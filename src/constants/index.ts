@@ -16,14 +16,27 @@ type ChainTokenList = {
 
 export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth')
 export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin')
-export const USDC = new Token(ChainId.MAINNET, '0xA0b86991c6218b36c1d19D4a2e9Eb0cE3606eB48', 6, 'USDC', 'USD//C')
-export const USDT = new Token(ChainId.HOPE, '0xcd48a86666d2a79e027d82ca6adf853357c70d02', 6, 'USDT', 'Tether USD')
+export const USDC = new Token(ChainId.SEPOLIA, '0x9Dab7bbE254Fcf610dc0DC9AbAC96b99b33b98e9', 6, 'USDC', 'USD//C')
+export const USDT = new Token(ChainId.SEPOLIA, '0x5A115CF3F91792Ccb9440BFa3C713706d1aC8Bc1', 6, 'USDT', 'Tether USD')
 export const WBTC = new Token(ChainId.MAINNET, '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 8, 'WBTC', 'Wrapped BTC')
 export const FEI = new Token(ChainId.MAINNET, '0x956F47F50A910163D8BF957Cf5846D573E7f87CA', 18, 'FEI', 'Fei USD')
 export const TRIBE = new Token(ChainId.MAINNET, '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B', 18, 'TRIBE', 'Tribe')
 export const FRAX = new Token(ChainId.MAINNET, '0x853d955aCEf822Db058eb8505911ED77F175b99e', 18, 'FRAX', 'Frax')
 export const FXS = new Token(ChainId.MAINNET, '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0', 18, 'FXS', 'Frax Share')
 export const renBTC = new Token(ChainId.MAINNET, '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D', 8, 'renBTC', 'renBTC')
+
+// hope about token
+export const LT = new Token(ChainId.SEPOLIA, '0x6E34e3c7Be8B5B69efb23c5Dba071c977D652a4E', 18, 'LT', 'light')
+export const VELT = new Token(ChainId.SEPOLIA, '0x26cf9861BcF9aF3d86d715D51497a58D217cC442', 18, 'VELT', 've light')
+export const HOPE = new Token(ChainId.SEPOLIA, '0x4368FeB368A4a488F373d6cB7eb725f117c42EfD', 18, 'HOPE', 'hope')
+
+// staking buyhope dao about address
+export const PERMIT2_ADDRESS = '0x0e83Cec2Ff3D14194A6b13459BA3Ce8F0C383399'
+export const GOMBOC_CONTROLLER_ADDRESS = '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e'
+export const LT_MINTER_ADDRESS = '0x29C8C1a65B7b6E80d528C8C4713293cE28ad4E97'
+export const TOKEN_SALE_ADDRESS = '0x8179476B7869e691f1b705Cd63A9CfF36836989e'
+export const POOL_GOMBOC_ADDRESS = '0x9CC52c53808c05E6037Be60136a524E9a6c898ea'
+export const STAKING_HOPE_GOMBOC_ADDRESS = '0x74507aE3D35431Cc52bC99042d951d7107b8e621'
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
 export const AVERAGE_BLOCK_TIME_IN_SECS = 13

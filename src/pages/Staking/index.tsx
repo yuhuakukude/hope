@@ -1,9 +1,11 @@
 import React from 'react'
 import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
-// import { useActiveWeb3React } from '../../hooks'
-// import { useTokenBalance } from '../../state/wallet/hooks'
+import { useActiveWeb3React } from '../../hooks'
+import { useTokenBalance } from '../../state/wallet/hooks'
 import { USDT } from '../../constants'
+
+import { Row, Col } from 'antd'
 
 import './index.scss'
 
@@ -13,18 +15,33 @@ const PageWrapper = styled(AutoColumn)`
 `
 
 export default function Staking() {
-  // const { account, chainId } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   console.log(USDT)
-  // const usdtBalance = useTokenBalance(account ?? undefined, USDT)
-  // console.log(usdtBalance)
+  const usdtBalance = useTokenBalance(account ?? undefined, USDT)
+  console.log(usdtBalance?.toFixed(2, { groupSeparator: ',' } ?? '-'), chainId)
+
   // const usdtBalance = useTokenBalance(account ?? undefined, USDT[chainId ?? 56])
   return (
     <>
       <PageWrapper>
         <div className="staking-page">
-          <i className="iconfont">&#xe605;</i>
-          <i className="iconfont">&#xe606;</i>
-          <i className="iconfont">&#xe607;</i>
+          <div className="staking-head">
+            <h3 className="text-white font-28 font-bolder">Staking $HOPE</h3>
+            <p className="text-white font-nor m-t-10">
+              Stake your $HOPE tokens for an annual percentage yield (APY).
+              <a href="/" className="text-normal m-l-15">
+                Learn more
+              </a>
+            </p>
+          </div>
+          <Row className="m-t-40" gutter={30}>
+            <Col className="gutter-row" span={16}>
+              
+            </Col>
+            <Col className="gutter-row" span={8}>
+              <div className="gutter-box">col-6</div>
+            </Col>
+          </Row>
         </div>
       </PageWrapper>
     </>

@@ -1,0 +1,50 @@
+{
+  "_format": "hh-sol-artifact-1",
+  "contractName": "MockSwap",
+  "sourceName": "contracts/mock/MockSwap.sol",
+  "abi": [
+    {
+      "inputs": [],
+      "name": "getHOPEPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getLTPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "getStHOPEPrice",
+      "outputs": [
+        {
+          "internalType": "uint256",
+          "name": "",
+          "type": "uint256"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function"
+    }
+  ],
+  "bytecode": "0x6080806040523460145760b9908161001a8239f35b600080fdfe6080806040526004361015601257600080fd5b6000803560e01c91826365403b1e14604c5750508063b4733cef1460455763dd54bc8d14603f575b600080fd5b603a6067565b50603a6067565b346063578160031936011260635780600160209252f35b5080fd5b5034603a576000366003190112603a5760206040516103e88152f3fea2646970667358221220c7f950ceedc2a1ecf20a2b24a3a408b3dc8d7cbd6229851a5a93e7c64141ed0964736f6c63430008110033",
+  "deployedBytecode": "0x6080806040526004361015601257600080fd5b6000803560e01c91826365403b1e14604c5750508063b4733cef1460455763dd54bc8d14603f575b600080fd5b603a6067565b50603a6067565b346063578160031936011260635780600160209252f35b5080fd5b5034603a576000366003190112603a5760206040516103e88152f3fea2646970667358221220c7f950ceedc2a1ecf20a2b24a3a408b3dc8d7cbd6229851a5a93e7c64141ed0964736f6c63430008110033",
+  "linkReferences": {},
+  "deployedLinkReferences": {}
+}
