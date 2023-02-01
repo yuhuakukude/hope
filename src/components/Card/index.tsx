@@ -58,3 +58,24 @@ export const BlueCard = ({ children, ...rest }: CardProps) => {
     </BlueCardStyled>
   )
 }
+
+const TitleCardStyled = styled(Card)`
+  border-radius: 20px;
+  background-color: #26262c;
+`
+
+const TitleTextStyled = styled(Text)`
+  color: white;
+  border-bottom: 1px solid #3d3e46;
+  font-size: 18px;
+  padding: 30px;
+`
+
+export function TitleCard({ title, children, ...rest }: CardProps) {
+  return (
+    <TitleCardStyled {...rest}>
+      <TitleTextStyled>{title}</TitleTextStyled>
+      <div style={{ padding: '30px' }}>{children}</div>
+    </TitleCardStyled>
+  )
+}
