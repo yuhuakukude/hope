@@ -1,0 +1,334 @@
+$distance-list: 0, 3, 4, 5, 6, 8, 10, 11, 12, 15, 16, 17, 18, 20, 23, 24, 25, 26, 28, 30, 32, 35, 36, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100;
+$fonts-list: 12, 14, 16, 18, 20, 22;
+
+@each $distance in $distance-list {
+  .m-#{$distance} {
+    margin: $distance + px !important;
+  }
+
+  .m-y-#{$distance} {
+    margin-top: $distance + px !important;
+    margin-bottom: $distance + px !important;
+  }
+
+  .m-x-#{$distance} {
+    margin-right: $distance + px !important;
+    margin-left: $distance + px !important;
+  }
+
+  .m-t-#{$distance} {
+    margin-top: $distance + px !important;
+  }
+
+  .m-r-#{$distance} {
+    margin-right: $distance + px !important;
+  }
+
+  .m-b-#{$distance} {
+    margin-bottom: $distance + px !important;
+  }
+
+  .m-l-#{$distance} {
+    margin-left: $distance + px !important;
+  }
+
+  .p-#{$distance} {
+    padding: $distance + px !important;
+  }
+
+  .p-y-#{$distance} {
+    padding-top: $distance + px !important;
+    padding-bottom: $distance + px !important;
+  }
+
+  .p-x-#{$distance} {
+    padding-right: $distance + px !important;
+    padding-left: $distance + px !important;
+  }
+
+  .p-t-#{$distance} {
+    padding-top: $distance + px !important;
+  }
+
+  .p-r-#{$distance} {
+    padding-right: $distance + px !important;
+  }
+
+  .p-b-#{$distance} {
+    padding-bottom: $distance + px !important;
+  }
+
+  .p-l-#{$distance} {
+    padding-left: $distance + px !important;
+  }
+}
+
+.left {
+  float: left;
+}
+
+.right {
+  float: right;
+}
+
+.cursor-select {
+  cursor: pointer;
+  user-select: none;
+}
+.w-100 {
+  width: 100%;
+}
+
+.h-100 {
+  height: 100%;
+}
+
+.h-42 {
+  height: 42px;
+}
+
+/* flex 布局兼容性写法 */
+.flex {
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+}
+
+.flex-1 {
+  -webkit-box-flex: 1;
+  -ms-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+}
+
+.flex-2 {
+  -webkit-box-flex: 2;
+  -ms-flex: 2;
+  -webkit-flex: 2;
+  flex: 2;
+}
+
+.flex-3 {
+  -webkit-box-flex: 3;
+  -ms-flex: 3;
+  -webkit-flex: 3;
+  flex: 3;
+}
+
+.flex-4 {
+  -webkit-box-flex: 4;
+  -ms-flex: 4;
+  -webkit-flex: 4;
+  flex: 4;
+}
+
+.flex-5 {
+  -webkit-box-flex: 5;
+  -ms-flex: 5;
+  -webkit-flex: 5;
+  flex: 5;
+}
+
+.flex-6 {
+  -webkit-box-flex: 6;
+  -ms-flex: 6;
+  -webkit-flex: 6;
+  flex: 6;
+}
+
+/* flex 水平排列 */
+.row {
+  -webkit-box-orient: horizontal;
+  flex-direction: row;
+  flex-direction: row;
+  flex-direction: row;
+}
+
+/* flex 垂直排列 */
+.column {
+  -webkit-box-orient: vertical;
+  flex-direction: column;
+  flex-direction: column;
+  flex-direction: column;
+}
+
+/* flex 主轴终点对齐 */
+.jc-end {
+  -webkit-box-pack: end;
+  justify-content: flex-end;
+  -ms-flex-pack: end;
+  justify-content: flex-end;
+}
+
+/* flex 主轴居中对齐 */
+.jc-center {
+  -webkit-box-pack: center;
+  justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  justify-content: center;
+}
+
+/* flex 主轴两端对齐 */
+.jc-between {
+  -webkit-box-pack: justify;
+  justify-content: space-between;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+}
+
+/* flex 主轴两端对齐 */
+.jc-around {
+  -webkit-box-pack: justify;
+  justify-content: space-around;
+  -ms-flex-pack: justify;
+  justify-content: space-around;
+}
+
+/* flex 交叉轴终点对齐 */
+.ai-end {
+  -webkit-box-align: end;
+  align-items: flex-end;
+  -ms-flex-align: end;
+  align-items: flex-end;
+}
+
+/* flex 交叉轴居中对齐 */
+.ai-center {
+  -webkit-box-align: center;
+  align-items: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+// 5列布局
+.el-col-five {
+  width: 20%
+}
+.el-col-offset-five {
+  margin-left: 20%
+}
+.el-col-pull-five {
+  position: relative;
+  right: 20%
+}
+.el-col-push-five {
+  position: relative;
+  left: 20%
+}
+
+.line-height1{
+  line-height: 1;
+}
+
+.font-36 {
+  font-size: 36px;
+}
+
+.font-32 {
+  font-size: 32px;
+}
+
+.font-34 {
+  font-size: 34px;
+}
+
+.font-48 {
+  font-size: 48px;
+}
+
+.font-24 {
+  font-size: 24px;
+}
+
+.font-26 {
+  font-size: 26px;
+}
+
+.font-20 {
+  font-size: 20px;
+}
+
+.font-18 {
+  font-size: 18px;
+}
+
+.font-nor {
+  font-size: 16px;
+}
+
+.font-14 {
+  font-size: 14px;
+}
+
+.font-12 {
+  font-size: 12px;
+}
+
+.font-bold {
+  font-weight: bold;
+}
+
+.font-500 {
+  font-weight: 500;
+}
+
+.font-bolder {
+  font-weight: bolder;
+}
+
+.font-medium {
+  font-weight: 500;
+}
+
+.text-center {
+  text-align: center;
+}
+.text-right {
+  text-align: right;
+}
+.text-left {
+  text-align: left;
+}
+.text-white {
+  color: #fff;
+}
+
+.text-normal {
+  color: #A8A8AA;
+}
+
+.text-dark {
+  color: #212121;
+}
+
+.text-grey {
+  color: #AEAEAE;
+}
+
+.text-primary {
+  color: #E4C989;
+}
+
+.text-success {
+  color: #0ECB81;
+}
+
+.text-warn {
+  color: #B68000;
+}
+
+.text-error {
+  color: #F6465D;
+}
+
+.lh1{
+  line-height: 1;
+}
+.lh15{
+  line-height: 1.5;
+}
+.lh18{
+  line-height: 1.8;
+}

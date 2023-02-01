@@ -33,6 +33,7 @@ import VotePage from './Vote/VotePage'
 import Staking from './Staking'
 
 import './App.css'
+import '../assets/style/index.scss'
 
 const AppWrapper = styled.div`
   display: flex;

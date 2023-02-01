@@ -1,0 +1,40 @@
+@import "./common";
+@import "./reset";
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+dl,
+dd,
+ul,
+ol,
+form { margin: 0; }
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: 100%;
+}
+
+ul,
+li,
+ol {
+  padding-left: 0;
+  list-style: none;
+  list-style-position: outside;
+}
+
+html,
+body {
+  height: 100%;
+  font-size: 14px;
+  font-family: Arboria-Book;
+}

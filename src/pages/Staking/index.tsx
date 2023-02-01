@@ -27,7 +27,7 @@ export default function Staking() {
           staking{bal} {account}
         </div>
         <Button>Default Button</Button>
-        <div>{chainId}</div>
+        <div className="text-success">{chainId}</div>
         {/* <div>{usdtBalance?.toFixed()}</div> */}
       </PageWrapper>
     </>
