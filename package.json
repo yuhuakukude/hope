@@ -122,6 +122,9 @@
   "license": "GPL-3.0-or-later",
   "dependencies": {
     "@uniswap/default-token-list": "^2.0.0",
-    "@uniswap/sdk": "Light-Ecosystem/hope-dapp-sdk.git"
+    "@uniswap/sdk": "Light-Ecosystem/hope-dapp-sdk.git",
+    "antd": "^3.26.19",
+    "sass": "^1.57.1",
+    "sass-loader": "^13.2.0"
   }
 }
