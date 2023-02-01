@@ -4,10 +4,11 @@ import { AutoColumn } from '../../components/Column'
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { USDT } from '../../constants'
-
+import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
 
 import './index.scss'
+import HopeCard from '../../components/ahp/card'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -19,6 +20,17 @@ export default function Staking() {
   console.log(USDT)
   const usdtBalance = useTokenBalance(account ?? undefined, USDT)
   console.log(usdtBalance?.toFixed(2, { groupSeparator: ',' } ?? '-'), chainId)
+
+  async function initApy() {
+    try {
+      const res = await StakingApi.getApy()
+      if (res && res.result) {
+        console.log(res, '😈😈😈')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   // const usdtBalance = useTokenBalance(account ?? undefined, USDT[chainId ?? 56])
   return (
@@ -36,10 +48,23 @@ export default function Staking() {
           </div>
           <Row className="m-t-40" gutter={30}>
             <Col className="gutter-row" span={16}>
-              
+              <div className="staking-tab">
+                <button
+                  onClick={() => {
+                    initApy()
+                  }}
+                >
+                  12323123
+                </button>
+              </div>
             </Col>
             <Col className="gutter-row" span={8}>
-              <div className="gutter-box">col-6</div>
+              <HopeCard title={'Overview'}>
+                <div className="flex">
+                  <div className="apy-box"></div>
+                  <p className="">APY</p>
+                </div>
+              </HopeCard>
             </Col>
           </Row>
         </div>
