@@ -12,7 +12,7 @@ const http = Axios.create({
   }
 })
 
-async function requestInterceptor(config: AxiosRequestConfig) {
+async function requestInterceptor(config: AxiosRequestConfig): Promise<AxiosRequestConfig> {
   // let { headers } = config;
   return new Promise(resolve => {
     requestCount += 1
