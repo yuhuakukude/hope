@@ -23,6 +23,9 @@ import { V1_EXCHANGE_ABI, V1_FACTORY_ABI, V1_FACTORY_ADDRESSES } from '../consta
 import { getContract } from '../utils'
 import { useActiveWeb3React } from './index'
 
+import { STAKING_HOPE_GOMBOC_ADDRESS } from '../constants'
+import STAKING_HOPE_GOMBOC_ABI from '../constants/abis/ahp/STAKING_HOPE_GOMBOC.json'
+
 // returns null on errors
 function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
   const { library, account } = useActiveWeb3React()
@@ -124,4 +127,9 @@ export function useSocksController(): Contract | null {
     UNISOCKS_ABI,
     false
   )
+}
+
+// staking buy dao
+export function useStakingHopeGombocContract(): Contract | null {
+  return useContract(STAKING_HOPE_GOMBOC_ADDRESS, STAKING_HOPE_GOMBOC_ABI.abi, true)
 }
