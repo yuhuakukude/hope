@@ -17,6 +17,9 @@ import useTheme from '../../hooks/useTheme'
 
 const InputRow = styled.div<{ selected: boolean }>`
   ${({ theme }) => theme.flexRowNoWrap}
+  border: 1px solid ${({ theme }) => theme.bg2};
+  margin-top: 12px;
+  border-radius: 10px;
   align-items: center;
   padding: ${({ selected }) => (selected ? '0.75rem 0.5rem 0.75rem 1rem' : '0.75rem 0.75rem 0.75rem 1rem')};
 `
@@ -48,7 +51,6 @@ const LabelRow = styled.div`
   color: ${({ theme }) => theme.text1};
   font-size: 0.75rem;
   line-height: 1rem;
-  padding: 0.75rem 1rem 0 1rem;
   span:hover {
     cursor: pointer;
     color: ${({ theme }) => darken(0.2, theme.text2)};
@@ -81,7 +83,6 @@ const InputPanel = styled.div<{ hideInput?: boolean }>`
 
 const Container = styled.div<{ hideInput: boolean }>`
   border-radius: ${({ hideInput }) => (hideInput ? '8px' : '20px')};
-  border: 1px solid ${({ theme }) => theme.bg2};
   background-color: ${({ theme }) => theme.bg1};
 `
 

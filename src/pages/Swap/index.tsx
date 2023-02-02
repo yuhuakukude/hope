@@ -327,7 +327,7 @@ export default function Swap({ history }: RouteComponentProps) {
 
           <AutoColumn gap={'md'}>
             <CurrencyInputPanel
-              label={independentField === Field.OUTPUT && !showWrap && trade ? 'From (estimated)' : 'From'}
+              label={independentField === Field.OUTPUT && !showWrap && trade ? 'Pay (estimated)' : 'Pay'}
               value={formattedAmounts[Field.INPUT]}
               showMaxButton={!atMaxAmountInput}
               currency={currencies[Field.INPUT]}
@@ -359,7 +359,7 @@ export default function Swap({ history }: RouteComponentProps) {
             <CurrencyInputPanel
               value={formattedAmounts[Field.OUTPUT]}
               onUserInput={handleTypeOutput}
-              label={independentField === Field.INPUT && !showWrap && trade ? 'To (estimated)' : 'To'}
+              label={independentField === Field.INPUT && !showWrap && trade ? 'Receive (Estimated)' : 'Receive'}
               showMaxButton={false}
               currency={currencies[Field.OUTPUT]}
               onCurrencySelect={handleOutputSelect}
