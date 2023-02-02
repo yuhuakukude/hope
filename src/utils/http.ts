@@ -47,7 +47,7 @@ function responseErrorInterceptor(error: { isAxiosError?: boolean; message?: str
   if (error.isAxiosError) {
     return Promise.reject(error)
   }
-  return Promise.reject({ ...error, message: '服务异常，请稍后尝试！' })
+  return Promise.reject({ ...error, message: 'Network Error' })
 }
 
 http.interceptors.request.use(requestInterceptor, requestErrorInterceptor)
