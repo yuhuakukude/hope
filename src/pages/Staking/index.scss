@@ -1,3 +1,29 @@
 .staking-page {
-  
+  .staking-tab {
+    border-radius: 20px;
+    background: #26262C;
+    overflow: hidden;
+    .head {
+      height: 75px;
+      background: #18181D;
+      .head-item {
+        height: 100%;
+        text-align: center;
+        color: #A8A8AA;
+        line-height: 74px;
+        font-weight: bold;
+        font-size: 18px;
+        cursor: pointer;
+        border-radius: 20px 20px 0 0;
+        &:hover {
+          background: #26262C;
+          color: #fff;
+        }
+        &.active {
+          background: #26262C;
+          color: #fff;
+        }
+      }
+    }
+  }
 }
