@@ -1,3 +1,41 @@
 .buy-hope-page {
-  
+  width: 500px;
+  margin: 0 auto;
+  background-color: #26262C;
+  padding: 40px 30px;
+  border-radius: 20px;
+  .box{
+    .input-title{
+    }
+    .input-box{
+      width: 100%;
+      height: 56px;
+      border-radius: 10px;
+      border: 1px solid rgba(61, 62, 70, 1);
+      .coin-box{
+        .icon{
+          width: 24px;
+          height: 24px;
+          background-color: red;
+        }
+      }
+      .input{
+        width: 100%;
+        height: 100%;
+      }
+    }
+  }
+  .gas{
+    border-top: 1px solid #3D3E46;
+    border-bottom: 1px solid #3D3E46;
+  }
+  .tip{
+    .icon .iconfont{
+      color: #FBDD55;
+      font-weight: bold;
+    }
+    p{
+      line-height: 20px;
+    }
+  }
 }

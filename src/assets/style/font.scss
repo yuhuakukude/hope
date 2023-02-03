@@ -1,0 +1,43 @@
+@font-face {
+  font-family: Arboria-Black;
+  src: url('./font/Arboria-Black.otf');
+}
+@font-face {
+  font-family: Arboria-Bold;
+  src: url('./font/Arboria-Bold.otf');
+}
+@font-face {
+  font-family: Arboria-Book;
+  src: url('./font/Arboria-Book.otf');
+}
+@font-face {
+  font-family: Arboria-Light;
+  src: url('./font/Arboria-Light.otf');
+}
+@font-face {
+  font-family: Arboria-Medium;
+  src: url('./font/Arboria-Medium.otf');
+}
+@font-face {
+  font-family: Arboria-Thin;
+  src: url('./font/Arboria-Thin.otf');
+}
+
+.text-black{
+  font-family: Arboria-Black;
+}
+.text-bold{
+  font-family: Arboria-Bold;
+}
+.text-book{
+  font-family: Arboria-Book;
+}
+.text-light{
+  font-family: Arboria-Light;
+}
+.text-medium{
+  font-family: Arboria-Medium;
+}
+.text-thin{
+  font-family: Arboria-Thin;
+}
