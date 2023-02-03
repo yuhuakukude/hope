@@ -11,14 +11,17 @@ import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 
 export function useStaking() {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const shgContract = useStakingHopeGombocContract()
   const ltMinterContract = useLtMinterContract()
   const stakedVal = useSingleCallResult(shgContract, 'lpBalanceOf', [account ?? undefined])
   const unstakedVal = useSingleCallResult(shgContract, 'unstakedBalanceOf', [account ?? undefined])
   const lpTotalSupply = useSingleCallResult(shgContract, 'lpTotalSupply')
   const claRewards = useSingleCallResult(shgContract, 'claimableTokens', [account ?? undefined])
-  const mintedVal = useSingleCallResult(ltMinterContract, 'minted', [account ?? undefined, STAKING_HOPE_GOMBOC_ADDRESS])
+  const mintedVal = useSingleCallResult(ltMinterContract, 'minted', [
+    account ?? undefined,
+    STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]
+  ])
 
   return {
     stakedVal: stakedVal?.result ? CurrencyAmount.ether(stakedVal?.result?.[0]) : undefined,

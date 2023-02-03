@@ -132,11 +132,13 @@ export function useSocksController(): Contract | null {
 
 // staking buy dao
 export function useStakingHopeGombocContract(): Contract | null {
-  return useContract(STAKING_HOPE_GOMBOC_ADDRESS, STAKING_HOPE_GOMBOC_ABI.abi, true)
+  const { chainId } = useActiveWeb3React()
+  return useContract(chainId && STAKING_HOPE_GOMBOC_ADDRESS[chainId], STAKING_HOPE_GOMBOC_ABI.abi, true)
 }
 
 export function useLtMinterContract(): Contract | null {
-  return useContract(LT_MINTER_ADDRESS, LT_MINTER_ABI.abi, true)
+  const { chainId } = useActiveWeb3React()
+  return useContract(chainId && LT_MINTER_ADDRESS[chainId], LT_MINTER_ABI.abi, true)
 }
 
 // buy hope

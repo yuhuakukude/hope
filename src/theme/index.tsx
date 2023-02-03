@@ -41,19 +41,19 @@ export function colors(darkMode: boolean): Colors {
     black,
 
     // text
-    text1: darkMode ? '#FFFFFF' : '#000000',
-    text2: darkMode ? '#C3C5CB' : '#565A69',
-    text3: darkMode ? '#6C7284' : '#888D9B',
-    text4: darkMode ? '#565A69' : '#C3C5CB',
-    text5: darkMode ? '#2C2F36' : '#EDEEF2',
+    text1: darkMode ? '#FFFFFF' : '#000000', // main
+    text2: darkMode ? '#A8A8AA' : '#565A69', // title
+    text3: darkMode ? '#5A5A5B' : '#888D9B', // hint
+    text4: darkMode ? '#26262C' : '#C3C5CB',
+    text5: darkMode ? '#63636A' : '#EDEEF2',
 
     // backgrounds / greys
-    bg1: darkMode ? '#212429' : '#FFFFFF',
-    bg2: darkMode ? '#2C2F36' : '#F7F8FA',
-    bg3: darkMode ? '#40444F' : '#EDEEF2',
-    bg4: darkMode ? '#565A69' : '#CED0D9',
-    bg5: darkMode ? '#6C7284' : '#888D9B',
-    bg6: darkMode ? '#0C0C0D' : '#888D9B',
+    bg1: darkMode ? '#26262C' : '#FFFFFF',
+    bg2: darkMode ? '#0C0C0D' : '#F7F8FA',
+    bg3: darkMode ? '#3D3E46' : '#EDEEF2',
+    bg4: darkMode ? '#3D3D3D' : '#CED0D9',
+    bg5: darkMode ? '#1E1E1E' : '#888D9B',
+    bg6: darkMode ? '#494949' : '#494949',
 
     //specialty colors
     modalBG: darkMode ? 'rgba(0,0,0,.425)' : 'rgba(0,0,0,0.3)',
@@ -75,11 +75,11 @@ export function colors(darkMode: boolean): Colors {
     secondary3: darkMode ? '#17000b26' : '#FDEAF1',
 
     // other
-    red1: '#68363C',
-    red2: '#F6465D',
+    red1: '#F6465D',
+    red2: '#68363C', // disable red
     red3: '#D60000',
     green1: '#0ECB81',
-    yellow1: '#FFE270',
+    yellow1: '#E4C989',
     yellow2: '#F3841E',
     blue1: '#2172E5'
 
@@ -100,7 +100,7 @@ export function theme(darkMode: boolean): DefaultTheme {
     },
 
     //shadows
-    shadow1: darkMode ? '#000' : '#2F80ED',
+    shadow1: darkMode ? '#0C0C0D' : '#2F80ED',
 
     // media queries
     mediaWidth: mediaWidthTemplates,
