@@ -1,5 +1,6 @@
-import React, { useEffect, useCallback, useState } from 'react'
+import React, { useEffect, useCallback, useState, useMemo } from 'react'
 import styled from 'styled-components'
+import { Button } from 'antd'
 import { AutoColumn } from '../../components/Column'
 import NumericalInput from '../../components/NumericalInput'
 import { useActiveWeb3React } from '../../hooks'
@@ -8,7 +9,7 @@ import { HOPE, PERMIT2_ADDRESS } from '../../constants'
 import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
 import HopeCard from '../../components/ahp/card'
-import { useStaking, useToStaked } from '../../hooks/ahp/useStaking'
+import { useStaking, useToStaked, useToWithdraw, useToUnStaked } from '../../hooks/ahp/useStaking'
 import format from '../../utils/format'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { ButtonPrimary } from '../../components/Button'
@@ -16,6 +17,7 @@ import { tryParseAmount } from '../../state/swap/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import ActionButton from '../../components/Button/ActionButton'
 import { TokenAmount } from '@uniswap/sdk'
+import StakingClaimModal from '../../components/ahp/StakingClaimModal'
 import './index.scss'
 
 const PageWrapper = styled(AutoColumn)`
@@ -29,21 +31,23 @@ export default function Staking() {
   const [curType, setStakingType] = useState('stake')
   const hopeBal = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
   const [apyVal, setApyVal] = useState('0')
-  const [amount, setAmount] = useState('0')
+  const [amount, setAmount] = useState('')
+  const [claimModalFlag, setClaimModalFlag] = useState<boolean>(false)
+  const [receiveAmount, setReceiveAmount] = useState('')
+
   const inputAmount = tryParseAmount(amount, HOPE[chainId ?? 1]) as TokenAmount | undefined
-  const [receiveAmount, setReceiveAmount] = useState('0')
-  // const { stakedVal, lpTotalSupply, unstakedVal, claRewards, mintedVal } = useStaking()
-  const { stakedVal, lpTotalSupply, unstakedVal, claRewards } = useStaking()
+  const { stakedVal, lpTotalSupply, unstakedVal, claRewards, mintedVal, unstakingVal } = useStaking()
   const { toStaked } = useToStaked()
+  const { toUnStaked } = useToUnStaked()
+  const { toWithdraw } = useToWithdraw()
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
-  // const totalRewards = useMemo(() => {
-  //   let res
-  //   if (claRewards && mintedVal) {
-  //     // res = JSBI.add(JSBI.BigInt(claRewards), JSBI.BigInt(mintedVal))
-  //     res = claRewards.add(mintedVal)
-  //   }
-  //   return res
-  // }, [claRewards, mintedVal])
+  const totalRewards = useMemo(() => {
+    let res
+    if (claRewards && mintedVal) {
+      res = claRewards.add(mintedVal)
+    }
+    return res
+  }, [claRewards, mintedVal])
 
   const stakingCallback = useCallback(async () => {
     if (!amount || !account || !inputAmount) return
@@ -69,6 +73,42 @@ export default function Staking() {
       })
   }, [amount, account, inputAmount, toStaked])
 
+  const unStakingCallback = useCallback(async () => {
+    if (!amount || !account || !inputAmount) return
+    // showModal(<TransactionPendingModal />)
+    toUnStaked(inputAmount)
+      .then(() => {
+        console.log('success')
+        // hideModal()
+        // showModal(<TransactionSubmittedModal />)
+      })
+      .catch((err: any) => {
+        // hideModal()
+        // showModal(
+        //   <MessageBox type="error">{err.error && err.error.message ? err.error.message : err?.message}</MessageBox>
+        // )
+        console.error(err)
+      })
+  }, [amount, account, inputAmount, toUnStaked])
+
+  const toWithdrawCallback = useCallback(async () => {
+    if (!account) return
+    // showModal(<TransactionPendingModal />)
+    toWithdraw()
+      .then(() => {
+        console.log('success')
+        // hideModal()
+        // showModal(<TransactionSubmittedModal />)
+      })
+      .catch((err: any) => {
+        // hideModal()
+        // showModal(
+        //   <MessageBox type="error">{err.error && err.error.message ? err.error.message : err?.message}</MessageBox>
+        // )
+        console.error(err)
+      })
+  }, [account, toWithdraw])
+
   async function initApy() {
     try {
       const res = await StakingApi.getApy()
@@ -81,8 +121,8 @@ export default function Staking() {
   }
 
   function changeStake(type: string) {
-    // form.setFieldsValue({ amount: '' })
-    // setReceiveAmount('0')
+    setAmount('')
+    setReceiveAmount('')
     setStakingType(type)
   }
 
@@ -90,6 +130,16 @@ export default function Staking() {
     console.log(val)
     setAmount(val)
     setReceiveAmount(val)
+  }
+
+  function toClaim() {
+    setClaimModalFlag(true)
+  }
+
+  function handleClaimDismiss() {}
+
+  function handleClaimView(view: boolean) {
+    setClaimModalFlag(view)
   }
 
   const init = useCallback(async () => {
@@ -164,7 +214,7 @@ export default function Staking() {
                       <ButtonPrimary className="hp-button-primary" onClick={toggleWalletModal}>
                         Connect Wallet
                       </ButtonPrimary>
-                    ) : (
+                    ) : curType === 'stake' ? (
                       <ActionButton
                         pending={approvalState === ApprovalState.PENDING}
                         disableAction={!inputAmount}
@@ -177,7 +227,19 @@ export default function Staking() {
                         }
                         onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : stakingCallback}
                       />
-                      // <ButtonPrimary className="hp-button-primary">approve</ButtonPrimary>
+                    ) : (
+                      <ActionButton
+                        pending={approvalState === ApprovalState.PENDING}
+                        disableAction={!inputAmount}
+                        actionText={
+                          !inputAmount
+                            ? 'Enter amount'
+                            : approvalState === ApprovalState.NOT_APPROVED
+                            ? 'Allow RamBox to use your USDT'
+                            : 'Commit to unstake'
+                        }
+                        onAction={unStakingCallback}
+                      />
                     )}
                   </div>
                 </div>
@@ -210,21 +272,56 @@ export default function Staking() {
                   </div>
                   <div className="flex jc-between m-b-10">
                     <span className="text-white">Unstaking</span>
+                    <span className="text-white">{unstakingVal?.toFixed(2, { groupSeparator: ',' }).toString()}</span>
+                  </div>
+                  <div className="flex jc-between">
+                    <span className="text-white">Unstaked</span>
                     <span className="text-white">{unstakedVal?.toFixed(2, { groupSeparator: ',' }).toString()}</span>
                   </div>
+                  {!(
+                    account &&
+                    unstakedVal &&
+                    Number(unstakedVal.toFixed(2, { groupSeparator: ',' }).toString()) > 0
+                  ) && (
+                    <div className="flex jc-end m-b-10">
+                      <Button className="text-primary cursor-select p-x-0" onClick={toWithdrawCallback} type="link">
+                        Withdraw
+                      </Button>
+                    </div>
+                  )}
                   <div className="flex jc-between m-b-10">
                     <span className="text-white">Total Rewards</span>
-                    {/* <span className="text-white">{totalRewards?.toFixed(2, { groupSeparator: ',' }).toString()}</span> */}
+                    <span className="text-white">{totalRewards?.toFixed(2, { groupSeparator: ',' }).toString()}</span>
                   </div>
-                  <div className="flex jc-between m-b-10">
+                  <div className="flex jc-between">
                     <span className="text-white">Claimable Rewards</span>
                     <span className="text-white">{claRewards?.toFixed(2, { groupSeparator: ',' }).toString()}</span>
                   </div>
+                  {!(
+                    account &&
+                    claRewards &&
+                    Number(claRewards.toFixed(2, { groupSeparator: ',' }).toString()) > 0
+                  ) && (
+                    <div className="flex jc-end m-b-10">
+                      <Button className="text-primary cursor-select p-x-0" onClick={toClaim} type="link">
+                        Claim
+                      </Button>
+                    </div>
+                  )}
                 </HopeCard>
               </div>
             </Col>
           </Row>
         </div>
+        <StakingClaimModal
+          rewardsInfo={{
+            claRewards: claRewards?.toFixed(2, { groupSeparator: ',' }).toString(),
+            totalRewards: totalRewards?.toFixed(2, { groupSeparator: ',' }).toString()
+          }}
+          isOpen={claimModalFlag}
+          onDismiss={handleClaimDismiss}
+          setModalView={handleClaimView}
+        />
       </PageWrapper>
     </>
   )
