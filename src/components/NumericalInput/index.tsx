@@ -3,15 +3,15 @@ import styled from 'styled-components'
 import { escapeRegExp } from '../../utils'
 
 const StyledInput = styled.input<{ error?: boolean; fontSize?: string; align?: string }>`
-  color: #fff;
+  color: ${({ error, theme }) => (error ? theme.red1 : theme.text1)};
   width: 0;
   position: relative;
   font-weight: 500;
   outline: none;
   border: none;
   flex: 1 1 auto;
-  background-color: #26262c;
-  font-size: ${({ fontSize }) => fontSize ?? '16px'};
+  background-color: ${({ theme }) => theme.bg1};
+  font-size: ${({ fontSize }) => fontSize ?? '24px'};
   text-align: ${({ align }) => align && align};
   white-space: nowrap;
   overflow: hidden;
@@ -33,7 +33,7 @@ const StyledInput = styled.input<{ error?: boolean; fontSize?: string; align?: s
   }
 
   ::placeholder {
-    color: #5a5a5b;
+    color: ${({ theme }) => theme.text4};
   }
 `
 
@@ -73,7 +73,7 @@ export const Input = React.memo(function InnerInput({
       // text-specific options
       type="text"
       pattern="^[0-9]*[.,]?[0-9]*$"
-      placeholder={placeholder || '0.00'}
+      placeholder={placeholder || '0.0'}
       minLength={1}
       maxLength={79}
       spellCheck="false"

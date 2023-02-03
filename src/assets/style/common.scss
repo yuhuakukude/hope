@@ -341,3 +341,25 @@ $fonts-list: 12, 14, 16, 18, 20, 22, 28;
   cursor: pointer;
   user-select: none;
 }
+.user-select{
+  user-select: none;
+}
+
+.usdt-icon{
+  width: 24px;
+  height: 24px;
+  background: url('../images/usdt-logo.png') no-repeat center;
+  background-size: contain;
+}
+.usdc-icon{
+  width: 24px;
+  height: 24px;
+  background: url('../images/usdc-logo.png') no-repeat center;
+  background-size: contain;
+}
+.hope-icon{
+  width: 24px;
+  height: 24px;
+  background: url('../images/hope-logo.png') no-repeat center;
+  background-size: contain;
+}

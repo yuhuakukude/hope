@@ -128,6 +128,7 @@ export default function App() {
                 <Route exact strict path="/uni/:currencyIdA/:currencyIdB" component={Manage} />
                 <Route exact strict path="/vote/:id" component={VotePage} />
                 <Route exact strict path="/staking" component={Staking} />
+                <Route exact strict path="/buy-hope" component={BuyHope} />
                 <Route component={RedirectPathToSwapOnly} />
               </Switch>
             </Web3ReactManager>

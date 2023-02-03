@@ -1,0 +1,16 @@
+.select-currency-modal {
+  background-color: #26262C;
+  .coin-box{
+    min-height: 350px;
+    .item{
+      cursor: pointer;
+      &:hover{
+        color: #A8A8AA;
+      }
+      .right .iconfont{
+        color: #0ECB81;
+        font-weight: bold;
+      }
+    }
+  }
+}
