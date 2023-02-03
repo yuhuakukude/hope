@@ -1,15 +1,24 @@
 import React, { useEffect, useCallback, useState } from 'react'
 import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
+import NumericalInput from '../../components/NumericalInput'
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { HOPE } from '../../constants'
 import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
-
-import './index.scss'
 import HopeCard from '../../components/ahp/card'
-import { useStaking } from '../../hooks/ahp/useStaking'
+import { useStaking, useToStaked } from '../../hooks/ahp/useStaking'
+import format from '../../utils/format'
+import { useWalletModalToggle } from '../../state/application/hooks'
+import { ButtonPrimary } from '../../components/Button'
+import { tryParseAmount } from '../../state/swap/hooks'
+import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
+import ActionButton from '../../components/Button/ActionButton'
+import { TokenAmount } from '@uniswap/sdk'
+import { PERMIT2_ADDRESS } from '../../constants'
+import './index.scss'
+
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
   width: 100%;
@@ -17,15 +26,55 @@ const PageWrapper = styled(AutoColumn)`
 
 export default function Staking() {
   const { account } = useActiveWeb3React()
+  const toggleWalletModal = useWalletModalToggle()
   const [curType, setStakingType] = useState('stake')
   const hopeBal = useTokenBalance(account ?? undefined, HOPE)
-  const { stakedVal } = useStaking()
+  const [apyVal, setApyVal] = useState('0')
+  const [amount, setAmount] = useState('0')
+  const inputAmount = tryParseAmount(amount, HOPE) as TokenAmount | undefined
+  const [receiveAmount, setReceiveAmount] = useState('0')
+  // const { stakedVal, lpTotalSupply, unstakedVal, claRewards, mintedVal } = useStaking()
+  const { stakedVal, lpTotalSupply, unstakedVal, claRewards } = useStaking()
+  const { toStaked } = useToStaked()
+  const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS)
+  // const totalRewards = useMemo(() => {
+  //   let res
+  //   if (claRewards && mintedVal) {
+  //     // res = JSBI.add(JSBI.BigInt(claRewards), JSBI.BigInt(mintedVal))
+  //     res = claRewards.add(mintedVal)
+  //   }
+  //   return res
+  // }, [claRewards, mintedVal])
+
+  const stakingCallback = useCallback(async () => {
+    if (!amount || !account || !inputAmount) return
+    // showModal(<TransactionPendingModal />)
+    const testData = {
+      NONCE: '47317459226169151117060976502302229419756387859583426096766647023563518724591',
+      DEADLINE: '1675355171',
+      sigVal:
+        '0xc5beacf6327fafdbb3a188f1974da1b890e28921b4302b800a6d609c904d001e1669a5e73c18fb749eabb8b74587192c2bbcfe68954f0b18fc479c8a50b667781b'
+    }
+    toStaked(inputAmount, testData.NONCE, testData.DEADLINE, testData.sigVal)
+      .then(() => {
+        console.log('success')
+        // hideModal()
+        // showModal(<TransactionSubmittedModal />)
+      })
+      .catch((err: any) => {
+        // hideModal()
+        // showModal(
+        //   <MessageBox type="error">{err.error && err.error.message ? err.error.message : err?.message}</MessageBox>
+        // )
+        console.error(err)
+      })
+  }, [amount, account, inputAmount, toStaked])
 
   async function initApy() {
     try {
       const res = await StakingApi.getApy()
       if (res && res.result) {
-        console.log(res)
+        setApyVal(res.result)
       }
     } catch (error) {
       console.log(error)
@@ -36,6 +85,12 @@ export default function Staking() {
     // form.setFieldsValue({ amount: '' })
     // setReceiveAmount('0')
     setStakingType(type)
+  }
+
+  function changeAmount(val: any) {
+    console.log(val)
+    setAmount(val)
+    setReceiveAmount(val)
   }
 
   const init = useCallback(async () => {
@@ -90,16 +145,84 @@ export default function Staking() {
                         : `${stakedVal?.toFixed(2, { groupSeparator: ',' }).toString()} stHOPE`}
                     </div>
                   </div>
+                  <NumericalInput
+                    className="hp-amount m-t-10"
+                    value={amount}
+                    onUserInput={val => {
+                      changeAmount(val)
+                    }}
+                  />
+                  <div className="flex jc-between m-t-30">
+                    <span className="text-white">Est Transaction Fee</span>
+                    <span className="text-white">0.0012 ETH</span>
+                  </div>
+                  <div className="flex jc-between m-t-20">
+                    <span className="text-white">Receive </span>
+                    <span className="text-white">{receiveAmount} stHOPE</span>
+                  </div>
+                  <div className="action-box m-t-40">
+                    {!account ? (
+                      <ButtonPrimary className="hp-button-primary" onClick={toggleWalletModal}>
+                        Connect Wallet
+                      </ButtonPrimary>
+                    ) : (
+                      <ActionButton
+                        pending={approvalState === ApprovalState.PENDING}
+                        disableAction={!inputAmount}
+                        actionText={
+                          !inputAmount
+                            ? 'Enter amount'
+                            : approvalState === ApprovalState.NOT_APPROVED
+                            ? 'Allow RamBox to use your USDT'
+                            : 'Approve'
+                        }
+                        onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : stakingCallback}
+                      />
+                      // <ButtonPrimary className="hp-button-primary">approve</ButtonPrimary>
+                    )}
+                  </div>
                 </div>
               </div>
             </Col>
             <Col className="gutter-row" span={8}>
-              <HopeCard title={'Overview'}>
+              <HopeCard title={'Stake'}>
                 <div className="flex">
-                  <div className="apy-box"></div>
-                  <p className="">APY</p>
+                  <div className="apy-box">
+                    <p className="text-white font-nor">APR</p>
+                    <h3 className="text-success font-28 font-bold">{format.rate(apyVal)}</h3>
+                  </div>
+                  <div className="flex-1">
+                    <p className="text-white font-nor">Total Staked </p>
+                    <h3 className="text-white font-28 font-bold">
+                      {lpTotalSupply?.toFixed(2, { groupSeparator: ',' }).toString()}
+                    </h3>
+                  </div>
                 </div>
               </HopeCard>
+              <div className="m-t-30">
+                <HopeCard title={'Stake'}>
+                  <div className="flex jc-between m-b-10">
+                    <span className="text-white">Available</span>
+                    <span className="text-white">{hopeBal?.toFixed(2, { groupSeparator: ',' } ?? '-')}</span>
+                  </div>
+                  <div className="flex jc-between m-b-10">
+                    <span className="text-white">Staked</span>
+                    <span className="text-white">{stakedVal?.toFixed(2, { groupSeparator: ',' }).toString()}</span>
+                  </div>
+                  <div className="flex jc-between m-b-10">
+                    <span className="text-white">Unstaking</span>
+                    <span className="text-white">{unstakedVal?.toFixed(2, { groupSeparator: ',' }).toString()}</span>
+                  </div>
+                  <div className="flex jc-between m-b-10">
+                    <span className="text-white">Total Rewards</span>
+                    {/* <span className="text-white">{totalRewards?.toFixed(2, { groupSeparator: ',' }).toString()}</span> */}
+                  </div>
+                  <div className="flex jc-between m-b-10">
+                    <span className="text-white">Claimable Rewards</span>
+                    <span className="text-white">{claRewards?.toFixed(2, { groupSeparator: ',' }).toString()}</span>
+                  </div>
+                </HopeCard>
+              </div>
             </Col>
           </Row>
         </div>

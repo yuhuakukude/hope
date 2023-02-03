@@ -60,14 +60,16 @@ export const BlueCard = ({ children, ...rest }: CardProps) => {
 }
 
 const TitleCardStyled = styled(Card)`
+  padding: 0;
   border-radius: 20px;
   background-color: #26262c;
+  min-width: 500px;
 `
 
 const TitleTextStyled = styled(Text)`
   color: white;
-  border-bottom: 1px solid #3d3e46;
   font-size: 18px;
+  border-bottom: 1px solid #3d3e46;
   padding: 30px;
 `
 
