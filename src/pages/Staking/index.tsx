@@ -8,10 +8,15 @@ import { HOPE } from '../../constants'
 import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
 import HopeCard from '../../components/ahp/card'
-import { useStaking } from '../../hooks/ahp/useStaking'
+import { useStaking, useToStaked } from '../../hooks/ahp/useStaking'
 import format from '../../utils/format'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { ButtonPrimary } from '../../components/Button'
+import { tryParseAmount } from '../../state/swap/hooks'
+import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
+import ActionButton from '../../components/Button/ActionButton'
+import { TokenAmount } from '@uniswap/sdk'
+import { PERMIT2_ADDRESS } from '../../constants'
 import './index.scss'
 
 const PageWrapper = styled(AutoColumn)`
@@ -26,10 +31,12 @@ export default function Staking() {
   const hopeBal = useTokenBalance(account ?? undefined, HOPE)
   const [apyVal, setApyVal] = useState('0')
   const [amount, setAmount] = useState('0')
+  const inputAmount = tryParseAmount(amount, HOPE) as TokenAmount | undefined
   const [receiveAmount, setReceiveAmount] = useState('0')
   // const { stakedVal, lpTotalSupply, unstakedVal, claRewards, mintedVal } = useStaking()
   const { stakedVal, lpTotalSupply, unstakedVal, claRewards } = useStaking()
-
+  const { toStaked } = useToStaked()
+  const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS)
   // const totalRewards = useMemo(() => {
   //   let res
   //   if (claRewards && mintedVal) {
@@ -38,6 +45,30 @@ export default function Staking() {
   //   }
   //   return res
   // }, [claRewards, mintedVal])
+
+  const stakingCallback = useCallback(async () => {
+    if (!amount || !account || !inputAmount) return
+    // showModal(<TransactionPendingModal />)
+    const testData = {
+      NONCE: '47317459226169151117060976502302229419756387859583426096766647023563518724591',
+      DEADLINE: '1675355171',
+      sigVal:
+        '0xc5beacf6327fafdbb3a188f1974da1b890e28921b4302b800a6d609c904d001e1669a5e73c18fb749eabb8b74587192c2bbcfe68954f0b18fc479c8a50b667781b'
+    }
+    toStaked(inputAmount, testData.NONCE, testData.DEADLINE, testData.sigVal)
+      .then(() => {
+        console.log('success')
+        // hideModal()
+        // showModal(<TransactionSubmittedModal />)
+      })
+      .catch((err: any) => {
+        // hideModal()
+        // showModal(
+        //   <MessageBox type="error">{err.error && err.error.message ? err.error.message : err?.message}</MessageBox>
+        // )
+        console.error(err)
+      })
+  }, [amount, account, inputAmount, toStaked])
 
   async function initApy() {
     try {
@@ -135,7 +166,19 @@ export default function Staking() {
                         Connect Wallet
                       </ButtonPrimary>
                     ) : (
-                      <ButtonPrimary className="hp-button-primary">approve</ButtonPrimary>
+                      <ActionButton
+                        pending={approvalState === ApprovalState.PENDING}
+                        disableAction={!inputAmount}
+                        actionText={
+                          !inputAmount
+                            ? 'Enter amount'
+                            : approvalState === ApprovalState.NOT_APPROVED
+                            ? 'Allow RamBox to use your USDT'
+                            : 'Approve'
+                        }
+                        onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : stakingCallback}
+                      />
+                      // <ButtonPrimary className="hp-button-primary">approve</ButtonPrimary>
                     )}
                   </div>
                 </div>
