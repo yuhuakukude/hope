@@ -4,7 +4,7 @@ import { AutoColumn } from '../../components/Column'
 import NumericalInput from '../../components/NumericalInput'
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
-import { HOPE } from '../../constants'
+import { HOPE, PERMIT2_ADDRESS } from '../../constants'
 import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
 import HopeCard from '../../components/ahp/card'
@@ -16,7 +16,6 @@ import { tryParseAmount } from '../../state/swap/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import ActionButton from '../../components/Button/ActionButton'
 import { TokenAmount } from '@uniswap/sdk'
-import { PERMIT2_ADDRESS } from '../../constants'
 import './index.scss'
 
 const PageWrapper = styled(AutoColumn)`
@@ -25,18 +24,18 @@ const PageWrapper = styled(AutoColumn)`
 `
 
 export default function Staking() {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const [curType, setStakingType] = useState('stake')
-  const hopeBal = useTokenBalance(account ?? undefined, HOPE)
+  const hopeBal = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
   const [apyVal, setApyVal] = useState('0')
   const [amount, setAmount] = useState('0')
-  const inputAmount = tryParseAmount(amount, HOPE) as TokenAmount | undefined
+  const inputAmount = tryParseAmount(amount, HOPE[chainId ?? 1]) as TokenAmount | undefined
   const [receiveAmount, setReceiveAmount] = useState('0')
   // const { stakedVal, lpTotalSupply, unstakedVal, claRewards, mintedVal } = useStaking()
   const { stakedVal, lpTotalSupply, unstakedVal, claRewards } = useStaking()
   const { toStaked } = useToStaked()
-  const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS)
+  const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
   // const totalRewards = useMemo(() => {
   //   let res
   //   if (claRewards && mintedVal) {
