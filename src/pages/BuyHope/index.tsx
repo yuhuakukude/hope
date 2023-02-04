@@ -37,7 +37,7 @@ export default function BuyHope() {
   const rateObj = useSingleCallResult(buyHopeContract, 'currencys', [currency])
   const usdtBalance = useTokenBalance(account ?? undefined, USDT)
   const usdcBalance = useTokenBalance(account ?? undefined, USDC)
-  const inputAmount = tryParseAmount(pay, USDT) as TokenAmount | undefined
+  const inputAmount = tryParseAmount(pay, currency === 'USDT' ? USDT : USDC) as TokenAmount | undefined
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
 
   const onUserPayInput = (value: string) => {
@@ -80,20 +80,24 @@ export default function BuyHope() {
     console.log(testData)
   }, [pay, account, inputAmount])
 
-  const btnDisabled = useMemo(() => {
+  const isMaxDisabled = useMemo(() => {
+    let flag = false
     const max = currency === 'USDT' ? usdtBalance?.toFixed(2) : usdcBalance?.toFixed(2)
-    return pay >= (max || 0)
+    if (pay && max) {
+      flag = pay > (max || 0)
+    }
+    return flag
   }, [pay, usdtBalance, usdcBalance, currency])
 
   const actionText = useMemo(() => {
     if (!inputAmount) {
       return `Approve ${currency}`
-    } else if (btnDisabled) {
+    } else if (isMaxDisabled) {
       return `Insufficient ${currency} balance`
     } else {
       return approvalState === ApprovalState.NOT_APPROVED ? 'Confirm in your wallet' : 'Approve'
     }
-  }, [inputAmount, btnDisabled, approvalState, currency])
+  }, [inputAmount, isMaxDisabled, approvalState, currency])
 
   const showSelectCurrency = () => {
     const arr: any = [
@@ -122,7 +126,9 @@ export default function BuyHope() {
 
   const maxInputFn = () => {
     const balance = currency === 'USDT' ? usdtBalance?.toFixed(2) : usdcBalance?.toFixed(2)
-    setPay(balance || '0')
+    const resAmount = balance?.toString().replace(/(?:\.0*|(\.\d+?)0+)$/, '$1') || '0'
+    setPay(resAmount)
+    onUserPayInput(resAmount)
   }
 
   useEffect(() => {
@@ -152,7 +158,7 @@ export default function BuyHope() {
                 </span>
               </div>
             </div>
-            <div className="input-box m-t-12 p-x-32 flex ai-center">
+            <div className={['input-box', 'm-t-12', 'p-x-32', 'flex', 'ai-center', isMaxDisabled && 'error'].join(' ')}>
               <div className="coin-box flex ai-center cursor-select" onClick={showSelectCurrency}>
                 <div className={`${currency === 'USDT' ? 'usdt-icon' : 'usdc-icon'}`}></div>
                 <div className="currency font-nor text-medium m-l-12">{currency}</div>
@@ -202,7 +208,7 @@ export default function BuyHope() {
               ) : (
                 <ActionButton
                   pending={approvalState === ApprovalState.PENDING}
-                  disableAction={btnDisabled || !inputAmount}
+                  disableAction={isMaxDisabled || !inputAmount}
                   actionText={actionText}
                   onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : buyHopeCallback}
                 />
