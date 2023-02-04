@@ -27,6 +27,7 @@ const PageWrapper = styled(AutoColumn)`
 export default function BuyHope() {
   const [currency, setCurrency] = useState<string>('USDT')
   const [currencyModalFlag, setCurrencyModalFlag] = useState(false)
+  const [inputBorder, setInputBorder] = useState('')
   const [rateVal, setRateVal] = useState('')
   const [coinList, setCoinList] = useState('')
   const [pay, setPay] = useState('')
@@ -131,6 +132,10 @@ export default function BuyHope() {
     onUserPayInput(resAmount)
   }
 
+  const inputOnFocus = (type: string) => {
+    setInputBorder(type)
+  }
+
   useEffect(() => {
     const uDec = currency === 'USDT' ? USDT.decimals : USDC.decimals
     if (rateObj?.result) {
@@ -158,15 +163,27 @@ export default function BuyHope() {
                 </span>
               </div>
             </div>
-            <div className={['input-box', 'm-t-12', 'p-x-32', 'flex', 'ai-center', isMaxDisabled && 'error'].join(' ')}>
+            <div
+              className={[
+                'input-box',
+                'm-t-12',
+                'p-x-32',
+                'flex',
+                'ai-center',
+                isMaxDisabled && 'error',
+                inputBorder === 'pay' && 'fouce'
+              ].join(' ')}
+            >
               <div className="coin-box flex ai-center cursor-select" onClick={showSelectCurrency}>
                 <div className={`${currency === 'USDT' ? 'usdt-icon' : 'usdc-icon'}`}></div>
                 <div className="currency font-nor text-medium m-l-12">{currency}</div>
                 <div className="drop m-l-30">
-                  <i className="iconfont">&#xe60d;</i>
+                  <i className="iconfont text-normal">&#xe60d;</i>
                 </div>
               </div>
               <NumericalInput
+                onFocus={() => inputOnFocus('pay')}
+                onBlur={() => setInputBorder('')}
                 className="input m-l-10"
                 decimals={2}
                 value={pay}
@@ -182,12 +199,23 @@ export default function BuyHope() {
           </div>
           <div className="box">
             <div className="input-title text-medium font-18 text-normal">You Receive</div>
-            <div className="input-box m-t-12 p-x-32 flex ai-center">
+            <div
+              className={[
+                'input-box',
+                'm-t-12',
+                'p-x-32',
+                'flex',
+                'ai-center',
+                inputBorder === 'receive' && 'fouce'
+              ].join(' ')}
+            >
               <div className="coin-box flex ai-center cursor-select">
                 <div className="hope-icon"></div>
                 <div className="currency font-nor text-medium m-l-12">HOPE</div>
               </div>
               <NumericalInput
+                onFocus={() => inputOnFocus('receive')}
+                onBlur={() => setInputBorder('')}
                 className="input m-l-10"
                 value={receive}
                 align={'right'}
