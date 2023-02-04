@@ -37,6 +37,8 @@ export default function Staking() {
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
+  // Subscribed
+  const [isSubscribed, setIsSubscribed] = useState<boolean>(false)
   // txn values
   const [txHash, setTxHash] = useState<string>('')
 
@@ -158,6 +160,12 @@ export default function Staking() {
       })
   }, [account, chainId, toWithdraw])
 
+  function toMax() {
+    const balance = curType === 'stake' ? hopeBal?.toFixed(2) : stakedVal?.toFixed(2)
+    const resAmount = balance?.toString().replace(/(?:\.0*|(\.\d+?)0+)$/, '$1') || '0'
+    setAmount(resAmount)
+  }
+
   async function initApy() {
     try {
       const res = await StakingApi.getApy()
@@ -168,6 +176,20 @@ export default function Staking() {
       console.log(error)
     }
   }
+
+  const getIsSub = useCallback(async () => {
+    try {
+      const res = await StakingApi.getSubscriptionInfo({
+        address: account
+      })
+      if (res && res.result === false) {
+        console.log(res)
+        setIsSubscribed(true)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [account])
 
   function changeStake(type: string) {
     setAmount('')
@@ -183,7 +205,10 @@ export default function Staking() {
 
   const init = useCallback(async () => {
     await initApy()
-  }, [])
+    if (account) {
+      await getIsSub()
+    }
+  }, [account, getIsSub])
 
   useEffect(() => {
     init()
@@ -234,6 +259,7 @@ export default function Staking() {
           content={confirmationContent}
           pendingText={''}
           currencyToAdd={curToken}
+          isShowSubscribe={isSubscribed}
         />
         <div className="staking-page">
           <div className="staking-head">
@@ -268,7 +294,7 @@ export default function Staking() {
                     Unstake
                   </div>
                 </div>
-                <div className="tab-con p-20">
+                <div className="tab-con p-30">
                   <div className="flex jc-between">
                     <span className="text-normal">{curType === 'stake' ? 'Deposit' : 'Withdraw'}</span>
                     <div className="text-normal">
@@ -278,13 +304,24 @@ export default function Staking() {
                         : `${stakedVal?.toFixed(2, { groupSeparator: ',' }).toString()} stHOPE`}
                     </div>
                   </div>
-                  <NumericalInput
-                    className="hp-amount m-t-10"
-                    value={amount}
-                    onUserInput={val => {
-                      changeAmount(val)
-                    }}
-                  />
+                  <div className="hp-amount-box">
+                    <NumericalInput
+                      className="hp-amount m-t-10"
+                      value={amount}
+                      decimals={2}
+                      align={'right'}
+                      onUserInput={val => {
+                        changeAmount(val)
+                      }}
+                    />
+                    <div className="coin-box flex ai-center cursor-select">
+                      <div className="hope-icon"></div>
+                      <div className="currency font-nor text-medium m-l-12">HOPE</div>
+                    </div>
+                    <span onClick={() => toMax()} className="input-max cursor-select">
+                      Max
+                    </span>
+                  </div>
                   <div className="flex jc-between m-t-30">
                     <span className="text-white">Est Transaction Fee</span>
                     <span className="text-white">0.0012 ETH</span>
@@ -335,11 +372,11 @@ export default function Staking() {
                 <div className="flex">
                   <div className="apy-box">
                     <p className="text-white font-nor">APR</p>
-                    <h3 className="text-success font-28 font-bold">{format.rate(apyVal)}</h3>
+                    <h3 className="text-success font-28 font-bold m-t-10">{format.rate(apyVal)}</h3>
                   </div>
                   <div className="flex-1">
                     <p className="text-white font-nor">Total Staked </p>
-                    <h3 className="text-white font-28 font-bold">
+                    <h3 className="text-white font-28 font-bold m-t-10">
                       {lpTotalSupply?.toFixed(2, { groupSeparator: ',' }).toString()}
                     </h3>
                   </div>

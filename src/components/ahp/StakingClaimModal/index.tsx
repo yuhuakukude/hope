@@ -8,11 +8,10 @@ import { ButtonPrimary } from '../../Button'
 interface StakingClaimModalProps {
   isOpen: boolean
   onDismiss: () => void
-  setModalView: any
   rewardsInfo: any
 }
 
-const StakingClaimModal = ({ isOpen, onDismiss, setModalView, rewardsInfo }: StakingClaimModalProps) => {
+const StakingClaimModal = ({ isOpen, onDismiss, rewardsInfo }: StakingClaimModalProps) => {
   const { account } = useActiveWeb3React()
   const { toClaim } = useToClaim()
   const toClaimCallback = useCallback(async () => {
@@ -20,7 +19,6 @@ const StakingClaimModal = ({ isOpen, onDismiss, setModalView, rewardsInfo }: Sta
     // showModal(<TransactionPendingModal />)
     toClaim()
       .then(() => {
-        setModalView(false)
         console.log('success')
         // hideModal()
         // showModal(<TransactionSubmittedModal />)
@@ -32,18 +30,13 @@ const StakingClaimModal = ({ isOpen, onDismiss, setModalView, rewardsInfo }: Sta
         // )
         console.error(err)
       })
-  }, [account, toClaim, setModalView])
+  }, [account, toClaim])
   return (
     <Modal isOpen={isOpen} onDismiss={onDismiss}>
       <div className="staking-claim-box w-100">
         <div className="head">
           $LT Rewards Claim
-          <i
-            onClick={() => {
-              setModalView(false)
-            }}
-            className="iconfont m-r-10 icon-close cursor-select"
-          >
+          <i onClick={onDismiss} className="iconfont m-r-10 icon-close cursor-select">
             &#xe612;
           </i>
         </div>
