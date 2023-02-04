@@ -2,7 +2,7 @@ import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
-import React, { useState, useCallback, useEffect } from 'react'
+import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import { ButtonPrimary } from '../../components/Button'
 import ActionButton from '../../components/Button/ActionButton'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
@@ -10,6 +10,8 @@ import { useWalletModalToggle } from '../../state/application/hooks'
 import SelectCurrency from './component/SelectCurrency/index'
 import { useBuyHopeContract } from '../../hooks/useContract'
 import { useSingleCallResult } from '../../state/multicall/hooks'
+import { Decimal } from 'decimal.js'
+import format from '../../utils/format'
 
 import './index.scss'
 import { Input as NumericalInput } from '../../components/NumericalInput'
@@ -36,10 +38,34 @@ export default function BuyHope() {
   const usdtBalance = useTokenBalance(account ?? undefined, USDT)
   const usdcBalance = useTokenBalance(account ?? undefined, USDC)
   const inputAmount = tryParseAmount(pay, USDT) as TokenAmount | undefined
-  const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS)
+  const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
 
   const onUserPayInput = (value: string) => {
+    if (value && value.slice(0, 1) === '.') {
+      value = `0${value}`
+    }
+    // let val = value!.replace(/\$\s?|(,*)/g, '')
+    if (!value || Number(value) === 0 || rateVal === '') {
+      setReceive('')
+    } else {
+      const resVal = new Decimal(value).mul(new Decimal(rateVal)).toNumber()
+      setReceive(`${format.numeral(resVal, 2)}`)
+    }
     setPay(value)
+  }
+
+  const onUserReceiveInput = (value: string) => {
+    if (value && value.slice(0, 1) === '.') {
+      value = `0${value}`
+    }
+    // let val = value!.replace(/\$\s?|(,*)/g, '')
+    if (!value || Number(value) === 0 || rateVal === '') {
+      setPay('')
+    } else {
+      const resVal = new Decimal(value).div(new Decimal(rateVal)).toNumber()
+      setPay(`${format.numeral(resVal, 2)}`)
+    }
+    setReceive(value)
   }
 
   const buyHopeCallback = useCallback(async () => {
@@ -54,9 +80,21 @@ export default function BuyHope() {
     console.log(testData)
   }, [pay, account, inputAmount])
 
-  const onUserReceiveInput = (value: string) => {
-    setReceive(value)
-  }
+  const btnDisabled = useMemo(() => {
+    const max = currency === 'USDT' ? usdtBalance?.toFixed(2) : usdcBalance?.toFixed(2)
+    return pay >= (max || 0)
+  }, [pay, usdtBalance, usdcBalance, currency])
+
+  const actionText = useMemo(() => {
+    if (!inputAmount) {
+      return `Approve ${currency}`
+    } else if (btnDisabled) {
+      return `Insufficient ${currency} balance`
+    } else {
+      return approvalState === ApprovalState.NOT_APPROVED ? 'Confirm in your wallet' : 'Approve'
+    }
+  }, [inputAmount, btnDisabled, approvalState, currency])
+
   const showSelectCurrency = () => {
     const arr: any = [
       {
@@ -89,15 +127,13 @@ export default function BuyHope() {
 
   useEffect(() => {
     const uDec = currency === 'USDT' ? USDT.decimals : USDC.decimals
-    console.warn(rateObj)
     if (rateObj?.result) {
       const rate = Number(rateObj.result.rate.toString()) || 0
       setRateVal(`${rate / Math.pow(10, HOPE[chainId ?? 1].decimals - uDec) / 1000}`)
     } else {
       setRateVal('')
     }
-    console.warn(rateVal)
-  }, [currency, rateObj.result])
+  }, [currency, rateObj, chainId])
   return (
     <>
       <PageWrapper>
@@ -166,14 +202,8 @@ export default function BuyHope() {
               ) : (
                 <ActionButton
                   pending={approvalState === ApprovalState.PENDING}
-                  disableAction={!inputAmount}
-                  actionText={
-                    !inputAmount
-                      ? 'Enter amount'
-                      : approvalState === ApprovalState.NOT_APPROVED
-                      ? 'Allow RamBox to use your USDT'
-                      : 'Approve'
-                  }
+                  disableAction={btnDisabled || !inputAmount}
+                  actionText={actionText}
                   onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : buyHopeCallback}
                 />
                 // <ButtonPrimary className="hp-button-primary">approve</ButtonPrimary>
