@@ -35,14 +35,16 @@ const SearchInput = styled.input`
 export default function SelectCurrency({
   isOpen,
   onCloseModel,
-  list
+  list,
+  currentCurrency
 }: {
   isOpen: boolean
   onCloseModel: (currency: string) => void
   list: any
+  currentCurrency: string
 }) {
   console.warn(list)
-  const [currency, setCurrency] = useState<string>('USDT')
+  const [currency, setCurrency] = useState<string>(currentCurrency)
   const [searchQuery, setSearchQuery] = useState<string>('')
   const [coinSearchList, setCoinSearchList] = useState([...list])
   const inputRef = useRef<HTMLInputElement>()

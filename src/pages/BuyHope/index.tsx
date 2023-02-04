@@ -195,7 +195,12 @@ export default function BuyHope() {
           </div>
         </div>
         {currencyModalFlag && (
-          <SelectCurrency isOpen={currencyModalFlag} onCloseModel={onCloseModel} list={coinList}></SelectCurrency>
+          <SelectCurrency
+            isOpen={currencyModalFlag}
+            currentCurrency={currency}
+            onCloseModel={onCloseModel}
+            list={coinList}
+          ></SelectCurrency>
         )}
       </PageWrapper>
     </>
