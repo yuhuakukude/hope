@@ -1,3 +1,25 @@
 .ant-btn-link:hover, .ant-btn-link:focus {
   color: #E4C989;
 }
+
+.sub-input {
+  .ant-input {
+    height: 56px;
+    background: none;
+    border: 1px solid #3D3D3D;
+    border-radius: 10px;
+    font-size: 16px;
+    color: #fff;
+  }
+  .ant-input:focus, .ant-input:hover{
+    border: 1px solid #3D3D3D;
+    box-shadow: none;
+  }
+  .ant-input-group-addon {
+    background: none;
+    border-color: #3D3D3D;
+  }
+  .ant-btn-link[disabled] {
+    color: #A8A8AA;
+  }
+}

@@ -1,23 +1,30 @@
 import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
-import { useActiveWeb3React } from '../../hooks'
-import { useTokenBalance } from '../../state/wallet/hooks'
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import { ButtonPrimary } from '../../components/Button'
 import ActionButton from '../../components/Button/ActionButton'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import SelectCurrency from './component/SelectCurrency/index'
-import { useBuyHopeContract } from '../../hooks/useContract'
-import { useSingleCallResult } from '../../state/multicall/hooks'
 import { Decimal } from 'decimal.js'
 import format from '../../utils/format'
+import JSBI from 'jsbi'
+import { calculateGasMargin } from '../../utils'
+import { Input as NumericalInput } from '../../components/NumericalInput'
+import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 
 import './index.scss'
-import { Input as NumericalInput } from '../../components/NumericalInput'
+import { ethers } from 'ethers'
+import { TransactionResponse } from '@ethersproject/providers'
+import { useActiveWeb3React } from '../../hooks'
+import { useTokenBalance } from '../../state/wallet/hooks'
+import { useBuyHopeContract } from '../../hooks/useContract'
+import { useSingleCallResult } from '../../state/multicall/hooks'
 import { tryParseAmount } from '../../state/swap/hooks'
-import { TokenAmount } from '@uniswap/sdk'
-import { PERMIT2_ADDRESS, USDT, USDC, HOPE } from '../../constants'
+import { PERMIT2_ADDRESS, USDT, USDC, HOPE, TOKEN_SALE_ADDRESS } from '../../constants'
+import { useTransactionAdder } from '../../state/transactions/hooks'
+import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
+import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -25,6 +32,11 @@ const PageWrapper = styled(AutoColumn)`
 `
 
 export default function BuyHope() {
+  const toggleWalletModal = useWalletModalToggle()
+  const { account, chainId, library } = useActiveWeb3React()
+  const buyHopeContract = useBuyHopeContract()
+  const addTransaction = useTransactionAdder()
+  // state
   const [currency, setCurrency] = useState<string>('USDT')
   const [currencyModalFlag, setCurrencyModalFlag] = useState(false)
   const [inputBorder, setInputBorder] = useState('')
@@ -32,20 +44,27 @@ export default function BuyHope() {
   const [coinList, setCoinList] = useState('')
   const [pay, setPay] = useState('')
   const [receive, setReceive] = useState('')
-  const toggleWalletModal = useWalletModalToggle()
-  const { account, chainId } = useActiveWeb3React()
-  const buyHopeContract = useBuyHopeContract()
+  const [txHash, setTxHash] = useState<string>('')
+  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+
+  // modal and loading
+  const [showConfirm, setShowConfirm] = useState<boolean>(false)
+  const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
+
+  // get balance / rate
   const rateObj = useSingleCallResult(buyHopeContract, 'currencys', [currency])
   const usdtBalance = useTokenBalance(account ?? undefined, USDT)
   const usdcBalance = useTokenBalance(account ?? undefined, USDC)
   const inputAmount = tryParseAmount(pay, currency === 'USDT' ? USDT : USDC) as TokenAmount | undefined
+
+  // token api
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
+  const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
 
   const onUserPayInput = (value: string) => {
     if (value && value.slice(0, 1) === '.') {
       value = `0${value}`
     }
-    // let val = value!.replace(/\$\s?|(,*)/g, '')
     if (!value || Number(value) === 0 || rateVal === '') {
       setReceive('')
     } else {
@@ -59,27 +78,81 @@ export default function BuyHope() {
     if (value && value.slice(0, 1) === '.') {
       value = `0${value}`
     }
-    // let val = value!.replace(/\$\s?|(,*)/g, '')
     if (!value || Number(value) === 0 || rateVal === '') {
       setPay('')
+      setReceive('')
     } else {
       const resVal = new Decimal(value).div(new Decimal(rateVal)).toNumber()
       setPay(`${format.numeral(resVal, 2)}`)
+      if (`${resVal}`.split('.')[1].length > 2) {
+        onUserPayInput(`${format.numeral(resVal, 2)}`)
+      } else {
+        setReceive(value)
+      }
     }
-    setReceive(value)
   }
 
+  const initAmount = () => {
+    setPay('')
+    setReceive('')
+  }
+
+  const toBuyHope = useCallback(
+    async (amount: CurrencyAmount, NONCE, DEADLINE, sigVal) => {
+      if (!account) throw new Error('none account')
+      if (!buyHopeContract) throw new Error('none contract')
+      if (amount.equalTo(JSBI.BigInt('0'))) throw new Error('amount is un support')
+      const args = [currency, amount.raw.toString(), NONCE, DEADLINE, sigVal]
+      const method = 'buy'
+      return buyHopeContract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+        return buyHopeContract[method](...args, {
+          gasLimit: calculateGasMargin(estimatedGasLimit),
+          // gasLimit: '3500000',
+          from: account
+        }).then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Buy ${amount
+              .multiply(JSBI.BigInt('5'))
+              .toSignificant(4, { groupSeparator: ',' })
+              .toString()}  RAM with ${amount.toSignificant()} USDT`
+          })
+          return response.hash
+        })
+      })
+    },
+    [account, addTransaction, buyHopeContract, currency]
+  )
+
   const buyHopeCallback = useCallback(async () => {
-    if (!pay || !account || !inputAmount) return
-    // showModal(<TransactionPendingModal />)
-    const testData = {
-      NONCE: '47317459226169151117060976502302229419756387859583426096766647023563518724591',
-      DEADLINE: '1675355171',
-      sigVal:
-        '0xc5beacf6327fafdbb3a188f1974da1b890e28921b4302b800a6d609c904d001e1669a5e73c18fb749eabb8b74587192c2bbcfe68954f0b18fc479c8a50b667781b'
+    if (!account || !inputAmount || !library || !chainId) return
+    setCurToken(HOPE[chainId ?? 1])
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+
+    // sign
+    const deadline = toDeadline(PERMIT_EXPIRATION)
+    const nonce = ethers.utils.randomBytes(32)
+    const permit: Permit = {
+      permitted: {
+        token: currency === 'USDT' ? USDT.address : USDC.address,
+        amount: inputAmount.raw.toString()
+      },
+      nonce: nonce,
+      spender: TOKEN_SALE_ADDRESS[chainId ?? 1] || '',
+      deadline
     }
-    console.log(testData)
-  }, [pay, account, inputAmount])
+    const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
+    const signature = await library.getSigner(account)._signTypedData(domain, types, values)
+    toBuyHope(inputAmount, nonce, deadline, signature)
+      .then(hash => {
+        setAttemptingTxn(false)
+        setTxHash(hash)
+        initAmount()
+      })
+      .catch((err: any) => {
+        setErrorMessage(err.message)
+      })
+  }, [account, inputAmount, library, chainId, toBuyHope])
 
   const isMaxDisabled = useMemo(() => {
     let flag = false
@@ -89,6 +162,12 @@ export default function BuyHope() {
     }
     return flag
   }, [pay, usdtBalance, usdcBalance, currency])
+
+  const balanceAmount = useMemo(() => {
+    return currency === 'USDT'
+      ? usdtBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '-'
+      : usdcBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '-'
+  }, [usdtBalance, usdcBalance, currency])
 
   const actionText = useMemo(() => {
     if (!inputAmount) {
@@ -127,7 +206,12 @@ export default function BuyHope() {
 
   const maxInputFn = () => {
     const balance = currency === 'USDT' ? usdtBalance?.toFixed(2) : usdcBalance?.toFixed(2)
-    const resAmount = balance?.toString().replace(/(?:\.0*|(\.\d+?)0+)$/, '$1') || '0'
+    let resAmount = balance?.toString().replace(/(?:\.0*|(\.\d+?)0+)$/, '$1') || '0'
+    const [intV, decV] = resAmount.split('.')
+    const decValLen = decV?.length || 0
+    if (decValLen > 2) {
+      resAmount = `${intV}.${decV.slice(0, 2)}`
+    }
     setPay(resAmount)
     onUserPayInput(resAmount)
   }
@@ -135,6 +219,10 @@ export default function BuyHope() {
   const inputOnFocus = (type: string) => {
     setInputBorder(type)
   }
+
+  const confirmationContent = useCallback(() => {
+    return errorMessage && <TransactionErrorContent onDismiss={() => setShowConfirm(false)} message={errorMessage} />
+  }, [errorMessage])
 
   useEffect(() => {
     const uDec = currency === 'USDT' ? USDT.decimals : USDC.decimals
@@ -148,20 +236,30 @@ export default function BuyHope() {
   return (
     <>
       <PageWrapper>
+        <TransactionConfirmationModal
+          isOpen={showConfirm}
+          onDismiss={() => setShowConfirm(false)}
+          attemptingTxn={attemptingTxn}
+          hash={txHash}
+          content={confirmationContent}
+          pendingText={''}
+          currencyToAdd={curToken}
+        />
         <div className="buy-hope-page">
           <div className="title text-medium font-18">Buy HOPE to your wallet</div>
           <div className="box m-t-40">
             <div className="flex jc-between">
               <div className="input-title text-medium font-18 text-normal">You Pay</div>
-              <div className="balance text-normal font-nor">
-                Available:{' '}
-                {currency === 'USDT'
-                  ? usdtBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '-'
-                  : usdcBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '-'}{' '}
-                <span className="text-primary m-l-8 cursor-select" onClick={maxInputFn}>
-                  Max
-                </span>
-              </div>
+              {account && (
+                <div className="balance text-normal font-nor">
+                  Available: {balanceAmount}
+                  {balanceAmount !== '-' && account && (
+                    <span className="text-primary m-l-8 cursor-select" onClick={maxInputFn}>
+                      Max
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
             <div
               className={[
@@ -217,6 +315,7 @@ export default function BuyHope() {
                 onFocus={() => inputOnFocus('receive')}
                 onBlur={() => setInputBorder('')}
                 className="input m-l-10"
+                decimals={2}
                 value={receive}
                 align={'right'}
                 onUserInput={(val: any) => {
@@ -245,19 +344,23 @@ export default function BuyHope() {
               )}
             </div>
           </div>
-          <div className="gas flex jc-between p-y-30 m-t-30">
-            <div className="label font-nor text-normal">Gas Fee</div>
-            <div className="value font-nor text-medium">≈0.001 ETH</div>
-          </div>
-          <div className="tip flex m-t-30">
-            <div className="icon m-r-15">
-              <i className="iconfont font-28">&#xe614;</i>
+          {account && (
+            <div className="gas flex jc-between p-y-30 m-t-30">
+              <div className="label font-nor text-normal">Gas Fee</div>
+              <div className="value font-nor text-medium">≈0.001 ETH</div>
             </div>
-            <p className="text-normal font-nor">
-              Your wallet balance is below 0.001 ETH. The approve action require small transaction fees, so you may have
-              deposit additional funds to complete them.
-            </p>
-          </div>
+          )}
+          {account && (
+            <div className="tip flex p-t-30">
+              <div className="icon m-r-15">
+                <i className="iconfont font-28">&#xe614;</i>
+              </div>
+              <p className="text-normal font-nor">
+                Your wallet balance is below 0.001 ETH. The approve action require small transaction fees, so you may
+                have deposit additional funds to complete them.
+              </p>
+            </div>
+          )}
         </div>
         {currencyModalFlag && (
           <SelectCurrency
