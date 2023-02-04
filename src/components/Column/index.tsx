@@ -19,5 +19,12 @@ export const AutoColumn = styled.div<{
   grid-row-gap: ${({ gap }) => (gap === 'sm' && '8px') || (gap === 'md' && '12px') || (gap === 'lg' && '24px') || gap};
   justify-items: ${({ justify }) => justify && justify};
 `
+export const GapColumn = styled.div<{ gap: string }>`
+  display: flex;
+  flex-direction: column;
 
+  & > *:not(:last-child) {
+    margin-bottom: ${({ gap }) => gap} !important;
+  }
+`
 export default Column
