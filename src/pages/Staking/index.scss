@@ -30,16 +30,40 @@
     width: 110px;
     margin-right: 50px;
   }
-  .hp-amount {
-    width: 100%;
-    background: none;
-    border-radius: 10px;
-    border: 1px solid #3D3D3D;
+  .hp-amount-box {
     height: 56px;
-    padding: 0 20px;
+    position: relative;
+    .hp-amount {
+      width: 100%;
+      background: none;
+      border-radius: 10px;
+      border: 1px solid #3D3D3D;
+      height: 56px;
+      padding: 0 65px 0 100px;
+      &:hover, &:focus {
+        border: 1px solid #E4C989;
+      }
+    }
+    .coin-box {
+      position: absolute;
+      top: 25px;
+      left: 20px;
+    }
+    .input-max {
+      position: absolute;
+      right: 20px;
+      top: 31px;
+      color: #E4C989;
+    }
   }
+  
   .hp-button-primary {
     background: #E4C989;
     color: #26262C;
+  }
+  .learn-more {
+    &:hover {
+      color: #E4C989;
+    }
   }
 }
