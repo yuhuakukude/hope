@@ -7,7 +7,6 @@ import { ButtonPrimary } from '../../components/Button'
 import ActionButton from '../../components/Button/ActionButton'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import { useWalletModalToggle } from '../../state/application/hooks'
-import { useToStaked } from '../../hooks/ahp/useStaking'
 import SelectCurrency from './component/SelectCurrency/index'
 import { useBuyHopeContract } from '../../hooks/useContract'
 import { useSingleCallResult } from '../../state/multicall/hooks'
@@ -36,16 +35,14 @@ export default function BuyHope() {
   const rateObj = useSingleCallResult(buyHopeContract, 'currencys', [currency])
   const usdtBalance = useTokenBalance(account ?? undefined, USDT)
   const usdcBalance = useTokenBalance(account ?? undefined, USDC)
-  // console.log(usdtBalance?.toFixed(2, { groupSeparator: ',' } ?? '-'), chainId)
   const inputAmount = tryParseAmount(pay, USDT) as TokenAmount | undefined
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS)
-  const { toStaked } = useToStaked()
 
   const onUserPayInput = (value: string) => {
     setPay(value)
   }
 
-  const stakingCallback = useCallback(async () => {
+  const buyHopeCallback = useCallback(async () => {
     if (!pay || !account || !inputAmount) return
     // showModal(<TransactionPendingModal />)
     const testData = {
@@ -54,20 +51,8 @@ export default function BuyHope() {
       sigVal:
         '0xc5beacf6327fafdbb3a188f1974da1b890e28921b4302b800a6d609c904d001e1669a5e73c18fb749eabb8b74587192c2bbcfe68954f0b18fc479c8a50b667781b'
     }
-    toStaked(inputAmount, testData.NONCE, testData.DEADLINE, testData.sigVal)
-      .then(() => {
-        console.log('success')
-        // hideModal()
-        // showModal(<TransactionSubmittedModal />)
-      })
-      .catch((err: any) => {
-        // hideModal()
-        // showModal(
-        //   <MessageBox type="error">{err.error && err.error.message ? err.error.message : err?.message}</MessageBox>
-        // )
-        console.error(err)
-      })
-  }, [pay, account, inputAmount, toStaked])
+    console.log(testData)
+  }, [pay, account, inputAmount])
 
   const onUserReceiveInput = (value: string) => {
     setReceive(value)
@@ -189,7 +174,7 @@ export default function BuyHope() {
                       ? 'Allow RamBox to use your USDT'
                       : 'Approve'
                   }
-                  onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : stakingCallback}
+                  onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : buyHopeCallback}
                 />
                 // <ButtonPrimary className="hp-button-primary">approve</ButtonPrimary>
               )}
