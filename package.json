@@ -129,6 +129,8 @@
     "eth-permit": "^0.2.3",
     "ethers": "5.5.0",
     "ms.macro": "^2.0.0",
+    "axios": "^0.27.2",
+    "decimal.js": "^10.4.3",
     "sass": "^1.57.1",
     "sass-loader": "^13.2.0"
   }

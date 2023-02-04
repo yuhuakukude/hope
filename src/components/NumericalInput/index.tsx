@@ -10,8 +10,10 @@ const StyledInput = styled.input<{ error?: boolean; fontSize?: string; align?: s
   outline: none;
   border: none;
   flex: 1 1 auto;
+  font-family: Arboria-Medium;
+  caret-color: #e4c989;
   background-color: ${({ theme }) => theme.bg1};
-  font-size: ${({ fontSize }) => fontSize ?? '24px'};
+  font-size: ${({ fontSize }) => fontSize ?? '16px'};
   text-align: ${({ align }) => align && align};
   white-space: nowrap;
   overflow: hidden;
@@ -33,7 +35,7 @@ const StyledInput = styled.input<{ error?: boolean; fontSize?: string; align?: s
   }
 
   ::placeholder {
-    color: ${({ theme }) => theme.text4};
+    color: #5a5a5b;
   }
 `
 
@@ -43,16 +45,23 @@ export const Input = React.memo(function InnerInput({
   value,
   onUserInput,
   placeholder,
+  decimals,
   ...rest
 }: {
   value: string | number
   onUserInput: (input: string) => void
   error?: boolean
   fontSize?: string
+  decimals?: number
   align?: 'right' | 'left'
 } & Omit<React.HTMLProps<HTMLInputElement>, 'ref' | 'onChange' | 'as'>) {
   const enforcer = (nextUserInput: string) => {
     if (nextUserInput === '' || inputRegex.test(escapeRegExp(nextUserInput))) {
+      const [intV, decV] = nextUserInput.split('.')
+      const decValLen = decV?.length || 0
+      if (decimals && decValLen > decimals) {
+        nextUserInput = `${intV}.${decV.slice(0, decimals)}`
+      }
       onUserInput(nextUserInput)
     }
   }
