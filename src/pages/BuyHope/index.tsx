@@ -168,6 +168,7 @@ export default function BuyHope() {
               </div>
               <NumericalInput
                 className="input m-l-10"
+                decimals={2}
                 value={pay}
                 align={'right'}
                 onUserInput={(val: any) => {
