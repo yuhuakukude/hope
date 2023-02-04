@@ -69,7 +69,9 @@ export default function SelectCurrency({
     onCloseModel(coin)
   }
 
-  function wrappedOnDismiss() {}
+  function wrappedOnDismiss() {
+    onCloseModel(currency)
+  }
 
   return (
     <Modal isOpen={isOpen} onDismiss={wrappedOnDismiss} maxHeight={90}>
