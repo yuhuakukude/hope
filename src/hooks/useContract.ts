@@ -143,5 +143,6 @@ export function useLtMinterContract(): Contract | null {
 
 // buy hope
 export function useBuyHopeContract(): Contract | null {
-  return useContract(TOKEN_SALE_ADDRESS, TOKEN_SALE_ABI.abi, true)
+  const { chainId } = useActiveWeb3React()
+  return useContract(chainId && TOKEN_SALE_ADDRESS[chainId], TOKEN_SALE_ABI.abi, true)
 }
