@@ -1,5 +1,5 @@
 import Row, { AutoRowBetween } from '../Row'
-import { AutoColumn, GapColumn } from '../Column'
+import { GapColumn } from '../Column'
 import React, { useState } from 'react'
 import Avatar from 'assets/images/metamask-logo.png'
 import { useActiveWeb3React } from '../../hooks'
@@ -45,7 +45,7 @@ interface GasTypeData {
   time: string
 }
 
-const GasDiv = styled(AutoColumn)`
+const GasDiv = styled(GapColumn)`
   border-radius: 10px;
   padding: 17px;
 
@@ -58,12 +58,13 @@ function GasType({ data, isSelected, onClick }: { data: GasTypeData; isSelected:
   const theme = useTheme()
   return (
     <GasDiv
+      gap={'10px'}
       onClick={_ => onClick()}
       style={{ border: isSelected ? `1px solid ${theme.primary1}` : '1px solid rgba(61, 61, 61, 1)' }}
     >
-      <PrimaryText size={'12px'}>{data.speed}</PrimaryText>
-      <PrimaryText size={'12px'}>{data.gas}</PrimaryText>
-      <SecondaryText size={'12px'}>{data.time}</SecondaryText>
+      <PrimaryText size={'14px'}>{data.speed}</PrimaryText>
+      <PrimaryText size={'14px'}>{data.gas}</PrimaryText>
+      <SecondaryText size={'14px'}>{data.time}</SecondaryText>
     </GasDiv>
   )
 }
@@ -118,7 +119,7 @@ export default function WalletDetail() {
       <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', padding: '30px' }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {fakeIcon}
-          <ThemeText>{account && shortenAddress(account)}</ThemeText>
+          <PrimaryText style={{ marginLeft: '8px' }}>{account && shortenAddress(account)}</PrimaryText>
         </div>
         <div>
           <AutoRowBetween gap={'10px'} style={{ color: theme.text1 }}>
