@@ -42,9 +42,17 @@ export const HOPE: { [chainId in ChainId]: Token } = {
   [ChainId.HOPE]: new Token(ChainId.HOPE, '0x4368FeB368A4a488F373d6cB7eb725f117c42EfD', 18, 'HOPE', 'hope')
 }
 
+export const ST_HOPE: { [chainId in ChainId]: Token } = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e', 18, 'stHOPE', 'stHOPE'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e', 18, 'stHOPE', 'stHOPE'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e', 18, 'stHOPE', 'stHOPE')
+}
+
 // staking buyhope dao about address
-export const PERMIT2_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.SEPOLIA]: '0x0e83Cec2Ff3D14194A6b13459BA3Ce8F0C383399'
+export const PERMIT2_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: '0x0e83Cec2Ff3D14194A6b13459BA3Ce8F0C383399',
+  [ChainId.SEPOLIA]: '0x0e83Cec2Ff3D14194A6b13459BA3Ce8F0C383399',
+  [ChainId.HOPE]: '0x0e83Cec2Ff3D14194A6b13459BA3Ce8F0C383399'
 }
 export const GOMBOC_CONTROLLER_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.SEPOLIA]: '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e'
@@ -58,8 +66,10 @@ export const TOKEN_SALE_ADDRESS: { [chainId in ChainId]?: string } = {
 export const POOL_GOMBOC_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.SEPOLIA]: '0x9CC52c53808c05E6037Be60136a524E9a6c898ea'
 }
-export const STAKING_HOPE_GOMBOC_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.SEPOLIA]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621'
+export const STAKING_HOPE_GOMBOC_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621',
+  [ChainId.SEPOLIA]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621',
+  [ChainId.HOPE]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621'
 }
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time

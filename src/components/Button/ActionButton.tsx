@@ -1,5 +1,5 @@
 import React from 'react'
-import { ButtonPrimary, ButtonOutlined } from './index'
+import { ButtonPrimary, ButtonOutlined, ButtonError } from './index'
 
 export default function ActionButton({
   error,
@@ -26,9 +26,11 @@ export default function ActionButton({
 }) {
   return (
     <>
-      {error || pending ? (
+      {error ? (
+        <ButtonError disabled error>{error}</ButtonError>
+      ) : pending ? (
         <ButtonOutlined disabled height={height} width={width}>
-          {pending ? <>{pendingText || 'Waiting Confirmation'}</> : error}
+          {pendingText || 'Waiting Confirmation'}
         </ButtonOutlined>
       ) : success ? (
         <ButtonPrimary disabled height={height} width={width}>

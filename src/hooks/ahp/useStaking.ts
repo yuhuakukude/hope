@@ -45,6 +45,7 @@ export function useToStaked() {
       if (amount.equalTo(JSBI.BigInt('0'))) throw new Error('amount is un support')
       const args = [amount.raw.toString(), NONCE, DEADLINE, sigVal]
       const method = 'staking'
+      console.log('args', args)
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
