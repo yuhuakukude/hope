@@ -14,7 +14,7 @@ import ClaimModal from '../claim/ClaimModal'
 import Modal from '../Modal'
 import UniBalanceContent from './UniBalanceContent'
 import useTheme from '../../hooks/useTheme'
-import Matamask from 'assets/images/metamask-logo.png'
+// import Matamask from 'assets/images/metamask-logo.png'
 import { Text } from 'rebass'
 
 const HeaderFrame = styled.div`
@@ -140,6 +140,21 @@ const StyledNavLink = styled(NavLink).attrs({
   }
 `
 
+const BuyHopeNavLink = styled(NavLink)`
+  width: 128px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  color: #e4c989;
+  font-size: 18px;
+  font-family: Arboria-Medium;
+  border-radius: 10px;
+  background-color: rgba(30, 30, 30, 1);
+  :hover {
+    color: #e4c989;
+  }
+`
+
 const StyledExternalLink = styled(ExternalLink).attrs({
   activeClassName
 })<{ isActive?: boolean }>`
@@ -259,8 +274,11 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
         </HeaderLinks>
       </HeaderRow>
       <HeaderControls>
+        <BuyHopeNavLink id={`buy-hope-nav-link`} to={'/buy-hope'}>
+          Buy HOPE
+        </BuyHopeNavLink>
         <HeaderElement>
-          <div style={{ width: '24px', height: '24px' }}>
+          {/* <div style={{ width: '24px', height: '24px' }}>
             {account ? (
               <img alt={'logo'} src={Matamask} style={{ width: '100%', height: 'auto' }} />
             ) : (
@@ -268,7 +286,7 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
                 &#xe610;
               </i>
             )}
-          </div>
+          </div> */}
           <AccountElement active={!!account} style={{ pointerEvents: 'auto', color: theme.text1 }}>
             <div style={{ paddingLeft: '14px', paddingRight: '14px', display: 'flex', alignItems: 'center' }}>
               <div

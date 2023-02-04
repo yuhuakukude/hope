@@ -1,5 +1,6 @@
 @import "./common";
 @import "./reset";
+@import "./font";
 @import "./icon-font/iconfont.css";
 
 body,
@@ -36,7 +37,9 @@ ol {
 html,
 body {
   height: 100%;
+  color: #fff;
   background: #0C0C0D;
   font-size: 14px;
   font-family: Arboria-Book;
+  line-height: 1;
 }

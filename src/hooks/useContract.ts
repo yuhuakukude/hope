@@ -6,7 +6,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
-import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, UNI } from '../constants'
+import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, PERMIT2_ADDRESS, UNI } from '../constants'
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS
@@ -23,9 +23,11 @@ import { V1_EXCHANGE_ABI, V1_FACTORY_ABI, V1_FACTORY_ADDRESSES } from '../consta
 import { getContract } from '../utils'
 import { useActiveWeb3React } from './index'
 
-import { STAKING_HOPE_GOMBOC_ADDRESS, LT_MINTER_ADDRESS } from '../constants'
+import { STAKING_HOPE_GOMBOC_ADDRESS, LT_MINTER_ADDRESS, TOKEN_SALE_ADDRESS } from '../constants'
 import STAKING_HOPE_GOMBOC_ABI from '../constants/abis/ahp/STAKING_HOPE_GOMBOC.json'
+import TOKEN_SALE_ABI from '../constants/abis/ahp/TOKEN_SALE.json'
 import LT_MINTER_ABI from '../constants/abis/ahp/LT_MINTER.json'
+import PERMIT2_ABI from '../constants/abis/ahp/PERMIT2.json'
 // returns null on errors
 function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
   const { library, account } = useActiveWeb3React()
@@ -138,4 +140,15 @@ export function useStakingHopeGombocContract(): Contract | null {
 export function useLtMinterContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
   return useContract(chainId && LT_MINTER_ADDRESS[chainId], LT_MINTER_ABI.abi, true)
+}
+
+export function usePermit2Contract(): Contract | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(chainId && PERMIT2_ADDRESS[chainId ?? 1], PERMIT2_ABI.abi, true)
+}
+
+// buy hope
+export function useBuyHopeContract(): Contract | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(chainId && TOKEN_SALE_ADDRESS[chainId], TOKEN_SALE_ABI.abi, true)
 }

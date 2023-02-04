@@ -3,7 +3,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector'
 
 import { fortmatic, injected, portis, walletconnect, walletlink } from '../connectors'
 
-export const ROUTER_ADDRESS = '0x7a250d5630B4cF539739dF2C5dAcb4c659F2488D'
+export const ROUTER_ADDRESS = '0x83F5c784133cB7Cf9249aFa98310032Bff9d17fa'
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
@@ -16,7 +16,7 @@ type ChainTokenList = {
 
 export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth')
 export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin')
-export const USDC = new Token(ChainId.SEPOLIA, '0x9Dab7bbE254Fcf610dc0DC9AbAC96b99b33b98e9', 6, 'USDC', 'USD//C')
+export const USDC = new Token(ChainId.SEPOLIA, '0x9Dab7bbE254Fcf610dc0DC9AbAC96b99b33b98e9', 18, 'USDC', 'USD//C')
 export const USDT = new Token(ChainId.SEPOLIA, '0x5A115CF3F91792Ccb9440BFa3C713706d1aC8Bc1', 6, 'USDT', 'Tether USD')
 export const WBTC = new Token(ChainId.MAINNET, '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 8, 'WBTC', 'Wrapped BTC')
 export const FEI = new Token(ChainId.MAINNET, '0x956F47F50A910163D8BF957Cf5846D573E7f87CA', 18, 'FEI', 'Fei USD')
@@ -42,9 +42,17 @@ export const HOPE: { [chainId in ChainId]: Token } = {
   [ChainId.HOPE]: new Token(ChainId.HOPE, '0x4368FeB368A4a488F373d6cB7eb725f117c42EfD', 18, 'HOPE', 'hope')
 }
 
+export const ST_HOPE: { [chainId in ChainId]: Token } = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e', 18, 'stHOPE', 'stHOPE'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e', 18, 'stHOPE', 'stHOPE'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e', 18, 'stHOPE', 'stHOPE')
+}
+
 // staking buyhope dao about address
-export const PERMIT2_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.SEPOLIA]: '0x0e83Cec2Ff3D14194A6b13459BA3Ce8F0C383399'
+export const PERMIT2_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: '0x0e83Cec2Ff3D14194A6b13459BA3Ce8F0C383399',
+  [ChainId.SEPOLIA]: '0x0e83Cec2Ff3D14194A6b13459BA3Ce8F0C383399',
+  [ChainId.HOPE]: '0x0e83Cec2Ff3D14194A6b13459BA3Ce8F0C383399'
 }
 export const GOMBOC_CONTROLLER_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.SEPOLIA]: '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e'
@@ -58,8 +66,10 @@ export const TOKEN_SALE_ADDRESS: { [chainId in ChainId]?: string } = {
 export const POOL_GOMBOC_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.SEPOLIA]: '0x9CC52c53808c05E6037Be60136a524E9a6c898ea'
 }
-export const STAKING_HOPE_GOMBOC_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.SEPOLIA]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621'
+export const STAKING_HOPE_GOMBOC_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621',
+  [ChainId.SEPOLIA]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621',
+  [ChainId.HOPE]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621'
 }
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
