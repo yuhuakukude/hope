@@ -106,7 +106,7 @@ export default function BuyHope() {
     const uDec = currency === 'USDT' ? USDT.decimals : USDC.decimals
     if (rateObj?.result) {
       const rate = Number(rateObj.result.rate.toString()) || 0
-      setRateVal(`${rate / Math.pow(10, HOPE.decimals - uDec) / 1000}`)
+      setRateVal(`${rate / Math.pow(10, HOPE[chainId ?? 1].decimals - uDec) / 1000}`)
     } else {
       setRateVal('')
     }
