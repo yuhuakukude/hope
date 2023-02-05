@@ -43,6 +43,9 @@
       &:hover, &:focus {
         border: 1px solid #E4C989;
       }
+      &.error{
+        border: 1px solid #F6465D;
+      }
     }
     .coin-box {
       position: absolute;

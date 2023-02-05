@@ -308,7 +308,11 @@ export default function Staking() {
                   </div>
                   <div className="hp-amount-box">
                     <NumericalInput
-                      className="hp-amount m-t-10"
+                      className={[
+                        'hp-amount',
+                        'm-t-10',
+                        curType === 'stake' ? stakeInputError && 'error' : unstakeInputError && 'error'
+                      ].join(' ')}
                       value={amount}
                       decimals={2}
                       align={'right'}
