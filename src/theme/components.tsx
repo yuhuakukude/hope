@@ -271,6 +271,12 @@ export const Spinner = styled.img`
   height: 16px;
 `
 
+export const FontSpinner = styled.i`
+  animation: 2s ${rotate} linear infinite;
+  width: 16px;
+  height: 16px;
+`
+
 const BackArrowLink = styled(StyledInternalLink)`
   color: ${({ theme }) => theme.text1};
 `
@@ -285,6 +291,12 @@ export function BackArrow({ to }: { to: string }) {
 export const CustomLightSpinner = styled(Spinner)<{ size: string }>`
   height: ${({ size }) => size};
   width: ${({ size }) => size};
+`
+
+export const CustomLightFontSpinner = styled(FontSpinner)<{ size: string }>`
+  height: ${({ size }) => size};
+  width: ${({ size }) => size};
+  color: white;
 `
 
 export const HideSmall = styled.span`

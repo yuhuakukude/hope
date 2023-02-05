@@ -26,6 +26,7 @@ import { ethers } from 'ethers'
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
   width: 100%;
+  padding: 0 30px;
 `
 
 export default function Staking() {
@@ -110,6 +111,7 @@ export default function Staking() {
         setAmount('')
       })
       .catch((err: any) => {
+        setAttemptingTxn(false)
         setErrorMessage(err.message)
       })
   }, [account, inputAmount, library, chainId, toStaked])
@@ -126,6 +128,7 @@ export default function Staking() {
         setAmount('')
       })
       .catch((err: any) => {
+        setAttemptingTxn(false)
         setErrorMessage(err.message)
       })
   }, [amount, account, inputAmount, toUnStaked])
@@ -141,6 +144,7 @@ export default function Staking() {
         setAmount('')
       })
       .catch((err: any) => {
+        setAttemptingTxn(false)
         setErrorMessage(err.message)
       })
   }, [account, chainId, toClaim])
@@ -156,6 +160,7 @@ export default function Staking() {
         setTxHash(hash)
       })
       .catch((err: any) => {
+        setAttemptingTxn(false)
         setErrorMessage(err.message)
         console.error(err)
       })
@@ -224,7 +229,7 @@ export default function Staking() {
           <div className="head">
             $LT Rewards Claim
             <div className="icon-close">
-              <CloseIcon onClick={claimCallback} />
+              <CloseIcon onClick={() => setShowConfirm(false)} />
             </div>
           </div>
           <div className="claim-con p-30">
@@ -274,7 +279,7 @@ export default function Staking() {
             </p>
           </div>
           <Row className="m-t-40" gutter={30}>
-            <Col className="gutter-row" span={16}>
+            <Col className="gutter-row" span={14}>
               <div className="staking-tab">
                 <div className="head flex">
                   <div
@@ -373,14 +378,14 @@ export default function Staking() {
                 </div>
               </div>
             </Col>
-            <Col className="gutter-row" span={8}>
+            <Col className="gutter-row" span={10}>
               <HopeCard title={'Stake'}>
                 <div className="flex">
                   <div className="apy-box">
                     <p className="text-white font-nor">APR</p>
                     <h3 className="text-success font-28 font-bold m-t-10">{format.rate(apyVal)}</h3>
                   </div>
-                  <div className="flex-1">
+                  <div>
                     <p className="text-white font-nor">Total Staked </p>
                     <h3 className="text-white font-28 font-bold m-t-10">
                       {lpTotalSupply?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
@@ -390,23 +395,23 @@ export default function Staking() {
               </HopeCard>
               <div className="m-t-30">
                 <HopeCard title={'Stake'}>
-                  <div className="flex jc-between m-b-10">
+                  <div className="flex jc-between m-b-20">
                     <span className="text-white">Available</span>
                     <span className="text-white">{hopeBal?.toFixed(2, { groupSeparator: ',' } ?? '-') || '--'}</span>
                   </div>
-                  <div className="flex jc-between m-b-10">
+                  <div className="flex jc-between m-b-20">
                     <span className="text-white">Staked</span>
                     <span className="text-white">
                       {stakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
                     </span>
                   </div>
-                  <div className="flex jc-between m-b-10">
+                  <div className="flex jc-between m-b-20">
                     <span className="text-white">Unstaking</span>
                     <span className="text-white">
                       {unstakingVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
                     </span>
                   </div>
-                  <div className="flex jc-between m-b-10">
+                  <div className="flex jc-between m-b-20">
                     <span className="text-white">Unstaked</span>
                     <span className="text-white">
                       {unstakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
@@ -419,7 +424,7 @@ export default function Staking() {
                       </Button>
                     </div>
                   )}
-                  <div className="flex jc-between m-b-10">
+                  <div className="flex jc-between m-b-20">
                     <span className="text-white">Total Rewards</span>
                     <span className="text-white">
                       {totalRewards?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
@@ -432,11 +437,13 @@ export default function Staking() {
                     </span>
                   </div>
                   {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
-                    <div className="flex jc-end m-b-10">
+                    <div className="flex jc-end m-b-20">
                       <Button
                         className="text-primary cursor-select p-x-0"
                         onClick={() => {
                           setTxHash('')
+                          setErrorMessage('')
+                          setAttemptingTxn(false)
                           setShowConfirm(true)
                         }}
                         type="link"

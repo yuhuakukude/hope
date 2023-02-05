@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="84px" height="84px" viewBox="0 0 88 88" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57 (83077) - https://sketch.com -->
+    <title>提交</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Staking" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="HOPE-Staking---Claim-LT-success" transform="translate(-676.000000, -358.000000)">
+            <g id="编组-15" transform="translate(470.000000, 278.000000)">
+                <g id="提交" transform="translate(206.000000, 80.000000)">
+                    <rect id="矩形" stroke="#979797" fill="#D8D8D8" opacity="0" x="0.5" y="0.5" width="87" height="87"></rect>
+                    <circle id="椭圆形" stroke="#FFFFFF" stroke-width="2" cx="44" cy="44" r="41"></circle>
+                    <g id="编组-21" transform="translate(29.000000, 24.000000)" stroke="#0ECB81" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <g id="编组-20" transform="translate(0.000000, 0.307692)">
+                            <polyline id="路径-6" transform="translate(15.097436, 15.165619) rotate(-135.000000) translate(-15.097436, -15.165619) " points="4.54514375 25.618455 25.649728 25.7179111 25.550272 4.61332677"></polyline>
+                            <path d="M15.0882353,0.242424242 L15.0882353,40" id="路径-7"></path>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="64px" height="64px" viewBox="0 0 88 88" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57 (83077) - https://sketch.com -->
+    <title>编组 13</title>
+    <desc>Created with Sketch.</desc>
+    <g id="Liquidity" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="LightSwap-Remove-Liquidity-Error" transform="translate(-676.000000, -398.000000)">
+            <g id="编组-16" transform="translate(470.000000, 318.000000)">
+                <g id="编组-13" transform="translate(206.000000, 80.000000)">
+                    <rect id="矩形" stroke="#979797" fill="#D8D8D8" opacity="0" x="0.5" y="0.5" width="87" height="87"></rect>
+                    <path d="M46.6286477,10.8543981 C46.3544842,10.3559189 45.9442354,9.94567014 45.4457562,9.67150661 C43.9939942,8.87303748 42.1698214,9.40263603 41.3713523,10.8543981 L4.13643716,78.5542438 C3.89282294,78.9971787 3.76508488,79.4944911 3.76508488,80 C3.76508488,81.6568542 5.10823063,83 6.76508488,83 L81.2349151,83 C81.740424,83 82.2377364,82.8722619 82.6806714,82.6286477 C84.1324334,81.8301786 84.662032,80.0060058 83.8635628,78.5542438 L46.6286477,10.8543981 Z" id="三角形" stroke="#FFFFFF" stroke-width="2"></path>
+                    <g id="编组-11" transform="translate(44.000000, 34.000000)" stroke="#F6465D" stroke-linecap="round" stroke-linejoin="round" stroke-width="2">
+                        <path d="M0.5,-7.10542736e-15 L0.5,29.2919132" id="路径-2"></path>
+                        <path d="M0.5,35.8393698 L0.5,36.8348719" id="路径-3"></path>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
