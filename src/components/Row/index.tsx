@@ -11,7 +11,6 @@ const Row = styled(Box)<{
 }>`
   width: ${({ width }) => width ?? '100%'};
   display: flex;
-  padding: 0;
   align-items: ${({ align }) => align ?? 'center'};
   justify-content: ${({ justify }) => justify ?? 'flex-start'};
   padding: ${({ padding }) => padding};
@@ -21,6 +20,14 @@ const Row = styled(Box)<{
 
 export const RowBetween = styled(Row)`
   justify-content: space-between;
+`
+
+export const AutoRowBetween = styled(Row)<{ gap?: string }>`
+  justify-content: space-between;
+
+  & > *:not(:last-child) {
+    margin-right: ${({ gap }) => gap} !important;
+  }
 `
 
 export const RowFlat = styled.div`

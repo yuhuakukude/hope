@@ -14,16 +14,17 @@ import usePrevious from '../../hooks/usePrevious'
 import { ApplicationModal } from '../../state/application/actions'
 import { useModalOpen, useWalletModalToggle } from '../../state/application/hooks'
 import { ExternalLink } from '../../theme'
-import AccountDetails from '../AccountDetails'
 
 import Modal from '../Modal'
 import Option from './Option'
 import PendingView from './PendingView'
+import WalletDetail from './WalletDetail'
 
 const CloseIcon = styled.div`
   position: absolute;
   right: 1rem;
   top: 14px;
+
   &:hover {
     cursor: pointer;
     opacity: 0.6;
@@ -308,13 +309,14 @@ export default function WalletModal({
     }
     if (account && walletView === WALLET_VIEWS.ACCOUNT) {
       return (
-        <AccountDetails
-          toggleWalletModal={toggleWalletModal}
-          pendingTransactions={pendingTransactions}
-          confirmedTransactions={confirmedTransactions}
-          ENSName={ENSName}
-          openOptions={() => setWalletView(WALLET_VIEWS.OPTIONS)}
-        />
+        <WalletDetail />
+        // <AccountDetails
+        //   toggleWalletModal={toggleWalletModal}
+        //   pendingTransactions={pendingTransactions}
+        //   confirmedTransactions={confirmedTransactions}
+        //   ENSName={ENSName}
+        //   openOptions={() => setWalletView(WALLET_VIEWS.OPTIONS)}
+        // />
       )
     }
     return (
