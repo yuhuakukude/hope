@@ -32,6 +32,8 @@ import Vote from './Vote'
 import VotePage from './Vote/VotePage'
 import BuyHope from './BuyHope'
 import Staking from './Staking'
+import DaoGomboc from './Dao/Gomboc'
+import DaoLocker from './Dao/Locker'
 
 import './App.css'
 import '../assets/style/index.scss'
@@ -131,6 +133,8 @@ export default function App() {
                   <Route exact strict path="/vote/:id" component={VotePage} />
                   <Route exact strict path="/staking" component={Staking} />
                   <Route exact strict path="/buy-hope" component={BuyHope} />
+                  <Route exact strict path="/dao-gomboc" component={DaoGomboc} />
+                  <Route exact strict path="/dao-locker" component={DaoLocker} />
                   <Route component={RedirectPathToSwapOnly} />
                 </Switch>
               </Web3ReactManager>

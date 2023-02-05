@@ -16,6 +16,7 @@ import { ButtonPrimary } from '../../components/Button'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import ActionButton from '../../components/Button/ActionButton'
+import { CloseIcon } from '../../theme/components'
 import { Token, TokenAmount } from '@uniswap/sdk'
 import './index.scss'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
@@ -222,9 +223,9 @@ export default function Staking() {
         <div className="staking-claim-box w-100">
           <div className="head">
             $LT Rewards Claim
-            <i onClick={claimCallback} className="iconfont m-r-10 icon-close cursor-select">
-              &#xe612;
-            </i>
+            <div className="icon-close">
+              <CloseIcon onClick={claimCallback} />
+            </div>
           </div>
           <div className="claim-con p-30">
             <div className="flex jc-between">
@@ -266,8 +267,9 @@ export default function Staking() {
             <h3 className="text-white font-28 font-bolder">Staking $HOPE</h3>
             <p className="text-white font-nor m-t-10">
               Stake your $HOPE tokens for an annual percentage yield (APY).
-              <a href="/" className="text-normal m-l-15">
+              <a href="/" className="text-normal m-l-15 learn-more">
                 Learn more
+                <i className="iconfont m-l-5 font-14 m-t-2">&#xe619;</i>
               </a>
             </p>
           </div>
@@ -300,13 +302,17 @@ export default function Staking() {
                     <div className="text-normal">
                       Available:{' '}
                       {curType === 'stake'
-                        ? `${hopeBal?.toFixed(2, { groupSeparator: ',' } ?? '-')} HOPE`
-                        : `${stakedVal?.toFixed(2, { groupSeparator: ',' }).toString()} stHOPE`}
+                        ? `${hopeBal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'} HOPE`
+                        : `${stakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'} stHOPE`}
                     </div>
                   </div>
                   <div className="hp-amount-box">
                     <NumericalInput
-                      className="hp-amount m-t-10"
+                      className={[
+                        'hp-amount',
+                        'm-t-10',
+                        curType === 'stake' ? stakeInputError && 'error' : unstakeInputError && 'error'
+                      ].join(' ')}
                       value={amount}
                       decimals={2}
                       align={'right'}
@@ -328,7 +334,7 @@ export default function Staking() {
                   </div>
                   <div className="flex jc-between m-t-20">
                     <span className="text-white">Receive </span>
-                    <span className="text-white">{receiveAmount} stHOPE</span>
+                    <span className="text-white">{receiveAmount || '--'} stHOPE</span>
                   </div>
                   <div className="action-box m-t-40">
                     {!account ? (
@@ -377,7 +383,7 @@ export default function Staking() {
                   <div className="flex-1">
                     <p className="text-white font-nor">Total Staked </p>
                     <h3 className="text-white font-28 font-bold m-t-10">
-                      {lpTotalSupply?.toFixed(2, { groupSeparator: ',' }).toString()}
+                      {lpTotalSupply?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
                     </h3>
                   </div>
                 </div>
@@ -386,44 +392,46 @@ export default function Staking() {
                 <HopeCard title={'Stake'}>
                   <div className="flex jc-between m-b-10">
                     <span className="text-white">Available</span>
-                    <span className="text-white">{hopeBal?.toFixed(2, { groupSeparator: ',' } ?? '-')}</span>
+                    <span className="text-white">{hopeBal?.toFixed(2, { groupSeparator: ',' } ?? '-') || '--'}</span>
                   </div>
                   <div className="flex jc-between m-b-10">
                     <span className="text-white">Staked</span>
-                    <span className="text-white">{stakedVal?.toFixed(2, { groupSeparator: ',' }).toString()}</span>
+                    <span className="text-white">
+                      {stakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+                    </span>
                   </div>
                   <div className="flex jc-between m-b-10">
                     <span className="text-white">Unstaking</span>
-                    <span className="text-white">{unstakingVal?.toFixed(2, { groupSeparator: ',' }).toString()}</span>
+                    <span className="text-white">
+                      {unstakingVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+                    </span>
                   </div>
-                  <div className="flex jc-between">
+                  <div className="flex jc-between m-b-10">
                     <span className="text-white">Unstaked</span>
-                    <span className="text-white">{unstakedVal?.toFixed(2, { groupSeparator: ',' }).toString()}</span>
+                    <span className="text-white">
+                      {unstakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+                    </span>
                   </div>
-                  {!(
-                    account &&
-                    unstakedVal &&
-                    Number(unstakedVal.toFixed(2, { groupSeparator: ',' }).toString()) > 0
-                  ) && (
-                    <div className="flex jc-end m-b-10">
+                  {account && unstakedVal && Number(unstakedVal.toFixed(2)) > 0 && (
+                    <div className="flex jc-end withdaw-box">
                       <Button className="text-primary cursor-select p-x-0" onClick={toWithdrawCallback} type="link">
-                        Withdraw
+                        Withdaw
                       </Button>
                     </div>
                   )}
                   <div className="flex jc-between m-b-10">
                     <span className="text-white">Total Rewards</span>
-                    <span className="text-white">{totalRewards?.toFixed(2, { groupSeparator: ',' }).toString()}</span>
+                    <span className="text-white">
+                      {totalRewards?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+                    </span>
                   </div>
                   <div className="flex jc-between">
                     <span className="text-white">Claimable Rewards</span>
-                    <span className="text-white">{claRewards?.toFixed(2, { groupSeparator: ',' }).toString()}</span>
+                    <span className="text-white">
+                      {claRewards?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+                    </span>
                   </div>
-                  {!(
-                    account &&
-                    claRewards &&
-                    Number(claRewards.toFixed(2, { groupSeparator: ',' }).toString()) > 0
-                  ) && (
+                  {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
                     <div className="flex jc-end m-b-10">
                       <Button
                         className="text-primary cursor-select p-x-0"

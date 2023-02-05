@@ -10,7 +10,7 @@ export const rate = (value: string | number, decimal?: 2, isNull?: boolean) => {
         .replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')}%`
     }
   }
-  return isNull ? '' : '-'
+  return isNull ? '' : '--'
 }
 
 // 小数位保留

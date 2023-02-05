@@ -11,7 +11,7 @@ import useTheme from '../../hooks/useTheme'
 import { Text } from 'rebass'
 import { PrimaryText, SecondaryText } from '../Text'
 
-const DivideLine = styled.div`
+export const DivideLine = styled.div`
   border: 0.5px solid ${({ theme }) => theme.bg3};
   width: 100%;
 `
@@ -73,7 +73,24 @@ const ThemeText = styled.p`
   color: ${({ theme }) => theme.text1};
 `
 
-export default function WalletDetail() {
+const TransactionLayout = styled.div`
+  width: 100%;
+  padding: 30px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  : hover {
+    cursor: pointer;
+  }
+`
+
+export default function WalletDetail({
+  showTransaction,
+  setShowTransaction
+}: {
+  showTransaction: boolean
+  setShowTransaction: (showTransaction: boolean) => void
+}) {
   const { account } = useActiveWeb3React()
   const [gas, setGas] = useState(0)
   const theme = useTheme()
@@ -156,18 +173,16 @@ export default function WalletDetail() {
         })}
       </div>
       <DivideLine />
-      <div
-        style={{
-          width: '100%',
-          padding: '30px',
-          display: 'flex',
-          justifyContent: 'space-between',
-          alignItems: 'center'
+      <TransactionLayout
+        onClick={() => {
+          if (!showTransaction) {
+            setShowTransaction(true)
+          }
         }}
       >
         <ThemeText>Transactions</ThemeText>
         <img src={Arrow} style={{ width: '16px', height: '16px' }} />
-      </div>
+      </TransactionLayout>
     </div>
   )
 }
