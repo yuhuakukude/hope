@@ -16,7 +16,7 @@ const Base = styled(RebassButton)<{
   width: ${({ width }) => (width ? width : '100%')};
   font-weight: 500;
   text-align: center;
-  border-radius: 20px;
+  border-radius: 10px;
   border-radius: ${({ borderRadius }) => borderRadius && borderRadius};
   outline: none;
   border: 1px solid transparent;
@@ -246,7 +246,6 @@ const ButtonConfirmedStyle = styled(Base)`
   background-color: ${({ theme }) => lighten(0.5, theme.green1)};
   color: ${({ theme }) => theme.green1};
   border: 1px solid ${({ theme }) => theme.green1};
-
   &:disabled {
     opacity: 50%;
     cursor: auto;
@@ -310,7 +309,7 @@ export function ButtonDropdown({ disabled = false, children, ...rest }: { disabl
 
 export function ButtonDropdownGrey({ disabled = false, children, ...rest }: { disabled?: boolean } & ButtonProps) {
   return (
-    <ButtonGray {...rest} disabled={disabled} style={{ borderRadius: '20px' }}>
+    <ButtonGray {...rest} disabled={disabled} style={{ borderRadius: '10px' }}>
       <RowBetween>
         <div style={{ display: 'flex', alignItems: 'center' }}>{children}</div>
         <ChevronDown size={24} />

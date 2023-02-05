@@ -1,9 +1,10 @@
 import { Trade, TradeType } from '@uniswap/sdk'
 import React, { useContext } from 'react'
-import styled, { ThemeContext } from 'styled-components'
+import { Text } from 'rebass'
+import { ThemeContext } from 'styled-components'
 import { Field } from '../../state/swap/actions'
 import { useUserSlippageTolerance } from '../../state/user/hooks'
-import { TYPE, ExternalLink } from '../../theme'
+import { TYPE } from '../../theme'
 import { computeSlippageAdjustedAmounts, computeTradePriceBreakdown } from '../../utils/prices'
 import { AutoColumn } from '../Column'
 import QuestionHelper from '../QuestionHelper'
@@ -11,15 +12,15 @@ import { RowBetween, RowFixed } from '../Row'
 import FormattedPriceImpact from './FormattedPriceImpact'
 import SwapRoute from './SwapRoute'
 
-const InfoLink = styled(ExternalLink)`
-  width: 100%;
-  border: 1px solid ${({ theme }) => theme.bg3};
-  padding: 6px 6px;
-  border-radius: 8px;
-  text-align: center;
-  font-size: 14px;
-  color: ${({ theme }) => theme.text1};
-`
+// const InfoLink = styled(ExternalLink)`
+//   width: 100%;
+//   border: 1px solid ${({ theme }) => theme.bg3};
+//   padding: 6px 6px;
+//   border-radius: 8px;
+//   text-align: center;
+//   font-size: 14px;
+//   color: ${({ theme }) => theme.text1};
+// `
 
 function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippage: number }) {
   const theme = useContext(ThemeContext)
@@ -86,7 +87,7 @@ export function AdvancedSwapDetails({ trade }: AdvancedSwapDetailsProps) {
 
   return (
     <AutoColumn gap="0px">
-      {trade && (
+      {trade ? (
         <>
           <TradeSummary trade={trade} allowedSlippage={allowedSlippage} />
           {showRoute && (
@@ -102,17 +103,19 @@ export function AdvancedSwapDetails({ trade }: AdvancedSwapDetailsProps) {
               </RowBetween>
             </>
           )}
-          {!showRoute && (
-            <AutoColumn style={{ padding: '12px 16px 0 16px' }}>
-              <InfoLink
-                href={'https://info.uniswap.org/pair/' + trade.route.pairs[0].liquidityToken.address}
-                target="_blank"
-              >
-                View pair analytics ↗
-              </InfoLink>
-            </AutoColumn>
-          )}
+          {/*{!showRoute && (*/}
+          {/*  <AutoColumn style={{ padding: '12px 16px 0 16px' }}>*/}
+          {/*    <InfoLink*/}
+          {/*      href={'https://info.uniswap.org/pair/' + trade.route.pairs[0].liquidityToken.address}*/}
+          {/*      target="_blank"*/}
+          {/*    >*/}
+          {/*      View pair analytics ↗*/}
+          {/*    </InfoLink>*/}
+          {/*  </AutoColumn>*/}
+          {/*)}*/}
         </>
+      ) : (
+        <Text textAlign={'center'}>Enter an amount to see more trading details</Text>
       )}
     </AutoColumn>
   )

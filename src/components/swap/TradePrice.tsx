@@ -1,7 +1,7 @@
 import React from 'react'
 import { Price } from '@uniswap/sdk'
 import { useContext } from 'react'
-import { Repeat } from 'react-feather'
+import { RefreshCw } from 'react-feather'
 import { Text } from 'rebass'
 import { ThemeContext } from 'styled-components'
 import { StyledBalanceMaxMini } from './styleds'
@@ -33,7 +33,7 @@ export default function TradePrice({ price, showInverted, setShowInverted }: Tra
         <>
           {formattedPrice ?? '-'} {label}
           <StyledBalanceMaxMini onClick={() => setShowInverted(!showInverted)}>
-            <Repeat size={14} />
+            <RefreshCw size={14} />
           </StyledBalanceMaxMini>
         </>
       ) : (

@@ -152,7 +152,7 @@ export default function BuyHope() {
       .catch((err: any) => {
         setErrorMessage(err.message)
       })
-  }, [account, inputAmount, library, chainId, toBuyHope])
+  }, [account, inputAmount, library, chainId, currency, toBuyHope])
 
   const isMaxDisabled = useMemo(() => {
     let flag = false

@@ -11,17 +11,17 @@ import Column, { AutoColumn } from '../../components/Column'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import { SwapPoolTabs } from '../../components/NavigationTabs'
-import { AutoRow, RowBetween } from '../../components/Row'
+import Row, { AutoRow, RowBetween } from '../../components/Row'
 import AdvancedSwapDetailsDropdown from '../../components/swap/AdvancedSwapDetailsDropdown'
 import BetterTradeLink, { DefaultVersionLink } from '../../components/swap/BetterTradeLink'
 import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpactWithoutFee'
-import { ArrowWrapper, BottomGrouping, SwapCallbackError, Wrapper } from '../../components/swap/styleds'
+import { ArrowWrapper, BottomGrouping, Dots, SwapCallbackError, Wrapper } from '../../components/swap/styleds'
 import TradePrice from '../../components/swap/TradePrice'
 import TokenWarningModal from '../../components/TokenWarningModal'
 import ProgressSteps from '../../components/ProgressSteps'
 import SwapHeader from '../../components/swap/SwapHeader'
 
-import { INITIAL_ALLOWED_SLIPPAGE } from '../../constants'
+//import { INITIAL_ALLOWED_SLIPPAGE } from '../../constants'
 import { getTradeVersion } from '../../data/V1'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency, useAllTokens } from '../../hooks/Tokens'
@@ -30,7 +30,7 @@ import useENSAddress from '../../hooks/useENSAddress'
 import { useSwapCallback } from '../../hooks/useSwapCallback'
 import useToggledVersion, { DEFAULT_VERSION, Version } from '../../hooks/useToggledVersion'
 import useWrapCallback, { WrapType } from '../../hooks/useWrapCallback'
-import { useToggleSettingsMenu, useWalletModalToggle } from '../../state/application/hooks'
+import { useWalletModalToggle } from '../../state/application/hooks'
 import { Field } from '../../state/swap/actions'
 import {
   useDefaultsFromURLSearch,
@@ -43,7 +43,7 @@ import { LinkStyledButton, TYPE } from '../../theme'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from '../../utils/prices'
 import AppBody from '../AppBody'
-import { ClickableText } from '../Pool/styleds'
+//import { ClickableText } from '../Pool/styleds'
 import Loader from '../../components/Loader'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
@@ -82,7 +82,7 @@ export default function Swap({ history }: RouteComponentProps) {
   const toggleWalletModal = useWalletModalToggle()
 
   // for expert mode
-  const toggleSettings = useToggleSettingsMenu()
+  //const toggleSettings = useToggleSettingsMenu()
   const [isExpertMode] = useExpertModeManager()
 
   // get custom setting values for user
@@ -384,28 +384,36 @@ export default function Swap({ history }: RouteComponentProps) {
             {showWrap ? null : (
               <Card padding={showWrap ? '.25rem 1rem 0 1rem' : '0px'} borderRadius={'20px'}>
                 <AutoColumn gap="8px" style={{ padding: '0 16px' }}>
-                  {Boolean(trade) && (
-                    <RowBetween align="center">
-                      <Text fontWeight={500} fontSize={14} color={theme.text2}>
-                        Price
-                      </Text>
+                  {Boolean(trade) ? (
+                    <Row justify={'center'}>
                       <TradePrice
                         price={trade?.executionPrice}
                         showInverted={showInverted}
                         setShowInverted={setShowInverted}
                       />
-                    </RowBetween>
+                    </Row>
+                  ) : (
+                    <Text textAlign={'center'} fontWeight={500} fontSize={14} color={theme.text2}>
+                      {swapInputError ? (
+                        '--'
+                      ) : (
+                        <>
+                          Fetching best price
+                          <Dots />
+                        </>
+                      )}
+                    </Text>
                   )}
-                  {allowedSlippage !== INITIAL_ALLOWED_SLIPPAGE && (
-                    <RowBetween align="center">
-                      <ClickableText fontWeight={500} fontSize={14} color={theme.text2} onClick={toggleSettings}>
-                        Slippage Tolerance
-                      </ClickableText>
-                      <ClickableText fontWeight={500} fontSize={14} color={theme.text2} onClick={toggleSettings}>
-                        {allowedSlippage / 100}%
-                      </ClickableText>
-                    </RowBetween>
-                  )}
+                  {/*{allowedSlippage !== INITIAL_ALLOWED_SLIPPAGE && (*/}
+                  {/*  <RowBetween align="center">*/}
+                  {/*    <ClickableText fontWeight={500} fontSize={14} color={theme.text2} onClick={toggleSettings}>*/}
+                  {/*      Slippage Tolerance*/}
+                  {/*    </ClickableText>*/}
+                  {/*    <ClickableText fontWeight={500} fontSize={14} color={theme.text2} onClick={toggleSettings}>*/}
+                  {/*      {allowedSlippage / 100}%*/}
+                  {/*    </ClickableText>*/}
+                  {/*  </RowBetween>*/}
+                  {/*)}*/}
                 </AutoColumn>
               </Card>
             )}
@@ -493,7 +501,7 @@ export default function Swap({ history }: RouteComponentProps) {
                 disabled={!isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!swapCallbackError}
                 error={isValid && priceImpactSeverity > 2 && !swapCallbackError}
               >
-                <Text fontSize={20} fontWeight={500}>
+                <Text fontSize={16} fontWeight={500}>
                   {swapInputError
                     ? swapInputError
                     : priceImpactSeverity > 3 && !isExpertMode
@@ -520,6 +528,12 @@ export default function Swap({ history }: RouteComponentProps) {
         ) : (
           <UnsupportedCurrencyFooter show={swapIsUnsupported} currencies={[currencies.INPUT, currencies.OUTPUT]} />
         )}
+        <AutoColumn style={{ margin: '0 20px', padding: '20px 0', borderTop: '1px solid #3D3E46' }}>
+          <RowBetween>
+            <TYPE.gray>Network Fee</TYPE.gray>
+            <TYPE.main>≈0.01 ETH</TYPE.main>
+          </RowBetween>
+        </AutoColumn>
       </AppBody>
     </>
   )
