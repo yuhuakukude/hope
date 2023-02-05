@@ -43,6 +43,9 @@
       &:hover, &:focus {
         border: 1px solid #E4C989;
       }
+      &.error{
+        border: 1px solid #F6465D;
+      }
     }
     .coin-box {
       position: absolute;
@@ -56,7 +59,9 @@
       color: #E4C989;
     }
   }
-  
+  .withdaw-box {
+    margin-top: -10px;
+  }
   .hp-button-primary {
     background: #E4C989;
     color: #26262C;

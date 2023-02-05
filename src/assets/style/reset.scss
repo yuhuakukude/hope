@@ -23,3 +23,23 @@
     color: #A8A8AA;
   }
 }
+
+// staking claim
+.staking-claim-box {
+  .head {
+    height: 75px;
+    position: relative;
+    line-height: 75px;
+    text-align: center;
+    font-size: 18px;
+    color: #fff;
+    text-align: center;
+    border-bottom: 1px solid #A8A8AA;
+    .icon-close {
+      position: absolute;
+      line-height: 1;
+      top: 25px;
+      right: 20px;
+    }
+  }
+}
