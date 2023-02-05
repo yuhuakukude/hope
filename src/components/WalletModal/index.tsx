@@ -19,6 +19,7 @@ import Modal from '../Modal'
 import Option from './Option'
 import PendingView from './PendingView'
 import WalletDetail from './WalletDetail'
+import TransactionModal from './TransactionModal'
 
 const CloseIcon = styled.div`
   position: absolute;
@@ -140,6 +141,8 @@ export default function WalletModal({
 
   const previousAccount = usePrevious(account)
 
+  const [showTransaction, setShowTransaction] = useState(false)
+
   // close on connection, when logged out before
   useEffect(() => {
     if (account && !previousAccount && walletModalOpen) {
@@ -152,6 +155,7 @@ export default function WalletModal({
     if (walletModalOpen) {
       setPendingError(false)
       setWalletView(WALLET_VIEWS.ACCOUNT)
+      setShowTransaction(false)
     }
   }, [walletModalOpen])
 
@@ -307,9 +311,12 @@ export default function WalletModal({
         </UpperSection>
       )
     }
+    if (showTransaction) {
+      return <TransactionModal setShowTransaction={setShowTransaction} />
+    }
     if (account && walletView === WALLET_VIEWS.ACCOUNT) {
       return (
-        <WalletDetail />
+        <WalletDetail setShowTransaction={setShowTransaction} showTransaction={showTransaction} />
         // <AccountDetails
         //   toggleWalletModal={toggleWalletModal}
         //   pendingTransactions={pendingTransactions}
