@@ -530,8 +530,8 @@ export default function Swap({ history }: RouteComponentProps) {
         )}
         <AutoColumn style={{ margin: '0 20px', padding: '20px 0', borderTop: '1px solid #3D3E46' }}>
           <RowBetween>
-            <TYPE.gray>Network Fee</TYPE.gray>
-            <TYPE.main>≈0.01 ETH</TYPE.main>
+            <TYPE.main>Network Fee</TYPE.main>
+            <TYPE.white>≈0.01 ETH</TYPE.white>
           </RowBetween>
         </AutoColumn>
       </AppBody>
