@@ -5,15 +5,24 @@ import { PrimaryText } from '../Text'
 import { DivideLine } from './WalletDetail'
 import { GapColumn } from '../Column'
 import useTheme from '../../hooks/useTheme'
+import { clearAllTransactions } from '../../state/transactions/actions'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../state'
+import { useActiveWeb3React } from '../../hooks'
 
 const ModalBg = styled.div`
   background: ${({ theme }) => theme.bg1};
   border-radius: 20px;
+  position: fixed;
+  width: 500px;
+  top: 60px;
+  right: 20px;
 `
 
 const ClearText = styled(PrimaryText)`
   :hover {
     color: ${({ theme }) => theme.red1};
+    cursor: pointer;
   }
 `
 
@@ -49,7 +58,7 @@ function TransactionLine({ data }: { data: TransactionData }) {
   return (
     <RowBetween>
       <PrimaryText>{data.time}</PrimaryText>
-      <PrimaryText>{data.time}</PrimaryText>
+      <PrimaryText>{data.title}</PrimaryText>
       {renderIcon()}
     </RowBetween>
   )
@@ -63,8 +72,12 @@ const ClickableIcon = styled.i`
 
 export default function TransactionModal({
   setShowTransaction
-}: {
+}: // pendingTransactions,
+// confirmedTransactions
+{
   setShowTransaction: (showTransaction: boolean) => void
+  // pendingTransactions: string[]
+  // confirmedTransactions: string[]
 }) {
   const fakeTransaction: TransactionData[] = [
     {
@@ -78,6 +91,12 @@ export default function TransactionModal({
       status: TransactionStatus.Warning
     }
   ]
+  const dispatch = useDispatch<AppDispatch>()
+  const { chainId } = useActiveWeb3React()
+
+  const clearAllTransactionsCallback = useCallback(() => {
+    if (chainId) dispatch(clearAllTransactions({ chainId }))
+  }, [dispatch, chainId])
 
   return (
     <ModalBg>
@@ -91,7 +110,7 @@ export default function TransactionModal({
           &#xe61d;
         </ClickableIcon>
         <PrimaryText size={'18px'}>Transactions</PrimaryText>
-        <ClearText>Clear All</ClearText>
+        <ClearText onClick={clearAllTransactionsCallback}>Clear All</ClearText>
       </RowBetween>
       <DivideLine />
       <GapColumn gap={'20px'} style={{ padding: '30px' }}>

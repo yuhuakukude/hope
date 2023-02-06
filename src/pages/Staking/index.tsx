@@ -33,6 +33,7 @@ export default function Staking() {
   const { account, chainId, library } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const [curType, setStakingType] = useState('stake')
+  const [curBuzType, setCurBuzType] = useState('')
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
 
   // modal and loading
@@ -59,6 +60,14 @@ export default function Staking() {
   const { toClaim } = useToClaim()
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
 
+  const isUnSub = useMemo(() => {
+    let res = false
+    if (curBuzType === 'unStaking' && isSubscribed) {
+      res = true
+    }
+    return res
+  }, [curBuzType, isSubscribed])
+
   const totalRewards = useMemo(() => {
     let res
     if (claRewards && mintedVal) {
@@ -83,9 +92,8 @@ export default function Staking() {
 
   const stakingCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
-
+    setCurBuzType('')
     setCurToken(ST_HOPE[chainId ?? 1])
-
     setShowConfirm(true)
     setAttemptingTxn(true)
 
@@ -116,8 +124,24 @@ export default function Staking() {
       })
   }, [account, inputAmount, library, chainId, toStaked])
 
+  const getIsSub = useCallback(async () => {
+    try {
+      const res = await StakingApi.getSubscriptionInfo({
+        address: account
+      })
+      if (res && res.result === false) {
+        setIsSubscribed(true)
+      } else {
+        setIsSubscribed(false)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [account])
+
   const unStakingCallback = useCallback(async () => {
     if (!amount || !account || !inputAmount) return
+    setCurBuzType('unStaking')
     setCurToken(undefined)
     setShowConfirm(true)
     setAttemptingTxn(true)
@@ -126,6 +150,7 @@ export default function Staking() {
         setAttemptingTxn(false)
         setTxHash(hash)
         setAmount('')
+        getIsSub()
       })
       .catch((err: any) => {
         setAttemptingTxn(false)
@@ -135,6 +160,7 @@ export default function Staking() {
 
   const claimCallback = useCallback(async () => {
     if (!account) return
+    setCurBuzType('')
     setCurToken(LT[chainId ?? 1])
     setAttemptingTxn(true)
     toClaim()
@@ -151,6 +177,7 @@ export default function Staking() {
 
   const toWithdrawCallback = useCallback(async () => {
     if (!account) return
+    setCurBuzType('')
     setCurToken(HOPE[chainId ?? 1])
     setShowConfirm(true)
     setAttemptingTxn(true)
@@ -182,20 +209,6 @@ export default function Staking() {
       console.log(error)
     }
   }
-
-  const getIsSub = useCallback(async () => {
-    try {
-      const res = await StakingApi.getSubscriptionInfo({
-        address: account
-      })
-      if (res && res.result === false) {
-        console.log(res)
-        setIsSubscribed(true)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }, [account])
 
   function changeStake(type: string) {
     setAmount('')
@@ -265,7 +278,7 @@ export default function Staking() {
           content={confirmationContent}
           pendingText={''}
           currencyToAdd={curToken}
-          isShowSubscribe={isSubscribed}
+          isShowSubscribe={isUnSub}
         />
         <div className="staking-page">
           <div className="staking-head">
@@ -327,7 +340,9 @@ export default function Staking() {
                     />
                     <div className="coin-box flex ai-center cursor-select">
                       <div className="hope-icon"></div>
-                      <div className="currency font-nor text-medium m-l-12">HOPE</div>
+                      <div className="currency font-nor text-medium m-l-12">
+                        {curType === 'stake' ? 'HOPE' : 'stHOPE'}
+                      </div>
                     </div>
                     <span onClick={() => toMax()} className="input-max cursor-select">
                       Max
@@ -375,6 +390,27 @@ export default function Staking() {
                       />
                     )}
                   </div>
+                  <div className="staking-tip">
+                    {curType === 'unstake' && (
+                      <div className="flex m-t-15">
+                        <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
+                        <div>
+                          <p className="text-white lh15">
+                            The $stHOPE unstake will take 28 days to processing and you can withdraw your $HOPE at any
+                            time after it is completed.
+                          </p>
+                          <p className="text-white lh15 m-t-5">
+                            Note that you do not receive the $LT bonus when you confirm your submission. You can also
+                            try{' '}
+                            <a className="text-primary" href="/">
+                              LightSwap
+                            </a>{' '}
+                            to convert $stHOPE to $HOPE or other assets quickly.
+                          </p>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </Col>
@@ -382,7 +418,7 @@ export default function Staking() {
               <HopeCard title={'Stake'}>
                 <div className="flex">
                   <div className="apy-box">
-                    <p className="text-white font-nor">APR</p>
+                    <p className="text-white font-nor">APY</p>
                     <h3 className="text-success font-28 font-bold m-t-10">{format.rate(apyVal)}</h3>
                   </div>
                   <div>

@@ -7,7 +7,7 @@ import styled from 'styled-components'
 const SearchInput = styled.input`
   position: relative;
   display: flex;
-  padding: 16px;
+  padding: 16px 16px 16px 45px;
   align-items: center;
   width: 100%;
   white-space: nowrap;
@@ -15,12 +15,12 @@ const SearchInput = styled.input`
   border: none;
   outline: none;
   border-radius: 20px;
-  color: #000;
+  color: #fff;
   border-style: solid;
   border: 1px solid #3d3e46;
   -webkit-appearance: none;
-
   font-size: 18px;
+  font-family: Arboria-Medium;
 
   ::placeholder {
     color: #3d3e46;
@@ -82,7 +82,7 @@ export default function SelectCurrency({
         >
           <i className="iconfont font-28 m-r-12">&#xe61a;</i> Select a Token
         </div>
-        <Row className="m-t-40">
+        <Row className="m-t-40 row-box">
           <SearchInput
             type="text"
             id="token-search-input"
@@ -92,6 +92,7 @@ export default function SelectCurrency({
             ref={inputRef as RefObject<HTMLInputElement>}
             onChange={handleInput}
           />
+          <i className="iconfont input-icon">&#xe61b;</i>
         </Row>
         <div className="coin-box m-t-30">
           {coinSearchList.map((e, i) => (

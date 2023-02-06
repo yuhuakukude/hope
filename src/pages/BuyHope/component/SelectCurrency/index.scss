@@ -13,4 +13,11 @@
       }
     }
   }
+  .row-box{
+    position: relative;
+    .input-icon{
+      position: absolute;
+      left: 20px;
+    }
+  }
 }
