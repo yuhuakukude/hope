@@ -111,7 +111,7 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
 
   const totalSupplies = useMultipleContractSingleData(rewardsAddresses, STAKING_REWARDS_INTERFACE, 'lpTotalSupply')
 
-  const rewardDataList = useMultipleContractSingleData(rewardsAddresses, STAKING_REWARDS_INTERFACE, 'rewardData')
+  //const rewardDataList = useMultipleContractSingleData(rewardsAddresses, STAKING_REWARDS_INTERFACE, 'rewardData')
 
   // // tokens per second, constants
   // const rewardRates = useMultipleContractSingleData(
@@ -140,7 +140,7 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
       // these get fetched regardless of account
       const totalSupplyState = totalSupplies[index]
       //const rewardRateState = rewardRates[index]
-      const rewardDataState = rewardDataList[index]
+      //const rewardDataState = rewardDataList[index]
 
       if (
         // these may be undefined if not logged in
@@ -161,7 +161,7 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
 
         const stakedAmount = new TokenAmount(dummyPair.liquidityToken, JSBI.BigInt(balanceState?.result?.[0] ?? 0))
         const totalStakedAmount = new TokenAmount(dummyPair.liquidityToken, JSBI.BigInt(totalSupplyState.result?.[0]))
-        const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(rewardDataState.result?.rate))
+        //const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(rewardDataState.result?.rate))
 
         const getHypotheticalRewardRate = (
           stakedAmount: TokenAmount,
@@ -176,32 +176,32 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
           )
         }
 
-        const individualRewardRate = getHypotheticalRewardRate(stakedAmount, totalStakedAmount, totalRewardRate)
+        // const individualRewardRate = getHypotheticalRewardRate(stakedAmount, totalStakedAmount, totalRewardRate)
 
-        const periodFinishSeconds = rewardDataState.result?.periodFinish?.toNumber()
-        const periodFinishMs = periodFinishSeconds * 1000
+        //const periodFinishSeconds = rewardDataState.result?.periodFinish?.toNumber()
+        //const periodFinishMs = periodFinishSeconds * 1000
 
         // compare period end timestamp vs current block timestamp (in seconds)
-        const active =
-          periodFinishSeconds && currentBlockTimestamp ? periodFinishSeconds > currentBlockTimestamp.toNumber() : true
+        // const active =
+        //   periodFinishSeconds && currentBlockTimestamp ? periodFinishSeconds > currentBlockTimestamp.toNumber() : true
 
         memo.push({
           stakingRewardAddress: rewardsAddress,
           tokens: info[index].tokens,
-          periodFinish: periodFinishMs > 0 ? new Date(periodFinishMs) : undefined,
+          periodFinish: undefined,
           earnedAmount: new TokenAmount(uni, JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0)),
-          rewardRate: individualRewardRate,
-          totalRewardRate,
+          rewardRate: new TokenAmount(uni, JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0)),
+          totalRewardRate: new TokenAmount(uni, JSBI.BigInt(earnedAmountState?.result?.[0] ?? 0)),
           stakedAmount: stakedAmount,
           totalStakedAmount,
           getHypotheticalRewardRate,
-          active
+          active: false
         })
       }
       console.log('memo', memo)
       return memo
     }, [])
-  }, [balances, chainId, currentBlockTimestamp, earnedAmounts, info, rewardDataList, rewardsAddresses, totalSupplies, uni])
+  }, [balances, chainId, earnedAmounts, info, rewardsAddresses, totalSupplies, uni])
 }
 
 export function useTotalUniEarned(): TokenAmount | undefined {

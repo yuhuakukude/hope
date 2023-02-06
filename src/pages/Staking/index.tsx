@@ -156,7 +156,7 @@ export default function Staking() {
         setAttemptingTxn(false)
         setErrorMessage(err.message)
       })
-  }, [amount, account, inputAmount, toUnStaked])
+  }, [amount, account, inputAmount, toUnStaked, getIsSub])
 
   const claimCallback = useCallback(async () => {
     if (!account) return
