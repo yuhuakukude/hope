@@ -22,18 +22,17 @@ const StyledDialogOverlay = styled(AnimatedDialogOverlay)`
     background-color: ${({ theme }) => theme.modalBG};
   }
 `
-const StyledDialogOverlayTopRight = styled(AnimatedDialogOverlay)`
-  &[data-reach-dialog-overlay] {
-    z-index: 2;
-    overflow: hidden;
-    display: flex;
-    position: fixed;
-    top: 60px;
-    right: 20px;
-    justify-content: right;
-    background-color: ${({ theme }) => theme.modalBG};
-  }
-`
+// const StyledDialogOverlayTopRight = styled(AnimatedDialogOverlay)`
+//   &[data-reach-dialog-overlay] {
+//     z-index: 2;
+//     overflow: hidden;
+//     display: flex;
+//     top: 70px;
+//     right: 20px;
+//     justify-content: right;
+//     background-color: ${({ theme }) => theme.modalBG};
+//   }
+// `
 
 const AnimatedDialogContent = animated(DialogContent)
 // destructure to not pass custom props to Dialog DOM element
@@ -126,36 +125,10 @@ export default function Modal({
 
   return (
     <>
-      {fadeTransition.map(({ item, key, props }) =>
-        item && !topRight ? (
-          <StyledDialogOverlay
-            key={key}
-            style={props}
-            onDismiss={onDismiss}
-            initialFocusRef={initialFocusRef}
-            unstable_lockFocusAcrossFrames={false}
-          >
-            <StyledDialogContent
-              {...(isMobile
-                ? {
-                    ...bind(),
-                    style: { transform: y.interpolate(y => `translateY(${y > 0 ? y : 0}px)`) }
-                  }
-                : {})}
-              aria-label="dialog content"
-              minHeight={minHeight}
-              maxHeight={maxHeight}
-              mobile={isMobile}
-            >
-              {/* prevents the automatic focusing of inputs on mobile by the reach dialog */}
-              {!initialFocusRef && isMobile ? <div tabIndex={1} /> : null}
-              {children}
-            </StyledDialogContent>
-          </StyledDialogOverlay>
-        ) : (
-          item &&
-          topRight && (
-            <StyledDialogOverlayTopRight
+      {fadeTransition.map(
+        ({ item, key, props }) =>
+          item && (
+            <StyledDialogOverlay
               key={key}
               style={props}
               onDismiss={onDismiss}
@@ -178,9 +151,62 @@ export default function Modal({
                 {!initialFocusRef && isMobile ? <div tabIndex={1} /> : null}
                 {children}
               </StyledDialogContent>
-            </StyledDialogOverlayTopRight>
+            </StyledDialogOverlay>
           )
-        )
+        // item && !topRight ? (
+        //   <StyledDialogOverlay
+        //     key={key}
+        //     style={props}
+        //     onDismiss={onDismiss}
+        //     initialFocusRef={initialFocusRef}
+        //     unstable_lockFocusAcrossFrames={false}
+        //   >
+        //     <StyledDialogContent
+        //       {...(isMobile
+        //         ? {
+        //             ...bind(),
+        //             style: { transform: y.interpolate(y => `translateY(${y > 0 ? y : 0}px)`) }
+        //           }
+        //         : {})}
+        //       aria-label="dialog content"
+        //       minHeight={minHeight}
+        //       maxHeight={maxHeight}
+        //       mobile={isMobile}
+        //     >
+        //       {/* prevents the automatic focusing of inputs on mobile by the reach dialog */}
+        //       {!initialFocusRef && isMobile ? <div tabIndex={1} /> : null}
+        //       {children}
+        //     </StyledDialogContent>
+        //   </StyledDialogOverlay>
+        // ) : (
+        //   item &&
+        //   topRight && (
+        //     <StyledDialogOverlayTopRight
+        //       key={key}
+        //       style={props}
+        //       onDismiss={onDismiss}
+        //       initialFocusRef={initialFocusRef}
+        //       unstable_lockFocusAcrossFrames={false}
+        //     >
+        //       <StyledDialogContent
+        //         {...(isMobile
+        //           ? {
+        //               ...bind(),
+        //               style: { transform: y.interpolate(y => `translateY(${y > 0 ? y : 0}px)`) }
+        //             }
+        //           : {})}
+        //         aria-label="dialog content"
+        //         minHeight={minHeight}
+        //         maxHeight={maxHeight}
+        //         mobile={isMobile}
+        //       >
+        //         {/* prevents the automatic focusing of inputs on mobile by the reach dialog */}
+        //         {!initialFocusRef && isMobile ? <div tabIndex={1} /> : null}
+        //         {children}
+        //       </StyledDialogContent>
+        //     </StyledDialogOverlayTopRight>
+        //   )
+        // )
       )}
     </>
   )

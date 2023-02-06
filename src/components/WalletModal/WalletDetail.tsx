@@ -135,8 +135,21 @@ export default function WalletDetail({
   ]
   const fakeIcon = <img src={Avatar} style={{ width: '24px', height: '24px' }} alt="" />
   return (
-    <div style={{ width: '100%', display: 'flex', alignItems: 'center', flexDirection: 'column', overflowY: 'scroll' }}>
-      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', padding: '30px' }}>
+    <div
+      style={{
+        position: 'absolute',
+        width: '460px',
+        display: 'flex',
+        background: theme.bg1,
+        top: '70px',
+        right: '20px',
+        borderRadius: '20px',
+        alignItems: 'center',
+        flexDirection: 'column',
+        overflowY: 'scroll'
+      }}
+    >
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', padding: '20px' }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {fakeIcon}
           <PrimaryText style={{ marginLeft: '8px' }}>{account && shortenAddress(account)}</PrimaryText>
@@ -151,11 +164,11 @@ export default function WalletDetail({
       </div>
       <ThemeText style={{ fontSize: '30px' }}>{balance}</ThemeText>
       <ThemeText style={{ color: theme.text2, marginTop: '16px' }}>görETH Balance</ThemeText>
-      <ButtonPrimary width={'80%'} margin={'40px 0'}>
+      <ButtonPrimary width={'80%'} margin={'20px 0'}>
         Buy HOPE
       </ButtonPrimary>
       <DivideLine />
-      <GapColumn gap={'30px'} style={{ width: '100%', padding: '30px' }}>
+      <GapColumn gap={'30px'} style={{ width: '100%', padding: '20px' }}>
         {fakeBalanceData.map((blc, index) => {
           return <BalanceDetail data={blc} key={index} />
         })}
@@ -167,8 +180,8 @@ export default function WalletDetail({
           display: 'flex',
           width: '100%',
           justifyContent: 'space-between',
-          padding: '0px 30px',
-          marginBottom: '30px'
+          padding: '0px 20px',
+          marginBottom: '20px'
         }}
       >
         {gasType.map((type, index) => {
