@@ -1,0 +1,18 @@
+.gom-head-box {
+  background-color: #26262C;
+  padding: 30px;
+  border-radius: 20px;
+  .learn-more {
+    padding: 13px 20px;
+    border: 1px solid #E4C989;
+    color: #E4C989;
+    font-size: 16;
+    border-radius: 10px;
+    display: inline-block;
+    min-height: 42px;
+  }
+  .head-img {
+    width: 100px;
+    height: 100px;
+  }
+}

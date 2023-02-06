@@ -126,11 +126,12 @@
     "@uniswap/sdk": "Light-Ecosystem/hope-dapp-sdk.git",
     "antd": "^3.26.19",
     "axios": "0.18.1",
+    "dayjs": "^1.11.7",
+    "decimal.js": "^10.4.3",
+    "echarts": "^5.4.1",
     "eth-permit": "^0.2.3",
     "ethers": "5.5.0",
     "ms.macro": "^2.0.0",
-    "axios": "^0.27.2",
-    "decimal.js": "^10.4.3",
     "sass": "^1.57.1",
     "sass-loader": "^13.2.0"
   }
