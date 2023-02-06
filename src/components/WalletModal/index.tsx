@@ -18,8 +18,8 @@ import { ExternalLink } from '../../theme'
 import Modal from '../Modal'
 import Option from './Option'
 import PendingView from './PendingView'
-import WalletDetail from './WalletDetail'
 import TransactionModal from './TransactionModal'
+import WalletDetail from './WalletDetail'
 
 const CloseIcon = styled.div`
   position: absolute;
@@ -42,7 +42,12 @@ const Wrapper = styled.div`
   ${({ theme }) => theme.flexColumnNoWrap}
   margin: 0;
   padding: 0;
-  width: 100%;
+  width: 500px;
+  // position: fixed;
+  // background: ${({ theme }) => theme.bg1};
+  // border-radius: 20px;
+  // top: 60px;
+  // right: 20px;
 `
 
 const HeaderRow = styled.div`
@@ -370,7 +375,7 @@ export default function WalletModal({
   }
 
   return (
-    <Modal isOpen={walletModalOpen} onDismiss={toggleWalletModal} minHeight={false} maxHeight={90}>
+    <Modal isOpen={walletModalOpen} onDismiss={toggleWalletModal} minHeight={false} maxHeight={90} topRight>
       <Wrapper>{getModalContent()}</Wrapper>
     </Modal>
   )

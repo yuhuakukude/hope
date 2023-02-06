@@ -10,6 +10,9 @@ import Arrow from 'assets/images/arrow-right-white.png'
 import useTheme from '../../hooks/useTheme'
 import { Text } from 'rebass'
 import { PrimaryText, SecondaryText } from '../Text'
+import { ReactComponent as Copy } from 'assets/svg/copy.svg'
+import { ReactComponent as Share } from 'assets/svg/share.svg'
+import { ReactComponent as Disconnect } from 'assets/svg/disconnect.svg'
 
 export const DivideLine = styled.div`
   border: 0.5px solid ${({ theme }) => theme.bg3};
@@ -132,17 +135,17 @@ export default function WalletDetail({
   ]
   const fakeIcon = <img src={Avatar} style={{ width: '24px', height: '24px' }} alt="" />
   return (
-    <div style={{ width: '100%', display: 'flex', alignItems: 'center', flexDirection: 'column', overflowY: 'auto' }}>
+    <div style={{ width: '100%', display: 'flex', alignItems: 'center', flexDirection: 'column', overflowY: 'scroll' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', padding: '30px' }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {fakeIcon}
           <PrimaryText style={{ marginLeft: '8px' }}>{account && shortenAddress(account)}</PrimaryText>
         </div>
         <div>
-          <AutoRowBetween gap={'10px'} style={{ color: theme.text1 }}>
-            <i className="iconfont">&#xe60a;</i>
-            <i className="iconfont">&#xe60a;</i>
-            <i className="iconfont">&#xe60a;</i>
+          <AutoRowBetween gap={'10px'} style={{ alignItems: 'center', color: theme.text1 }}>
+            <Copy style={{ width: '24px', height: '24px', padding: '3px' }} />
+            <Share style={{ width: '24px', height: '24px', padding: '3px' }} />
+            <Disconnect />
           </AutoRowBetween>
         </div>
       </div>

@@ -32,7 +32,7 @@ import Vote from './Vote'
 import VotePage from './Vote/VotePage'
 import BuyHope from './BuyHope'
 import Staking from './Staking'
-import DaoGomboc from './Dao/Gomboc'
+import DaoGomboc from './DaoGomboc'
 import DaoLocker from './Dao/Locker'
 
 import './App.css'

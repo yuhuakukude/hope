@@ -1,11 +1,11 @@
 import React, { useEffect, useCallback, useState } from 'react'
 import styled from 'styled-components'
-import { AutoColumn } from '../../../components/Column'
+import { AutoColumn } from '../../components/Column'
 import './index.scss'
 import Head from './components/Head'
 import GomChart from './components/GomChart'
 import Vote from './components/Vote'
-import GombocApi from '../../../api/gomboc.api'
+import GombocApi from '../../api/gomboc.api'
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
   width: 100%;

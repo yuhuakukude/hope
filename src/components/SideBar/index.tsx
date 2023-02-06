@@ -34,7 +34,7 @@ const SidebarIcon = styled('div')`
 
 const SidebarSelectedPre = styled(SidebarIcon)``
 const SidebarSelected = styled(SidebarIcon)`
-  background-color: ${({ theme }) => theme.bg6};
+  background-color: ${({ theme }) => theme.bg2};
   border-radius: 30px 0 0 30px;
   color: ${({ theme }) => theme.primary1};
 `
