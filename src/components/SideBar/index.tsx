@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { ReactComponent as Logo } from 'assets/svg/sidebar-logo.svg'
-import React, { useState } from 'react'
+import React from 'react'
 import Column, { AutoColumn } from '../Column'
 import { ReactComponent as Twitter } from 'assets/svg/sidebar-twitter.svg'
 import { ReactComponent as Medium } from 'assets/svg/sidebar-medium.svg'
@@ -8,6 +8,7 @@ import { ReactComponent as Telegram } from 'assets/svg/sidebar-telegram.svg'
 import { ReactComponent as Discord } from 'assets/svg/sidebar-discord.svg'
 import { ReactComponent as Email } from 'assets/svg/sidebar-email.svg'
 import { Text } from 'rebass'
+import { NavLink } from 'react-router-dom'
 
 // const SideBarTab = styled('button')``
 
@@ -32,13 +33,13 @@ const SidebarIcon = styled('div')`
   }
 `
 
-const SidebarSelectedPre = styled(SidebarIcon)``
-const SidebarSelected = styled(SidebarIcon)`
-  background-color: ${({ theme }) => theme.bg2};
-  border-radius: 30px 0 0 30px;
-  color: ${({ theme }) => theme.primary1};
-`
-const SidebarSelectedNext = styled(SidebarIcon)``
+//const SidebarSelectedPre = styled(SidebarIcon)``
+// const SidebarSelected = styled(SidebarIcon)`
+//   background-color: ${({ theme }) => theme.bg2};
+//   border-radius: 30px 0 0 30px;
+//   color: ${({ theme }) => theme.primary1};
+// `
+//const SidebarSelectedNext = styled(SidebarIcon)``
 
 const Icon = styled('i')`
   margin-left: 20px;
@@ -54,41 +55,52 @@ const MenuText = styled(Text)`
 `
 
 export default function SideBar() {
-  const [currentTab, setCurrentTab] = useState(0)
+  //const [currentTab, setCurrentTab] = useState(0)
+  //const location = useLocation()
 
-  const icons = ['&#xe607;', '&#xe609;', '&#xe606;', '&#xe605;', '&#xe608;']
+  const ROUTERS = [
+    { title: 'swap', icon: '&#xe607;', baseRouter: '/swap', router: '/swap/exchange' },
+    { title: 'swap', icon: '&#xe609;', baseRouter: '/hope', router: '/hope/staking' },
+    { title: 'swap', icon: '&#xe606;', router: '' },
+    { title: 'swap', icon: '&#xe605;', router: '' },
+    { title: 'swap', icon: '&#xe608;', router: '' }
+  ]
 
   return (
     <Bar>
       <Column style={{ width: '100%' }}>
         <Logo style={{ alignSelf: 'center', margin: '25px auto' }} />
         <Column style={{ width: '100%', paddingLeft: '22px' }}>
-          {icons.map((icon, index) => {
-            if (currentTab - 1 === index) {
-              return (
-                <SidebarSelectedPre key={index} onClick={() => setCurrentTab(index)}>
-                  <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />
-                </SidebarSelectedPre>
-              )
-            }
-            if (currentTab === index) {
-              return (
-                <SidebarSelected key={index} onClick={() => setCurrentTab(index)}>
-                  <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />{' '}
-                </SidebarSelected>
-              )
-            }
-            if (currentTab + 1 === index) {
-              return (
-                <SidebarSelectedNext key={index} onClick={() => setCurrentTab(index)}>
-                  <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />{' '}
-                </SidebarSelectedNext>
-              )
-            }
+          {ROUTERS.map(({ router, icon }, index) => {
+            // if (currentTab - 1 === index) {
+            //   return (
+            //     <SidebarSelectedPre key={index} onClick={() => setCurrentTab(index)}>
+            //       <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />
+            //     </SidebarSelectedPre>
+            //   )
+            // }
+            // if (currentTab === index) {
+            //   return (
+            //     <NavLink key={index} to={router}>
+            //       <SidebarSelected>
+            //         <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />{' '}
+            //       </SidebarSelected>
+            //     </NavLink>
+            //   )
+            // }
+            // if (currentTab + 1 === index) {
+            //   return (
+            //     <SidebarSelectedNext key={index} onClick={() => setCurrentTab(index)}>
+            //       <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />{' '}
+            //     </SidebarSelectedNext>
+            //   )
+            // }
             return (
-              <SidebarIcon key={index} onClick={() => setCurrentTab(index)}>
-                <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />{' '}
-              </SidebarIcon>
+              <NavLink key={index} to={router}>
+                <SidebarIcon key={index}>
+                  <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />{' '}
+                </SidebarIcon>
+              </NavLink>
             )
           })}
         </Column>

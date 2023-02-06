@@ -21,8 +21,8 @@ import { Button } from 'rebass/styled-components'
 const Web3StatusGeneric = styled(Button)`
   ${({ theme }) => theme.flexRowNoWrap}
   width: 100%;
+  height: 100%;
   align-items: center;
-  padding: 0.5rem;
   border-radius: 20px;
   cursor: pointer;
   user-select: none;
