@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 import { darken } from 'polished'
 import { useTranslation } from 'react-i18next'
 
@@ -221,6 +221,8 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
   const { account } = useActiveWeb3React()
   const { t } = useTranslation()
   const theme = useTheme()
+  const location = useLocation()
+  console.log('location', location)
   // const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   // const [isDark] = useDarkModeManager()
 
