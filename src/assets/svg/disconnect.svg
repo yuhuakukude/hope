@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="18px" height="18px" viewBox="0 0 18 18" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57 (83077) - https://sketch.com -->
+    <title>Disconnect@1x</title>
+    <desc>Created with Sketch.</desc>
+    <defs>
+        <rect id="path-1" x="0" y="0" width="18" height="18"></rect>
+    </defs>
+    <g id="Wallet-connect" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="Wallet-Content-Box-5" transform="translate(-1362.000000, -133.000000)">
+            <g id="Disconnect" transform="translate(1362.000000, 133.000000)">
+                <g id="编组-14">
+                    <mask id="mask-2" fill="white">
+                        <use xlink:href="#path-1"></use>
+                    </mask>
+                    <use id="蒙版" fill="#000000" fill-rule="nonzero" opacity="0" xlink:href="#path-1"></use>
+                    <g mask="url(#mask-2)" stroke-linecap="round">
+                        <g transform="translate(-1.500000, -1.500000)">
+                            <path d="M11.7401528,7.875 L15.4,7.875 C17.091372,7.875 18.4625,9.24612795 18.4625,10.9375 C18.4625,12.628872 17.091372,14 15.4,14 L11.7898894,14 L11.7898894,14 M8.28242229,14 L4.725,14 C3.03362795,14 1.6625,12.628872 1.6625,10.9375 C1.6625,9.24612795 3.03362795,7.875 4.725,7.875 L4.725,7.875 L8.2051971,7.875 L8.2051971,7.875" id="形状" stroke="#FFFFFF" stroke-width="1.2" transform="translate(10.062500, 10.937500) rotate(-45.000000) translate(-10.062500, -10.937500) "></path>
+                            <g id="编组-11" stroke="none" stroke-width="1" fill-rule="evenodd" transform="translate(15.873744, 15.626256) rotate(-225.000000) translate(-15.873744, -15.626256) translate(11.673744, 13.001256)" stroke-linejoin="round">
+                                <path d="M4.39396973,3.12613846 C4.39396973,1.04204615 4.39396973,-7.32747196e-15 4.39396973,-7.32747196e-15" id="路径-6" stroke="#FFFFFF" stroke-width="1.2"></path>
+                                <path d="M6.125,4.8355137 C7.5986758,3.3618379 8.3355137,2.625 8.3355137,2.625" id="路径-6" stroke="#FFFFFF" stroke-width="1.2"></path>
+                                <path d="M-6.82121026e-13,4.8355137 C1.4736758,3.3618379 2.2105137,2.625 2.2105137,2.625" id="路径-6备份" stroke="#FFFFFF" stroke-width="1.2" transform="translate(1.105257, 3.730257) scale(-1, 1) translate(-1.105257, -3.730257) "></path>
+                            </g>
+                            <g id="编组-11" stroke="none" stroke-width="1" fill-rule="evenodd" transform="translate(5.126256, 5.373744) rotate(-45.000000) translate(-5.126256, -5.373744) translate(0.926256, 2.748744)" stroke-linejoin="round">
+                                <path d="M4.39396973,3.12613846 C4.39396973,1.04204615 4.39396973,-7.32747196e-15 4.39396973,-7.32747196e-15" id="路径-6" stroke="#FFFFFF" stroke-width="1.2"></path>
+                                <path d="M6.125,4.8355137 C7.5986758,3.3618379 8.3355137,2.625 8.3355137,2.625" id="路径-6" stroke="#FFFFFF" stroke-width="1.2"></path>
+                                <path d="M-6.82121026e-13,4.8355137 C1.4736758,3.3618379 2.2105137,2.625 2.2105137,2.625" id="路径-6备份" stroke="#FFFFFF" stroke-width="1.2" transform="translate(1.105257, 3.730257) scale(-1, 1) translate(-1.105257, -3.730257) "></path>
+                            </g>
+                        </g>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>
