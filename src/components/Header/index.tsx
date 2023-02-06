@@ -299,7 +299,7 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
         </HeaderLinks>
       </HeaderRow>
       <HeaderControls>
-        <BuyHopeNavLink id={`buy-hope-nav-link`} to={'/buy-hope'}>
+        <BuyHopeNavLink id={`buy-hope-nav-link`} to={'/hope/buy-hope'}>
           Buy HOPE
         </BuyHopeNavLink>
         <HeaderElement>

@@ -1,4 +1,5 @@
 import { Decimal } from 'decimal.js'
+import moment from 'moment'
 // rate
 export const rate = (value: string | number, decimal?: number, isNull?: boolean) => {
   if (value || value === 0) {
@@ -83,9 +84,18 @@ export const separate = (value: number | string, formatString?: number) => {
 export const amountFormat = (value: number | string, formatString?: number) =>
   separate(numeral(value, formatString), formatString)
 
+// date
+export const formatDate = (value: any, formatString = 'YYYY-MM-DD HH:mm:ss') => {
+  if (value) {
+    return moment.unix(value).format(formatString)
+  }
+  return '-'
+}
+
 export default {
   rate,
   numeral,
   separate,
-  amountFormat
+  amountFormat,
+  formatDate
 }

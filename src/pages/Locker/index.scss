@@ -39,6 +39,73 @@
         border-radius: 20px;
         background-color: #26262C;
       }
+      .r{
+        .inp-box{
+          position: relative;
+          .input-amount {
+            width: 100%;
+            color: #fff;
+            background: none;
+            border-radius: 10px;
+            border: 1px solid #3D3D3D;
+            height: 56px;
+            padding: 0 20px 0 100px;
+            &:hover, &:focus {
+              border: 1px solid #E4C989;
+            }
+            &.error{
+              border: 1px solid #F6465D;
+            }
+          }
+          .coin-box {
+            position: absolute;
+            top: 50%;
+            left: 32px;
+            transform: translate(0, -50%);
+          }
+        }
+        .date-box{
+          .date-picker-tem{
+            width: 100%;
+            .ant-calendar-picker-input{
+              width: 100%;
+              height: 56px;
+              font-size: 16px;
+              color: #fff;
+              background-color: #26262C;
+              border-radius: 10px;
+              font-family: Arboria-Medium;
+              border: 1px solid #3D3D3D;
+              padding-left: 20px;
+              &::placeholder{
+                color: #5A5A5B;
+              }
+            }
+            .ant-calendar-picker-icon{
+              color: #fff;
+            }
+          }
+        }
+        .date-btn{
+          gap: 20px;
+          .btn-item{
+            flex: 1;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border: 1px solid #3D3D3D;
+            cursor: pointer;
+            user-select: none;
+            border-radius: 10px;
+            &.active, &:hover{
+              border-color: #E4C989;
+            }
+          }
+        }
+        .tip p{
+          line-height: 24px;
+        }
+      }
     }
   }
 }

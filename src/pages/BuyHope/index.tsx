@@ -161,7 +161,8 @@ export default function BuyHope() {
     let flag = false
     const max = currency === 'USDT' ? usdtBalance : usdcBalance
     if (pay && max) {
-      flag = max?.lessThan(pay)
+      const payAmout = (tryParseAmount(pay, currency === 'USDT' ? USDT : USDC) as TokenAmount | undefined) || ''
+      flag = max?.lessThan(payAmout)
     }
     return flag
   }, [pay, usdtBalance, usdcBalance, currency])
