@@ -5,7 +5,6 @@ import { STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
 import { useActiveWeb3React } from '../../hooks'
 import { useMultipleContractSingleData } from '../multicall/hooks'
 import { tryParseAmount } from '../swap/hooks'
-import useCurrentBlockTimestamp from '../../hooks/useCurrentBlockTimestamp'
 
 export const STAKING_GENESIS = 1600387200
 
@@ -77,7 +76,7 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
   const { chainId, account } = useActiveWeb3React()
 
   // detect if staking is ended
-  const currentBlockTimestamp = useCurrentBlockTimestamp()
+  //const currentBlockTimestamp = useCurrentBlockTimestamp()
 
   const info = useMemo(
     () =>
