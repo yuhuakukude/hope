@@ -151,7 +151,8 @@ const BuyHopeNavLink = styled(NavLink)`
   border-radius: 10px;
   background-color: rgba(30, 30, 30, 1);
   :hover {
-    color: #e4c989;
+    background-color: #e4c989;
+    color: #26262c;
   }
 `
 

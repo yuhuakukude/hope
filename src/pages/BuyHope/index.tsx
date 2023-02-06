@@ -75,6 +75,7 @@ export default function BuyHope() {
   }
 
   const onUserReceiveInput = (value: string) => {
+    console.warn('====')
     if (value && value.slice(0, 1) === '.') {
       value = `0${value}`
     }
@@ -84,8 +85,9 @@ export default function BuyHope() {
     } else {
       const resVal = new Decimal(value).div(new Decimal(rateVal)).toNumber()
       setPay(`${format.numeral(resVal, 2)}`)
-      if (`${resVal}`.split('.')[1].length > 2) {
-        onUserPayInput(`${format.numeral(resVal, 2)}`)
+      if (`${resVal}`.split('.')[1]?.length > 2) {
+        const receiveInitVal = new Decimal(`${format.numeral(resVal, 2)}`).mul(new Decimal(rateVal)).toNumber()
+        setReceive(`${format.numeral(receiveInitVal, 2)}`)
       } else {
         setReceive(value)
       }
@@ -165,8 +167,8 @@ export default function BuyHope() {
 
   const balanceAmount = useMemo(() => {
     return currency === 'USDT'
-      ? usdtBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '-'
-      : usdcBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '-'
+      ? usdtBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'
+      : usdcBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'
   }, [usdtBalance, usdcBalance, currency])
 
   const actionText = useMemo(() => {
@@ -184,13 +186,13 @@ export default function BuyHope() {
       {
         coin: 'USDT',
         dec: USDT.decimals,
-        amount: usdtBalance?.toFixed(2, { groupSeparator: ',' } ?? '-'),
+        amount: usdtBalance?.toFixed(2, { groupSeparator: ',' } ?? '--'),
         icon: 'usdt-icon'
       },
       {
         coin: 'USDC',
         dec: USDC.decimals,
-        amount: usdcBalance?.toFixed(2, { groupSeparator: ',' } ?? '-'),
+        amount: usdcBalance?.toFixed(2, { groupSeparator: ',' } ?? '--'),
         icon: 'usdc-icon'
       }
     ]
@@ -330,7 +332,7 @@ export default function BuyHope() {
             </p>
             <div className="action-box m-t-30">
               {!account ? (
-                <ButtonPrimary className="hp-button-primary" onClick={toggleWalletModal}>
+                <ButtonPrimary className="hp-button-primary text-medium font-nor" onClick={toggleWalletModal}>
                   Connect Wallet
                 </ButtonPrimary>
               ) : (
