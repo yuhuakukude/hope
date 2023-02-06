@@ -109,12 +109,12 @@ export default function App() {
               <TopLevelModals />
               <Web3ReactManager>
                 <Switch>
-                  <Route exact strict path="/swap" component={Swap} />
+                  <Route exact strict path="/swap/exchange" component={Swap} />
+                  <Route exact strict path="/swap/pools" component={Pool} />
                   <Route exact strict path="/claim" component={OpenClaimAddressModalAndRedirectToSwap} />
                   <Route exact strict path="/swap/:outputCurrency" component={RedirectToSwap} />
                   <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
                   <Route exact strict path="/find" component={PoolFinder} />
-                  <Route exact strict path="/pool" component={Pool} />
                   <Route exact strict path="/uni" component={Earn} />
                   <Route exact strict path="/vote" component={Vote} />
                   <Route exact strict path="/create" component={RedirectToAddLiquidity} />
@@ -131,9 +131,9 @@ export default function App() {
                   <Route exact strict path="/migrate/v1/:address" component={MigrateV1Exchange} />
                   <Route exact strict path="/uni/:currencyIdA/:currencyIdB" component={Manage} />
                   <Route exact strict path="/vote/:id" component={VotePage} />
-                  <Route exact strict path="/staking" component={Staking} />
-                  <Route exact strict path="/buy-hope" component={BuyHope} />
-                  <Route exact strict path="/dao-gomboc" component={DaoGomboc} />
+                  <Route exact strict path="/hope/staking" component={Staking} />
+                  <Route exact strict path="/hope/buy-hope" component={BuyHope} />
+                  <Route exact strict path="hope/gomboc" component={DaoGomboc} />
                   <Route exact strict path="/dao-locker" component={DaoLocker} />
                   <Route component={RedirectPathToSwapOnly} />
                 </Switch>

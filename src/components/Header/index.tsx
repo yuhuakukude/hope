@@ -1,12 +1,11 @@
-import React, { useState } from 'react'
-import { NavLink } from 'react-router-dom'
+import React, { useMemo, useState } from 'react'
+import { NavLink, useLocation } from 'react-router-dom'
 import { darken } from 'polished'
 import { useTranslation } from 'react-i18next'
 
 import styled from 'styled-components'
 
 import { useActiveWeb3React } from '../../hooks'
-import { ExternalLink } from '../../theme'
 
 import Row, { RowFixed } from '../Row'
 import Web3Status from '../Web3Status'
@@ -156,36 +155,36 @@ const BuyHopeNavLink = styled(NavLink)`
   }
 `
 
-const StyledExternalLink = styled(ExternalLink).attrs({
-  activeClassName
-})<{ isActive?: boolean }>`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: left;
-  outline: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: ${({ theme }) => theme.text2};
-  font-size: 1rem;
-  padding-bottom: 1rem;
-  width: fit-content;
-  margin: 0 12px;
-  font-weight: 500;
-
-  &.${activeClassName} {
-    font-weight: 600;
-    border-bottom: 3px solid ${({ theme }) => theme.primary1};
-    color: ${({ theme }) => theme.text1};
-  }
-
-  :hover,
-  :focus {
-    color: ${({ theme }) => darken(0.1, theme.text1)};
-  }
-
-  ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-      display: none;
-`}
-`
+// const StyledExternalLink = styled(ExternalLink).attrs({
+//   activeClassName
+// })<{ isActive?: boolean }>`
+//   ${({ theme }) => theme.flexRowNoWrap}
+//   align-items: left;
+//   outline: none;
+//   cursor: pointer;
+//   text-decoration: none;
+//   color: ${({ theme }) => theme.text2};
+//   font-size: 1rem;
+//   padding-bottom: 1rem;
+//   width: fit-content;
+//   margin: 0 12px;
+//   font-weight: 500;
+//
+//   &.${activeClassName} {
+//     font-weight: 600;
+//     border-bottom: 3px solid ${({ theme }) => theme.primary1};
+//     color: ${({ theme }) => theme.text1};
+//   }
+//
+//   :hover,
+//   :focus {
+//     color: ${({ theme }) => darken(0.1, theme.text1)};
+//   }
+//
+//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
+//       display: none;
+// `}
+// `
 
 export const StyledMenuButton = styled.button`
   position: relative;
@@ -222,6 +221,24 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
   const { account } = useActiveWeb3React()
   const { t } = useTranslation()
   const theme = useTheme()
+  const location = useLocation()
+  const headerRouters = useMemo(() => {
+    if (location?.pathname?.startsWith('/swap')) {
+      return [
+        { id: 'swap-nav-link', title: 'Swap', router: '/swap/exchange' },
+        { id: 'pool-nav-link', title: 'Pools', router: '/swap/pools' },
+        { id: 'stake-nav-link', title: 'Mint', router: '/swap/mining' }
+      ]
+    }
+    if (location?.pathname?.startsWith('/hope')) {
+      return [
+        { id: 'hope-nav-link', title: 'Staking', router: '/hope/staking' },
+        { id: 'pool-nav-link', title: 'Buy Hope', router: '/hope/buy-hope' },
+        { id: 'stake-nav-link', title: 'Gomboc', router: '/hope/gomboc' }
+      ]
+    }
+    return []
+  }, [location])
   // const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   // const [isDark] = useDarkModeManager()
 
@@ -245,31 +262,38 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
             })}
           {!headers && (
             <>
-              <StyledNavLink id={`swap-nav-link`} to={'/swap'}>
-                {t('swap')}
-              </StyledNavLink>
-              <StyledNavLink
-                id={`pool-nav-link`}
-                to={'/pool'}
-                isActive={(match, { pathname }) =>
-                  Boolean(match) ||
-                  pathname.startsWith('/add') ||
-                  pathname.startsWith('/remove') ||
-                  pathname.startsWith('/create') ||
-                  pathname.startsWith('/find')
-                }
-              >
-                {t('pool')}
-              </StyledNavLink>
-              <StyledNavLink id={`stake-nav-link`} to={'/uni'}>
-                UNI
-              </StyledNavLink>
-              <StyledNavLink id={`stake-nav-link`} to={'/vote'}>
-                Vote
-              </StyledNavLink>
-              <StyledExternalLink id={`stake-nav-link`} href={'https://uniswap.info'}>
-                Charts <span style={{ fontSize: '11px' }}>↗</span>
-              </StyledExternalLink>
+              {headerRouters.map(({ title, router }) => {
+                return (
+                  <StyledNavLink key={title} id={`swap-nav-link`} to={router}>
+                    {title}
+                  </StyledNavLink>
+                )
+              })}
+              {/*<StyledNavLink id={`swap-nav-link`} to={'/swap'}>*/}
+              {/*  {t('swap')}*/}
+              {/*</StyledNavLink>*/}
+              {/*<StyledNavLink*/}
+              {/*  id={`pool-nav-link`}*/}
+              {/*  to={'/pool'}*/}
+              {/*  isActive={(match, { pathname }) =>*/}
+              {/*    Boolean(match) ||*/}
+              {/*    pathname.startsWith('/add') ||*/}
+              {/*    pathname.startsWith('/remove') ||*/}
+              {/*    pathname.startsWith('/create') ||*/}
+              {/*    pathname.startsWith('/find')*/}
+              {/*  }*/}
+              {/*>*/}
+              {/*  {t('pool')}*/}
+              {/*</StyledNavLink>*/}
+              {/*<StyledNavLink id={`stake-nav-link`} to={'/uni'}>*/}
+              {/*  UNI*/}
+              {/*</StyledNavLink>*/}
+              {/*<StyledNavLink id={`stake-nav-link`} to={'/vote'}>*/}
+              {/*  Vote*/}
+              {/*</StyledNavLink>*/}
+              {/*<StyledExternalLink id={`stake-nav-link`} href={'https://uniswap.info'}>*/}
+              {/*  Charts <span style={{ fontSize: '11px' }}>↗</span>*/}
+              {/*</StyledExternalLink>*/}
             </>
           )}
         </HeaderLinks>
