@@ -43,3 +43,23 @@
     }
   }
 }
+
+// select
+.ant-select-dropdown {
+  background: #3D3E46;
+  .ant-select-dropdown-menu {
+    .ant-select-dropdown-menu-item {
+      height: 40px;
+      color: #fff;
+      line-height: 30px;
+    }
+    .ant-select-dropdown-menu-item-selected {
+      background: #E4C989;
+      color: #26262C;
+    }
+    .ant-select-dropdown-menu-item-active {
+      background: #E4C989;
+      color: #26262C;
+    }
+  }
+}
