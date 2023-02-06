@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import './index.scss'
 import dayjs from 'dayjs'
-// import { Tooltip } from 'antd'
+import { Tooltip } from 'antd'
 
 interface VoteProps {
   votiingData: any
@@ -73,9 +73,9 @@ const Vote = ({ votiingData }: VoteProps) => {
       </p>
       <p className="text-center text-normal m-t-20">
         Voting period ends
-        {/* <Tooltip title="tip mes">
+        <Tooltip title="tip mes">
           <i className="iconfont text-normal m-l-8 cursor-select">&#xe613;</i>
-        </Tooltip> */}
+        </Tooltip>
       </p>
       <div className="end-time-box flex m-t-20 w-100">
         <div className="flex-1">

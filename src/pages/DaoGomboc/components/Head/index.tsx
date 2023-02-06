@@ -1,6 +1,6 @@
 import React from 'react'
 import './index.scss'
-import headImg1 from '../../../../../assets/images/ahp/icon-submit.png'
+import headImg1 from '../../../../assets/images/ahp/icon-submit.png'
 
 /**
  *
