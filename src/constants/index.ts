@@ -1,7 +1,7 @@
 import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk'
 import { AbstractConnector } from '@web3-react/abstract-connector'
 
-import { fortmatic, injected, portis, walletconnect, walletlink } from '../connectors'
+import { injected, walletconnect } from '../connectors'
 
 export const ROUTER_ADDRESS = '0x83F5c784133cB7Cf9249aFa98310032Bff9d17fa'
 
@@ -195,42 +195,42 @@ export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
     href: null,
     color: '#4196FC',
     mobile: true
-  },
-  WALLET_LINK: {
-    connector: walletlink,
-    name: 'Coinbase Wallet',
-    iconName: 'coinbaseWalletIcon.svg',
-    description: 'Use Coinbase Wallet app on mobile device',
-    href: null,
-    color: '#315CF5'
-  },
-  COINBASE_LINK: {
-    name: 'Open in Coinbase Wallet',
-    iconName: 'coinbaseWalletIcon.svg',
-    description: 'Open in Coinbase Wallet app.',
-    href: 'https://go.cb-w.com/mtUDhEZPy1',
-    color: '#315CF5',
-    mobile: true,
-    mobileOnly: true
-  },
-  FORTMATIC: {
-    connector: fortmatic,
-    name: 'Fortmatic',
-    iconName: 'fortmaticIcon.png',
-    description: 'Login using Fortmatic hosted wallet',
-    href: null,
-    color: '#6748FF',
-    mobile: true
-  },
-  Portis: {
-    connector: portis,
-    name: 'Portis',
-    iconName: 'portisIcon.png',
-    description: 'Login using Portis hosted wallet',
-    href: null,
-    color: '#4A6C9B',
-    mobile: true
   }
+  // WALLET_LINK: {
+  //   connector: walletlink,
+  //   name: 'Coinbase Wallet',
+  //   iconName: 'coinbaseWalletIcon.svg',
+  //   description: 'Use Coinbase Wallet app on mobile device',
+  //   href: null,
+  //   color: '#315CF5'
+  // },
+  // COINBASE_LINK: {
+  //   name: 'Open in Coinbase Wallet',
+  //   iconName: 'coinbaseWalletIcon.svg',
+  //   description: 'Open in Coinbase Wallet app.',
+  //   href: 'https://go.cb-w.com/mtUDhEZPy1',
+  //   color: '#315CF5',
+  //   mobile: true,
+  //   mobileOnly: true
+  // },
+  // FORTMATIC: {
+  //   connector: fortmatic,
+  //   name: 'Fortmatic',
+  //   iconName: 'fortmaticIcon.png',
+  //   description: 'Login using Fortmatic hosted wallet',
+  //   href: null,
+  //   color: '#6748FF',
+  //   mobile: true
+  // },
+  // Portis: {
+  //   connector: portis,
+  //   name: 'Portis',
+  //   iconName: 'portisIcon.png',
+  //   description: 'Login using Portis hosted wallet',
+  //   href: null,
+  //   color: '#4A6C9B',
+  //   mobile: true
+  // }
 }
 
 export const NetworkContextName = 'NETWORK'

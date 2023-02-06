@@ -13,13 +13,16 @@ import { SUPPORTED_WALLETS } from '../../constants'
 import usePrevious from '../../hooks/usePrevious'
 import { ApplicationModal } from '../../state/application/actions'
 import { useModalOpen, useWalletModalToggle } from '../../state/application/hooks'
-import { ExternalLink } from '../../theme'
+// import { ExternalLink } from '../../theme'
 
 import Modal from '../Modal'
 import Option from './Option'
 import PendingView from './PendingView'
 import TransactionModal from './TransactionModal'
 import WalletDetail from './WalletDetail'
+import { Checkbox } from 'antd'
+import useTheme from '../../hooks/useTheme'
+import { PrimaryText } from '../Text'
 
 const CloseIcon = styled.div`
   position: absolute;
@@ -44,7 +47,7 @@ const Wrapper = styled.div`
   padding: 0;
   width: 500px;
   // position: fixed;
-  // background: ${({ theme }) => theme.bg1};
+    // background: ${({ theme }) => theme.bg1};
   // border-radius: 20px;
   // top: 60px;
   // right: 20px;
@@ -89,21 +92,10 @@ const UpperSection = styled.div`
   }
 `
 
-const Blurb = styled.div`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-  margin-top: 2rem;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    margin: 1rem;
-    font-size: 12px;
-  `};
-`
-
 const OptionGrid = styled.div`
   display: grid;
   grid-gap: 10px;
+  margin-top: 15px;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     grid-template-columns: 1fr;
     grid-gap: 10px;
@@ -147,6 +139,9 @@ export default function WalletModal({
   const previousAccount = usePrevious(account)
 
   const [showTransaction, setShowTransaction] = useState(false)
+  const theme = useTheme()
+  const [agreeTerms, isAgreeTerms] = useState(false)
+  const [agreeTermsError, isAgreeTermsError] = useState(false)
 
   // close on connection, when logged out before
   useEffect(() => {
@@ -281,9 +276,14 @@ export default function WalletModal({
           <Option
             id={`connect-${key}`}
             onClick={() => {
-              option.connector === connector
-                ? setWalletView(WALLET_VIEWS.ACCOUNT)
-                : !option.href && tryActivation(option.connector)
+              if (!agreeTerms) {
+                isAgreeTermsError(true)
+              } else {
+                isAgreeTermsError(false)
+                option.connector === connector
+                  ? setWalletView(WALLET_VIEWS.ACCOUNT)
+                  : !option.href && tryActivation(option.connector)
+              }
             }}
             key={key}
             active={option.connector === connector}
@@ -353,6 +353,26 @@ export default function WalletModal({
           </HeaderRow>
         )}
         <ContentWrapper>
+          {walletView !== WALLET_VIEWS.PENDING && (
+            <div>
+              <div style={{ color: 'white', marginBottom: '10px', display: 'flex' }}>
+                <Checkbox
+                  value={agreeTerms}
+                  onChange={e => {
+                    isAgreeTerms(e.target.checked)
+                  }}
+                />
+                <PrimaryText style={{ marginLeft: '10px', lineHeight: '1.2' }}>
+                  I have read, understand, and agree to the{' '}
+                  <span style={{ color: theme.primary1 }}>Terms of Service</span>
+                  and <span style={{ color: theme.primary1 }}>Privacy Policy</span>
+                </PrimaryText>
+              </div>
+              {agreeTermsError && !agreeTerms && (
+                <p style={{ color: theme.red1, marginLeft: '25px' }}>Agreement is required to login</p>
+              )}
+            </div>
+          )}
           {walletView === WALLET_VIEWS.PENDING ? (
             <PendingView
               connector={pendingWallet}
@@ -362,12 +382,6 @@ export default function WalletModal({
             />
           ) : (
             <OptionGrid>{getOptions()}</OptionGrid>
-          )}
-          {walletView !== WALLET_VIEWS.PENDING && (
-            <Blurb>
-              <span>New to Ethereum? &nbsp;</span>{' '}
-              <ExternalLink href="https://ethereum.org/wallets/">Learn more about wallets</ExternalLink>
-            </Blurb>
           )}
         </ContentWrapper>
       </UpperSection>

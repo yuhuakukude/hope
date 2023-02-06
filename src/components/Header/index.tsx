@@ -312,7 +312,7 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
               </i>
             )}
           </div> */}
-          <AccountElement active={!!account} style={{ pointerEvents: 'auto', color: theme.text1 }}>
+          <AccountElement active={!!account} style={{ pointerEvents: 'auto', color: theme.text1, marginRight: '30px' }}>
             <div style={{ paddingLeft: '14px', paddingRight: '14px', display: 'flex', alignItems: 'center' }}>
               <div
                 style={{
