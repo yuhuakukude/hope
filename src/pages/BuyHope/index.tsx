@@ -152,15 +152,16 @@ export default function BuyHope() {
         initAmount()
       })
       .catch((err: any) => {
+        setAttemptingTxn(false)
         setErrorMessage(err.message)
       })
   }, [account, inputAmount, library, chainId, currency, toBuyHope])
 
   const isMaxDisabled = useMemo(() => {
     let flag = false
-    const max = currency === 'USDT' ? usdtBalance?.toFixed(2) : usdcBalance?.toFixed(2)
+    const max = currency === 'USDT' ? usdtBalance : usdcBalance
     if (pay && max) {
-      flag = pay > (max || 0)
+      flag = max?.lessThan(pay)
     }
     return flag
   }, [pay, usdtBalance, usdcBalance, currency])
@@ -172,12 +173,12 @@ export default function BuyHope() {
   }, [usdtBalance, usdcBalance, currency])
 
   const actionText = useMemo(() => {
-    if (!inputAmount) {
-      return `Approve ${currency}`
-    } else if (isMaxDisabled) {
+    if (isMaxDisabled) {
       return `Insufficient ${currency} balance`
+    } else if (!inputAmount) {
+      return `Enter Amount`
     } else {
-      return approvalState === ApprovalState.NOT_APPROVED ? 'Confirm in your wallet' : 'Approve'
+      return approvalState === ApprovalState.NOT_APPROVED ? 'Confirm in your wallet' : 'Supply'
     }
   }, [inputAmount, isMaxDisabled, approvalState, currency])
 
@@ -338,7 +339,8 @@ export default function BuyHope() {
               ) : (
                 <ActionButton
                   pending={approvalState === ApprovalState.PENDING}
-                  disableAction={isMaxDisabled || !inputAmount}
+                  pendingText={'Approving'}
+                  disableAction={isMaxDisabled || !inputAmount || balanceAmount === '--'}
                   actionText={actionText}
                   onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : buyHopeCallback}
                 />
