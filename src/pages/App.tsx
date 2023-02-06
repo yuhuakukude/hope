@@ -33,7 +33,7 @@ import VotePage from './Vote/VotePage'
 import BuyHope from './BuyHope'
 import Staking from './Staking'
 import DaoGomboc from './DaoGomboc'
-import DaoLocker from './Dao/Locker'
+import DaoLocker from './Locker'
 
 import './App.css'
 import '../assets/style/index.scss'
