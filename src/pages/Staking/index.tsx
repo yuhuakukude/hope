@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { Button } from 'antd'
 import { AutoColumn } from '../../components/Column'
 import NumericalInput from '../../components/NumericalInput'
+import QuestionHelper from '../../components/QuestionHelper'
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { HOPE, LT, PERMIT2_ADDRESS, ST_HOPE, STAKING_HOPE_GOMBOC_ADDRESS } from '../../constants'
@@ -418,7 +419,10 @@ export default function Staking() {
               <HopeCard title={'Stake'}>
                 <div className="flex">
                   <div className="apy-box">
-                    <p className="text-white font-nor">APY</p>
+                    <p className="text-white font-nor flex ai-center">
+                      APR
+                      <QuestionHelper text="The APY value is calculated based on the current data, which consists of the reward tokens by hold stHOPE. " />
+                    </p>
                     <h3 className="text-success font-28 font-bold m-t-10">{format.rate(apyVal)}</h3>
                   </div>
                   <div>
@@ -488,6 +492,15 @@ export default function Staking() {
                       </Button>
                     </div>
                   )}
+                  <div className="action-box m-t-20">
+                    {!account ? (
+                      <ButtonPrimary className="hp-button-primary" onClick={toggleWalletModal}>
+                        Connect Wallet
+                      </ButtonPrimary>
+                    ) : (
+                      <ButtonPrimary className="hp-button-primary">Get yield up to 2.5x</ButtonPrimary>
+                    )}
+                  </div>
                 </HopeCard>
               </div>
             </Col>
