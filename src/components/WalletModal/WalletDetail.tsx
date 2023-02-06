@@ -13,6 +13,9 @@ import { PrimaryText, SecondaryText } from '../Text'
 import { ReactComponent as Copy } from 'assets/svg/copy.svg'
 import { ReactComponent as Share } from 'assets/svg/share.svg'
 import { ReactComponent as Disconnect } from 'assets/svg/disconnect.svg'
+import Test1 from 'assets/images/test1.jpg'
+import Test2 from 'assets/images/test2.jpg'
+import Test3 from 'assets/images/test3.jpg'
 
 export const DivideLine = styled.div`
   border: 0.5px solid ${({ theme }) => theme.bg3};
@@ -100,18 +103,18 @@ export default function WalletDetail({
   const balance = '1.001000'
   const fakeBalanceData: BalanceData[] = [
     {
-      icon: Avatar,
+      icon: Test1,
       name: 'HOPE',
       balance: '10,002,000.00'
     },
     {
-      icon: Avatar,
+      icon: Test2,
       name: 'stHOPE',
       balance: '10,002,000.00',
       statues: 'Staking'
     },
     {
-      icon: Avatar,
+      icon: Test3,
       name: 'LT',
       balance: '109,010,002,000.00'
     }
