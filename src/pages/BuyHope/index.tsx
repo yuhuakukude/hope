@@ -45,7 +45,7 @@ export default function BuyHope() {
   const [pay, setPay] = useState('')
   const [receive, setReceive] = useState('')
   const [txHash, setTxHash] = useState<string>('')
-  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -154,16 +154,24 @@ export default function BuyHope() {
       deadline
     }
     const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
-    const signature = await library.getSigner(account)._signTypedData(domain, types, values)
-    toBuyHope(inputAmount, nonce, deadline, signature)
-      .then(hash => {
-        setAttemptingTxn(false)
-        setTxHash(hash)
-        initAmount()
+    library
+      .getSigner(account)
+      ._signTypedData(domain, types, values)
+      .then(signature => {
+        toBuyHope(inputAmount, nonce, deadline, signature)
+          .then(hash => {
+            setAttemptingTxn(false)
+            setTxHash(hash)
+            initAmount()
+          })
+          .catch((err: any) => {
+            setAttemptingTxn(false)
+            setErrorStatus({ code: err?.code, message: err.message })
+          })
       })
-      .catch((err: any) => {
+      .catch(error => {
         setAttemptingTxn(false)
-        setErrorMessage(err.message)
+        setErrorStatus({ code: error?.code, message: error.message })
       })
   }, [account, inputAmount, library, chainId, currency, toBuyHope])
 
@@ -230,8 +238,16 @@ export default function BuyHope() {
   }
 
   const confirmationContent = useCallback(() => {
-    return errorMessage && <TransactionErrorContent onDismiss={() => setShowConfirm(false)} message={errorMessage} />
-  }, [errorMessage])
+    return (
+      errorStatus && (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
+      )
+    )
+  }, [errorStatus])
 
   useEffect(() => {
     const uDec = currency === 'USDT' ? USDT.decimals : USDC.decimals

@@ -23,12 +23,14 @@ import { V1_EXCHANGE_ABI, V1_FACTORY_ABI, V1_FACTORY_ADDRESSES } from '../consta
 import { getContract } from '../utils'
 import { useActiveWeb3React } from './index'
 
-import { STAKING_HOPE_GOMBOC_ADDRESS, LT_MINTER_ADDRESS, TOKEN_SALE_ADDRESS, VELT_TOKEN_ADDRESS } from '../constants'
+import { STAKING_HOPE_GOMBOC_ADDRESS, LT_MINTER_ADDRESS, TOKEN_SALE_ADDRESS, VELT_TOKEN_ADDRESS, GOMBOC_CONTROLLER_ADDRESS } from '../constants'
 import STAKING_HOPE_GOMBOC_ABI from '../constants/abis/ahp/STAKING_HOPE_GOMBOC.json'
 import TOKEN_SALE_ABI from '../constants/abis/ahp/TOKEN_SALE.json'
 import LT_MINTER_ABI from '../constants/abis/ahp/LT_MINTER.json'
 import PERMIT2_ABI from '../constants/abis/ahp/PERMIT2.json'
 import VELT_TOKEN_ABI from '../constants/abis/ahp/VELT_TOKEN.json'
+import GOMBOC_CONTROLLER_ABI from '../constants/abis/ahp/GOMBOC_CONTROLLER.json'
+
 // returns null on errors
 function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
   const { library, account } = useActiveWeb3React()
@@ -148,10 +150,10 @@ export function usePermit2Contract(): Contract | null {
   return useContract(chainId && PERMIT2_ADDRESS[chainId ?? 1], PERMIT2_ABI.abi, true)
 }
 
-// export function useContract(): Contract | null {
-//   const { chainId } = useActiveWeb3React()
-//   return useContract(chainId && PERMIT2_ADDRESS[chainId ?? 1], PERMIT2_ABI.abi, true)
-// }
+export function useGomConContract(): Contract | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(chainId && GOMBOC_CONTROLLER_ADDRESS[chainId ?? 1], GOMBOC_CONTROLLER_ABI.abi, true)
+}
 
 // buy hope
 export function useBuyHopeContract(): Contract | null {

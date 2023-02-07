@@ -1,7 +1,6 @@
 import { useCallback } from 'react'
 import { useSingleCallResult } from '../../state/multicall/hooks'
 import { useStakingHopeGombocContract, useLtMinterContract } from '../useContract'
-// import { useStakingHopeGombocContract } from '../useContract'
 import { useActiveWeb3React } from '../index'
 import JSBI from 'jsbi'
 import { CurrencyAmount } from '@uniswap/sdk'

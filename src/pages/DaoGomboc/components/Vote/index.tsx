@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo } from 'react'
+import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react'
 import './index.scss'
 import dayjs from 'dayjs'
 import QuestionHelper from '../../../../components/QuestionHelper'
@@ -7,9 +7,16 @@ import { ButtonPrimary } from '../../../../components/Button'
 import { useActiveWeb3React } from '../../../../hooks'
 import { useWalletModalToggle } from '../../../../state/application/hooks'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
+import { useGomConContract } from '../../../../hooks/useContract'
 import { VELT } from '../../../../constants'
 import { Select } from 'antd'
-import { JSBI } from '@uniswap/sdk'
+import { useToVote } from '../../../../hooks/ahp/useGomVote'
+import { JSBI, Percent, Token } from '@uniswap/sdk'
+import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
+import ActionButton from '../../../../components/Button/ActionButton'
+import TransactionConfirmationModal, {
+  TransactionErrorContent
+} from '../../../../components/TransactionConfirmationModal'
 
 interface VoteProps {
   votiingData: any
@@ -19,8 +26,20 @@ interface VoteProps {
 const Vote = ({ votiingData, gombocList }: VoteProps) => {
   const { account, chainId } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
+  const gomConContract = useGomConContract()
+  const { toVote } = useToVote()
+  const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
   const veLtBal = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const [voteAmount, setVoteAmount] = useState('')
+  const [unUseRateVal, setUnUseRateVal] = useState('')
+
+  // modal and loading
+  const [showConfirm, setShowConfirm] = useState<boolean>(false)
+  const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
+  // txn values
+  const [txHash, setTxHash] = useState<string>('')
+  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+
   const { Option } = Select
   const endDate = dayjs()
     .add(10, 'day')
@@ -81,22 +100,80 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
     }
   }, [gombocList])
 
-  // const mulArg = useMemo(() => {
-  //   if (selList) {
-  //     const arr: any = []
-  //     selList.forEach((e: any) => {
-  //       const item = [account, e.value]
-  //       arr.push(item)
-  //     })
-  //     return arr
-  //   } else {
-  //     return []
-  //   }
-  // }, [selList])
+  const mulArg = useMemo(() => {
+    if (selList && account) {
+      const arr: any = []
+      selList.forEach((e: any) => {
+        const item = [account, e.value]
+        arr.push(item)
+      })
+      return arr
+    } else {
+      return []
+    }
+  }, [selList, account])
 
-  // const allVoteData = useSingleContractMultipleData(govContract, 'voteUserSlopes', mulArg)
+  const voteInputError = useMemo(() => {
+    if (amount && (Number(amount) > 100 || Number(amount) === 0)) {
+      return 'Insufficient Value'
+    }
+    return undefined
+  }, [amount])
 
-  // console.log(allVoteData)
+  const getActionText = useMemo(() => {
+    let res = 'Select a Gömböc for Vote'
+    if (voteInputError) {
+      res = voteInputError
+    } else if (!curGomAddress) {
+      res = 'Select a Gömböc for Vote'
+    } else if (!amount) {
+      res = 'Enter amount'
+    } else {
+      res = 'Confirm Vote'
+    }
+    return res
+  }, [voteInputError, amount, curGomAddress])
+
+  const allVoteData = useSingleContractMultipleData(gomConContract, 'voteUserSlopes', mulArg)
+
+  const handleVoteData = useCallback(() => {
+    if (allVoteData && allVoteData.length > 0) {
+      let unUseVal = JSBI.BigInt(10000)
+      allVoteData.forEach((e: any) => {
+        const po = (e.power && e.power.toString()) || 0
+        unUseVal = JSBI.subtract(unUseVal, JSBI.BigInt(po))
+      })
+      const ra = new Percent(unUseVal, JSBI.BigInt(10000))
+      if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
+        setUnUseRateVal(ra.toFixed(2))
+      }
+    }
+  }, [allVoteData])
+
+  const toVoteCallback = useCallback(async () => {
+    if (!amount || !account) return
+    setCurToken(undefined)
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+    const argAmount = Math.floor(Number(amount) * 100)
+    console.log(curGomAddress)
+    toVote(curGomAddress, argAmount)
+      .then((hash: any) => {
+        setAttemptingTxn(false)
+        setTxHash(hash)
+        setAmount('')
+        setCurGomAddress('')
+      })
+      .catch((err: any) => {
+        setAttemptingTxn(false)
+        console.log(err)
+        setErrorMessage(err.message)
+      })
+  }, [amount, curGomAddress, account, toVote])
+
+  useEffect(() => {
+    handleVoteData()
+  }, [allVoteData, handleVoteData])
 
   useEffect((): any => {
     cd.current = votiingData.votingEndSeconds
@@ -122,102 +199,127 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
     setCurGomAddress(val)
   }
 
+  const confirmationContent = useCallback(
+    () =>
+      errorMessage ? (
+        <TransactionErrorContent onDismiss={() => setShowConfirm(false)} message={errorMessage} />
+      ) : (
+        <div></div>
+      ),
+    [errorMessage]
+  )
+
   return (
-    <div className="gom-vote-box">
-      <h3 className="font-bolder text-white font-20">Proposed Gömböc Weight Changes</h3>
-      <p className="m-t-20 text-white lh15">
-        - Your vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.
-      </p>
-      <p className="m-t-10 text-white lh15">
-        - Voting power is set at the time of the vote. If you get more veLT later, resubmit your vote to use your
-        increased power.
-      </p>
-      <p className="m-t-10 text-white lh15">
-        - Votes are time locked for 10 days. If you vote now, no edits can be made until{' '}
-        <span className="text-primary">{endDate}</span>.
-      </p>
-      <div className="text-center text-normal m-t-20 flex jc-center ai-center">
-        Voting period ends
-        <QuestionHelper text="Voting period ends" />
-      </div>
-      <div className="end-time-box flex m-t-20 w-100">
-        <div className="flex-1">
-          <p className="text-center text-gray">Day</p>
-          <div className="flex jc-center m-t-8">
-            <div className="end-item">{cd.current > 0 && endTimeData.d ? endTimeData.d : '00'}</div>
-          </div>
-        </div>
-        <div className="flex-1">
-          <p className="text-center text-gray">Hour</p>
-          <div className="flex jc-center m-t-8">
-            <div className="end-item">{cd.current > 0 && endTimeData.h ? endTimeData.h : '00'}</div>
-          </div>
-        </div>
-        <div className="flex-1">
-          <p className="text-center text-gray">Min</p>
-          <div className="flex jc-center m-t-8">
-            <div className="end-item">{cd.current > 0 && endTimeData.m ? endTimeData.m : '00'}</div>
-          </div>
-        </div>
-        <div className="flex-1">
-          <p className="text-center text-gray">Sec</p>
-          <div className="flex jc-center m-t-8">
-            <div className="end-item">{cd.current > 0 && endTimeData.s ? endTimeData.s : '00'}</div>
-          </div>
-        </div>
-      </div>
-      <div className="form-box m-t-20">
-        <p className="text-normal">Select a Gömböc </p>
-        <Select
-          value={curGomAddress}
-          onChange={(val: string) => {
-            changeSel(val)
-          }}
-          className="hp-select m-t-10"
-        >
-          {selList.map((data: any, index: number) => {
-            return (
-              <Option key={index} value={data.value}>
-                {data.label}
-              </Option>
-            )
-          })}
-        </Select>
-        <div className="flex jc-between m-t-30 m-b-10">
-          <span className="text-normal">Vote weight:</span>
-          <p>
-            unallocated votes : 80.88%
-            <span className="text-primary m-l-5">Lock</span>
-          </p>
-        </div>
-        <div className="hp-amount-box">
-          <NumericalInput
-            className={['hp-amount'].join(' ')}
-            value={amount}
-            decimals={2}
-            align={'right'}
-            onUserInput={val => {
-              changeAmount(val)
-            }}
-          />
-          <span className="input-tip">% of your voting power</span>
-        </div>
-        <p className="text-normal m-t-10">
-          {voteAmount || '--'} of your voting power will be allocated to this gömböc.
+    <>
+      <TransactionConfirmationModal
+        isOpen={showConfirm}
+        onDismiss={() => setShowConfirm(false)}
+        attemptingTxn={attemptingTxn}
+        hash={txHash}
+        content={confirmationContent}
+        pendingText={''}
+        currencyToAdd={curToken}
+        isShowSubscribe={false}
+      />
+      <div className="gom-vote-box">
+        <h3 className="font-bolder text-white font-20">Proposed Gömböc Weight Changes</h3>
+        <p className="m-t-20 text-white lh15">
+          - Your vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.
         </p>
-        <div className="action-box m-t-40">
-          {!account ? (
-            <ButtonPrimary className="hp-button-primary" onClick={toggleWalletModal}>
-              Connect Wallet
-            </ButtonPrimary>
-          ) : (
-            <ButtonPrimary className="hp-button-primary" onClick={toggleWalletModal}>
-              Confirm Vote
-            </ButtonPrimary>
-          )}
+        <p className="m-t-10 text-white lh15">
+          - Voting power is set at the time of the vote. If you get more veLT later, resubmit your vote to use your
+          increased power.
+        </p>
+        <p className="m-t-10 text-white lh15">
+          - Votes are time locked for 10 days. If you vote now, no edits can be made until{' '}
+          <span className="text-primary">{endDate}</span>.
+        </p>
+        <div className="text-center text-normal m-t-20 flex jc-center ai-center">
+          Voting period ends
+          <QuestionHelper text="Voting period ends" />
+        </div>
+        <div className="end-time-box flex m-t-20 w-100">
+          <div className="flex-1">
+            <p className="text-center text-gray">Day</p>
+            <div className="flex jc-center m-t-8">
+              <div className="end-item">{cd.current > 0 && endTimeData.d ? endTimeData.d : '00'}</div>
+            </div>
+          </div>
+          <div className="flex-1">
+            <p className="text-center text-gray">Hour</p>
+            <div className="flex jc-center m-t-8">
+              <div className="end-item">{cd.current > 0 && endTimeData.h ? endTimeData.h : '00'}</div>
+            </div>
+          </div>
+          <div className="flex-1">
+            <p className="text-center text-gray">Min</p>
+            <div className="flex jc-center m-t-8">
+              <div className="end-item">{cd.current > 0 && endTimeData.m ? endTimeData.m : '00'}</div>
+            </div>
+          </div>
+          <div className="flex-1">
+            <p className="text-center text-gray">Sec</p>
+            <div className="flex jc-center m-t-8">
+              <div className="end-item">{cd.current > 0 && endTimeData.s ? endTimeData.s : '00'}</div>
+            </div>
+          </div>
+        </div>
+        <div className="form-box m-t-20">
+          <p className="text-normal">Select a Gömböc </p>
+          <Select
+            value={curGomAddress}
+            onChange={(val: string) => {
+              changeSel(val)
+            }}
+            className="hp-select m-t-10"
+          >
+            {selList.map((data: any, index: number) => {
+              return (
+                <Option key={index} value={data.value}>
+                  {data.label}
+                </Option>
+              )
+            })}
+          </Select>
+          <div className="flex jc-between m-t-30 m-b-10">
+            <span className="text-normal">Vote weight:</span>
+            <p>
+              unallocated votes : {unUseRateVal}%<span className="text-primary m-l-5">Lock</span>
+            </p>
+          </div>
+          <div className="hp-amount-box">
+            <NumericalInput
+              className={['hp-amount'].join(' ')}
+              value={amount}
+              decimals={2}
+              align={'right'}
+              onUserInput={val => {
+                changeAmount(val)
+              }}
+            />
+            <span className="input-tip">% of your voting power</span>
+          </div>
+          <p className="text-normal m-t-10">
+            {voteAmount || '--'} of your voting power will be allocated to this gömböc.
+          </p>
+          <div className="action-box m-t-40">
+            {!account ? (
+              <ButtonPrimary className="hp-button-primary" onClick={toggleWalletModal}>
+                Connect Wallet
+              </ButtonPrimary>
+            ) : (
+              <ActionButton
+                error={voteInputError}
+                // pending={approvalState === ApprovalState.PENDING}
+                disableAction={!amount || !curGomAddress}
+                actionText={getActionText}
+                onAction={toVoteCallback}
+              />
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   )
 }
 
