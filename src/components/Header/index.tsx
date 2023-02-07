@@ -233,8 +233,13 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
     if (location?.pathname?.startsWith('/hope')) {
       return [
         { id: 'hope-nav-link', title: 'Staking', router: '/hope/staking' },
-        { id: 'pool-nav-link', title: 'Buy Hope', router: '/hope/buy-hope' },
-        { id: 'stake-nav-link', title: 'Gomboc', router: '/hope/gomboc' }
+        { id: 'pool-nav-link', title: 'Buy Hope', router: '/hope/buy-hope' }
+      ]
+    }
+    if (location?.pathname?.startsWith('/dao')) {
+      return [
+        { id: 'hope-nav-link', title: 'Gomboc', router: '/dao/gomboc' },
+        { id: 'pool-nav-link', title: 'LOcker', router: '/dao/locker' }
       ]
     }
     return []

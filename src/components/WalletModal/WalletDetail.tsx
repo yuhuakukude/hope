@@ -1,16 +1,16 @@
 import Row, { AutoRowBetween } from '../Row'
 import { GapColumn } from '../Column'
 import React, { useState } from 'react'
+import { NavLink } from 'react-router-dom'
 import Avatar from 'assets/images/metamask-logo.png'
 import { useActiveWeb3React } from '../../hooks'
-import { shortenAddress } from '../../utils'
+import { getEtherscanLink, shortenAddress } from '../../utils'
 import { ButtonPrimary } from '../Button'
 import styled from 'styled-components'
 import Arrow from 'assets/images/arrow-right-white.png'
 import useTheme from '../../hooks/useTheme'
 import { Text } from 'rebass'
 import { PrimaryText, SecondaryText } from '../Text'
-import { ReactComponent as Copy } from 'assets/svg/copy.svg'
 import { ReactComponent as Share } from 'assets/svg/share.svg'
 import { ReactComponent as Disconnect } from 'assets/svg/disconnect.svg'
 import Test1 from 'assets/images/test1.jpg'
@@ -19,7 +19,8 @@ import Test3 from 'assets/images/test3.jpg'
 import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
 import { HOPE, LT } from '../../constants'
 import Circle from '../../assets/images/blue-loader.svg'
-import { CustomLightSpinner } from '../../theme'
+import { CustomLightSpinner, ExternalLink } from '../../theme'
+import Copy from '../AccountDetails/Copy'
 
 export const DivideLine = styled.div`
   border: 0.5px solid ${({ theme }) => theme.bg3};
@@ -147,13 +148,17 @@ export default function WalletDetail({
           {fakeIcon}
           <PrimaryText style={{ marginLeft: '8px' }}>{account && shortenAddress(account)}</PrimaryText>
         </div>
-        <div>
-          <AutoRowBetween gap={'10px'} style={{ alignItems: 'center', color: theme.text1 }}>
-            <Copy style={{ width: '24px', height: '24px', padding: '3px' }} />
-            <Share style={{ width: '24px', height: '24px', padding: '3px' }} />
-            <Disconnect />
-          </AutoRowBetween>
-        </div>
+        {account && chainId && (
+          <div>
+            <AutoRowBetween gap={'10px'} style={{ alignItems: 'center', color: theme.text1 }}>
+              {account && <Copy toCopy={account} />}
+              <ExternalLink href={`${getEtherscanLink(chainId, account, 'address')}`}>
+                <Share style={{ width: '24px', height: '24px', padding: '3px' }} />
+              </ExternalLink>
+              <Disconnect />
+            </AutoRowBetween>
+          </div>
+        )}
       </div>
       {userEthBalance ? (
         <ThemeText style={{ fontSize: '30px' }}>
@@ -163,9 +168,9 @@ export default function WalletDetail({
         <CustomLightSpinner src={Circle} alt="loader" size={'20px'} />
       )}
       <ThemeText style={{ color: theme.text2, marginTop: '16px' }}>ETH Balance</ThemeText>
-      <ButtonPrimary width={'80%'} margin={'20px 0'}>
-        Buy HOPE
-      </ButtonPrimary>
+      <NavLink style={{ width: '80%', margin: 'auto' }} to={'/hope/buy-hope'}>
+        <ButtonPrimary margin={'20px 0'}>Buy HOPE</ButtonPrimary>
+      </NavLink>
       <DivideLine />
       <GapColumn gap={'30px'} style={{ width: '100%', padding: '20px' }}>
         <BalanceDetail

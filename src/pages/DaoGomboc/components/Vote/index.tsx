@@ -81,6 +81,23 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
     }
   }, [gombocList])
 
+  // const mulArg = useMemo(() => {
+  //   if (selList) {
+  //     const arr: any = []
+  //     selList.forEach((e: any) => {
+  //       const item = [account, e.value]
+  //       arr.push(item)
+  //     })
+  //     return arr
+  //   } else {
+  //     return []
+  //   }
+  // }, [selList])
+
+  // const allVoteData = useSingleContractMultipleData(govContract, 'voteUserSlopes', mulArg)
+
+  // console.log(allVoteData)
+
   useEffect((): any => {
     cd.current = votiingData.votingEndSeconds
     dealData()
