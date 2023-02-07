@@ -14,11 +14,13 @@ import { ethers } from 'ethers'
 import { useActiveWeb3React } from '../../hooks'
 import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS } from '../../constants'
 import { tryParseAmount } from '../../state/swap/hooks'
-import { Token, TokenAmount } from '@uniswap/sdk'
+import { JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import { useLocker, useToLocker } from '../../hooks/ahp/useLocker'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
+import AddAmount from './component/AddAmount'
+import AddTime from './component/AddTime'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -27,6 +29,8 @@ const PageWrapper = styled(AutoColumn)`
 
 export default function DaoLocker() {
   const [amount, setAmount] = useState('')
+  const [addAmounntModal, setAddAmounntModal] = useState(false)
+  const [addTimeModal, setAddTimeModal] = useState(false)
   const [lockerDate, setLockerDate] = useState<any>('')
   const [dateIndex, setDateIndex] = useState(2)
   const [txHash, setTxHash] = useState<string>('')
@@ -93,6 +97,18 @@ export default function DaoLocker() {
     setAmount(resAmount)
   }
 
+  const getVeLtAmount = useMemo(() => {
+    if (!amount || !lockerDate) return 0
+    // const year = JSBI.multiply(
+    //   JSBI.multiply(JSBI.multiply(JSBI.BigInt(365), JSBI.BigInt(24)), JSBI.BigInt(60)),
+    //   JSBI.BigInt(60).toString()
+    // )
+    // const lockPeriod = moment(lockerDate).diff(moment().utc(), 'second')
+    // const veLt = (Number(amount) * lockPeriod) / year / (4 * 10000)
+    // const res = ethers.utils.formatUnits(veLt.toFixed(), veltDec)
+    return 0
+  }, [amount, lockerDate])
+
   const isMaxDisabled = useMemo(() => {
     let flag = false
     if (amount && ltBalance) {
@@ -142,6 +158,7 @@ export default function DaoLocker() {
         setAttemptingTxn(false)
         setTxHash(hash)
         setAmount('')
+        setLockerDate('')
       })
       .catch((err: any) => {
         setAttemptingTxn(false)
@@ -150,7 +167,16 @@ export default function DaoLocker() {
   }, [account, inputAmount, library, chainId, lockerDate, toLocker])
 
   const lockerAddAction = (type: string) => {
-    console.log(type)
+    if (type === 'amount') {
+      setAddAmounntModal(true)
+    } else if ('time') {
+      setAddTimeModal(true)
+    }
+  }
+
+  const onCloseModel = () => {
+    setAddAmounntModal(false)
+    setAddTimeModal(false)
   }
 
   useEffect(() => {
@@ -227,14 +253,17 @@ export default function DaoLocker() {
                   <p className="font-nor text-normal m-t-12">123,456,789.12 (100.00%)</p>
                 </div>
                 <div className="-r m-l-20 flex ai-center">
-                  {lockerRes?.end && lockerRes?.end !== '--' && (
+                  {/* {lockerRes?.end && lockerRes?.end !== '--' && (
                     <i
                       onClick={() => lockerAddAction('amount')}
                       className="iconfont font-20 cursor-select text-primary"
                     >
                       &#xe621;
                     </i>
-                  )}
+                  )} */}
+                  <i onClick={() => lockerAddAction('amount')} className="iconfont font-20 cursor-select text-primary">
+                    &#xe621;
+                  </i>
                 </div>
               </div>
               <div className="item p-30 flex jc-between">
@@ -244,11 +273,14 @@ export default function DaoLocker() {
                   <p className="font-nor text-normal m-t-16">Max increase: 202 weeks</p>
                 </div>
                 <div className="-r m-l-20 flex ai-center">
-                  {lockerRes?.end && lockerRes?.end !== '--' && (
+                  {/* {lockerRes?.end && lockerRes?.end !== '--' && (
                     <i onClick={() => lockerAddAction('time')} className="iconfont font-20 cursor-select text-primary">
                       &#xe621;
                     </i>
-                  )}
+                  )} */}
+                  <i onClick={() => lockerAddAction('time')} className="iconfont font-20 cursor-select text-primary">
+                    &#xe621;
+                  </i>
                 </div>
               </div>
             </div>
@@ -263,7 +295,7 @@ export default function DaoLocker() {
                     <span className="text-normal">Lock</span>
                     <span className="text-normal">
                       Available: {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} LT{' '}
-                      <span className="text-primary cursor-select" onClick={maxInputFn}>
+                      <span className="text-primary cursor-select m-l-8" onClick={maxInputFn}>
                         Max
                       </span>
                     </span>
@@ -311,7 +343,7 @@ export default function DaoLocker() {
                 </div>
                 <p className="m-t-40 font-nor flex jc-between">
                   <span className="text-normal">Total voting escrow</span>
-                  <span className="text-medium">0.00 veLT</span>
+                  <span className="text-medium">{getVeLtAmount} veLT</span>
                 </p>
                 <div className="m-t-30">
                   <ActionButton
@@ -337,6 +369,8 @@ export default function DaoLocker() {
             </div>
           </div>
         </div>
+        {addAmounntModal && <AddAmount isOpen={addAmounntModal} onCloseModel={onCloseModel}></AddAmount>}
+        {addTimeModal && <AddTime isOpen={addTimeModal} onCloseModel={onCloseModel}></AddTime>}
       </PageWrapper>
     </>
   )

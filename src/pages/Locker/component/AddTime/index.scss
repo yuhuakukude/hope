@@ -1,0 +1,55 @@
+.locker-add-amount-modal {
+  background-color: #26262C;
+  .desc-info{
+    .item{
+      .iconfont{
+        color: #63636A;
+      }
+    }
+  }
+  .week-input-box{
+    width: 232px;
+    height: 56px;
+    position: relative;
+    .iconfont{
+      position: absolute;
+      color: #E4C989;
+      font-size: 36px;
+      z-index: 9;
+      cursor: pointer;
+      user-select: none;
+      &.sub{
+        left: 12px;
+        top: 50%;
+        transform: translate(0, -50%);
+      }
+      &.add{
+        right: 12px;
+        top: 50%;
+        transform: translate(0, -50%);
+      }
+      &.disabled{
+        color: #A8A8AA;
+        cursor: no-drop;
+      }
+    }
+    .ant-input-number{
+      width: 232px;
+      height: 56px;
+      line-height: 56px;
+      background-color: #26262C;
+      color: #fff;
+      border-color: #3D3E46;
+      border-radius: 10px;
+    }
+    .ant-input-number-input{
+      font-size: 24px;
+      font-family: Arboria-Medium;
+      text-align: center;
+      padding: 0 60px;
+    }
+    .ant-input-number-handler-wrap{
+      display: none;
+    }
+  }
+}
