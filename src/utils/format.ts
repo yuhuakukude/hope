@@ -1,5 +1,6 @@
 import { Decimal } from 'decimal.js'
-// 率
+import moment from 'moment'
+// rate
 export const rate = (value: string | number, decimal?: number, isNull?: boolean) => {
   if (value || value === 0) {
     const val = Number(value) * 100
@@ -12,7 +13,7 @@ export const rate = (value: string | number, decimal?: number, isNull?: boolean)
   return isNull ? '' : '--'
 }
 
-// 小数位保留
+// decomal
 export const numeral = (context: string | number, formatString = 2) => {
   // let value = context;
   if (context) {
@@ -53,7 +54,48 @@ export const numeral = (context: string | number, formatString = 2) => {
   return 0
 }
 
+// separate
+export const separate = (value: number | string, formatString?: number) => {
+  let decimalPart = ''
+  if (formatString) {
+    decimalPart = '.'.padEnd(formatString + 1, '0')
+  }
+  if (value && !Number.isNaN(value)) {
+    const val = String(value)
+    let integerPart = val
+    const integerLen = val.length
+    if (val.indexOf('.') >= 0) {
+      ;[integerPart] = val.split('.')
+      decimalPart = `.${val.split('.')[1]}`
+      if (formatString) {
+        decimalPart = decimalPart.padEnd(formatString + 1, '0')
+      }
+    }
+
+    if (integerLen <= 3) {
+      return `${integerPart}${decimalPart}`.replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
+    }
+    return `${integerPart.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,')}${decimalPart}`.replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
+  }
+  return `0${decimalPart}`.replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
+}
+
+// amountFormat
+export const amountFormat = (value: number | string, formatString?: number) =>
+  separate(numeral(value, formatString), formatString)
+
+// date
+export const formatDate = (value: any, formatString = 'YYYY-MM-DD HH:mm:ss') => {
+  if (value) {
+    return moment.unix(value).format(formatString)
+  }
+  return '-'
+}
+
 export default {
   rate,
-  numeral
+  numeral,
+  separate,
+  amountFormat,
+  formatDate
 }

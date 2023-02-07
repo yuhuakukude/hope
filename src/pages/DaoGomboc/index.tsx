@@ -13,6 +13,7 @@ const PageWrapper = styled(AutoColumn)`
 
 export default function DaoGomboc() {
   const [votiingData, setVotiingData] = useState({})
+  const [gombocList, setGombocList] = useState([])
   async function initVotiingData() {
     try {
       const res = await GombocApi.getGombocsVotiing()
@@ -24,8 +25,20 @@ export default function DaoGomboc() {
     }
   }
 
+  async function initGombocsList() {
+    try {
+      const res = await GombocApi.getGombocsList()
+      if (res && res.result && res.result.length > 0) {
+        setGombocList(res.result)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   const init = useCallback(async () => {
     await initVotiingData()
+    await initGombocsList()
   }, [])
 
   useEffect(() => {
@@ -41,7 +54,7 @@ export default function DaoGomboc() {
               <GomChart votiingData={votiingData} />
             </div>
             <div className="flex-2 normal-card">
-              <Vote votiingData={votiingData} />
+              <Vote votiingData={votiingData} gombocList={gombocList} />
             </div>
           </div>
         </div>

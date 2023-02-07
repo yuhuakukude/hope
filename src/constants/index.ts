@@ -71,6 +71,9 @@ export const STAKING_HOPE_GOMBOC_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.SEPOLIA]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621',
   [ChainId.HOPE]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621'
 }
+export const VELT_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
+  [ChainId.SEPOLIA]: '0x26cf9861BcF9aF3d86d715D51497a58D217cC442'
+}
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
 export const AVERAGE_BLOCK_TIME_IN_SECS = 13

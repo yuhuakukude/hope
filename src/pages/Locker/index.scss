@@ -1,0 +1,111 @@
+.dao-locker-page{
+  .banner{
+    background: url('../../assets/images/locker_banner.png') no-repeat center;
+    background-size: 100% 100%;
+    border-radius: 20px;
+    h2{
+      color: #fff;
+      font-size: 30px;
+    }
+    .link{
+      &:hover{
+        color: #E4C989;
+      }
+    }
+    ul li{
+      line-height: 24px;
+    }
+  }
+  .content-box{
+    .card-box{
+      gap: 30px;
+      .item{
+        flex: 1;
+        min-height: 180px;
+        box-sizing: border-box;
+        border-radius: 20px;
+        background-color: #26262C;
+        .link-btn{
+          display: inline-block;
+          padding: 5px 13px;
+          border: 1px solid #E4C989;
+          border-radius: 6px;
+        }
+      }
+    }
+    .action-box{
+      .l, .r{
+        box-sizing: border-box;
+        border-radius: 20px;
+        background-color: #26262C;
+      }
+      .r{
+        .inp-box{
+          position: relative;
+          .input-amount {
+            width: 100%;
+            color: #fff;
+            background: none;
+            border-radius: 10px;
+            border: 1px solid #3D3D3D;
+            height: 56px;
+            padding: 0 20px 0 100px;
+            &:hover, &:focus {
+              border: 1px solid #E4C989;
+            }
+            &.error{
+              border: 1px solid #F6465D;
+            }
+          }
+          .coin-box {
+            position: absolute;
+            top: 50%;
+            left: 32px;
+            transform: translate(0, -50%);
+          }
+        }
+        .date-box{
+          .date-picker-tem{
+            width: 100%;
+            .ant-calendar-picker-input{
+              width: 100%;
+              height: 56px;
+              font-size: 16px;
+              color: #fff;
+              background-color: #26262C;
+              border-radius: 10px;
+              font-family: Arboria-Medium;
+              border: 1px solid #3D3D3D;
+              padding-left: 20px;
+              &::placeholder{
+                color: #5A5A5B;
+              }
+            }
+            .ant-calendar-picker-icon{
+              color: #fff;
+            }
+          }
+        }
+        .date-btn{
+          gap: 20px;
+          .btn-item{
+            flex: 1;
+            height: 40px;
+            line-height: 40px;
+            text-align: center;
+            border: 1px solid #3D3D3D;
+            cursor: pointer;
+            user-select: none;
+            border-radius: 10px;
+            &.active, &:hover{
+              border-color: #E4C989;
+            }
+          }
+        }
+        .tip p{
+          line-height: 24px;
+        }
+      }
+    }
+  }
+}
