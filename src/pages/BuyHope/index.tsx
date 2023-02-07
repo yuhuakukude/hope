@@ -61,14 +61,24 @@ export default function BuyHope() {
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
 
+  const mulRateFn = (value: any) => {
+    const pow = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(currency === 'USDT' ? USDT.decimals : USDC.decimals))
+    const bigValue = JSBI.BigInt(Number(value) * Number(pow))
+    const bigRate = JSBI.BigInt(Number(rateVal) * 100)
+    return new TokenAmount(USDT, bigValue)
+      .multiply(bigRate)
+      .divide(JSBI.BigInt(100))
+      .toFixed(2)
+  }
+
   const onUserPayInput = (value: string) => {
     if (value && value.slice(0, 1) === '.') {
       value = `0${value}`
     }
-    if (!value || Number(value) === 0 || rateVal === '') {
+    if (!value || Number(value) === 0 || rateVal === '' || !USDT) {
       setReceive('')
     } else {
-      const resVal = new Decimal(value).mul(new Decimal(rateVal)).toNumber()
+      const resVal = mulRateFn(value)
       setReceive(`${format.numeral(resVal, 2)}`)
     }
     setPay(value)
@@ -86,7 +96,7 @@ export default function BuyHope() {
       const resVal = new Decimal(value).div(new Decimal(rateVal)).toNumber()
       setPay(`${format.numeral(resVal, 2)}`)
       if (`${resVal}`.split('.')[1]?.length > 2) {
-        const receiveInitVal = new Decimal(`${format.numeral(resVal, 2)}`).mul(new Decimal(rateVal)).toNumber()
+        const receiveInitVal = mulRateFn(`${format.numeral(resVal, 2)}`)
         setReceive(`${format.numeral(receiveInitVal, 2)}`)
       } else {
         setReceive(value)
@@ -340,7 +350,6 @@ export default function BuyHope() {
                   actionText={actionText}
                   onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : buyHopeCallback}
                 />
-                // <ButtonPrimary className="hp-button-primary">approve</ButtonPrimary>
               )}
             </div>
           </div>

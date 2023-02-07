@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { ReactComponent as Logo } from 'assets/svg/sidebar-logo.svg'
-import React from 'react'
+import React, { useCallback } from 'react'
 import Column, { AutoColumn } from '../Column'
 import { ReactComponent as Twitter } from 'assets/svg/sidebar-twitter.svg'
 import { ReactComponent as Medium } from 'assets/svg/sidebar-medium.svg'
@@ -8,7 +8,7 @@ import { ReactComponent as Telegram } from 'assets/svg/sidebar-telegram.svg'
 import { ReactComponent as Discord } from 'assets/svg/sidebar-discord.svg'
 import { ReactComponent as Email } from 'assets/svg/sidebar-email.svg'
 import { Text } from 'rebass'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 
 // const SideBarTab = styled('button')``
 
@@ -28,17 +28,18 @@ const SidebarIcon = styled('div')`
   display: flex;
   height: 60px;
   width: 100%;
+
   :hover {
     cursor: pointer;
   }
 `
 
 //const SidebarSelectedPre = styled(SidebarIcon)``
-// const SidebarSelected = styled(SidebarIcon)`
-//   background-color: ${({ theme }) => theme.bg2};
-//   border-radius: 30px 0 0 30px;
-//   color: ${({ theme }) => theme.primary1};
-// `
+const SidebarSelected = styled(SidebarIcon)`
+  background-color: ${({ theme }) => theme.bg2};
+  border-radius: 30px 0 0 30px;
+  color: ${({ theme }) => theme.primary1};
+`
 //const SidebarSelectedNext = styled(SidebarIcon)``
 
 const Icon = styled('i')`
@@ -55,8 +56,7 @@ const MenuText = styled(Text)`
 `
 
 export default function SideBar() {
-  //const [currentTab, setCurrentTab] = useState(0)
-  //const location = useLocation()
+  const location = useLocation()
 
   const ROUTERS = [
     { title: 'swap', icon: '&#xe607;', router: '' },
@@ -65,6 +65,9 @@ export default function SideBar() {
     { title: 'swap', icon: '&#xe605;', baseRouter: '/swap', router: '/swap/exchange' },
     { title: 'swap', icon: '&#xe608;', baseRouter: '/dao', router: '/dao/gomboc' }
   ]
+  const currentTab = useCallback(() => {
+    return ROUTERS.findIndex(router => router.router === location.pathname)
+  }, [ROUTERS, location.pathname])
 
   return (
     <Bar>
@@ -79,15 +82,15 @@ export default function SideBar() {
             //     </SidebarSelectedPre>
             //   )
             // }
-            // if (currentTab === index) {
-            //   return (
-            //     <NavLink key={index} to={router}>
-            //       <SidebarSelected>
-            //         <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />{' '}
-            //       </SidebarSelected>
-            //     </NavLink>
-            //   )
-            // }
+            if (currentTab() === index) {
+              return (
+                <NavLink key={index} to={router}>
+                  <SidebarSelected>
+                    <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />{' '}
+                  </SidebarSelected>
+                </NavLink>
+              )
+            }
             // if (currentTab + 1 === index) {
             //   return (
             //     <SidebarSelectedNext key={index} onClick={() => setCurrentTab(index)}>
