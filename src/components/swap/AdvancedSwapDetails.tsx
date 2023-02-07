@@ -80,7 +80,6 @@ export interface AdvancedSwapDetailsProps {
 
 export function AdvancedSwapDetails({ trade }: AdvancedSwapDetailsProps) {
   const theme = useContext(ThemeContext)
-
   const [allowedSlippage] = useUserSlippageTolerance()
 
   const showRoute = Boolean(trade && trade.route.path.length > 2)

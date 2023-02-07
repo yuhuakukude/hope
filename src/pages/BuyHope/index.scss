@@ -18,6 +18,9 @@
         background: #26262B;
         color: #fff;
       }
+      &:hover{
+        border-color: #E4C989;
+      }
       &.error{
         border: 1px solid #F6465D !important;
       }

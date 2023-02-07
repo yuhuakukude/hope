@@ -11,7 +11,7 @@ export const Wrapper = styled.div`
 `
 
 export const ArrowWrapper = styled.div<{ clickable: boolean }>`
-  padding: 2px;
+  padding: 15px;
 
   ${({ clickable }) =>
     clickable
@@ -73,7 +73,6 @@ export const StyledBalanceMaxMini = styled.button`
 
 export const TruncatedText = styled(Text)`
   text-overflow: ellipsis;
-  width: 220px;
   overflow: hidden;
 `
 

@@ -16,6 +16,10 @@ import { ReactComponent as Disconnect } from 'assets/svg/disconnect.svg'
 import Test1 from 'assets/images/test1.jpg'
 import Test2 from 'assets/images/test2.jpg'
 import Test3 from 'assets/images/test3.jpg'
+import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
+import { HOPE, LT } from '../../constants'
+import Circle from '../../assets/images/blue-loader.svg'
+import { CustomLightSpinner } from '../../theme'
 
 export const DivideLine = styled.div`
   border: 0.5px solid ${({ theme }) => theme.bg3};
@@ -97,28 +101,14 @@ export default function WalletDetail({
   showTransaction: boolean
   setShowTransaction: (showTransaction: boolean) => void
 }) {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const [gas, setGas] = useState(0)
   const theme = useTheme()
-  const balance = '1.001000'
-  const fakeBalanceData: BalanceData[] = [
-    {
-      icon: Test1,
-      name: 'HOPE',
-      balance: '10,002,000.00'
-    },
-    {
-      icon: Test2,
-      name: 'stHOPE',
-      balance: '10,002,000.00',
-      statues: 'Staking'
-    },
-    {
-      icon: Test3,
-      name: 'LT',
-      balance: '109,010,002,000.00'
-    }
-  ]
+  const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
+  const hopeBalance = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
+  const stHopeBalance = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
+  const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
+
   const gasType: GasTypeData[] = [
     {
       speed: 'Standard',
@@ -165,16 +155,40 @@ export default function WalletDetail({
           </AutoRowBetween>
         </div>
       </div>
-      <ThemeText style={{ fontSize: '30px' }}>{balance}</ThemeText>
-      <ThemeText style={{ color: theme.text2, marginTop: '16px' }}>görETH Balance</ThemeText>
+      {userEthBalance ? (
+        <ThemeText style={{ fontSize: '30px' }}>
+          {userEthBalance ? userEthBalance.toFixed(2, { groupSeparator: ',' }) : '--'}
+        </ThemeText>
+      ) : (
+        <CustomLightSpinner src={Circle} alt="loader" size={'20px'} />
+      )}
+      <ThemeText style={{ color: theme.text2, marginTop: '16px' }}>ETH Balance</ThemeText>
       <ButtonPrimary width={'80%'} margin={'20px 0'}>
         Buy HOPE
       </ButtonPrimary>
       <DivideLine />
       <GapColumn gap={'30px'} style={{ width: '100%', padding: '20px' }}>
-        {fakeBalanceData.map((blc, index) => {
-          return <BalanceDetail data={blc} key={index} />
-        })}
+        <BalanceDetail
+          data={{
+            name: 'HOPE',
+            icon: Test1,
+            balance: hopeBalance ? hopeBalance?.toFixed(2, { groupSeparator: ',' }) : '--'
+          }}
+        />
+        <BalanceDetail
+          data={{
+            name: 'stHOPE',
+            icon: Test2,
+            balance: stHopeBalance ? stHopeBalance?.toFixed(2, { groupSeparator: ',' }) : '--'
+          }}
+        />
+        <BalanceDetail
+          data={{
+            name: 'LT',
+            icon: Test3,
+            balance: ltBalance ? ltBalance?.toFixed(2, { groupSeparator: ',' }) : '--'
+          }}
+        />
       </GapColumn>
       <DivideLine />
       <PrimaryText style={{ width: '100%', padding: '30px', fontSize: '18px' }}>Gas Priority Fee</PrimaryText>
