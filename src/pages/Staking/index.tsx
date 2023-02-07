@@ -113,6 +113,7 @@ export default function Staking() {
     }
 
     const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
+
     library
       .getSigner(account)
       ._signTypedData(domain, types, values)
@@ -199,7 +200,6 @@ export default function Staking() {
         setTxHash(hash)
       })
       .catch((err: any) => {
-        setAttemptingTxn(false)
         setAttemptingTxn(false)
         setErrorStatus({ code: err?.code, message: err.message })
       })

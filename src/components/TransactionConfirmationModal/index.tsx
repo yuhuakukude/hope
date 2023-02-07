@@ -194,7 +194,13 @@ export function TransactionErrorContent({
           ) : (
             <>
               <Warning />
-              <Text fontWeight={500} fontSize={16} color={theme.red1} style={{ textAlign: 'center', width: '85%' }}>
+              <Text
+                overflow={'auto'}
+                fontWeight={500}
+                fontSize={16}
+                color={theme.red1}
+                style={{ textAlign: 'center', width: '85%' }}
+              >
                 {message}
               </Text>
             </>
