@@ -13,9 +13,11 @@ import { TYPE } from '../../theme'
 const TransactionWrapper = styled.div``
 
 const TransactionStatusText = styled.div`
+  color: ${({ theme }) => theme.text1};
   margin-right: 0.5rem;
   display: flex;
   align-items: center;
+  width: 180px;
   :hover {
     text-decoration: underline;
   }
@@ -27,7 +29,7 @@ const TransactionState = styled(ExternalLink)<{ pending: boolean; success?: bool
   align-items: center;
   text-decoration: none !important;
   border-radius: 0.5rem;
-  padding: 0.25rem 0rem;
+  padding: 0.55rem 0rem;
   font-weight: 500;
   font-size: 0.825rem;
   color: ${({ theme }) => theme.primary1};
@@ -57,7 +59,7 @@ export default function Transaction({ hash }: { hash: string }) {
           ).getDay()}`}</TYPE.main>
         </RowFixed>
         <RowFixed>
-          <TransactionStatusText>{summary ?? hash} ↗</TransactionStatusText>
+          <TransactionStatusText>{summary ?? hash}</TransactionStatusText>
         </RowFixed>
         <IconWrapper pending={pending} success={success}>
           {pending ? <Loader /> : success ? <CheckCircle size="16" /> : <Triangle size="16" />}
