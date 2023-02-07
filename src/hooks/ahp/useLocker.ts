@@ -45,10 +45,10 @@ export function useToLocker() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Buy ${amount
+            summary: `Locker ${amount
               .multiply(JSBI.BigInt('5'))
               .toSignificant(4, { groupSeparator: ',' })
-              .toString()}  RAM with ${amount.toSignificant()} USDT`
+              .toString()} VELT with ${amount.toSignificant()} LT`
           })
           return response.hash
         })
@@ -71,10 +71,10 @@ export function useToLocker() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Buy ${amount
+            summary: `Locker ${amount
               .multiply(JSBI.BigInt('5'))
               .toSignificant(4, { groupSeparator: ',' })
-              .toString()}  RAM with ${amount.toSignificant()} USDT`
+              .toString()} VELT with ${amount.toSignificant()} LT`
           })
           return response.hash
         })
@@ -96,7 +96,9 @@ export function useToLocker() {
           // gasLimit: '3500000',
           from: account
         }).then((response: TransactionResponse) => {
-          addTransaction(response)
+          addTransaction(response, {
+            summary: `Locker LT with add time success`
+          })
           return response.hash
         })
       })

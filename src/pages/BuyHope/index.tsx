@@ -62,13 +62,18 @@ export default function BuyHope() {
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
 
   const mulRateFn = (value: any) => {
-    const pow = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(currency === 'USDT' ? USDT.decimals : USDC.decimals))
-    const bigValue = JSBI.BigInt(Number(value) * Number(pow))
-    const bigRate = JSBI.BigInt(Number(rateVal) * 100)
-    return new TokenAmount(USDT, bigValue)
-      .multiply(bigRate)
-      .divide(JSBI.BigInt(100))
-      .toFixed(2)
+    if (inputAmount && rateObj?.result?.rate && value) {
+      let bigRes = JSBI.multiply(JSBI.BigInt(inputAmount?.raw), JSBI.BigInt(rateObj?.result?.rate))
+      return new TokenAmount(HOPE[chainId ?? 1], bigRes).toFixed(2)
+    }
+    return '0'
+    // const pow = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(currency === 'USDT' ? USDT.decimals : USDC.decimals))
+    // const bigValue = JSBI.BigInt(Number(value) * Number(pow))
+    // const bigRate = JSBI.BigInt(Number(rateVal) * 100)
+    // return new TokenAmount(USDT, bigValue)
+    //   .multiply(bigRate)
+    //   .divide(JSBI.BigInt(100))
+    //   .toFixed(2)
   }
 
   const onUserPayInput = (value: string) => {
@@ -95,12 +100,13 @@ export default function BuyHope() {
     } else {
       const resVal = new Decimal(value).div(new Decimal(rateVal)).toNumber()
       setPay(`${format.numeral(resVal, 2)}`)
-      if (`${resVal}`.split('.')[1]?.length > 2) {
-        const receiveInitVal = mulRateFn(`${format.numeral(resVal, 2)}`)
-        setReceive(`${format.numeral(receiveInitVal, 2)}`)
-      } else {
-        setReceive(value)
-      }
+      // if (`${resVal}`.split('.')[1]?.length > 2) {
+      //   const receiveInitVal = mulRateFn(`${format.numeral(resVal, 2)}`)
+      //   setReceive(`${format.numeral(receiveInitVal, 2)}`)
+      // } else {
+      //   setReceive(value)
+      // }
+      setReceive(value)
     }
   }
 
@@ -126,7 +132,7 @@ export default function BuyHope() {
             summary: `Buy ${amount
               .multiply(JSBI.BigInt('5'))
               .toSignificant(4, { groupSeparator: ',' })
-              .toString()}  RAM with ${amount.toSignificant()} USDT`
+              .toString()} Hope with ${amount.toSignificant()} {currency}`
           })
           return response.hash
         })
