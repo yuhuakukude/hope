@@ -18,8 +18,8 @@ export function useLocker() {
   return {
     lockerRes: lockerRes?.result
       ? {
-          amount: CurrencyAmount.ether(lockerRes?.result?.amount),
-          end: `${lockerRes?.result?.end}` === '0' ? '-' : format.formatDate(Number(`${lockerRes?.result?.end}`))
+          amount: lockerRes?.result?.amount ? CurrencyAmount.ether(lockerRes?.result?.amount) : 0,
+          end: `${lockerRes?.result?.end}` === '0' ? '--' : format.formatDate(Number(`${lockerRes?.result?.end}`))
         }
       : undefined
   }

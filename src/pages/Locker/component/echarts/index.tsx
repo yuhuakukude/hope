@@ -35,8 +35,8 @@ export default function LockerEcharts() {
           const valueArr: any = []
           arr.forEach((e: any) => {
             dateArr.unshift(e.snapshotDate)
-            const valItem = tryParseAmount(e.lightLockedTotal, LT[chainId ?? 1]) as TokenAmount | undefined
-            valueArr.unshift(valItem?.toFixed(2))
+            const valItem = new TokenAmount(LT[chainId ?? 1], e.lightLockedTotal).toFixed(2)
+            valueArr.unshift(valItem)
           })
           console.log(valueArr)
           const option = {
@@ -48,7 +48,7 @@ export default function LockerEcharts() {
               min: 0,
               max: dateArr.length - 1,
               inRange: {
-                color: ['#0000FF', '#E31B29', '#F5791F']
+                color: ['#E4C989', '#B5884C']
               }
             },
             title: {

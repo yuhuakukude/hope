@@ -5,7 +5,6 @@ import { AutoColumn } from '../../components/Column'
 import LockerEcharts from './component/echarts'
 import NumericalInput from '../../components/NumericalInput'
 import { DatePicker } from 'antd'
-import dayjs from 'dayjs'
 import moment from 'moment'
 import ActionButton from '../../components/Button/ActionButton'
 import './index.scss'
@@ -13,7 +12,7 @@ import TransactionConfirmationModal, { TransactionErrorContent } from '../../com
 
 import { ethers } from 'ethers'
 import { useActiveWeb3React } from '../../hooks'
-import { LT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS } from '../../constants'
+import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS } from '../../constants'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { Token, TokenAmount } from '@uniswap/sdk'
 import { useTokenBalance } from '../../state/wallet/hooks'
@@ -41,6 +40,7 @@ export default function DaoLocker() {
 
   const { account, chainId, library } = useActiveWeb3React()
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
+  const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const inputAmount = tryParseAmount(amount, LT[chainId ?? 1]) as TokenAmount | undefined
 
   // token api
@@ -57,32 +57,31 @@ export default function DaoLocker() {
   const { toLocker } = useToLocker()
 
   const changeDateIndex = (val: any) => {
-    const weekDate = dayjs().day() === 0 ? 7 : dayjs().day()
-    let subNum = 0
-    let week4 = dayjs()
-      .add(4 - weekDate, 'day')
-      .format('YYYY-MM-DD')
+    const weekDate = moment().day() === 0 ? 7 : moment().day()
+    let week4
     if (weekDate > 4) {
-      week4 = dayjs()
+      week4 = moment()
         .subtract(weekDate - 4, 'day')
         .format('YYYY-MM-DD')
+    } else {
+      week4 = moment()
+        .subtract(7 - 4 + weekDate, 'day')
+        .format('YYYY-MM-DD')
     }
-    if (weekDate > 4 && weekDate !== 7) {
-      subNum = 1
-    }
-    const time = moment(week4).add((val - subNum) * 7, 'day')
+    console.log(week4)
+    const time = moment(week4).add(val, 'week')
     setLockerDate(moment(time))
     setDateIndex(val)
   }
 
   const disabledDate = (current: any) =>
-    (current && dayjs(current).day() !== 4) ||
-    current < dayjs().endOf('day') ||
-    dayjs(current).diff(dayjs(), 'day') <= 7
+    (current && moment(current).day() !== 4) ||
+    current < moment().endOf('day') ||
+    moment(current).diff(moment(), 'day') <= 7
 
   const onDateChange = (date: any, dateString: any) => {
     console.log(date, dateString)
-    setLockerDate(dateString)
+    setLockerDate(moment(dateString))
   }
   const changeAmount = (val: any) => {
     setAmount(val)
@@ -150,6 +149,10 @@ export default function DaoLocker() {
       })
   }, [account, inputAmount, library, chainId, lockerDate, toLocker])
 
+  const lockerAddAction = (type: string) => {
+    console.log(type)
+  }
+
   useEffect(() => {
     if (account) {
       changeDateIndex(2)
@@ -197,36 +200,55 @@ export default function DaoLocker() {
             <div className="card-box m-t-30 flex jc-between">
               <div className="item p-30">
                 <p className="font-nor text-normal">My LT Balance</p>
-                <p className="font-20 m-t-20 text-medium">1,023,456,789.12 LT</p>
+                <p className="font-20 m-t-20 text-medium">
+                  {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} LT
+                </p>
                 <p className="font-nor text-normal m-t-16">≈ $102,345.92</p>
               </div>
               <div className="item p-30">
                 <p className="font-nor text-normal">My Locked LT Amount</p>
-                <p className="font-20 m-t-20 text-medium">1,023,456,789.12 LT</p>
+                <p className="font-20 m-t-20 text-medium">
+                  {lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} LT
+                </p>
                 <p className="font-nor text-normal m-t-16">≈ $102,345.92</p>
-                <NavLink to={'/buy-hope'} className="link-btn text-medium text-primary font-12 m-t-20">
-                  Withdraw
-                </NavLink>
+                {lockerRes?.end === '--' && lockerRes?.amount > 0 && (
+                  <NavLink to={'/buy-hope'} className="link-btn text-medium text-primary font-12 m-t-20">
+                    Withdraw
+                  </NavLink>
+                )}
               </div>
               <div className="item p-30 flex jc-between">
                 <div className="-l">
                   <p className="font-nor text-normal">My veLT Amount</p>
-                  <p className="font-20 m-t-20 text-medium">123,456,789.12 veLT</p>
+                  <p className="font-20 m-t-20 text-medium">
+                    {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} veLT
+                  </p>
                   <p className="font-nor text-normal m-t-16">unallocated:</p>
                   <p className="font-nor text-normal m-t-12">123,456,789.12 (100.00%)</p>
                 </div>
                 <div className="-r m-l-20 flex ai-center">
-                  <i className="iconfont font-20 cursor-select text-primary">&#xe621;</i>
+                  {lockerRes?.end && lockerRes?.end !== '--' && (
+                    <i
+                      onClick={() => lockerAddAction('amount')}
+                      className="iconfont font-20 cursor-select text-primary"
+                    >
+                      &#xe621;
+                    </i>
+                  )}
                 </div>
               </div>
               <div className="item p-30 flex jc-between">
                 <div className="-l">
                   <p className="font-nor text-normal">Locked Until (UTC)</p>
-                  <p className="font-20 m-t-20 text-medium">2024-09-10 00:00:00 </p>
+                  <p className="font-20 m-t-20 text-medium">{lockerRes?.end}</p>
                   <p className="font-nor text-normal m-t-16">Max increase: 202 weeks</p>
                 </div>
                 <div className="-r m-l-20 flex ai-center">
-                  <i className="iconfont font-20 cursor-select text-primary">&#xe621;</i>
+                  {lockerRes?.end && lockerRes?.end !== '--' && (
+                    <i onClick={() => lockerAddAction('time')} className="iconfont font-20 cursor-select text-primary">
+                      &#xe621;
+                    </i>
+                  )}
                 </div>
               </div>
             </div>
@@ -265,6 +287,7 @@ export default function DaoLocker() {
                 <div className="date-box">
                   <p className="font-nor m-t-30 text-normal">Lock Until</p>
                   <DatePicker
+                    value={lockerDate}
                     className="date-picker-tem m-t-12"
                     disabled={!account || Number(lockerRes?.amount) > 0}
                     disabledDate={disabledDate}
