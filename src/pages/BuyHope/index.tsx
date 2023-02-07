@@ -21,7 +21,7 @@ import { useSingleCallResult } from '../../state/multicall/hooks'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { PERMIT2_ADDRESS, USDT, USDC, HOPE, TOKEN_SALE_ADDRESS } from '../../constants'
 import { useTransactionAdder } from '../../state/transactions/hooks'
-import { CurrencyAmount, Token } from '@uniswap/sdk'
+import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 
 const PageWrapper = styled(AutoColumn)`
@@ -41,7 +41,7 @@ export default function BuyHope() {
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
   const [inputTyped, setInputTyped] = useState('')
-  const [payToken, setPayToken] = useState(USDT)
+  const [payToken, setPayToken] = useState<Token>(USDT)
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -50,34 +50,46 @@ export default function BuyHope() {
   // get balance / rate
   const rateObj = useSingleCallResult(buyHopeContract, 'currencys', [payToken.symbol])
   const inputAmount = tryParseAmount(inputTyped, payToken)
-
+  console.log('rateObj', rateObj?.result)
   // token api
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
 
   const receiveTokenAmount = useMemo(() => {
-    if (!inputTyped || !rateObj?.result?.rate) {
+    if (!inputTyped || !rateObj?.result?.rate || !payToken) {
       return undefined
     }
-    return tryParseAmount(inputTyped, HOPE[chainId ?? 1])
-      ?.multiply(rateObj?.result?.rate)
-      .divide(JSBI.BigInt(1000000000000000))
-  }, [chainId, inputTyped, rateObj])
+    return new TokenAmount(
+      HOPE[chainId ?? 1],
+      JSBI.divide(
+        JSBI.multiply(
+          JSBI.BigInt(tryParseAmount(inputTyped, payToken)?.raw.toString() ?? '0'),
+          JSBI.BigInt(rateObj?.result?.rate?.toString())
+        ),
+        JSBI.BigInt(1000)
+      )
+    )
+  }, [chainId, inputTyped, payToken, rateObj?.result?.rate])
 
   const onOutputType = useCallback(
-    (typed: string) => {
-      if (!typed) {
+    (value: string) => {
+      if (!value) {
         return setInputTyped('')
       }
       return setInputTyped(
-        tryParseAmount(typed, USDT)
-          ?.multiply(JSBI.BigInt(1000000000000000))
-          .divide(rateObj?.result?.rate)
-          .toSignificant(USDT.decimals)
-          ?.toString() ?? ''
+        new TokenAmount(
+          payToken,
+          JSBI.divide(
+            JSBI.multiply(
+              JSBI.BigInt(tryParseAmount(value, HOPE[chainId ?? 1])?.raw.toString() ?? '0'),
+              JSBI.BigInt(1000)
+            ),
+            JSBI.BigInt(rateObj?.result?.rate?.toString())
+          )
+        ).toSignificant(payToken.decimals)
       )
     },
-    [rateObj]
+    [chainId, payToken, rateObj?.result?.rate]
   )
 
   const toBuyHope = useCallback(
