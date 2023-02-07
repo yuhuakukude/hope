@@ -197,7 +197,6 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
           active: false
         })
       }
-      console.log('memo', memo)
       return memo
     }, [])
   }, [balances, chainId, earnedAmounts, info, rewardsAddresses, totalSupplies, uni])

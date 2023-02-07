@@ -8,6 +8,7 @@ import { ExternalLink } from '../../theme'
 import { useAllTransactions } from '../../state/transactions/hooks'
 import { RowFixed } from '../Row'
 import Loader from '../Loader'
+import { TYPE } from '../../theme'
 
 const TransactionWrapper = styled.div``
 
@@ -50,6 +51,11 @@ export default function Transaction({ hash }: { hash: string }) {
   return (
     <TransactionWrapper>
       <TransactionState href={getEtherscanLink(chainId, hash, 'transaction')} pending={pending} success={success}>
+        <RowFixed>
+          <TYPE.main>{`${new Date(tx?.addedTime).getFullYear()}-${new Date(tx?.addedTime).getMonth()}-${new Date(
+            tx?.addedTime
+          ).getDay()}`}</TYPE.main>
+        </RowFixed>
         <RowFixed>
           <TransactionStatusText>{summary ?? hash} ↗</TransactionStatusText>
         </RowFixed>
