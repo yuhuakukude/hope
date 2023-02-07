@@ -148,6 +148,11 @@ export function usePermit2Contract(): Contract | null {
   return useContract(chainId && PERMIT2_ADDRESS[chainId ?? 1], PERMIT2_ABI.abi, true)
 }
 
+// export function useContract(): Contract | null {
+//   const { chainId } = useActiveWeb3React()
+//   return useContract(chainId && PERMIT2_ADDRESS[chainId ?? 1], PERMIT2_ABI.abi, true)
+// }
+
 // buy hope
 export function useBuyHopeContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
