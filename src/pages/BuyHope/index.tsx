@@ -47,11 +47,9 @@ export default function BuyHope() {
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
-  // get balance / rate
   const rateObj = useSingleCallResult(buyHopeContract, 'currencys', [payToken.symbol])
   const inputAmount = tryParseAmount(inputTyped, payToken)
-  console.log('rateObj', rateObj?.result)
-  // token api
+
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
 
