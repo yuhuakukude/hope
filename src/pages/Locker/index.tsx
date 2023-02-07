@@ -105,7 +105,7 @@ export default function DaoLocker() {
     } else {
       return approvalState === ApprovalState.NOT_APPROVED ? 'Confirm in your wallet' : 'Locker'
     }
-  }, [inputAmount, isMaxDisabled, approvalState])
+  }, [isMaxDisabled, inputAmount, lockerDate, approvalState])
 
   const confirmationContent = useCallback(() => {
     return errorMessage && <TransactionErrorContent onDismiss={() => setShowConfirm(false)} message={errorMessage} />
