@@ -23,7 +23,7 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
   const inputAmount = tryParseAmount(amount, LT[chainId ?? 1]) as TokenAmount | undefined
   const [txHash, setTxHash] = useState<string>('')
-  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
 
   // token api
@@ -72,8 +72,16 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
   }, [isMaxDisabled, inputAmount, approvalState])
 
   const confirmationContent = useCallback(() => {
-    return errorMessage && <TransactionErrorContent onDismiss={() => setShowConfirm(false)} message={errorMessage} />
-  }, [errorMessage])
+    return (
+      errorStatus && (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
+      )
+    )
+  }, [errorStatus])
 
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
@@ -95,16 +103,24 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
     }
 
     const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
-    const signature = await library.getSigner(account)._signTypedData(domain, types, values)
-    toAddAmountLocker(inputAmount, nonce, deadline, signature)
-      .then(hash => {
-        setAttemptingTxn(false)
-        setTxHash(hash)
-        setAmount('')
+    library
+      .getSigner(account)
+      ._signTypedData(domain, types, values)
+      .then(signature => {
+        toAddAmountLocker(inputAmount, nonce, deadline, signature)
+          .then(hash => {
+            setAttemptingTxn(false)
+            setTxHash(hash)
+            setAmount('')
+          })
+          .catch((err: any) => {
+            setAttemptingTxn(false)
+            setErrorStatus({ code: err?.code, message: err.message })
+          })
       })
-      .catch((err: any) => {
+      .catch(error => {
         setAttemptingTxn(false)
-        setErrorMessage(err.message)
+        setErrorStatus({ code: error?.code, message: error.message })
       })
   }, [account, inputAmount, library, chainId, toAddAmountLocker])
 
