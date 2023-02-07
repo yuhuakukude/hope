@@ -5,6 +5,7 @@ import './index.scss'
 import Head from './components/Head'
 import GomChart from './components/GomChart'
 import Vote from './components/Vote'
+import GomList from './components/GomList'
 import GombocApi from '../../api/gomboc.api'
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -56,6 +57,9 @@ export default function DaoGomboc() {
             <div className="flex-2 normal-card">
               <Vote votiingData={votiingData} gombocList={gombocList} />
             </div>
+          </div>
+          <div className="normal-card m-t-30">
+            <GomList />
           </div>
         </div>
       </PageWrapper>

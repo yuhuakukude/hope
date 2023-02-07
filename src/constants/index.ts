@@ -16,8 +16,8 @@ type ChainTokenList = {
 
 export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth')
 export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin')
-export const USDC = new Token(ChainId.SEPOLIA, '0x9Dab7bbE254Fcf610dc0DC9AbAC96b99b33b98e9', 18, 'USDC', 'USD//C')
-export const USDT = new Token(ChainId.SEPOLIA, '0x5A115CF3F91792Ccb9440BFa3C713706d1aC8Bc1', 6, 'USDT', 'Tether USD')
+export const USDC = new Token(ChainId.SEPOLIA, '0xf9B7E9bb840b7BBf7E0C42724f11121D4D1eFC22', 18, 'USDC', 'USD//C')
+export const USDT = new Token(ChainId.SEPOLIA, '0xB2448D911BC792c463AF9ED8cf558a85D97c5Bf1', 6, 'USDT', 'Tether USD')
 export const WBTC = new Token(ChainId.MAINNET, '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 8, 'WBTC', 'Wrapped BTC')
 export const FEI = new Token(ChainId.MAINNET, '0x956F47F50A910163D8BF957Cf5846D573E7f87CA', 18, 'FEI', 'Fei USD')
 export const TRIBE = new Token(ChainId.MAINNET, '0xc7283b66Eb1EB5FB86327f08e1B5816b0720212B', 18, 'TRIBE', 'Tribe')
@@ -27,52 +27,52 @@ export const renBTC = new Token(ChainId.MAINNET, '0xEB4C2781e4ebA804CE9a9803C67d
 
 // hope about token
 export const LT: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x6E34e3c7Be8B5B69efb23c5Dba071c977D652a4E', 18, 'LT', 'light'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x6E34e3c7Be8B5B69efb23c5Dba071c977D652a4E', 18, 'LT', 'light'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x6E34e3c7Be8B5B69efb23c5Dba071c977D652a4E', 18, 'LT', 'light')
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E', 18, 'LT', 'light'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E', 18, 'LT', 'light'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E', 18, 'LT', 'light')
 }
 export const VELT: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x26cf9861BcF9aF3d86d715D51497a58D217cC442', 18, 'VELT', 've light'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x26cf9861BcF9aF3d86d715D51497a58D217cC442', 18, 'VELT', 've light'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x26cf9861BcF9aF3d86d715D51497a58D217cC442', 18, 'VELT', 've light')
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xA6f0B76e460841E5b138896d632b178fC40eC0C7', 18, 'VELT', 've light'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xA6f0B76e460841E5b138896d632b178fC40eC0C7', 18, 'VELT', 've light'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xA6f0B76e460841E5b138896d632b178fC40eC0C7', 18, 'VELT', 've light')
 }
 export const HOPE: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x4368FeB368A4a488F373d6cB7eb725f117c42EfD', 18, 'HOPE', 'hope'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x4368FeB368A4a488F373d6cB7eb725f117c42EfD', 18, 'HOPE', 'hope'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x4368FeB368A4a488F373d6cB7eb725f117c42EfD', 18, 'HOPE', 'hope')
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x8c2894B3bd5E385FfeF7dE863ACDD253588d4E8b', 18, 'HOPE', 'hope'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x8c2894B3bd5E385FfeF7dE863ACDD253588d4E8b', 18, 'HOPE', 'hope'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x8c2894B3bd5E385FfeF7dE863ACDD253588d4E8b', 18, 'HOPE', 'hope')
 }
 
 export const ST_HOPE: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e', 18, 'stHOPE', 'stHOPE'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e', 18, 'stHOPE', 'stHOPE'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e', 18, 'stHOPE', 'stHOPE')
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027', 18, 'stHOPE', 'stHOPE'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027', 18, 'stHOPE', 'stHOPE'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027', 18, 'stHOPE', 'stHOPE')
 }
 
 // staking buyhope dao about address
 export const PERMIT2_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: '0x0e83Cec2Ff3D14194A6b13459BA3Ce8F0C383399',
-  [ChainId.SEPOLIA]: '0x0e83Cec2Ff3D14194A6b13459BA3Ce8F0C383399',
-  [ChainId.HOPE]: '0x0e83Cec2Ff3D14194A6b13459BA3Ce8F0C383399'
+  [ChainId.MAINNET]: '0x9251f431276302F21779DF930ebBAEa78Fbdfc15',
+  [ChainId.SEPOLIA]: '0x9251f431276302F21779DF930ebBAEa78Fbdfc15',
+  [ChainId.HOPE]: '0x9251f431276302F21779DF930ebBAEa78Fbdfc15'
 }
 export const GOMBOC_CONTROLLER_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.SEPOLIA]: '0xc9075E71e27B9161FAa76A353fEF2f68F0C13b3e'
+  [ChainId.SEPOLIA]: '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027'
 }
 export const LT_MINTER_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.SEPOLIA]: '0x29C8C1a65B7b6E80d528C8C4713293cE28ad4E97'
+  [ChainId.SEPOLIA]: '0x8D9dDd856342028e7F64d94F69aD09bb468dF00D'
 }
 export const TOKEN_SALE_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.SEPOLIA]: '0x8179476B7869e691f1b705Cd63A9CfF36836989e'
+  [ChainId.SEPOLIA]: '0x69cf8bBd866100F2f46632595Ef260A6253F7dB1'
 }
 export const POOL_GOMBOC_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.SEPOLIA]: '0x9CC52c53808c05E6037Be60136a524E9a6c898ea'
+  [ChainId.SEPOLIA]: '0xF293BCE14C9bf0fd4Be6B1097808320dBDBccfd0'
 }
 export const STAKING_HOPE_GOMBOC_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621',
-  [ChainId.SEPOLIA]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621',
-  [ChainId.HOPE]: '0x74507aE3D35431Cc52bC99042d951d7107b8e621'
+  [ChainId.MAINNET]: '0x1023dF2eFad3d19ce0f4eF746df080246477e50e',
+  [ChainId.SEPOLIA]: '0x1023dF2eFad3d19ce0f4eF746df080246477e50e',
+  [ChainId.HOPE]: '0x1023dF2eFad3d19ce0f4eF746df080246477e50e'
 }
 export const VELT_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.SEPOLIA]: '0x26cf9861BcF9aF3d86d715D51497a58D217cC442'
+  [ChainId.SEPOLIA]: '0xA6f0B76e460841E5b138896d632b178fC40eC0C7'
 }
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
