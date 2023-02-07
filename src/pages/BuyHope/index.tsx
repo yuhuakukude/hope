@@ -210,12 +210,7 @@ export default function BuyHope() {
 
   const maxInputFn = () => {
     const balance = currency === 'USDT' ? usdtBalance?.toFixed(2) : usdcBalance?.toFixed(2)
-    let resAmount = balance?.toString().replace(/(?:\.0*|(\.\d+?)0+)$/, '$1') || '0'
-    const [intV, decV] = resAmount.split('.')
-    const decValLen = decV?.length || 0
-    if (decValLen > 2) {
-      resAmount = `${intV}.${decV.slice(0, 2)}`
-    }
+    const resAmount = balance?.toString().replace(/(?:\.0*|(\.\d+?)0+)$/, '$1') || '0'
     setPay(resAmount)
     onUserPayInput(resAmount)
   }
@@ -355,7 +350,7 @@ export default function BuyHope() {
               <div className="value font-nor text-medium">≈0.001 ETH</div>
             </div>
           )}
-          {account && (
+          {/* {account && (
             <div className="tip flex p-t-30">
               <div className="icon m-r-15">
                 <i className="iconfont font-28">&#xe614;</i>
@@ -365,7 +360,7 @@ export default function BuyHope() {
                 have deposit additional funds to complete them.
               </p>
             </div>
-          )}
+          )} */}
         </div>
         {currencyModalFlag && (
           <SelectCurrency

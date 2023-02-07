@@ -88,6 +88,12 @@ export default function DaoLocker() {
     setAmount(val)
   }
 
+  const maxInputFn = () => {
+    const balance = ltBalance?.toFixed(2)
+    const resAmount = balance?.toString().replace(/(?:\.0*|(\.\d+?)0+)$/, '$1') || '0'
+    setAmount(resAmount)
+  }
+
   const isMaxDisabled = useMemo(() => {
     let flag = false
     if (amount && ltBalance) {
@@ -234,12 +240,15 @@ export default function DaoLocker() {
                   <p className="flex jc-between font-nor m-t-40">
                     <span className="text-normal">Lock</span>
                     <span className="text-normal">
-                      Available: 500.00 LT <span className="text-primary">Max</span>
+                      Available: {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} LT{' '}
+                      <span className="text-primary cursor-select" onClick={maxInputFn}>
+                        Max
+                      </span>
                     </span>
                   </p>
                   <div className="inp-box m-t-12">
                     <NumericalInput
-                      className={['input-amount'].join(' ')}
+                      className={['input-amount', isMaxDisabled && 'error'].join(' ')}
                       value={amount}
                       decimals={2}
                       align={'right'}

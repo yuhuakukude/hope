@@ -80,6 +80,9 @@
               &::placeholder{
                 color: #5A5A5B;
               }
+              &:focus, &:hover{
+                border-color: #E4C989;
+              }
             }
             .ant-calendar-picker-icon{
               color: #fff;
