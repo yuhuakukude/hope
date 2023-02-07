@@ -59,11 +59,11 @@ export default function SideBar() {
   //const location = useLocation()
 
   const ROUTERS = [
-    { title: 'swap', icon: '&#xe607;', baseRouter: '/swap', router: '/swap/exchange' },
-    { title: 'swap', icon: '&#xe609;', baseRouter: '/hope', router: '/hope/staking' },
-    { title: 'swap', icon: '&#xe606;', router: '' },
-    { title: 'swap', icon: '&#xe605;', router: '' },
-    { title: 'swap', icon: '&#xe608;', router: '' }
+    { title: 'swap', icon: '&#xe607;', router: '' },
+    { title: 'swap', icon: '&#xe609;', router: '' },
+    { title: 'swap', icon: '&#xe606;', baseRouter: '/hope', router: '/hope/staking' },
+    { title: 'swap', icon: '&#xe605;', baseRouter: '/swap', router: '/swap/exchange' },
+    { title: 'swap', icon: '&#xe608;', baseRouter: '/dao', router: '/dao/gomboc' }
   ]
 
   return (

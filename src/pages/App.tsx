@@ -133,8 +133,8 @@ export default function App() {
                   <Route exact strict path="/vote/:id" component={VotePage} />
                   <Route exact strict path="/hope/staking" component={Staking} />
                   <Route exact strict path="/hope/buy-hope" component={BuyHope} />
-                  <Route exact strict path="/hope/gomboc" component={DaoGomboc} />
-                  <Route exact strict path="/dao-locker" component={DaoLocker} />
+                  <Route exact strict path="/dao/gomboc" component={DaoGomboc} />
+                  <Route exact strict path="/dao/locker" component={DaoLocker} />
                   <Route component={RedirectPathToSwapOnly} />
                 </Switch>
               </Web3ReactManager>
