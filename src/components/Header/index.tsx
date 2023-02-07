@@ -319,18 +319,20 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
             )}
           </div> */}
           <AccountElement active={!!account} style={{ pointerEvents: 'auto', color: theme.text1, marginRight: '30px' }}>
-            <div style={{ paddingLeft: '14px', paddingRight: '14px', display: 'flex', alignItems: 'center' }}>
-              <div
-                style={{
-                  width: '6px',
-                  height: '6px',
-                  background: theme.green1,
-                  borderRadius: '50%',
-                  marginRight: '5px'
-                }}
-              />
-              <Text>{CHAIN_ID_NETWORK_ARGUMENT[chainId as FormaticSupportedChains] ?? 'ETH'}</Text>
-            </div>
+            {account && (
+              <div style={{ paddingLeft: '14px', paddingRight: '14px', display: 'flex', alignItems: 'center' }}>
+                <div
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    background: theme.green1,
+                    borderRadius: '50%',
+                    marginRight: '5px'
+                  }}
+                />
+                <Text>{CHAIN_ID_NETWORK_ARGUMENT[chainId as FormaticSupportedChains] ?? 'ETH'}</Text>
+              </div>
+            )}
             <Web3Status />
           </AccountElement>
         </HeaderElement>

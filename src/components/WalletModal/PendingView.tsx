@@ -1,11 +1,13 @@
 import { AbstractConnector } from '@web3-react/abstract-connector'
 import React from 'react'
 import styled from 'styled-components'
-import Option from './Option'
-import { SUPPORTED_WALLETS } from '../../constants'
-import { injected } from '../../connectors'
-import { darken } from 'polished'
-import Loader from '../Loader'
+import Circle from '../../assets/images/blue-loader.svg'
+import { CustomLightSpinner } from '../../theme'
+import { Text } from 'rebass'
+import { AutoColumn } from '../Column'
+import { ReactComponent as Warning } from '../../assets/svg/warning.svg'
+import { TYPE } from '../../theme'
+import { ButtonPrimary } from '../Button'
 
 const PendingSection = styled.div`
   ${({ theme }) => theme.flexColumnNoWrap};
@@ -17,114 +19,112 @@ const PendingSection = styled.div`
   }
 `
 
-const StyledLoader = styled(Loader)`
-  margin-right: 1rem;
-`
-
 const LoadingMessage = styled.div<{ error?: boolean }>`
   ${({ theme }) => theme.flexRowNoWrap};
   align-items: center;
-  justify-content: flex-start;
-  border-radius: 12px;
+  justify-content: center;
+  border-radius: 10px;
   margin-bottom: 20px;
   color: ${({ theme, error }) => (error ? theme.red1 : 'inherit')};
-  border: 1px solid ${({ theme, error }) => (error ? theme.red1 : theme.text4)};
 
   & > * {
     padding: 1rem;
   }
 `
 
-const ErrorGroup = styled.div`
-  ${({ theme }) => theme.flexRowNoWrap};
-  align-items: center;
-  justify-content: flex-start;
-`
-
-const ErrorButton = styled.div`
-  border-radius: 8px;
-  font-size: 12px;
-  color: ${({ theme }) => theme.text1};
-  background-color: ${({ theme }) => theme.bg4};
-  margin-left: 1rem;
-  padding: 0.5rem;
-  font-weight: 600;
-  user-select: none;
-
-  &:hover {
-    cursor: pointer;
-    background-color: ${({ theme }) => darken(0.1, theme.text4)};
-  }
-`
-
 const LoadingWrapper = styled.div`
   ${({ theme }) => theme.flexRowNoWrap};
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+`
+
+const SpinnerView = styled.div`
+  padding: 20px;
+  margin: auto;
 `
 
 export default function PendingView({
   connector,
   error = false,
   setPendingError,
-  tryActivation
+  tryActivation,
+  onBack
 }: {
   connector?: AbstractConnector
   error?: boolean
   setPendingError: (error: boolean) => void
   tryActivation: (connector: AbstractConnector) => void
+  onBack: ()=> void
 }) {
-  const isMetamask = window?.ethereum?.isMetaMask
+  //const isMetamask = window?.ethereum?.isMetaMask
 
   return (
     <PendingSection>
       <LoadingMessage error={error}>
         <LoadingWrapper>
           {error ? (
-            <ErrorGroup>
-              <div>Error connecting.</div>
-              <ErrorButton
+            <AutoColumn justify={'center'} gap={'16px'}>
+              <Warning />
+              <TYPE.body mt={'8px'}>Error connecting</TYPE.body>
+              <TYPE.main textAlign={'center'}>
+                The connection attempt failed. Please click try again and follow the steps to connect in your wallet.
+              </TYPE.main>
+              <ButtonPrimary
+                mt={'34px'}
                 onClick={() => {
                   setPendingError(false)
                   connector && tryActivation(connector)
                 }}
               >
                 Try Again
-              </ErrorButton>
-            </ErrorGroup>
+              </ButtonPrimary>
+              <TYPE.link onClick={onBack} style={{ cursor: 'pointer' }} mt={'14px'}>
+                Back to wallet selection
+              </TYPE.link>
+            </AutoColumn>
           ) : (
-            <>
-              <StyledLoader />
-              Initializing...
-            </>
+            <AutoColumn>
+              <SpinnerView>
+                <CustomLightSpinner src={Circle} alt="loader" size={'90px'} />
+              </SpinnerView>
+              <AutoColumn gap="20px" justify={'center'}>
+                <Text fontWeight={500} fontSize={20}>
+                  Waiting to connect
+                </Text>
+                <Text fontSize={16} color="#565A69" textAlign="center">
+                  Confirm this connection in your wallet
+                </Text>
+              </AutoColumn>
+            </AutoColumn>
           )}
         </LoadingWrapper>
       </LoadingMessage>
-      {Object.keys(SUPPORTED_WALLETS).map(key => {
-        const option = SUPPORTED_WALLETS[key]
-        if (option.connector === connector) {
-          if (option.connector === injected) {
-            if (isMetamask && option.name !== 'MetaMask') {
-              return null
-            }
-            if (!isMetamask && option.name === 'MetaMask') {
-              return null
-            }
-          }
-          return (
-            <Option
-              id={`connect-${key}`}
-              key={key}
-              clickable={false}
-              color={option.color}
-              header={option.name}
-              subheader={option.description}
-              icon={require('../../assets/images/' + option.iconName)}
-            />
-          )
-        }
-        return null
-      })}
+      {/*{Object.keys(SUPPORTED_WALLETS).map(key => {*/}
+      {/*  const option = SUPPORTED_WALLETS[key]*/}
+      {/*  if (option.connector === connector) {*/}
+      {/*    if (option.connector === injected) {*/}
+      {/*      if (isMetamask && option.name !== 'MetaMask') {*/}
+      {/*        return null*/}
+      {/*      }*/}
+      {/*      if (!isMetamask && option.name === 'MetaMask') {*/}
+      {/*        return null*/}
+      {/*      }*/}
+      {/*    }*/}
+      {/*    return (*/}
+      {/*      <Option*/}
+      {/*        id={`connect-${key}`}*/}
+      {/*        key={key}*/}
+      {/*        clickable={false}*/}
+      {/*        color={option.color}*/}
+      {/*        header={option.name}*/}
+      {/*        subheader={option.description}*/}
+      {/*        icon={require('../../assets/images/' + option.iconName)}*/}
+      {/*      />*/}
+      {/*    )*/}
+      {/*  }*/}
+      {/*  return null*/}
+      {/*})}*/}
     </PendingSection>
   )
 }

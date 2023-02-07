@@ -44,7 +44,7 @@ export const HOPE: { [chainId in ChainId]: Token } = {
 
 export const ST_HOPE: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027', 18, 'stHOPE', 'stHOPE'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027', 18, 'stHOPE', 'stHOPE'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x1023dF2eFad3d19ce0f4eF746df080246477e50e', 18, 'stHOPE', 'stHOPE'),
   [ChainId.HOPE]: new Token(ChainId.HOPE, '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027', 18, 'stHOPE', 'stHOPE')
 }
 
@@ -200,7 +200,7 @@ export const SUPPORTED_NETWORKS: {
     chainId: '0xaa36a7',
     chainName: 'Sepolia',
     nativeCurrency: {
-      name: 'Ethereum',
+      name: 'Sepolia',
       symbol: 'ETH',
       decimals: 18
     },
