@@ -419,10 +419,10 @@ export default function Staking() {
               <HopeCard title={'Stake'}>
                 <div className="flex">
                   <div className="apy-box">
-                    <p className="text-white font-nor flex ai-center">
-                      APR
+                    <div className="text-white font-nor flex ai-center">
+                      APY
                       <QuestionHelper text="The APY value is calculated based on the current data, which consists of the reward tokens by hold stHOPE. " />
-                    </p>
+                    </div>
                     <h3 className="text-success font-28 font-bold m-t-10">{format.rate(apyVal)}</h3>
                   </div>
                   <div>
