@@ -172,6 +172,43 @@ export interface WalletInfo {
   mobileOnly?: true
 }
 
+export const SUPPORTED_NETWORKS: {
+  [chainId in ChainId]?: {
+    chainId: string
+    chainName: string
+    nativeCurrency: {
+      name: string
+      symbol: string
+      decimals: number
+    }
+    rpcUrls: string[]
+    blockExplorerUrls: string[]
+  }
+} = {
+  [ChainId.MAINNET]: {
+    chainId: '0x1',
+    chainName: 'Ethereum',
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    rpcUrls: ['https://sepolia.infura.io/v3/f338fa7411a945db8bed616683b2ade5'],
+    blockExplorerUrls: ['https://sepolia.etherscan.io']
+  },
+  [ChainId.SEPOLIA]: {
+    chainId: '0xaa36a7',
+    chainName: 'Sepolia',
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    rpcUrls: ['https://sepolia.infura.io/v3/f338fa7411a945db8bed616683b2ade5'],
+    blockExplorerUrls: ['https://sepolia.etherscan.io']
+  }
+}
+
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {
   INJECTED: {
     connector: injected,

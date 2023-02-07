@@ -1,4 +1,3 @@
-import { transparentize } from 'polished'
 import React, { useMemo } from 'react'
 import styled, {
   ThemeProvider as StyledComponentsThemeProvider,
@@ -231,10 +230,5 @@ export const ThemedGlobalStyle = createGlobalStyle`
     min-height: 100vh;
     background-position: 0 -30vh;
     background-repeat: no-repeat;
-    background-image: ${({ theme }) =>
-      `radial-gradient(50% 50% at 50% 50%, ${transparentize(0.9, theme.primary1)} 0%, ${transparentize(
-        1,
-        theme.bg1
-      )} 100%)`};
   }
 `

@@ -37,7 +37,7 @@ export default function CopyHelper(props: { toCopy: string; children?: React.Rea
         </TransactionStatusText>
       ) : (
         <TransactionStatusText>
-          <Copy size={'16'} />
+          <Copy style={{ color: 'white' }} size={'16'} />
         </TransactionStatusText>
       )}
       {isCopied ? '' : props.children}
