@@ -106,6 +106,7 @@ export default function DaoLocker() {
     // const lockPeriod = moment(lockerDate).diff(moment().utc(), 'second')
     // const veLt = (Number(amount) * lockPeriod) / year / (4 * 10000)
     // const res = ethers.utils.formatUnits(veLt.toFixed(), veltDec)
+    console.log(JSBI.BigInt(60))
     return 0
   }, [amount, lockerDate])
 
