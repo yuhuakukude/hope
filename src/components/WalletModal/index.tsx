@@ -7,9 +7,9 @@ import ReactGA from 'react-ga'
 import styled from 'styled-components'
 import MetamaskIcon from '../../assets/images/metamask.png'
 import { ReactComponent as Close } from '../../assets/images/x.svg'
-import { fortmatic, injected, portis } from '../../connectors'
+import { fortmatic, injected, NETWORK_CHAIN_ID, portis } from '../../connectors'
 import { OVERLAY_READY } from '../../connectors/Fortmatic'
-import { SUPPORTED_WALLETS } from '../../constants'
+import { SUPPORTED_NETWORKS, SUPPORTED_WALLETS } from '../../constants'
 import usePrevious from '../../hooks/usePrevious'
 import { ApplicationModal } from '../../state/application/actions'
 import { useModalOpen, useWalletModalToggle } from '../../state/application/hooks'
@@ -23,6 +23,11 @@ import WalletDetail from './WalletDetail'
 import { Checkbox } from 'antd'
 import useTheme from '../../hooks/useTheme'
 import { PrimaryText } from '../Text'
+import { AutoColumn } from '../Column'
+import { ReactComponent as Warning } from '../../assets/svg/warning.svg'
+import { TYPE } from '../../theme'
+import { ButtonPrimary } from '../Button'
+import { ChainId } from '@uniswap/sdk'
 
 const CloseIcon = styled.div`
   position: absolute;
@@ -64,7 +69,6 @@ const HeaderRow = styled.div`
 `
 
 const ContentWrapper = styled.div`
-  background-color: ${({ theme }) => theme.bg2};
   padding: 2rem;
   border-bottom-left-radius: 20px;
   border-bottom-right-radius: 20px;
@@ -74,6 +78,7 @@ const ContentWrapper = styled.div`
 
 const UpperSection = styled.div`
   position: relative;
+  padding-top: 50px;
 
   h5 {
     margin: 0;
@@ -116,13 +121,15 @@ const WALLET_VIEWS = {
 }
 
 export default function WalletModal({
-  pendingTransactions,
-  confirmedTransactions,
-  ENSName
+  isAgreeTerms,
+  setIsAgreeTerms,
+  isAgreeTermsError,
+  setIsAgreeTermsError
 }: {
-  pendingTransactions: string[] // hashes of pending
-  confirmedTransactions: string[] // hashes of confirmed
-  ENSName?: string
+  isAgreeTerms: boolean
+  isAgreeTermsError: boolean
+  setIsAgreeTerms: (isAgreeTerms: boolean) => void
+  setIsAgreeTermsError: (isAgreeTermsError: boolean) => void
 }) {
   // important that these are destructed from the account-specific web3-react context
   const { active, account, connector, activate, error } = useWeb3React()
@@ -140,8 +147,6 @@ export default function WalletModal({
 
   const [showTransaction, setShowTransaction] = useState(false)
   const theme = useTheme()
-  const [agreeTerms, isAgreeTerms] = useState(false)
-  const [agreeTermsError, isAgreeTermsError] = useState(false)
 
   // close on connection, when logged out before
   useEffect(() => {
@@ -276,10 +281,10 @@ export default function WalletModal({
           <Option
             id={`connect-${key}`}
             onClick={() => {
-              if (!agreeTerms) {
-                isAgreeTermsError(true)
+              if (!isAgreeTerms) {
+                setIsAgreeTermsError(true)
               } else {
-                isAgreeTermsError(false)
+                setIsAgreeTerms(false)
                 option.connector === connector
                   ? setWalletView(WALLET_VIEWS.ACCOUNT)
                   : !option.href && tryActivation(option.connector)
@@ -305,13 +310,37 @@ export default function WalletModal({
           <CloseIcon onClick={toggleWalletModal}>
             <CloseColor />
           </CloseIcon>
-          <HeaderRow>{error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error connecting'}</HeaderRow>
           <ContentWrapper>
-            {error instanceof UnsupportedChainIdError ? (
-              <h5>Please connect to the appropriate Ethereum network.</h5>
-            ) : (
-              'Error connecting. Try refreshing the page.'
-            )}
+            <AutoColumn justify={'center'} gap={'16px'}>
+              <Warning />
+
+              <TYPE.body mt={'8px'}>Error connecting</TYPE.body>
+              {error instanceof UnsupportedChainIdError ? (
+                <>
+                  <TYPE.main textAlign={'center'}>Please switch to Ethereum Mainnet</TYPE.main>
+                  <ButtonPrimary
+                    mt={'34px'}
+                    onClick={() => {
+                      const id = Object.values(ChainId).find(val => val === NETWORK_CHAIN_ID)
+                      if (!id) {
+                        return
+                      }
+                      const params = SUPPORTED_NETWORKS[id as ChainId]
+                      return params?.nativeCurrency.symbol === 'ETH'
+                        ? window.ethereum?.request?.({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: params.chainId }, account]
+                          })
+                        : window.ethereum?.request?.({ method: 'wallet_addEthereumChain', params: [params, account] })
+                    }}
+                  >
+                    Switch Network
+                  </ButtonPrimary>
+                </>
+              ) : (
+                'Error connecting. Try refreshing the page.'
+              )}
+            </AutoColumn>
           </ContentWrapper>
         </UpperSection>
       )
@@ -344,7 +373,7 @@ export default function WalletModal({
                 setWalletView(WALLET_VIEWS.ACCOUNT)
               }}
             >
-              Back
+              {''}
             </HoverText>
           </HeaderRow>
         ) : (
@@ -357,9 +386,9 @@ export default function WalletModal({
             <div>
               <div style={{ color: 'white', marginBottom: '10px', display: 'flex' }}>
                 <Checkbox
-                  value={agreeTerms}
+                  checked={isAgreeTerms}
                   onChange={e => {
-                    isAgreeTerms(e.target.checked)
+                    setIsAgreeTerms(e.target.checked)
                   }}
                 />
                 <PrimaryText style={{ marginLeft: '10px', lineHeight: '1.2' }}>
@@ -368,13 +397,14 @@ export default function WalletModal({
                   and <span style={{ color: theme.primary1 }}>Privacy Policy</span>
                 </PrimaryText>
               </div>
-              {agreeTermsError && !agreeTerms && (
+              {isAgreeTermsError && !isAgreeTerms && (
                 <p style={{ color: theme.red1, marginLeft: '25px' }}>Agreement is required to login</p>
               )}
             </div>
           )}
           {walletView === WALLET_VIEWS.PENDING ? (
             <PendingView
+              onBack={() => setWalletView(WALLET_VIEWS.OPTIONS)}
               connector={pendingWallet}
               error={pendingError}
               setPendingError={setPendingError}

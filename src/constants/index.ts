@@ -44,7 +44,7 @@ export const HOPE: { [chainId in ChainId]: Token } = {
 
 export const ST_HOPE: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027', 18, 'stHOPE', 'stHOPE'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027', 18, 'stHOPE', 'stHOPE'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x1023dF2eFad3d19ce0f4eF746df080246477e50e', 18, 'stHOPE', 'stHOPE'),
   [ChainId.HOPE]: new Token(ChainId.HOPE, '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027', 18, 'stHOPE', 'stHOPE')
 }
 
@@ -170,6 +170,43 @@ export interface WalletInfo {
   primary?: true
   mobile?: true
   mobileOnly?: true
+}
+
+export const SUPPORTED_NETWORKS: {
+  [chainId in ChainId]?: {
+    chainId: string
+    chainName: string
+    nativeCurrency: {
+      name: string
+      symbol: string
+      decimals: number
+    }
+    rpcUrls: string[]
+    blockExplorerUrls: string[]
+  }
+} = {
+  [ChainId.MAINNET]: {
+    chainId: '0x1',
+    chainName: 'Ethereum',
+    nativeCurrency: {
+      name: 'Ethereum',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    rpcUrls: ['https://sepolia.infura.io/v3/f338fa7411a945db8bed616683b2ade5'],
+    blockExplorerUrls: ['https://sepolia.etherscan.io']
+  },
+  [ChainId.SEPOLIA]: {
+    chainId: '0xaa36a7',
+    chainName: 'Sepolia',
+    nativeCurrency: {
+      name: 'Sepolia',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    rpcUrls: ['https://sepolia.infura.io/v3/f338fa7411a945db8bed616683b2ade5'],
+    blockExplorerUrls: ['https://sepolia.etherscan.io']
+  }
 }
 
 export const SUPPORTED_WALLETS: { [key: string]: WalletInfo } = {

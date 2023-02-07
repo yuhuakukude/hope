@@ -19,7 +19,6 @@ const OptionCard = styled(InfoCard as any)`
   display: flex;
   flex-direction: row;
   align-items: center;
-  justify-content: space-between;
   margin-top: 2rem;
   padding: 1rem;
 `
@@ -28,10 +27,12 @@ const OptionCardLeft = styled.div`
   ${({ theme }) => theme.flexColumnNoWrap};
   justify-content: center;
   height: 100%;
+  margin-left: 20px;
 `
 
 const OptionCardClickable = styled(OptionCard as any)<{ clickable?: boolean }>`
   margin-top: 0;
+  background-color: ${({ theme }) => theme.bg3};
   &:hover {
     cursor: ${({ clickable }) => (clickable ? 'pointer' : '')};
     border: ${({ clickable, theme }) => (clickable ? `1px solid ${theme.primary1}` : ``)};
@@ -112,6 +113,9 @@ export default function Option({
 }) {
   const content = (
     <OptionCardClickable id={id} onClick={onClick} clickable={clickable && !active} active={active}>
+      <IconWrapper size={size}>
+        <img src={icon} alt={'Icon'} />
+      </IconWrapper>
       <OptionCardLeft>
         <HeaderText color={color}>
           {active ? (
@@ -127,9 +131,6 @@ export default function Option({
         </HeaderText>
         {subheader && <SubHeader>{subheader}</SubHeader>}
       </OptionCardLeft>
-      <IconWrapper size={size}>
-        <img src={icon} alt={'Icon'} />
-      </IconWrapper>
     </OptionCardClickable>
   )
   if (link) {
