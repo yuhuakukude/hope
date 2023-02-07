@@ -170,7 +170,7 @@ export default function WalletDetail({
       </div>
       {userEthBalance ? (
         <ThemeText style={{ fontSize: '30px' }}>
-          {userEthBalance ? userEthBalance.toFixed(2, { groupSeparator: ',' }) : '--'}
+          {userEthBalance ? userEthBalance.toFixed(6, { groupSeparator: ',' }) : '--'}
         </ThemeText>
       ) : (
         <CustomLightSpinner src={Circle} alt="loader" size={'20px'} />

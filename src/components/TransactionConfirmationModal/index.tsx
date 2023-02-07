@@ -17,6 +17,7 @@ import useAddTokenToMetamask from 'hooks/useAddTokenToMetamask'
 import SubscribeCon from '../ahp/SubscribeCon'
 import { ReactComponent as Commited } from '../../assets/svg/commited.svg'
 import { ReactComponent as Warning } from '../../assets/svg/warning.svg'
+import { ReactComponent as Reject } from '../../assets/svg/reject.svg'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -163,7 +164,15 @@ export function ConfirmationModalContent({
   )
 }
 
-export function TransactionErrorContent({ message, onDismiss }: { message: string; onDismiss: () => void }) {
+export function TransactionErrorContent({
+  errorCode,
+  message,
+  onDismiss
+}: {
+  errorCode?: number
+  message: string
+  onDismiss: () => void
+}) {
   const theme = useContext(ThemeContext)
   return (
     <Wrapper>
@@ -175,10 +184,21 @@ export function TransactionErrorContent({ message, onDismiss }: { message: strin
           <CloseIcon onClick={onDismiss} />
         </RowBetween>
         <AutoColumn style={{ marginTop: 20, padding: '2rem 0' }} gap="24px" justify="center">
-          <Warning />
-          <Text fontWeight={500} fontSize={16} color={theme.red1} style={{ textAlign: 'center', width: '85%' }}>
-            {message}
-          </Text>
+          {errorCode === 4001 ? (
+            <>
+              <Reject />
+              <Text fontWeight={500} fontSize={16} color={theme.text1} style={{ textAlign: 'center', width: '85%' }}>
+                Transaction Reject
+              </Text>
+            </>
+          ) : (
+            <>
+              <Warning />
+              <Text fontWeight={500} fontSize={16} color={theme.red1} style={{ textAlign: 'center', width: '85%' }}>
+                {message}
+              </Text>
+            </>
+          )}
         </AutoColumn>
       </Section>
       <BottomSection gap="12px">
