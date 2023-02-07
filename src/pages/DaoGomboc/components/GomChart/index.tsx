@@ -1,8 +1,8 @@
 import React, { useRef, useEffect, useCallback, useState } from 'react'
 import './index.scss'
 import * as echarts from 'echarts'
-import { TitleComponentOption } from 'echarts/components';
-import {  PieSeriesOption } from 'echarts/charts';
+import { TitleComponentOption } from 'echarts/components'
+import { PieSeriesOption } from 'echarts/charts'
 import { ethers } from 'ethers'
 // import GombocApi from '../../../../../api/gomboc.api'
 
@@ -10,9 +10,7 @@ interface GomChartProps {
   votiingData: any
 }
 
-type EChartsOption = echarts.ComposeOption<
-  TitleComponentOption | PieSeriesOption
->;
+type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
 
 const GomChart = ({ votiingData }: GomChartProps) => {
   const [nextEffectTime, setNextEffectTime] = useState('')
@@ -26,7 +24,7 @@ const GomChart = ({ votiingData }: GomChartProps) => {
         }
         const votArr = votiingData.votingList
         if (votArr && votArr.length > 0) {
-          const arr: {name: string, value: string}[] = []
+          const arr: { name: string; value: string }[] = []
           votArr.forEach((e: any) => {
             let num = '0'
             if (e.gaugeController && e.gaugeController.getGombocWeight) {
@@ -39,36 +37,38 @@ const GomChart = ({ votiingData }: GomChartProps) => {
             arr.push(item)
           })
 
-          const option:EChartsOption = {
+          const option: EChartsOption = {
             tooltip: {
               trigger: 'item'
             },
             legend: {
               show: false
             },
-            series: [{
-              type: 'pie',
-              radius: [70,120],
-              colorBy: 'data',
-              label: {
-                alignTo: 'labelLine',
-                position: 'outer',
-                distanceToLabelLine: 6,
-                lineHeight: 14,
-                fontSize: 14,
-                color: '#FFA8A8',
-                rotate: 0,
-                show: true,
-                overflow: 'truncate',
-                bleedMargin: 10,
-              },
-              labelLine: {
-                length: 15,
-                length2: 10,
-                maxSurfaceAngle: 80
-              },
-              data: arr as any
-            }]
+            series: [
+              {
+                type: 'pie',
+                radius: [70, 120],
+                colorBy: 'data',
+                label: {
+                  alignTo: 'labelLine',
+                  position: 'outer',
+                  distanceToLabelLine: 6,
+                  lineHeight: 14,
+                  fontSize: 14,
+                  color: '#FFA8A8',
+                  rotate: 0,
+                  show: true,
+                  overflow: 'truncate',
+                  bleedMargin: 10
+                },
+                labelLine: {
+                  length: 15,
+                  length2: 10,
+                  maxSurfaceAngle: 80
+                },
+                data: arr as any
+              }
+            ]
           }
           myChart.setOption(option)
         }
