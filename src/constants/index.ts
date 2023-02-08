@@ -39,25 +39,25 @@ export const USDT: { [chainId in ChainId]: Token } = {
 }
 
 export const LT: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E', 18, 'LT', 'light'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E', 18, 'LT', 'light'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xdA3BE87aB604E89feBd93fc055a8E4d864335012', 18, 'LT', 'light')
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x6E7ca6778AB0c607AfA3D17C65cF1172BB4D83D2', 18, 'LT', 'light'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x6E7ca6778AB0c607AfA3D17C65cF1172BB4D83D2', 18, 'LT', 'light'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xe520Ffe2DB8E7216c5c654c2372fce68bC0D2F2E', 18, 'LT', 'light')
 }
 export const VELT: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xA6f0B76e460841E5b138896d632b178fC40eC0C7', 18, 'VELT', 've light'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xA6f0B76e460841E5b138896d632b178fC40eC0C7', 18, 'VELT', 've light'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x82ecf82016Ddd359D12b9E04202c21992D5AE7e6', 18, 'VELT', 've light')
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xc9B94F82E9C760CefCdbAD892B58E42216159241', 18, 'VELT', 've light'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xc9B94F82E9C760CefCdbAD892B58E42216159241', 18, 'VELT', 've light'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xb928e3E9f51Dfd4a698Ed2e35cefa69F1d137b38', 18, 'VELT', 've light')
 }
 export const HOPE: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x8c2894B3bd5E385FfeF7dE863ACDD253588d4E8b', 18, 'HOPE', 'hope'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x8c2894B3bd5E385FfeF7dE863ACDD253588d4E8b', 18, 'HOPE', 'hope'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x93C4dbce01Eea7C5233F78Dc646A0Fb5ac035237', 18, 'HOPE', 'hope')
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xE94Cf6a2D6d6FaBbd3fa9134b49f0Eb3C68C773d', 18, 'HOPE', 'hope'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xE94Cf6a2D6d6FaBbd3fa9134b49f0Eb3C68C773d', 18, 'HOPE', 'hope'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x31b793F6fd9D4451DB93e4F74a6c4F7650177f82', 18, 'HOPE', 'hope')
 }
 
 export const ST_HOPE: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027', 18, 'stHOPE', 'stHOPE'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x1023dF2eFad3d19ce0f4eF746df080246477e50e', 18, 'stHOPE', 'stHOPE'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xdBa20429302E2bd8353fb553E6abC67452f8826E', 18, 'stHOPE', 'stHOPE')
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xC34F90659605a7c2b79423503e767882de92A80d', 18, 'stHOPE', 'stHOPE'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xC34F90659605a7c2b79423503e767882de92A80d', 18, 'stHOPE', 'stHOPE'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x3c26F2690C784285a1620418d5cB5Fd1536942F7', 18, 'stHOPE', 'stHOPE')
 }
 
 // staking buyhope dao about address
@@ -67,34 +67,34 @@ export const PERMIT2_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.HOPE]: '0x0b4EfC1C7F42675a2a04FD9a2040e263225fAbb2'
 }
 export const GOMBOC_CONTROLLER_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027',
-  [ChainId.SEPOLIA]: '0x4Cea8feC7d11f12eEd5eC9c933e4B4E9d8e98027',
-  [ChainId.HOPE]: '0x6Ca07D9E16C5e86C5E1a301F04e61e4709c20545'
+  [ChainId.MAINNET]: '0x3270c89Db62d7C86700818c1C6B90bbF473C4C53',
+  [ChainId.SEPOLIA]: '0x3270c89Db62d7C86700818c1C6B90bbF473C4C53',
+  [ChainId.HOPE]: '0x0059A8BbDca01780397D382870dCD3Aeee25f4Ad'
 }
 export const LT_MINTER_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0x8D9dDd856342028e7F64d94F69aD09bb468dF00D',
-  [ChainId.SEPOLIA]: '0x8D9dDd856342028e7F64d94F69aD09bb468dF00D',
-  [ChainId.HOPE]: '0x013C7cDcD33eD30C206183552921a2bD07715620'
+  [ChainId.MAINNET]: '0x6Dd888E436c22beD2d66C67FdB1B3b93198D6045',
+  [ChainId.SEPOLIA]: '0x6Dd888E436c22beD2d66C67FdB1B3b93198D6045',
+  [ChainId.HOPE]: '0x36246648b46761985D271E2425083DDe594Ce70B'
 }
 export const TOKEN_SALE_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0x69cf8bBd866100F2f46632595Ef260A6253F7dB1',
-  [ChainId.SEPOLIA]: '0x69cf8bBd866100F2f46632595Ef260A6253F7dB1',
-  [ChainId.HOPE]: '0x277027E70b5E5e72B238814C1B792b08469932eF'
+  [ChainId.MAINNET]: '0x373C48E66C3241e0A5bC60505FBDEaf4Ed7cF742',
+  [ChainId.SEPOLIA]: '0x373C48E66C3241e0A5bC60505FBDEaf4Ed7cF742',
+  [ChainId.HOPE]: '0x95c25214db92701bADB20d2fB9b1A288DE69F3EF'
 }
 export const POOL_GOMBOC_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0xF293BCE14C9bf0fd4Be6B1097808320dBDBccfd0',
-  [ChainId.SEPOLIA]: '0xF293BCE14C9bf0fd4Be6B1097808320dBDBccfd0',
-  [ChainId.HOPE]: '0x01285bE3EDd938966E2d0Fb9e3234497BAFda9a6'
+  [ChainId.MAINNET]: '0xc95A338FD6D5E78068ED5feB4d459c3Eb43481c2',
+  [ChainId.SEPOLIA]: '0xc95A338FD6D5E78068ED5feB4d459c3Eb43481c2',
+  [ChainId.HOPE]: '0x349b8F25A6066Aa01B5780a9e24961A2dBbB2c31'
 }
 export const STAKING_HOPE_GOMBOC_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: '0x1023dF2eFad3d19ce0f4eF746df080246477e50e',
-  [ChainId.SEPOLIA]: '0x1023dF2eFad3d19ce0f4eF746df080246477e50e',
-  [ChainId.HOPE]: '0xdBa20429302E2bd8353fb553E6abC67452f8826E'
+  [ChainId.MAINNET]: '0xC34F90659605a7c2b79423503e767882de92A80d',
+  [ChainId.SEPOLIA]: '0xC34F90659605a7c2b79423503e767882de92A80d',
+  [ChainId.HOPE]: '0x3c26F2690C784285a1620418d5cB5Fd1536942F7'
 }
 export const VELT_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0xA6f0B76e460841E5b138896d632b178fC40eC0C7',
-  [ChainId.SEPOLIA]: '0xA6f0B76e460841E5b138896d632b178fC40eC0C7',
-  [ChainId.HOPE]: '0x82ecf82016Ddd359D12b9E04202c21992D5AE7e6'
+  [ChainId.MAINNET]: '0xc9B94F82E9C760CefCdbAD892B58E42216159241',
+  [ChainId.SEPOLIA]: '0xc9B94F82E9C760CefCdbAD892B58E42216159241',
+  [ChainId.HOPE]: '0xb928e3E9f51Dfd4a698Ed2e35cefa69F1d137b38'
 }
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
