@@ -92,7 +92,7 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
   }, [errorMessage])
 
   const lockerCallback = useCallback(async () => {
-    return console.log(weekNumber)
+    // return console.log(weekNumber)
     if (!account || !chainId) return
     setCurToken(LT[chainId ?? 1])
     setShowConfirm(true)
