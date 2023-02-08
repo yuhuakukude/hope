@@ -10,8 +10,6 @@ import JSBI from 'jsbi'
 import { calculateGasMargin } from '../../utils'
 import { Input as NumericalInput } from '../../components/NumericalInput'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
-
-import './index.scss'
 import { ethers } from 'ethers'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useActiveWeb3React } from '../../hooks'
@@ -23,6 +21,7 @@ import { HOPE, PERMIT2_ADDRESS, TOKEN_SALE_ADDRESS, USDC, USDT } from '../../con
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
+import './index.scss'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
