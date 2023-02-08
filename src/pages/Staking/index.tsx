@@ -177,6 +177,7 @@ export default function Staking() {
           })
       })
       .catch(error => {
+        setStakePendingText('')
         onTxError(error)
       })
   }, [account, inputAmount, library, chainId, onTxStart, toStaked, onTxSubmitted, onTxError])
