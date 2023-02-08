@@ -10,6 +10,7 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { tryParseAmount } from '../../state/swap/hooks'
+import format from '../../utils/format'
 
 export function useLocker() {
   const { account } = useActiveWeb3React()
@@ -36,14 +37,14 @@ export function useToLocker() {
   const contract = useLockerContract()
   const { account } = useActiveWeb3React()
   const toLocker = useCallback(
-    async (amount: CurrencyAmount, date: any, NONCE, DEADLINE, sigVal) => {
+    async (amount: CurrencyAmount, date: any, NONCE, DEADLINE, sigVal, veLtAmount) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       if (amount.equalTo(JSBI.BigInt('0'))) throw new Error('amount is un support')
       if (!date) throw new Error('none date')
       const args = [amount.raw.toString(), date, NONCE, DEADLINE, sigVal]
+      console.log(args)
       const method = 'createLock'
-      console.log('args', args)
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
@@ -51,7 +52,9 @@ export function useToLocker() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Locker ${amount.toSignificant()} LT`
+            summary: `Locker ${veLtAmount
+              ?.toFixed(2, { groupSeparator: ',' })
+              .toString()} VELT with ${amount.toSignificant()} LT`
           })
           return response.hash
         })
@@ -60,7 +63,7 @@ export function useToLocker() {
     [account, addTransaction, contract]
   )
   const toAddAmountLocker = useCallback(
-    async (amount: CurrencyAmount, NONCE, DEADLINE, sigVal) => {
+    async (amount: CurrencyAmount, NONCE, DEADLINE, sigVal, getVeLtArg) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       if (amount.equalTo(JSBI.BigInt('0'))) throw new Error('amount is un support')
@@ -74,7 +77,9 @@ export function useToLocker() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Locker ${amount.toSignificant()} LT`
+            summary: `Locker ${getVeLtArg
+              ?.toFixed(2, { groupSeparator: ',' })
+              .toString()} VELT with ${amount.toSignificant()} LT`
           })
           return response.hash
         })
@@ -97,7 +102,7 @@ export function useToLocker() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Locker LT with add time success`
+            summary: `Lock Time to ${format.formatDate(argTime)}`
           })
           return response.hash
         })
@@ -115,7 +120,7 @@ export function useToLocker() {
       JSBI.multiply(JSBI.multiply(JSBI.BigInt(365), JSBI.BigInt(24)), JSBI.BigInt(60)),
       JSBI.BigInt(60)
     )
-    const lockPeriod = moment(endDate).diff(moment().utc(), 'second')
+    const lockPeriod = moment(endDate).diff(moment(), 'second')
     const veltGetAmount = new TokenAmount(
       VELT[chainId ?? 1],
       JSBI.divide(

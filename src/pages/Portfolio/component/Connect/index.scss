@@ -1,0 +1,28 @@
+.portfolio-connect {
+  margin: 30px;
+  text-align: center;
+  border-radius: 20px;
+  background-color: rgba(38, 38, 44, 1);
+  padding: 40px;
+  box-sizing: border-box;
+
+  .portfolio-connect-bg {
+    margin: 0 auto;
+    width: 540px;
+    height: 280px;
+    border: 1px solid;
+  }
+
+  .portfolio-connect-title {
+    margin-top: 30px;
+    line-height: 24px;
+    color: #fff;
+    font-size: 16px;
+  }
+
+  .portfolio-connect-button {
+    text-align: center;
+    margin-top: 40px;
+    width: 400px;
+  }
+}

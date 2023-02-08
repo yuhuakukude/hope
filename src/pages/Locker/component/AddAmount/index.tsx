@@ -10,6 +10,7 @@ import TransactionConfirmationModal, {
 import './index.scss'
 
 import { ethers } from 'ethers'
+import { TransactionResponse } from '@ethersproject/providers'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
 import { JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../../hooks'
@@ -24,6 +25,7 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
   const inputAmount = tryParseAmount(amount, LT[chainId ?? 1]) as TokenAmount | undefined
   const [txHash, setTxHash] = useState<string>('')
+  const [pendingText, setPendingText] = useState('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
 
@@ -80,17 +82,13 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
     setAmount(resAmount)
   }
 
-  const changeAmount = (val: any) => {
-    setAmount(val)
-  }
-
   const actionText = useMemo(() => {
     if (isMaxDisabled) {
       return `Insufficient LT balance`
     } else if (!inputAmount) {
       return `Enter Amount`
     } else {
-      return approvalState === ApprovalState.NOT_APPROVED ? 'Confirm in your wallet' : 'Locker'
+      return approvalState === ApprovalState.NOT_APPROVED ? 'Approve LT' : 'Submit'
     }
   }, [isMaxDisabled, inputAmount, approvalState])
 
@@ -106,15 +104,52 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
     )
   }, [errorStatus])
 
+  const onTxStart = useCallback(() => {
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+  }, [])
+
+  const onTxSubmitted = useCallback(
+    (hash: string | undefined) => {
+      setShowConfirm(true)
+      setPendingText(``)
+      setAttemptingTxn(false)
+      hash && setTxHash(hash)
+      setAmount('')
+      onCloseModel()
+    },
+    [onCloseModel]
+  )
+
+  const onTxError = useCallback(error => {
+    setShowConfirm(true)
+    setTxHash('')
+    setPendingText(``)
+    setAttemptingTxn(false)
+    setErrorStatus({ code: error?.code, message: error.message })
+  }, [])
+
+  const onApprove = useCallback(() => {
+    setCurToken(undefined)
+    onTxStart()
+    setPendingText(`Approve LT`)
+    approveCallback()
+      .then((response: TransactionResponse | undefined) => {
+        onTxSubmitted(response?.hash)
+      })
+      .catch(error => {
+        onTxError(error)
+      })
+  }, [approveCallback, onTxError, onTxStart, onTxSubmitted])
+
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
     setCurToken(LT[chainId ?? 1])
-    setShowConfirm(true)
-    setAttemptingTxn(true)
+    setPendingText(`Approve LT`)
+    onTxStart()
 
     const deadline = toDeadline(PERMIT_EXPIRATION)
     const nonce = ethers.utils.randomBytes(32)
-
     const permit: Permit = {
       permitted: {
         token: LT[chainId ?? 1].address,
@@ -130,23 +165,38 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
       .getSigner(account)
       ._signTypedData(domain, types, values)
       .then(signature => {
-        toAddAmountLocker(inputAmount, nonce, deadline, signature)
+        const getVeLtArg = getVeLtAmount(amount, format.formatDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD'))
+        setPendingText(
+          `Locker ${getVeLtArg
+            ?.toFixed(2, { groupSeparator: ',' })
+            .toString()} VELT with ${inputAmount.toSignificant()} LT`
+        )
+        toAddAmountLocker(inputAmount, nonce, deadline, signature, getVeLtArg)
           .then(hash => {
-            setAttemptingTxn(false)
-            setTxHash(hash)
-            setAmount('')
-            onCloseModel()
+            onTxSubmitted(hash)
           })
-          .catch((err: any) => {
-            setAttemptingTxn(false)
-            setErrorStatus({ code: err?.code, message: err.message })
+          .catch((error: any) => {
+            onTxError(error)
+            throw error
           })
       })
       .catch(error => {
-        setAttemptingTxn(false)
-        setErrorStatus({ code: error?.code, message: error.message })
+        onTxError(error)
+        throw error
       })
-  }, [account, inputAmount, library, chainId, toAddAmountLocker, onCloseModel])
+  }, [
+    account,
+    amount,
+    inputAmount,
+    library,
+    chainId,
+    lockerRes,
+    onTxError,
+    onTxSubmitted,
+    onTxStart,
+    getVeLtAmount,
+    toAddAmountLocker
+  ])
 
   return (
     <Modal isOpen={isOpen} onDismiss={() => onCloseModel()}>
@@ -156,7 +206,7 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
         attemptingTxn={attemptingTxn}
         hash={txHash}
         content={confirmationContent}
-        pendingText={''}
+        pendingText={pendingText}
         currencyToAdd={curToken}
       />
       <div className="locker-add-amount-modal p-y-40 p-l-30 p-r-25 flex-1">
@@ -211,7 +261,7 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
               decimals={2}
               align={'right'}
               onUserInput={val => {
-                changeAmount(val)
+                setAmount(val)
               }}
             />
             <div className="coin-box flex ai-center cursor-select">
@@ -222,11 +272,11 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
         </div>
         <div className="m-t-30">
           <ActionButton
-            pending={approvalState === ApprovalState.PENDING}
-            pendingText={'Approving'}
-            disableAction={isMaxDisabled || !inputAmount || !ltBalance}
+            pending={approvalState === ApprovalState.PENDING || !pendingText}
+            pendingText={'Confirm in your wallet'}
+            disableAction={isMaxDisabled || !inputAmount || !ltBalance || approvalState === ApprovalState.UNKNOWN}
             actionText={actionText}
-            onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : lockerCallback}
+            onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : lockerCallback}
           />
         </div>
       </div>

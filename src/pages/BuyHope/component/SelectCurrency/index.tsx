@@ -6,6 +6,7 @@ import styled from 'styled-components'
 import { Token } from '@uniswap/sdk'
 import { useTokenBalances } from '../../../../state/wallet/hooks'
 import { useActiveWeb3React } from '../../../../hooks'
+import CurrencyLogo from '../../../../components/CurrencyLogo'
 
 const SearchInput = styled.input`
   position: relative;
@@ -99,7 +100,7 @@ export default function SelectCurrency({
               }}
             >
               <div className="left flex ai-center">
-                <div className={`${token.symbol}`} />
+                <CurrencyLogo currency={token} />
                 <div className="m-l-8 font-nor text-medium coin">{token.symbol}</div>
               </div>
               <div className="right flex ai-center">

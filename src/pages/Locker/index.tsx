@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useMemo, useCallback, useEffect, useRef, RefObject } from 'react'
 import styled from 'styled-components'
 import { NavLink } from 'react-router-dom'
 import { AutoColumn } from '../../components/Column'
@@ -6,6 +6,7 @@ import LockerEcharts from './component/echarts'
 import NumericalInput from '../../components/NumericalInput'
 import { DatePicker } from 'antd'
 import moment from 'moment'
+import momentTz from 'moment-timezone'
 import format from '../../utils/format'
 import ActionButton from '../../components/Button/ActionButton'
 import { ButtonPrimary } from '../../components/Button'
@@ -13,11 +14,12 @@ import './index.scss'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 
 import { ethers } from 'ethers'
+import { TransactionResponse } from '@ethersproject/providers'
 import { useActiveWeb3React } from '../../hooks'
 import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS } from '../../constants'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { Token, TokenAmount } from '@uniswap/sdk'
-import { useTokenBalance } from '../../state/wallet/hooks'
+import { useTokenBalance, useETHBalances } from '../../state/wallet/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import { useLocker, useToLocker } from '../../hooks/ahp/useLocker'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
@@ -38,7 +40,9 @@ export default function DaoLocker() {
   const [dateIndex, setDateIndex] = useState(2)
   const [txHash, setTxHash] = useState<string>('')
   const toggleWalletModal = useWalletModalToggle()
+  const [pendingText, setPendingText] = useState('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
+  const lockerRef = useRef<HTMLInputElement>()
   const dateList = [
     { type: 'week', label: '≈2 Week', value: 2 },
     { type: 'month', label: '≈6 Months', value: 26 },
@@ -47,6 +51,7 @@ export default function DaoLocker() {
   ]
 
   const { account, chainId, library } = useActiveWeb3React()
+  const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const inputAmount = tryParseAmount(amount, LT[chainId ?? 1]) as TokenAmount | undefined
@@ -99,6 +104,20 @@ export default function DaoLocker() {
     return getVeLtAmount(amount, lockerDate)
   }, [amount, lockerDate, getVeLtAmount])
 
+  const isShowTip = useMemo(() => {
+    if (!lockerRes?.end) {
+      return false
+    }
+    return moment(format.formatDate(Number(`${lockerRes?.end}`))).diff(moment(), 'days') <= 14
+  }, [lockerRes])
+
+  const isEthBalanceInsufficient = useMemo(() => {
+    if (!userEthBalance) {
+      return false
+    }
+    return Number(userEthBalance?.toFixed(4)) < 0.001
+  }, [userEthBalance])
+
   const maxWeek = useMemo(() => {
     if (!lockerRes?.end) {
       return 0
@@ -128,7 +147,7 @@ export default function DaoLocker() {
     } else if (!inputAmount || !lockerDate) {
       return `Enter Amount & Date`
     } else {
-      return approvalState === ApprovalState.NOT_APPROVED ? 'Confirm in your wallet' : 'Locker'
+      return approvalState === ApprovalState.NOT_APPROVED ? 'Approve LT' : 'Submit'
     }
   }, [isMaxDisabled, inputAmount, lockerDate, approvalState])
 
@@ -144,15 +163,50 @@ export default function DaoLocker() {
     )
   }, [errorStatus])
 
+  const onTxStart = useCallback(() => {
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+  }, [])
+
+  const onTxSubmitted = useCallback((hash: string | undefined) => {
+    setShowConfirm(true)
+    setPendingText(``)
+    setAttemptingTxn(false)
+    hash && setTxHash(hash)
+    setAmount('')
+    setLockerDate('')
+    changeDateIndex(2)
+  }, [])
+
+  const onTxError = useCallback(error => {
+    setShowConfirm(true)
+    setTxHash('')
+    setPendingText(``)
+    setAttemptingTxn(false)
+    setErrorStatus({ code: error?.code, message: error.message })
+  }, [])
+
+  const onApprove = useCallback(() => {
+    setCurToken(undefined)
+    onTxStart()
+    setPendingText(`Approve LT`)
+    approveCallback()
+      .then((response: TransactionResponse | undefined) => {
+        onTxSubmitted(response?.hash)
+      })
+      .catch(error => {
+        onTxError(error)
+      })
+  }, [approveCallback, onTxError, onTxStart, onTxSubmitted])
+
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
     setCurToken(VELT[chainId ?? 1])
-    setShowConfirm(true)
-    setAttemptingTxn(true)
+    setPendingText(`Approve LT`)
+    onTxStart()
 
     const deadline = toDeadline(PERMIT_EXPIRATION)
     const nonce = ethers.utils.randomBytes(32)
-
     const permit: Permit = {
       permitted: {
         token: LT[chainId ?? 1].address,
@@ -168,32 +222,28 @@ export default function DaoLocker() {
       .getSigner(account)
       ._signTypedData(domain, types, values)
       .then(signature => {
-        toLocker(
-          inputAmount,
-          moment(lockerDate)
-            .utc()
-            .unix(),
-          nonce,
-          deadline,
-          signature
+        setPendingText(
+          `Locker ${veLtAmount
+            ?.toFixed(2, { groupSeparator: ',' })
+            .toString()} VELT with ${inputAmount.toSignificant()} LT`
         )
+        const lockTimeArg = momentTz(lockerDate)
+          .tz('Africa/Bissau', true)
+          .unix()
+        toLocker(inputAmount, lockTimeArg, nonce, deadline, signature, veLtAmount)
           .then(hash => {
-            setAttemptingTxn(false)
-            setTxHash(hash)
-            setAmount('')
-            setLockerDate('')
-            changeDateIndex(2)
+            onTxSubmitted(hash)
           })
-          .catch((err: any) => {
-            setAttemptingTxn(false)
-            setErrorStatus({ code: err?.code, message: err.message })
+          .catch((error: any) => {
+            onTxError(error)
+            throw error
           })
       })
       .catch(error => {
-        setAttemptingTxn(false)
-        setErrorStatus({ code: error?.code, message: error.message })
+        onTxError(error)
+        throw error
       })
-  }, [account, inputAmount, library, chainId, lockerDate, toLocker])
+  }, [account, inputAmount, library, chainId, lockerDate, veLtAmount, toLocker, onTxStart, onTxSubmitted, onTxError])
 
   const lockerAddAction = (type: string) => {
     if (type === 'amount') {
@@ -223,7 +273,7 @@ export default function DaoLocker() {
           attemptingTxn={attemptingTxn}
           hash={txHash}
           content={confirmationContent}
-          pendingText={''}
+          pendingText={pendingText}
           currencyToAdd={curToken}
         />
         <div className="dao-locker-page">
@@ -231,9 +281,14 @@ export default function DaoLocker() {
             <h2 className="text-medium">Lock your LT to acquire veLT</h2>
             <p className="font-nor m-t-20">
               Extra earnings & voting power{' '}
-              <NavLink to={'/buy-hope'} className="link text-primary m-l-20">
+              <a
+                href="https://docs.hope.money/light/lRGc3srjpd2008mDaMdR/light-hyfi-applications-roadmap/roadmap"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="link text-primary m-l-20"
+              >
                 Learn more <i className="iconfont">&#xe619;</i>{' '}
-              </NavLink>
+              </a>
             </p>
             <ul className="m-t-20">
               <li className="font-nor">- Boost liquidity mining yield up to 2.5x</li>
@@ -241,16 +296,18 @@ export default function DaoLocker() {
               <li className="font-nor">- Earn your share of protocol revenue</li>
             </ul>
           </div>
-          <div className="tip-box flex ai-center jc-center m-t-30">
-            <i className="iconfont text-primary">&#xe61e;</i>
-            <p className="font-nor text-normal m-l-12">
-              Your lock expires soon. You need to lock at least for two weeks in{' '}
-              <a href="#getVeLt" className="text-primary">
-                Locker
-              </a>
-            </p>
-          </div>
-          <div className="content-box m-t-30" id="getVeLt">
+          {isShowTip && (
+            <div className="tip-box flex ai-center jc-center m-t-30">
+              <i className="iconfont text-primary">&#xe61e;</i>
+              <p className="font-nor text-normal m-l-12">
+                Your lock expires soon. You need to lock at least for two weeks in{' '}
+                <span className="text-primary cursor-select" onClick={() => lockerRef.current?.scrollIntoView()}>
+                  Locker
+                </span>
+              </p>
+            </div>
+          )}
+          <div className="content-box m-t-30" ref={lockerRef as RefObject<HTMLInputElement>}>
             <h3 className="text-medium font-20">My veLT</h3>
             <div className="card-box m-t-30 flex jc-between">
               <div className="item p-30">
@@ -258,16 +315,16 @@ export default function DaoLocker() {
                 <p className="font-20 m-t-20 text-medium">
                   {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} LT
                 </p>
-                <p className="font-nor text-normal m-t-16">≈ $102,345.92</p>
+                <p className="font-nor text-normal m-t-16">≈ $ --</p>
               </div>
               <div className="item p-30">
                 <p className="font-nor text-normal">My Locked LT Amount</p>
                 <p className="font-20 m-t-20 text-medium">
                   {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '--'} LT
                 </p>
-                <p className="font-nor text-normal m-t-16">≈ $102,345.92</p>
+                <p className="font-nor text-normal m-t-16">≈ $ --</p>
                 {lockerRes?.end === '--' && Number(lockerRes?.amount) > 0 && (
-                  <NavLink to={'/buy-hope'} className="link-btn text-medium text-primary font-12 m-t-20">
+                  <NavLink to={'/hope/staking'} className="link-btn text-medium text-primary font-12 m-t-20">
                     Withdraw
                   </NavLink>
                 )}
@@ -370,24 +427,29 @@ export default function DaoLocker() {
                   <span className="text-normal">Total voting escrow</span>
                   <span className="text-medium">{veLtAmount ? veLtAmount.toFixed(2) : '--'} veLT</span>
                 </p>
-                <div className="m-t-30">
+                <div className={account && isEthBalanceInsufficient ? 'm-t-30' : 'm-t-100'}>
                   {!account ? (
                     <ButtonPrimary className="hp-button-primary text-medium font-nor" onClick={toggleWalletModal}>
                       Connect Wallet
                     </ButtonPrimary>
                   ) : (
                     <ActionButton
-                      pending={approvalState === ApprovalState.PENDING}
-                      pendingText={'Approving'}
+                      pending={approvalState === ApprovalState.PENDING || !!pendingText}
+                      pendingText={'Confirm in your wallet'}
                       disableAction={
-                        isMaxDisabled || !inputAmount || !lockerDate || !ltBalance || lockerRes?.end !== '--'
+                        isMaxDisabled ||
+                        !inputAmount ||
+                        !lockerDate ||
+                        !ltBalance ||
+                        lockerRes?.end !== '--' ||
+                        approvalState === ApprovalState.UNKNOWN
                       }
                       actionText={actionText}
-                      onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : lockerCallback}
+                      onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : lockerCallback}
                     />
                   )}
                 </div>
-                {account && (
+                {account && isEthBalanceInsufficient && (
                   <div className="tip flex m-t-30">
                     <div className="icon m-r-15">
                       <i className="iconfont font-28 text-primary font-bold">&#xe614;</i>

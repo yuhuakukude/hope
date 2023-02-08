@@ -34,11 +34,13 @@ import BuyHope from './BuyHope'
 import Staking from './Staking'
 import DaoGomboc from './DaoGomboc'
 import DaoLocker from './Locker'
+import Portfolio from './Portfolio'
 
 import './App.css'
 import '../assets/style/index.scss'
 import SideBar from '../components/SideBar'
 import { ModalProvider } from '../context/ModalContext'
+
 
 const PageWrapper = styled.div`
   display: flex;
@@ -135,6 +137,11 @@ export default function App() {
                   <Route exact strict path="/hope/buy-hope" component={BuyHope} />
                   <Route exact strict path="/dao/gomboc" component={DaoGomboc} />
                   <Route exact strict path="/dao/locker" component={DaoLocker} />
+                  <Route exact strict path="/staking" component={Staking} />
+                  <Route exact strict path="/buy-hope" component={BuyHope} />
+                  <Route exact strict path="/dao-gomboc" component={DaoGomboc} />
+                  <Route exact strict path="/dao-locker" component={DaoLocker} />
+                  <Route exact strict path="/portfolio" component={Portfolio} />
                   <Route component={RedirectPathToSwapOnly} />
                 </Switch>
               </Web3ReactManager>

@@ -5,6 +5,7 @@ import { useActiveWeb3React } from '../../../../hooks'
 import * as echarts from 'echarts'
 import { TokenAmount } from '@uniswap/sdk'
 import './index.scss'
+import format from '../../../../utils/format'
 import { useLocker } from '../../../../hooks/ahp/useLocker'
 
 export default function LockerEcharts() {
@@ -29,6 +30,7 @@ export default function LockerEcharts() {
             valueArr.unshift(valItem)
           })
           const option = {
+            grid: { left: '6%', top: '6%', bottom: '10%', right: '0%' },
             visualMap: {
               show: false,
               type: 'continuous',
@@ -41,10 +43,7 @@ export default function LockerEcharts() {
               }
             },
             title: {
-              left: 'center',
-              textStyle: {
-                color: '#FFFFFF'
-              }
+              show: false
             },
             tooltip: {
               trigger: 'axis'
@@ -73,7 +72,10 @@ export default function LockerEcharts() {
                 }
               },
               axisLabel: {
-                color: '#FFFFFF'
+                color: '#FFFFFF',
+                formatter: (value: any) => {
+                  return format.numFormat(Number(value), 2)
+                }
               }
             },
             series: [
@@ -144,11 +146,15 @@ export default function LockerEcharts() {
             </p>
           </div>
         </div>
-        <div className="tip-box m-t-30 p-t-30">
-          <p className="text-normal font-nor m-b-12">10,000 LT locked for 4 years = 1 veLT</p>
-          <p className="text-normal font-nor m-b-12">10,000 LT locked for 3 years = 0.75 veLT</p>
-          <p className="text-normal font-nor m-b-12">10,000 LT locked for 2 years = 0.50 veLT</p>
-          <p className="text-normal font-nor m-b-12">10,000 LT locked for 1 year = 0.25 veLT</p>
+        <div className="tip-box m-t-30 p-t-30 flex">
+          <div>
+            <p className="text-normal font-nor m-b-12">10,000 LT locked for 4 years = 1 veLT</p>
+            <p className="text-normal font-nor m-b-12">10,000 LT locked for 3 years = 0.75 veLT</p>
+          </div>
+          <div className="m-l-20">
+            <p className="text-normal font-nor m-b-12">10,000 LT locked for 2 years = 0.50 veLT</p>
+            <p className="text-normal font-nor m-b-12">10,000 LT locked for 1 year = 0.25 veLT</p>
+          </div>
         </div>
       </div>
     </>

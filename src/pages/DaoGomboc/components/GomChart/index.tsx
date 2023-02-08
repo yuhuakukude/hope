@@ -62,8 +62,8 @@ const GomChart = ({ votiingData }: GomChartProps) => {
                   bleedMargin: 10
                 },
                 labelLine: {
-                  length: 15,
-                  length2: 10,
+                  length: 25,
+                  length2: 20,
                   maxSurfaceAngle: 80
                 },
                 data: arr as any

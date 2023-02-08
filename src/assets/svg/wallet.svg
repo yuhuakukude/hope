@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="88px" height="88px" viewBox="0 0 88 88" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+    <!-- Generator: Sketch 57 (83077) - https://sketch.com -->
+    <desc>Created with Sketch.</desc>
+    <g id="Liquidity" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd">
+        <g id="LightSwap-Remove-Liquidity-Signature" transform="translate(-676.000000, -476.000000)">
+            <g id="编组-14" transform="translate(470.000000, 396.000000)">
+                <g id="钱包" transform="translate(206.000000, 80.000000)">
+                    <rect id="矩形" stroke="#979797" fill="#D8D8D8" opacity="0" x="0.5" y="0.5" width="87" height="87"></rect>
+                    <g id="编组-18" transform="translate(2.000000, 6.000000)">
+                        <path d="M12.2926829,41.383341 L12.2926829,41.383341 L12.2926829,13.3170732 L12.2926829,13.3170732 L76,13.3170732 C80.418278,13.3170732 84,16.8987952 84,21.3170732 L84,60.6341463 C84,65.0524243 80.418278,68.6341463 76,68.6341463 L31.8553744,68.6341463 L31.8553744,68.6341463" id="路径" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path>
+                        <path d="M84,47.1219512 L71.7073171,47.1219512 C68.3127864,47.1219512 65.5609756,44.3701404 65.5609756,40.9756098 C65.5609756,37.5810791 68.3127864,34.8292683 71.7073171,34.8292683 L71.7073171,34.8292683 L84,34.8292683" id="路径" stroke="#FFFFFF" stroke-width="2" stroke-linejoin="round"></path>
+                        <path d="M30.1347998,5.77945442 L50.1412477,6.04326198 C53.5357724,6.03700124 56.2927599,8.78362556 56.2991626,12.1781502 C56.2991626,12.182008 56.2991626,12.1858658 56.2991626,12.1897234 C56.2991626,15.9524363 56.2991626,18.774471 56.2991626,20.6558275" id="路径" stroke="#FFFFFF" stroke-width="2" transform="translate(43.216981, 13.217641) rotate(-30.000000) translate(-43.216981, -13.217641) "></path>
+                        <path d="M12.2926829,13.3170732 C12.2926829,8.79103229 15.961764,5.12195122 20.4878049,5.12195122 C29.8526955,5.12195122 38.0982067,5.12195122 42.780652,5.12195122 M53.3650369,5.12195122 C55.5519556,5.12195122 60.4188447,5.12195122 65.5609756,5.12195122 C67.823996,5.12195122 69.6585366,6.95649176 69.6585366,9.2195122 L69.6585366,13.3170732" id="形状" stroke="#FFFFFF" stroke-width="2"></path>
+                        <circle id="椭圆形" fill="#E4C989" cx="72.7317073" cy="40.9756098" r="2.04878049"></circle>
+                        <circle id="椭圆形" stroke="#FFFFFF" stroke-width="2" cx="17.4146341" cy="58.3902439" r="17.4146341"></circle>
+                        <polyline id="路径-2" stroke="#E4C989" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" points="17.4146341 46.0515434 17.4146341 58.3902439 25.0651075 62.7457768"></polyline>
+                    </g>
+                </g>
+            </g>
+        </g>
+    </g>
+</svg>

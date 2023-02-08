@@ -13,4 +13,8 @@ export default class GombocApi {
   static getVoteHistoryList(params: any): any {
     return http.get('/light/gombocs/getLightGombocController', { params })
   }
+  // 查询投票池
+  static getGombocsPoolsList(params: any): any {
+    return http.get('/light/gombocs/pools', { params })
+  }
 }

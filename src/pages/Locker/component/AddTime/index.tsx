@@ -28,6 +28,7 @@ export default function AddTime({
   const { account, chainId } = useActiveWeb3React()
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
   const [txHash, setTxHash] = useState<string>('')
+  const [pendingText, setPendingText] = useState('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
 
@@ -108,9 +109,7 @@ export default function AddTime({
   const argTime = useMemo(() => {
     if (lockerRes?.end && weekNumber) {
       const endTime = format.formatDate(Number(`${lockerRes?.end}`))
-      const newEndDate = moment(endTime)
-        .add(weekNumber, 'week')
-        .utc()
+      const newEndDate = moment(endTime).add(weekNumber, 'week')
       return moment(newEndDate).unix()
     }
     return null
@@ -134,6 +133,7 @@ export default function AddTime({
   const lockerCallback = useCallback(async () => {
     if (!account || !chainId) return
     setCurToken(VELT[chainId ?? 1])
+    setPendingText(`Approve LT`)
     setShowConfirm(true)
     setAttemptingTxn(true)
 
@@ -142,13 +142,15 @@ export default function AddTime({
         setAttemptingTxn(false)
         setTxHash(hash)
         setWeekNumber(2)
-        onCloseModel()
+        setPendingText(``)
       })
       .catch((err: any) => {
         setAttemptingTxn(false)
+        setTxHash('')
+        setPendingText(``)
         setErrorStatus({ code: err?.code, message: err.message })
       })
-  }, [account, argTime, chainId, toAddTimeLocker, onCloseModel])
+  }, [account, argTime, chainId, toAddTimeLocker])
 
   return (
     <Modal isOpen={isOpen} onDismiss={wrappedOnDismiss}>
@@ -158,7 +160,7 @@ export default function AddTime({
         attemptingTxn={attemptingTxn}
         hash={txHash}
         content={confirmationContent}
-        pendingText={''}
+        pendingText={pendingText}
         currencyToAdd={curToken}
       />
       <div className="locker-add-amount-modal p-y-40 p-l-30 p-r-25 flex-1">
@@ -194,9 +196,7 @@ export default function AddTime({
             <div className="value font-nor flex m-t-12 ai-center">
               <p className="text-medium">{format.formatDate(Number(`${lockerRes?.end}`))} (UTC)</p>
               <i className="iconfont m-x-12">&#xe619;</i>
-              <p className="text-medium text-primary">
-                {argTime ? moment.unix(argTime).format('YYYY-MM-DD HH:mm:ss') : '--'} (UTC)
-              </p>
+              <p className="text-medium text-primary">{argTime ? format.formatDate(argTime) : '--'} (UTC)</p>
             </div>
           </div>
         </div>
@@ -225,7 +225,13 @@ export default function AddTime({
           </div>
         </div>
         <div className="m-t-30">
-          <ActionButton disableAction={!weekNumber || !ltBalance} actionText="Submit" onAction={lockerCallback} />
+          <ActionButton
+            pending={pendingText !== ''}
+            pendingText={'Confirm in your wallet'}
+            disableAction={!weekNumber || !ltBalance}
+            actionText="Submit"
+            onAction={lockerCallback}
+          />
         </div>
       </div>
     </Modal>

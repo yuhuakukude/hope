@@ -1,40 +1,119 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import './index.scss'
-import { Switch, Input, Table } from 'antd'
+import { Switch, Input, Table, Button } from 'antd'
+import JSBI from 'jsbi'
+import { useWalletModalToggle } from '../../../../state/application/hooks'
 import { ButtonPrimary } from '../../../../components/Button'
 import GombocApi from '../../../../api/gomboc.api'
 import { useActiveWeb3React } from '../../../../hooks'
+import { TokenAmount } from '@uniswap/sdk'
+import { LT } from '../../../../constants'
 const GomList = () => {
-  const { account } = useActiveWeb3React()
+  const toggleWalletModal = useWalletModalToggle()
+  const { account, chainId } = useActiveWeb3React()
   const [searchValue, setSearchValue] = useState('')
   const [isMyVote, setIsMyVote] = useState(false)
   const [tableData, setTableData] = useState([])
   const [voterAddress, setVoterAddress] = useState('')
 
+  const CompositionNode = (text: any) => <span>{text || '--'}</span>
+
+  function getViewAmount(value: any) {
+    let res = ''
+    if (value && value !== '0') {
+      const ta = new TokenAmount(LT[chainId ?? 1], JSBI.BigInt(value))
+      const ra = ta.multiply(JSBI.BigInt(100))
+      if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
+        res = ra.toFixed(2)
+      }
+    }
+    return res
+  }
+
+  function toReset() {}
+
+  function toVote() {}
+
+  const weightNode = (text: any, record: any) => {
+    return (
+      <>
+        <p>This period: {getViewAmount(text) || '--'} %</p>
+        <p>Next Period: {getViewAmount(record.nextWeight) || '--'} %</p>
+      </>
+    )
+  }
+
+  const votesNote = (text: any) => {
+    return (
+      <>
+        <p> {getViewAmount(text) || '--'} %</p>
+        <p>of my voting power</p>
+      </>
+    )
+  }
+
+  const actionNode = (record: any) => {
+    return (
+      <>
+        {!account ? (
+          <ButtonPrimary className="hp-button-primary" onClick={toggleWalletModal}>
+            Connect Wallet
+          </ButtonPrimary>
+        ) : (
+          <div>
+            <Button
+              disabled
+              className="text-primary font-bold"
+              onClick={() => {
+                toReset()
+              }}
+              type="link"
+            >
+              Reset
+            </Button>
+            <Button
+              className="text-primary font-bold"
+              onClick={() => {
+                toVote()
+              }}
+              type="link"
+            >
+              Vote
+            </Button>
+          </div>
+        )}
+      </>
+    )
+  }
+
   const columns = [
     {
       title: 'Gömböc',
-      dataIndex: 'gombocName',
-      key: 'gombocName'
+      dataIndex: 'name',
+      key: 'name'
     },
     {
       title: 'Composition',
-      dataIndex: 'Composition',
-      key: 'Composition'
+      dataIndex: 'composition',
+      render: CompositionNode,
+      key: 'composition'
     },
     {
       title: 'Weight',
-      dataIndex: 'Weight',
-      key: 'Weight'
+      dataIndex: 'weight',
+      render: weightNode,
+      key: 'weight'
     },
     {
       title: 'My votes',
-      dataIndex: 'votes',
-      key: 'votes'
+      dataIndex: 'userPower',
+      render: votesNote,
+      key: 'userPower'
     },
     {
       title: 'vote',
       dataIndex: 'vote',
+      render: actionNode,
       key: 'vote'
     }
   ]
@@ -57,11 +136,11 @@ const GomList = () => {
     try {
       const par = {
         voter: voterAddress,
-        gombocAddress: searchValue
+        token: searchValue
       }
-      const res = await GombocApi.getVoteHistoryList(par)
-      if (res.result && res.result.content && res.result.content.length > 0) {
-        setTableData(res.result.content)
+      const res = await GombocApi.getGombocsPoolsList(par)
+      if (res.result && res.result && res.result.length > 0) {
+        setTableData(res.result)
       } else {
         setTableData([])
       }
@@ -107,7 +186,7 @@ const GomList = () => {
         </div>
       </div>
       <div className="m-t-30">
-        <Table rowKey={'id'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
+        <Table rowKey={'gomboc'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
       </div>
     </div>
   )
