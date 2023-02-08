@@ -104,16 +104,15 @@ export default function BuyHope() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Buy ${amount
-              .multiply(JSBI.BigInt('5'))
-              .toSignificant(4, { groupSeparator: ',' })
-              .toString()} Hope with ${amount.toSignificant()} {currency}`
+            summary: `Buy ${receiveTokenAmount
+              ?.toSignificant(2, { groupSeparator: ',' })
+              .toString()} Hope with ${amount.toSignificant()} ${payToken.symbol}`
           })
           return response.hash
         })
       })
     },
-    [account, addTransaction, buyHopeContract, payToken.symbol]
+    [account, addTransaction, buyHopeContract, payToken, receiveTokenAmount]
   )
 
   const buyHopeCallback = useCallback(async () => {
@@ -167,7 +166,7 @@ export default function BuyHope() {
     } else if (!inputAmount) {
       return `Enter Amount`
     } else {
-      return approvalState === ApprovalState.NOT_APPROVED ? 'Confirm in your wallet' : 'Supply'
+      return approvalState === ApprovalState.NOT_APPROVED ? `Approve ${payToken.symbol}` : 'Supply'
     }
   }, [isMaxDisabled, inputAmount, payToken, approvalState])
 
