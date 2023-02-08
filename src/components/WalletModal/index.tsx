@@ -120,7 +120,7 @@ const WALLET_VIEWS = {
   PENDING: 'pending'
 }
 
-export default function WalletModal({}: {}) {
+export default function WalletModal() {
   // important that these are destructed from the account-specific web3-react context
   const { active, account, connector, activate, error } = useWeb3React()
 
