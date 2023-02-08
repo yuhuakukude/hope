@@ -4,12 +4,11 @@ import styled, { ThemeContext } from 'styled-components'
 import Modal from '../Modal'
 import { ExternalLink } from '../../theme'
 import { Text } from 'rebass'
-import { CloseIcon, CustomLightSpinner } from '../../theme/components'
+import { CloseIcon } from '../../theme/components'
 import { RowBetween, RowFixed } from '../Row'
 import { CheckCircle } from 'react-feather'
 import { ButtonPrimary, ButtonLight } from '../Button'
 import { AutoColumn, ColumnCenter } from '../Column'
-import Circle from '../../assets/images/blue-loader.svg'
 import MetaMaskLogo from '../../assets/images/metamask.png'
 import { getEtherscanLink } from '../../utils'
 import { useActiveWeb3React } from '../../hooks'
@@ -18,6 +17,7 @@ import SubscribeCon from '../ahp/SubscribeCon'
 import { ReactComponent as Commited } from '../../assets/svg/commited.svg'
 import { ReactComponent as Warning } from '../../assets/svg/warning.svg'
 import { ReactComponent as Reject } from '../../assets/svg/reject.svg'
+import { ReactComponent as Wallet } from '../../assets/svg/wallet.svg'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -32,7 +32,7 @@ const BottomSection = styled(Section)`
 `
 
 const ConfirmedIcon = styled(ColumnCenter)`
-  padding: 60px 0;
+  padding: 40px 0;
 `
 
 const StyledLogo = styled.img`
@@ -50,7 +50,7 @@ function ConfirmationPendingContent({ onDismiss, pendingText }: { onDismiss: () 
           <CloseIcon onClick={onDismiss} />
         </RowBetween>
         <ConfirmedIcon>
-          <CustomLightSpinner src={Circle} alt="loader" size={'90px'} />
+          <Wallet />
         </ConfirmedIcon>
         {/* <SubscribeCon subSuccess={onDismiss} /> */}
         <AutoColumn gap="12px" justify={'center'}>
@@ -58,11 +58,11 @@ function ConfirmationPendingContent({ onDismiss, pendingText }: { onDismiss: () 
             Waiting For Confirmation
           </Text>
           <AutoColumn gap="12px" justify={'center'}>
-            <Text fontWeight={600} fontSize={14} color="" textAlign="center">
+            <Text fontWeight={600} fontSize={16} color="#A8A8AA" textAlign="center">
               {pendingText}
             </Text>
           </AutoColumn>
-          <Text fontSize={12} color="#565A69" textAlign="center">
+          <Text padding={20} fontSize={16} color="#FFFFFF" textAlign="center">
             Confirm this transaction in your wallet
           </Text>
         </AutoColumn>

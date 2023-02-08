@@ -7,18 +7,28 @@ import moment from 'moment'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
+import format from '../../../../utils/format'
 import './index.scss'
 
+import { JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
-import { Token } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../../hooks'
 import { LT, VELT } from '../../../../constants'
 
-export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onCloseModel: () => void }) {
+export default function AddTime({
+  isOpen,
+  maxWeek,
+  onCloseModel
+}: {
+  isOpen: boolean
+  maxWeek: number
+  onCloseModel: () => void
+}) {
   const [weekNumber, setWeekNumber] = useState(2)
   const { account, chainId } = useActiveWeb3React()
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
   const [txHash, setTxHash] = useState<string>('')
+  const [pendingText, setPendingText] = useState('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
 
@@ -31,15 +41,11 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
 
   // token
   const { lockerRes } = useLocker()
-  const { toAddTimeLocker } = useToLocker()
+  const { toAddTimeLocker, getVeLtAmount } = useToLocker()
 
   function wrappedOnDismiss() {
     onCloseModel()
   }
-
-  const maxWeek = useMemo(() => {
-    return 208
-  }, [])
 
   const subWeekFn = () => {
     if (weekNumber > 2) {
@@ -102,18 +108,32 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
 
   const argTime = useMemo(() => {
     if (lockerRes?.end && weekNumber) {
-      const newEndDate = moment(lockerRes?.end).add(weekNumber, 'week')
-      return moment(newEndDate)
-        .utc()
-        .unix()
+      const endTime = format.formatDate(Number(`${lockerRes?.end}`))
+      const newEndDate = moment(endTime).add(weekNumber, 'week')
+      return moment(newEndDate).unix()
     }
     return null
   }, [weekNumber, lockerRes])
 
+  const afterVeLtAmount = useMemo(() => {
+    if (!argTime || !lockerRes?.amount) {
+      return undefined
+    }
+    const velt = getVeLtAmount(
+      lockerRes?.amount.toFixed(2) ?? '0',
+      format.formatDate(Number(`${argTime}`), 'YYYY-MM-DD')
+    )
+    const res = new TokenAmount(
+      VELT[chainId ?? 1],
+      JSBI.add(JSBI.BigInt(veltBalance?.raw.toString() ?? '0'), JSBI.BigInt(velt?.raw.toString() ?? '0'))
+    )
+    return res
+  }, [lockerRes, argTime, chainId, veltBalance, getVeLtAmount])
+
   const lockerCallback = useCallback(async () => {
-    // return console.log(weekNumber)
     if (!account || !chainId) return
-    setCurToken(LT[chainId ?? 1])
+    setCurToken(VELT[chainId ?? 1])
+    setPendingText(`Approve LT`)
     setShowConfirm(true)
     setAttemptingTxn(true)
 
@@ -122,9 +142,12 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
         setAttemptingTxn(false)
         setTxHash(hash)
         setWeekNumber(2)
+        setPendingText(``)
       })
       .catch((err: any) => {
         setAttemptingTxn(false)
+        setTxHash('')
+        setPendingText(``)
         setErrorStatus({ code: err?.code, message: err.message })
       })
   }, [account, argTime, chainId, toAddTimeLocker])
@@ -137,12 +160,12 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
         attemptingTxn={attemptingTxn}
         hash={txHash}
         content={confirmationContent}
-        pendingText={''}
+        pendingText={pendingText}
         currencyToAdd={curToken}
       />
       <div className="locker-add-amount-modal p-y-40 p-l-30 p-r-25 flex-1">
         <div className="title flex ai-center cursor-select jc-between">
-          <p className="box-title font-18 text-medium">Add LT Locking Amount{weekNumber}</p>
+          <p className="box-title font-18 text-medium">Add LT Locking Amount</p>
           <i className="iconfont font-20 m-r-12" onClick={() => onCloseModel()}>
             &#xe612;
           </i>
@@ -151,9 +174,13 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
           <div className="item m-t-40">
             <div className="label text-normal font-nor">Total LT Locked : </div>
             <div className="value font-nor flex m-t-12 ai-center">
-              <p className="text-medium">{lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}</p>
+              <p className="text-medium">
+                {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '--'}
+              </p>
               <i className="iconfont m-x-12">&#xe619;</i>
-              <p className="text-medium text-primary">223,456,789.00</p>
+              <p className="text-medium">
+                {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '--'}
+              </p>
             </div>
           </div>
           <div className="item m-t-20">
@@ -161,15 +188,15 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
             <div className="value font-nor flex m-t-12 ai-center">
               <p className="text-medium">{veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}</p>
               <i className="iconfont m-x-12">&#xe619;</i>
-              <p className="text-medium text-primary">223,456,789.00</p>
+              <p className="text-medium text-primary">{afterVeLtAmount ? afterVeLtAmount.toFixed(2) : '--'}</p>
             </div>
           </div>
           <div className="item m-t-20">
             <div className="label text-normal font-nor">Unlock Time : </div>
             <div className="value font-nor flex m-t-12 ai-center">
-              <p className="text-medium">{lockerRes?.end} (UTC)</p>
+              <p className="text-medium">{format.formatDate(Number(`${lockerRes?.end}`))} (UTC)</p>
               <i className="iconfont m-x-12">&#xe619;</i>
-              <p className="text-medium">2023-09-10 00:00:00 (UTC)</p>
+              <p className="text-medium text-primary">{argTime ? format.formatDate(argTime) : '--'} (UTC)</p>
             </div>
           </div>
         </div>
@@ -198,7 +225,13 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
           </div>
         </div>
         <div className="m-t-30">
-          <ActionButton disableAction={!weekNumber || !ltBalance} actionText="Submit" onAction={lockerCallback} />
+          <ActionButton
+            pending={pendingText !== ''}
+            pendingText={'Confirm in your wallet'}
+            disableAction={!weekNumber || !ltBalance}
+            actionText="Submit"
+            onAction={lockerCallback}
+          />
         </div>
       </div>
     </Modal>

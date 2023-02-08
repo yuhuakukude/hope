@@ -1,5 +1,7 @@
 import React from 'react'
 import { ButtonPrimary, ButtonOutlined, ButtonError } from './index'
+import { CustomLightSpinner } from '../../theme'
+import spinner from '../../assets/svg/spinner.svg'
 
 export default function ActionButton({
   error,
@@ -27,10 +29,13 @@ export default function ActionButton({
   return (
     <>
       {error ? (
-        <ButtonError disabled error>{error}</ButtonError>
+        <ButtonError disabled error>
+          {error}
+        </ButtonError>
       ) : pending ? (
         <ButtonOutlined disabled height={height} width={width}>
           {pendingText || 'Waiting Confirmation'}
+          <CustomLightSpinner style={{ marginLeft: 10 }} size={'20px'} src={spinner} />
         </ButtonOutlined>
       ) : success ? (
         <ButtonPrimary disabled height={height} width={width}>
