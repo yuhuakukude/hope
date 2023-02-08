@@ -71,7 +71,7 @@ export default function InvestmentAllocation() {
     return () => {
       myChart.dispose()
     }
-  }, [])
+  }, [arr])
 
   return (
     <div className="investment-allocation">
