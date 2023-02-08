@@ -1,27 +1,33 @@
 import { useCallback } from 'react'
 import { useSingleCallResult } from '../../state/multicall/hooks'
-import { useLockerContract } from '../useContract'
+import { useLockerContract, useLTContract } from '../useContract'
 import { useActiveWeb3React } from '../index'
-import JSBI from 'jsbi'
-import { LT } from '../../constants'
+import { JSBI, TokenAmount } from '@uniswap/sdk'
+import moment from 'moment'
+import { LT, VELT } from '../../constants'
 import { CurrencyAmount } from '@uniswap/sdk'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
-import format from '../../utils/format'
+import { tryParseAmount } from '../../state/swap/hooks'
 
 export function useLocker() {
-  const { chainId } = useActiveWeb3React()
-  const buyHopeContract = useLockerContract()
-  const lockerRes = useSingleCallResult(buyHopeContract, 'locked', [LT[chainId ?? 1].address])
-
+  const { account } = useActiveWeb3React()
+  const lockerContract = useLockerContract()
+  const ltContract = useLTContract()
+  const lockerRes = useSingleCallResult(lockerContract, 'locked', [account ?? undefined])
+  const ltTotalAmounnt = useSingleCallResult(ltContract, 'totalSupply', [])
+  const veltTotalAmounnt = useSingleCallResult(lockerContract, 'totalSupply', [])
+  console.log(`lockerRes: ${lockerRes?.result?.end}`)
   return {
     lockerRes: lockerRes?.result
       ? {
-          amount: lockerRes?.result?.amount ? CurrencyAmount.ether(lockerRes?.result?.amount) : 0,
-          end: `${lockerRes?.result?.end}` === '0' ? '--' : format.formatDate(Number(`${lockerRes?.result?.end}`))
+          amount: lockerRes?.result?.amount ? CurrencyAmount.ether(lockerRes?.result?.amount) : undefined,
+          end: `${lockerRes?.result?.end}` === '0' ? '--' : `${lockerRes?.result?.end}`
         }
-      : undefined
+      : undefined,
+    ltTotalAmounnt: ltTotalAmounnt?.result ? CurrencyAmount.ether(ltTotalAmounnt?.result?.[0]) : undefined,
+    veltTotalAmounnt: veltTotalAmounnt?.result ? CurrencyAmount.ether(veltTotalAmounnt?.result?.[0]) : undefined
   }
 }
 
@@ -45,10 +51,7 @@ export function useToLocker() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Locker ${amount
-              .multiply(JSBI.BigInt('5'))
-              .toSignificant(4, { groupSeparator: ',' })
-              .toString()} VELT with ${amount.toSignificant()} LT`
+            summary: `Locker ${amount.toSignificant()} LT`
           })
           return response.hash
         })
@@ -71,10 +74,7 @@ export function useToLocker() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Locker ${amount
-              .multiply(JSBI.BigInt('5'))
-              .toSignificant(4, { groupSeparator: ',' })
-              .toString()} VELT with ${amount.toSignificant()} LT`
+            summary: `Locker ${amount.toSignificant()} LT`
           })
           return response.hash
         })
@@ -105,9 +105,37 @@ export function useToLocker() {
     },
     [account, addTransaction, contract]
   )
+
+  const { chainId } = useActiveWeb3React()
+  const getVeLtAmount = (amount: string, endDate: any) => {
+    if (!amount || !endDate || !LT || !chainId) {
+      return undefined
+    }
+    const year = JSBI.multiply(
+      JSBI.multiply(JSBI.multiply(JSBI.BigInt(365), JSBI.BigInt(24)), JSBI.BigInt(60)),
+      JSBI.BigInt(60)
+    )
+    const lockPeriod = moment(endDate).diff(moment().utc(), 'second')
+    const veltGetAmount = new TokenAmount(
+      VELT[chainId ?? 1],
+      JSBI.divide(
+        JSBI.divide(
+          JSBI.multiply(
+            JSBI.BigInt(tryParseAmount(amount, LT[chainId ?? 1])?.raw.toString() ?? '0'),
+            JSBI.BigInt(lockPeriod)
+          ),
+          year
+        ),
+        JSBI.BigInt(40000)
+      )
+    )
+    return veltGetAmount
+  }
+
   return {
     toLocker,
     toAddAmountLocker,
-    toAddTimeLocker
+    toAddTimeLocker,
+    getVeLtAmount
   }
 }

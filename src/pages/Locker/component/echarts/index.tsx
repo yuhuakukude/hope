@@ -1,35 +1,25 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react'
 import LockerApi from '../../../../api/locker.api'
-import { LT, VELT } from '../../../../constants'
-import { tryParseAmount } from '../../../../state/swap/hooks'
+import { LT } from '../../../../constants'
 import { useActiveWeb3React } from '../../../../hooks'
 import * as echarts from 'echarts'
 import { TokenAmount } from '@uniswap/sdk'
 import './index.scss'
-import format from '../../../../utils/format'
+import { useLocker } from '../../../../hooks/ahp/useLocker'
 
 export default function LockerEcharts() {
   const { chainId } = useActiveWeb3React()
   const chartRef: any = useRef()
   const [lockTime, setLockTime] = useState<any>('0')
-  const [ltLocked, setLtLocked] = useState<any>('0')
-  const [veLtLocked, setVeLtLocked] = useState<any>('0')
+  const [earningsAmount, setEarningsAmount] = useState<any>('0')
+  const { ltTotalAmounnt, veltTotalAmounnt } = useLocker()
   const initFn = useCallback(
     async (myChart: any) => {
       try {
         const res = await LockerApi.getBannerCharts()
         if (res && res.result) {
           setLockTime(res.result.averageOfLockTime || '--')
-          setLtLocked(
-            res.result.totalOfLockedLT
-              ? (tryParseAmount(res.result.totalOfLockedLT, LT[chainId ?? 1]) as TokenAmount | undefined)
-              : '0'
-          )
-          setVeLtLocked(
-            res.result.totalVeLTAmount
-              ? (tryParseAmount(res.result.totalVeLTAmount, VELT[chainId ?? 1]) as TokenAmount | undefined)
-              : '0'
-          )
+          setEarningsAmount(res.result.earningsAmount || '--')
           const arr = res.result.lockedLtList || []
           const dateArr: any = []
           const valueArr: any = []
@@ -38,7 +28,6 @@ export default function LockerEcharts() {
             const valItem = new TokenAmount(LT[chainId ?? 1], e.lightLockedTotal).toFixed(2)
             valueArr.unshift(valItem)
           })
-          console.log(valueArr)
           const option = {
             visualMap: {
               show: false,
@@ -133,11 +122,15 @@ export default function LockerEcharts() {
           <div className="p-r-20 border-line flex-1">
             <p className="flex jc-between">
               <span className="text-normal font-nor">Total LT Locked: </span>
-              <span className="text-medium font-nor">{format.amountFormat(ltLocked, 6)}</span>
+              <span className="text-medium font-nor">
+                {ltTotalAmounnt?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+              </span>
             </p>
             <p className="flex jc-between m-t-20">
               <span className="text-normal font-nor">Total veLT Amount : </span>
-              <span>{format.amountFormat(veLtLocked, 6)}</span>
+              <span className="text-medium font-nor">
+                {veltTotalAmounnt?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+              </span>
             </p>
           </div>
           <div className="p-l-20 flex-1">
@@ -147,7 +140,7 @@ export default function LockerEcharts() {
             </p>
             <p className="flex jc-between m-t-20">
               <span className="text-normal font-nor">Yearly fee earnings per 1 veLT : </span>
-              <span className="text-medium font-nor">0.01$</span>
+              <span className="text-medium font-nor">{earningsAmount} $</span>
             </p>
           </div>
         </div>
