@@ -128,7 +128,7 @@ const Vote = ({ isOpen, onDismiss, votiingData, gombocList }: VoteProps) => {
 
   const unUseRateVal = useMemo(() => {
     let res = ''
-    if (votePowerAmount && Number(votePowerAmount.result)) {
+    if (votePowerAmount && (Number(votePowerAmount.result) || Number(votePowerAmount.result) === 0)) {
       const total = JSBI.BigInt(10000)
       const apo = JSBI.BigInt(Number(votePowerAmount.result))
       const unUseVal = JSBI.subtract(total, apo)
