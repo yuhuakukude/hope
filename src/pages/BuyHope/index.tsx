@@ -67,7 +67,7 @@ export default function BuyHope() {
         JSBI.BigInt(1000)
       )
     )
-  }, [chainId, inputTyped, payToken, rateObj?.result?.rate])
+  }, [chainId, inputTyped, payToken, rateObj])
 
   const onOutputType = useCallback(
     (value: string) => {
@@ -87,7 +87,7 @@ export default function BuyHope() {
         ).toSignificant(payToken.decimals)
       )
     },
-    [chainId, payToken, rateObj?.result?.rate]
+    [chainId, payToken, rateObj]
   )
 
   const toBuyHope = useCallback(
