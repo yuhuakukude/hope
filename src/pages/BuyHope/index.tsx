@@ -269,6 +269,7 @@ export default function BuyHope() {
                 <div className="currency font-nor text-medium m-l-12">HOPE</div>
               </div>
               <NumericalInput
+                disabled={!rateObj?.result}
                 onFocus={() => inputOnFocus('receive')}
                 onBlur={() => setInputBorder('')}
                 className="input m-l-10"
@@ -290,9 +291,9 @@ export default function BuyHope() {
                 </ButtonPrimary>
               ) : (
                 <ActionButton
-                  pending={approvalState === ApprovalState.PENDING}
-                  pendingText={'Approving'}
-                  disableAction={isMaxDisabled || !inputAmount}
+                  pending={approvalState === ApprovalState.PENDING || rateObj?.loading}
+                  pendingText={rateObj?.loading ? ' ' : 'Approving'}
+                  disableAction={isMaxDisabled || !inputAmount || !receiveTokenAmount}
                   actionText={actionText}
                   onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : buyHopeCallback}
                 />
