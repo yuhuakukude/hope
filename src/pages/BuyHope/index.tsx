@@ -113,11 +113,10 @@ export default function BuyHope() {
     setAttemptingTxn(true)
   }, [])
 
-  const onTxSubmitted = useCallback((response: TransactionResponse | undefined) => {
+  const onTxSubmitted = useCallback((hash: string | undefined) => {
     setPendingText(``)
     setAttemptingTxn(false)
-    response?.hash && setTxHash(response?.hash)
-    setAttemptingTxn(false)
+    hash && setTxHash(hash)
   }, [])
 
   const onTxError = useCallback(error => {
@@ -127,10 +126,11 @@ export default function BuyHope() {
   }, [])
 
   const onApprove = useCallback(() => {
+    setCurToken(undefined)
     onTxStart()
     approveCallback()
       .then((response: TransactionResponse | undefined) => {
-        onTxSubmitted(response)
+        onTxSubmitted(response?.hash)
       })
       .catch(error => {
         onTxError(error)
