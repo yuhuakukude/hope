@@ -7,6 +7,7 @@ import NumericalInput from '../../components/NumericalInput'
 import { DatePicker } from 'antd'
 import moment from 'moment'
 import ActionButton from '../../components/Button/ActionButton'
+import { ButtonPrimary } from '../../components/Button'
 import './index.scss'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 
@@ -21,6 +22,7 @@ import { useLocker, useToLocker } from '../../hooks/ahp/useLocker'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import AddAmount from './component/AddAmount'
 import AddTime from './component/AddTime'
+import { useWalletModalToggle } from '../../state/application/hooks'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -34,7 +36,8 @@ export default function DaoLocker() {
   const [lockerDate, setLockerDate] = useState<any>('')
   const [dateIndex, setDateIndex] = useState(2)
   const [txHash, setTxHash] = useState<string>('')
-  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+  const toggleWalletModal = useWalletModalToggle()
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const dateList = [
     { type: 'week', label: '≈2 Week', value: 2 },
     { type: 'month', label: '≈6 Months', value: 26 },
@@ -130,8 +133,16 @@ export default function DaoLocker() {
   }, [isMaxDisabled, inputAmount, lockerDate, approvalState])
 
   const confirmationContent = useCallback(() => {
-    return errorMessage && <TransactionErrorContent onDismiss={() => setShowConfirm(false)} message={errorMessage} />
-  }, [errorMessage])
+    return (
+      errorStatus && (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
+      )
+    )
+  }, [errorStatus])
 
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
@@ -153,17 +164,33 @@ export default function DaoLocker() {
     }
 
     const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
-    const signature = await library.getSigner(account)._signTypedData(domain, types, values)
-    toLocker(inputAmount, lockerDate, nonce, deadline, signature)
-      .then(hash => {
-        setAttemptingTxn(false)
-        setTxHash(hash)
-        setAmount('')
-        setLockerDate('')
+    library
+      .getSigner(account)
+      ._signTypedData(domain, types, values)
+      .then(signature => {
+        toLocker(
+          inputAmount,
+          moment(lockerDate)
+            .utc()
+            .unix(),
+          nonce,
+          deadline,
+          signature
+        )
+          .then(hash => {
+            setAttemptingTxn(false)
+            setTxHash(hash)
+            setAmount('')
+            setLockerDate('')
+          })
+          .catch((err: any) => {
+            setAttemptingTxn(false)
+            setErrorStatus({ code: err?.code, message: err.message })
+          })
       })
-      .catch((err: any) => {
+      .catch(error => {
         setAttemptingTxn(false)
-        setErrorMessage(err.message)
+        setErrorStatus({ code: error?.code, message: error.message })
       })
   }, [account, inputAmount, library, chainId, lockerDate, toLocker])
 
@@ -347,13 +374,19 @@ export default function DaoLocker() {
                   <span className="text-medium">{getVeLtAmount} veLT</span>
                 </p>
                 <div className="m-t-30">
-                  <ActionButton
-                    pending={approvalState === ApprovalState.PENDING}
-                    pendingText={'Approving'}
-                    disableAction={isMaxDisabled || !inputAmount || !lockerDate || !ltBalance}
-                    actionText={actionText}
-                    onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : lockerCallback}
-                  />
+                  {!account ? (
+                    <ButtonPrimary className="hp-button-primary text-medium font-nor" onClick={toggleWalletModal}>
+                      Connect Wallet
+                    </ButtonPrimary>
+                  ) : (
+                    <ActionButton
+                      pending={approvalState === ApprovalState.PENDING}
+                      pendingText={'Approving'}
+                      disableAction={isMaxDisabled || !inputAmount || !lockerDate || !ltBalance}
+                      actionText={actionText}
+                      onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : lockerCallback}
+                    />
+                  )}
                 </div>
                 {account && (
                   <div className="tip flex m-t-30">

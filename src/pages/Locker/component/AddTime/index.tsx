@@ -3,6 +3,7 @@ import Modal from '../../../../components/Modal'
 import { useLocker, useToLocker } from '../../../../hooks/ahp/useLocker'
 import { InputNumber } from 'antd'
 import ActionButton from '../../../../components/Button/ActionButton'
+import moment from 'moment'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
@@ -18,7 +19,7 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
   const { account, chainId } = useActiveWeb3React()
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
   const [txHash, setTxHash] = useState<string>('')
-  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
 
   // token api
@@ -88,8 +89,26 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
   }
 
   const confirmationContent = useCallback(() => {
-    return errorMessage && <TransactionErrorContent onDismiss={() => setShowConfirm(false)} message={errorMessage} />
-  }, [errorMessage])
+    return (
+      errorStatus && (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
+      )
+    )
+  }, [errorStatus])
+
+  const argTime = useMemo(() => {
+    if (lockerRes?.end && weekNumber) {
+      const newEndDate = moment(lockerRes?.end).add(weekNumber, 'week')
+      return moment(newEndDate)
+        .utc()
+        .unix()
+    }
+    return null
+  }, [weekNumber, lockerRes?.end])
 
   const lockerCallback = useCallback(async () => {
     // return console.log(weekNumber)
@@ -98,7 +117,7 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
     setShowConfirm(true)
     setAttemptingTxn(true)
 
-    toAddTimeLocker(weekNumber)
+    toAddTimeLocker(argTime)
       .then(hash => {
         setAttemptingTxn(false)
         setTxHash(hash)
@@ -106,9 +125,9 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
       })
       .catch((err: any) => {
         setAttemptingTxn(false)
-        setErrorMessage(err.message)
+        setErrorStatus({ code: err?.code, message: err.message })
       })
-  }, [account, weekNumber, chainId, toAddTimeLocker])
+  }, [account, argTime, chainId, toAddTimeLocker])
 
   return (
     <Modal isOpen={isOpen} onDismiss={wrappedOnDismiss}>

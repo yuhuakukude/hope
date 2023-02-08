@@ -53,6 +53,22 @@ export default function BuyHope() {
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
 
+  const rateScale = useMemo(() => {
+    if (!rateObj?.result?.rate || !payToken) {
+      return undefined
+    }
+    return new TokenAmount(
+      HOPE[chainId ?? 1],
+      JSBI.divide(
+        JSBI.multiply(
+          JSBI.BigInt(tryParseAmount('1', payToken)?.raw.toString() ?? '0'),
+          JSBI.BigInt(rateObj?.result?.rate?.toString())
+        ),
+        JSBI.BigInt(1000)
+      )
+    )
+  }, [rateObj?.result?.rate, chainId, payToken])
+
   const receiveTokenAmount = useMemo(() => {
     if (!inputTyped || !rateObj?.result?.rate || !payToken) {
       return undefined
@@ -74,18 +90,17 @@ export default function BuyHope() {
       if (!value) {
         return setInputTyped('')
       }
-      return setInputTyped(
-        new TokenAmount(
-          payToken,
-          JSBI.divide(
-            JSBI.multiply(
-              JSBI.BigInt(tryParseAmount(value, HOPE[chainId ?? 1])?.raw.toString() ?? '0'),
-              JSBI.BigInt(1000)
-            ),
-            JSBI.BigInt(rateObj?.result?.rate?.toString())
-          )
-        ).toSignificant(payToken.decimals)
-      )
+      const inputResValue = new TokenAmount(
+        payToken,
+        JSBI.divide(
+          JSBI.multiply(
+            JSBI.BigInt(tryParseAmount(value, HOPE[chainId ?? 1])?.raw.toString() ?? '0'),
+            JSBI.BigInt(1000)
+          ),
+          JSBI.BigInt(rateObj?.result?.rate?.toString())
+        )
+      ).toSignificant(payToken.decimals)
+      return setInputTyped(inputResValue)
     },
     [chainId, payToken, rateObj]
   )
@@ -281,7 +296,7 @@ export default function BuyHope() {
           </div>
           <div className="btn-box m-t-30">
             <p className="font-nor text-normal text-center">
-              1.00 {payToken.symbol} = {receiveTokenAmount ? receiveTokenAmount.toFixed(2) : '-'} HOPE
+              1.00 {payToken.symbol} = {rateScale ? rateScale.toFixed(2) : '-'} HOPE
             </p>
             <div className="action-box m-t-30">
               {!account ? (
