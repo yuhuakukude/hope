@@ -18,6 +18,10 @@ const Bar = styled('div')`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
+
+  :hover .showOnHover {
+    display: block;
+  }
 `
 
 const SidebarIcon = styled('div')`
@@ -42,10 +46,6 @@ const SidebarSelected = styled(SidebarIcon)`
   border-radius: 30px 0 0 30px;
   transition: all 1s;
   color: ${({ theme }) => theme.primary1};
-
-  #side-bar :hover > .showOnHover {
-    display: block;
-  }
 `
 //const SidebarSelectedNext = styled(SidebarIcon)``
 
@@ -90,9 +90,9 @@ export default function SideBar() {
   return (
     <Bar id="side-bar">
       <Column style={{ width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center' }}>
-          <Logo style={{ alignSelf: 'center', margin: '25px auto' }} />
-          <LogoText>HOPE</LogoText>
+        <div style={{ display: 'flex', alignItems: 'center', margin: '25px auto' }}>
+          <Logo style={{ alignSelf: 'center' }} />
+          <LogoText className="showOnHover">HOPE</LogoText>
         </div>
         <Column style={{ width: '100%', paddingLeft: '22px' }}>
           {ROUTERS.map(({ title, router, icon }, index) => {
