@@ -28,6 +28,11 @@ const PageWrapper = styled(AutoColumn)`
   width: 100%;
 `
 
+enum TYPE {
+  TOP_INPUT = 'TOP_INPUT',
+  BOTTOM_INPUT = 'BOTTOM_INPUT'
+}
+
 export default function BuyHope() {
   const toggleWalletModal = useWalletModalToggle()
   const { account, chainId, library } = useActiveWeb3React()
@@ -38,8 +43,8 @@ export default function BuyHope() {
   const [inputBorder, setInputBorder] = useState('')
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
-
-  const [inputTyped, setInputTyped] = useState('')
+  const [typed, setType] = useState('')
+  const [typedType, setTypedType] = useState<TYPE>(TYPE.TOP_INPUT)
   const [payToken, setPayToken] = useState<Token>(USDT[chainId ?? 1])
 
   const [pendingText, setPendingText] = useState('')
@@ -49,10 +54,44 @@ export default function BuyHope() {
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
   const rateObj = useSingleCallResult(buyHopeContract, 'currencys', [payToken.symbol])
-  const inputAmount = tryParseAmount(inputTyped, payToken)
 
-  const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
+
+  const formattedAmounts = useMemo(() => {
+    return typedType === TYPE.TOP_INPUT
+      ? {
+          topValue: typed,
+          bottomValue:
+            rateObj?.result?.rate && typed
+              ? new TokenAmount(
+                  HOPE[chainId ?? 1],
+                  JSBI.divide(
+                    JSBI.multiply(
+                      JSBI.BigInt(tryParseAmount(typed, payToken)?.raw.toString() ?? '0'),
+                      JSBI.BigInt(rateObj?.result?.rate?.toString())
+                    ),
+                    JSBI.BigInt(1000)
+                  )
+                ).toSignificant(HOPE[chainId ?? 1].decimals)
+              : ''
+        }
+      : {
+          topValue:
+            rateObj?.result?.rate && typed
+              ? new TokenAmount(
+                  payToken,
+                  JSBI.divide(
+                    JSBI.multiply(
+                      JSBI.BigInt(tryParseAmount(typed, HOPE[chainId ?? 1])?.raw.toString() ?? '0'),
+                      JSBI.BigInt(1000)
+                    ),
+                    JSBI.BigInt(rateObj?.result?.rate?.toString())
+                  )
+                ).toSignificant(payToken.decimals)
+              : '',
+          bottomValue: typed
+        }
+  }, [chainId, payToken, rateObj?.result?.rate, typed, typedType])
 
   const rateScale = useMemo(() => {
     if (!rateObj?.result?.rate || !payToken) {
@@ -70,41 +109,9 @@ export default function BuyHope() {
     )
   }, [rateObj, chainId, payToken])
 
-  const receiveTokenAmount = useMemo(() => {
-    if (!inputTyped || !rateObj?.result?.rate || !payToken) {
-      return undefined
-    }
-    return new TokenAmount(
-      HOPE[chainId ?? 1],
-      JSBI.divide(
-        JSBI.multiply(
-          JSBI.BigInt(tryParseAmount(inputTyped, payToken)?.raw.toString() ?? '0'),
-          JSBI.BigInt(rateObj?.result?.rate?.toString())
-        ),
-        JSBI.BigInt(1000)
-      )
-    )
-  }, [chainId, inputTyped, payToken, rateObj])
+  const payAmount = tryParseAmount(formattedAmounts.topValue, payToken)
 
-  const onOutputType = useCallback(
-    (value: string) => {
-      if (!value) {
-        return setInputTyped('')
-      }
-      const inputResValue = new TokenAmount(
-        payToken,
-        JSBI.divide(
-          JSBI.multiply(
-            JSBI.BigInt(tryParseAmount(value, HOPE[chainId ?? 1])?.raw.toString() ?? '0'),
-            JSBI.BigInt(1000)
-          ),
-          JSBI.BigInt(rateObj?.result?.rate?.toString())
-        )
-      ).toSignificant(payToken.decimals)
-      return setInputTyped(inputResValue)
-    },
-    [chainId, payToken, rateObj]
-  )
+  const [approvalState, approveCallback] = useApproveCallback(payAmount, PERMIT2_ADDRESS[chainId ?? 1])
 
   const onTxStart = useCallback(() => {
     setShowConfirm(true)
@@ -153,7 +160,7 @@ export default function BuyHope() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Buy ${receiveTokenAmount
+            summary: `Buy ${payAmount
               ?.toFixed(2, { groupSeparator: ',' })
               .toString()} Hope with ${amount.toSignificant()} ${payToken.symbol}`
           })
@@ -161,11 +168,11 @@ export default function BuyHope() {
         })
       })
     },
-    [account, addTransaction, buyHopeContract, payToken, receiveTokenAmount]
+    [account, addTransaction, buyHopeContract, payAmount, payToken.symbol]
   )
 
   const buyHopeCallback = useCallback(async () => {
-    if (!account || !inputAmount || !library || !chainId || !payToken.symbol) return
+    if (!account || !payAmount || !library || !chainId || !payToken.symbol) return
     setCurToken(HOPE[chainId ?? 1])
     setPendingText(`Approve ${payToken.symbol}`)
 
@@ -176,7 +183,7 @@ export default function BuyHope() {
     const permit: Permit = {
       permitted: {
         token: payToken.address,
-        amount: inputAmount.raw.toString()
+        amount: payAmount.raw.toString()
       },
       nonce: nonce,
       spender: TOKEN_SALE_ADDRESS[chainId ?? 1] || '',
@@ -187,12 +194,8 @@ export default function BuyHope() {
       .getSigner(account)
       ._signTypedData(domain, types, values)
       .then(signature => {
-        setPendingText(
-          `Buy ${receiveTokenAmount
-            ?.toFixed(2, { groupSeparator: ',' })
-            .toString()} Hope with ${inputAmount.toSignificant()} ${payToken.symbol}`
-        )
-        toBuyHope(inputAmount, nonce, deadline, signature)
+        setPendingText(`Buy ${formattedAmounts.bottomValue} Hope with ${payAmount?.toFixed(2)} ${payToken.symbol}`)
+        toBuyHope(payAmount, nonce, deadline, signature)
           .then(hash => {
             onTxSubmitted(hash)
           })
@@ -206,33 +209,29 @@ export default function BuyHope() {
       })
   }, [
     account,
-    inputAmount,
+    payAmount,
     library,
     chainId,
     payToken.symbol,
     payToken.address,
     onTxStart,
-    receiveTokenAmount,
+    formattedAmounts.bottomValue,
     toBuyHope,
     onTxSubmitted,
     onTxError
   ])
 
-  const isMaxDisabled = useMemo(() => {
-    return false
-  }, [])
-
   const balanceAmount = useTokenBalance(account ?? undefined, payToken)
 
   const actionText = useMemo(() => {
-    if (isMaxDisabled) {
-      return `Insufficient ${payToken} balance`
-    } else if (!inputAmount) {
+    if (!typed) {
       return `Enter Amount`
+    } else if (payAmount && balanceAmount?.lessThan(payAmount)) {
+      return `Insufficient ${payToken.symbol} balance`
     } else {
       return approvalState === ApprovalState.NOT_APPROVED ? `Approve ${payToken.symbol}` : 'Supply'
     }
-  }, [isMaxDisabled, inputAmount, payToken, approvalState])
+  }, [typed, payAmount, balanceAmount, payToken.symbol, approvalState])
 
   const inputOnFocus = (type: string) => {
     setInputBorder(type)
@@ -273,7 +272,7 @@ export default function BuyHope() {
                   {balanceAmount && (
                     <span
                       className="text-primary m-l-8 cursor-select"
-                      onClick={() => setInputTyped(balanceAmount?.toSignificant(payToken.decimals))}
+                      onClick={() => setType(balanceAmount?.toSignificant(payToken.decimals))}
                     >
                       Max
                     </span>
@@ -288,7 +287,7 @@ export default function BuyHope() {
                 'p-x-32',
                 'flex',
                 'ai-center',
-                isMaxDisabled && 'error',
+                payAmount && balanceAmount?.lessThan(payAmount) && 'error',
                 inputBorder === 'pay' && 'fouce'
               ].join(' ')}
             >
@@ -300,14 +299,16 @@ export default function BuyHope() {
                 </div>
               </div>
               <NumericalInput
+                error={payAmount && balanceAmount?.lessThan(payAmount)}
                 onFocus={() => inputOnFocus('pay')}
                 onBlur={() => setInputBorder('')}
                 className="input m-l-10"
                 decimals={2}
-                value={inputTyped}
+                value={formattedAmounts.topValue}
                 align={'right'}
-                onUserInput={(val: string) => {
-                  setInputTyped(val)
+                onUserInput={value => {
+                  setType(value)
+                  setTypedType(TYPE.TOP_INPUT)
                 }}
               />
             </div>
@@ -332,14 +333,16 @@ export default function BuyHope() {
                 <div className="currency font-nor text-medium m-l-12">HOPE</div>
               </div>
               <NumericalInput
-                disabled={!rateObj?.result}
                 onFocus={() => inputOnFocus('receive')}
                 onBlur={() => setInputBorder('')}
                 className="input m-l-10"
                 decimals={2}
-                value={receiveTokenAmount?.toSignificant(HOPE[chainId ?? 1].decimals) ?? ''}
+                value={formattedAmounts.bottomValue}
                 align={'right'}
-                onUserInput={onOutputType}
+                onUserInput={value => {
+                  setType(value)
+                  setTypedType(TYPE.BOTTOM_INPUT)
+                }}
               />
             </div>
           </div>
@@ -354,11 +357,14 @@ export default function BuyHope() {
                 </ButtonPrimary>
               ) : (
                 <ActionButton
+                  error={
+                    payAmount && balanceAmount?.lessThan(payAmount)
+                      ? `Insufficient ${payToken.symbol} balance`
+                      : undefined
+                  }
                   pending={approvalState === ApprovalState.PENDING || rateObj?.loading || !!pendingText}
                   pendingText={rateObj?.loading ? 'Waitting' : 'Confirm in your wallet'}
-                  disableAction={
-                    isMaxDisabled || !inputAmount || !receiveTokenAmount || approvalState === ApprovalState.UNKNOWN
-                  }
+                  disableAction={approvalState === ApprovalState.UNKNOWN}
                   actionText={actionText}
                   onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : buyHopeCallback}
                 />
