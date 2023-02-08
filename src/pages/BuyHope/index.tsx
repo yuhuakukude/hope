@@ -211,6 +211,7 @@ export default function BuyHope() {
     payToken.symbol,
     payToken.address,
     onTxStart,
+    receiveTokenAmount,
     toBuyHope,
     onTxSubmitted,
     onTxError
