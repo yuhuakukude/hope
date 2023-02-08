@@ -1,10 +1,10 @@
-import { CurrencyAmount, ETHER, Percent, Route, TokenAmount, Trade } from '@uniswap/sdk'
+import { ChainId, CurrencyAmount, ETHER, Percent, Route, TokenAmount, Trade } from '@uniswap/sdk'
 import { DAI, USDC } from '../constants'
 import { MockV1Pair } from '../data/V1'
 import v1SwapArguments from './v1SwapArguments'
 
 describe('v1SwapArguments', () => {
-  const USDC_WETH = new MockV1Pair('1000000', new TokenAmount(USDC, '1000000'))
+  const USDC_WETH = new MockV1Pair('1000000', new TokenAmount(USDC[ChainId.MAINNET], '1000000'))
   const DAI_WETH = new MockV1Pair('1000000', new TokenAmount(DAI, '1000000'))
 
   // just some random address
@@ -22,7 +22,10 @@ describe('v1SwapArguments', () => {
     expect(result.value).toEqual('0x64')
   })
   it('exact token to eth', () => {
-    const trade = Trade.exactIn(new Route([USDC_WETH], USDC, ETHER), new TokenAmount(USDC, '100'))
+    const trade = Trade.exactIn(
+      new Route([USDC_WETH], USDC[ChainId.MAINNET], ETHER),
+      new TokenAmount(USDC[ChainId.MAINNET], '100')
+    )
     const result = v1SwapArguments(trade, {
       recipient: TEST_RECIPIENT_ADDRESS,
       allowedSlippage: new Percent('1', '100'),
@@ -36,7 +39,10 @@ describe('v1SwapArguments', () => {
     expect(result.value).toEqual('0x0')
   })
   it('exact token to token', () => {
-    const trade = Trade.exactIn(new Route([USDC_WETH, DAI_WETH], USDC), new TokenAmount(USDC, '100'))
+    const trade = Trade.exactIn(
+      new Route([USDC_WETH, DAI_WETH], USDC[ChainId.MAINNET]),
+      new TokenAmount(USDC[ChainId.MAINNET], '100')
+    )
     const result = v1SwapArguments(trade, {
       recipient: TEST_RECIPIENT_ADDRESS,
       allowedSlippage: new Percent('1', '100'),
@@ -52,7 +58,7 @@ describe('v1SwapArguments', () => {
     expect(result.value).toEqual('0x0')
   })
   it('eth to exact token', () => {
-    const trade = Trade.exactOut(new Route([USDC_WETH], ETHER), new TokenAmount(USDC, '100'))
+    const trade = Trade.exactOut(new Route([USDC_WETH], ETHER), new TokenAmount(USDC[ChainId.MAINNET], '100'))
     const result = v1SwapArguments(trade, {
       recipient: TEST_RECIPIENT_ADDRESS,
       allowedSlippage: new Percent('1', '100'),
@@ -65,7 +71,7 @@ describe('v1SwapArguments', () => {
     expect(result.value).toEqual('0x66')
   })
   it('token to exact eth', () => {
-    const trade = Trade.exactOut(new Route([USDC_WETH], USDC, ETHER), CurrencyAmount.ether('100'))
+    const trade = Trade.exactOut(new Route([USDC_WETH], USDC[ChainId.MAINNET], ETHER), CurrencyAmount.ether('100'))
     const result = v1SwapArguments(trade, {
       recipient: TEST_RECIPIENT_ADDRESS,
       allowedSlippage: new Percent('1', '100'),
@@ -79,7 +85,7 @@ describe('v1SwapArguments', () => {
     expect(result.value).toEqual('0x0')
   })
   it('token to exact token', () => {
-    const trade = Trade.exactOut(new Route([USDC_WETH, DAI_WETH], USDC), new TokenAmount(DAI, '100'))
+    const trade = Trade.exactOut(new Route([USDC_WETH, DAI_WETH], USDC[ChainId.MAINNET]), new TokenAmount(DAI, '100'))
     const result = v1SwapArguments(trade, {
       recipient: TEST_RECIPIENT_ADDRESS,
       allowedSlippage: new Percent('1', '100'),
