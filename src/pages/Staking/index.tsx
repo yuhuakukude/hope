@@ -167,6 +167,7 @@ export default function Staking() {
         setStakePendingText(`Stake ${inputAmount.toFixed(2)} HOPE`)
         toStaked(inputAmount, nonce, deadline, signature)
           .then(hash => {
+            setAmount('')
             setStakePendingText('')
             onTxSubmitted(hash)
           })
@@ -434,7 +435,7 @@ export default function Staking() {
                     ) : curType === 'stake' ? (
                       <ActionButton
                         error={stakeInputError}
-                        pendingText={approvalState === ApprovalState.PENDING ? 'Approving HOPE' : stakePendingText}
+                        pendingText={approvalState === ApprovalState.PENDING ? 'Approving HOPE' : 'Confirm in your wallet'}
                         pending={(approvalState === ApprovalState.PENDING && curType === 'stake') || !!stakePendingText}
                         disableAction={!inputAmount || !hopeBal}
                         actionText={
@@ -451,7 +452,7 @@ export default function Staking() {
                     ) : (
                       <ActionButton
                         error={unstakeInputError}
-                        pendingText={stakePendingText}
+                        pendingText={'Confirm in your wallet'}
                         pending={!!stakePendingText && actionType === ACTION.UNSTAKING}
                         disableAction={!inputAmount || !stakedVal}
                         actionText={
