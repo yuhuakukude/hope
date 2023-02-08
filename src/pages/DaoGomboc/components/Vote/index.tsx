@@ -12,8 +12,7 @@ import { VELT } from '../../../../constants'
 import { Select } from 'antd'
 import { useToVote } from '../../../../hooks/ahp/useGomVote'
 import { JSBI, Percent, Token } from '@uniswap/sdk'
-// import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
-import { useSingleContractMultipleData, useSingleCallResult } from '../../../../state/multicall/hooks'
+import { useSingleCallResult } from '../../../../state/multicall/hooks'
 import ActionButton from '../../../../components/Button/ActionButton'
 import TransactionConfirmationModal, {
   TransactionErrorContent
@@ -32,7 +31,6 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
   const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
   const veLtBal = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const [voteAmount, setVoteAmount] = useState('')
-  const [unUseRateVal, setUnUseRateVal] = useState('')
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -101,19 +99,6 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
     }
   }, [gombocList])
 
-  const mulArg = useMemo(() => {
-    if (selList && account) {
-      const arr: any = []
-      selList.forEach((e: any) => {
-        const item = [account, e.value]
-        arr.push(item)
-      })
-      return arr
-    } else {
-      return []
-    }
-  }, [selList, account])
-
   const lastArg = useMemo(() => {
     let res: any = [undefined]
     if (account && curGomAddress) {
@@ -122,8 +107,9 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
     return res
   }, [account, curGomAddress])
 
-  const allVoteData = useSingleContractMultipleData(gomConContract, 'voteUserSlopes', mulArg)
+  const votePowerAmount = useSingleCallResult(gomConContract, 'voteUserPower', [account ?? undefined])
   const lastVoteData = useSingleCallResult(gomConContract, 'lastUserVote', lastArg)
+  const curPower = useSingleCallResult(gomConContract, 'voteUserSlopes', lastArg)
 
   const curLastVote = useMemo(() => {
     let res = false
@@ -136,28 +122,29 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
     return res
   }, [lastVoteData, curGomAddress])
 
-  const curIndex = useMemo(() => {
-    let res = 0
-    if (curGomAddress) {
-      selList.forEach((e: any, index: number) => {
-        if (e.value === curGomAddress) {
-          res = index
-        }
-      })
+  const unUseRateVal = useMemo(() => {
+    let res = ''
+    if (votePowerAmount && Number(votePowerAmount.result)) {
+      const total = JSBI.BigInt(10000)
+      const apo = JSBI.BigInt(Number(votePowerAmount.result))
+      const unUseVal = JSBI.subtract(total, apo)
+      const ra = new Percent(unUseVal, JSBI.BigInt(10000))
+      if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
+        res = ra.toFixed(2)
+      }
     }
     return res
-  }, [selList, curGomAddress])
+  }, [votePowerAmount])
 
   const subAmount = useMemo(() => {
     let sub = 0
-    if (allVoteData && allVoteData[curIndex] && unUseRateVal) {
-      const item: any = allVoteData[curIndex]
-      const po = (item?.power && item?.power.toString()) || 0
-      const ra = new Percent(po, JSBI.BigInt(10000))
+    if (unUseRateVal && curPower.result && curPower.result.power) {
+      const cp = JSBI.BigInt(Number(curPower.result.power))
+      const ra = new Percent(cp, JSBI.BigInt(10000))
       sub = Number(ra.toFixed(2)) + Number(unUseRateVal)
     }
     return sub
-  }, [allVoteData, curIndex, unUseRateVal])
+  }, [unUseRateVal, curPower])
 
   const voteInputError = useMemo(() => {
     if (curLastVote) {
@@ -187,20 +174,6 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
     return res
   }, [voteInputError, amount, curGomAddress])
 
-  const handleVoteData = useCallback(() => {
-    if (allVoteData && allVoteData.length > 0) {
-      let unUseVal = JSBI.BigInt(10000)
-      allVoteData.forEach((e: any) => {
-        const po = (e.power && e.power.toString()) || 0
-        unUseVal = JSBI.subtract(unUseVal, JSBI.BigInt(po))
-      })
-      const ra = new Percent(unUseVal, JSBI.BigInt(10000))
-      if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
-        setUnUseRateVal(ra.toFixed(2))
-      }
-    }
-  }, [allVoteData])
-
   const toVoteCallback = useCallback(async () => {
     if (!amount || !account) return
     setCurToken(undefined)
@@ -221,10 +194,6 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
         setErrorMessage(err.message)
       })
   }, [amount, curGomAddress, account, toVote])
-
-  useEffect(() => {
-    handleVoteData()
-  }, [allVoteData, handleVoteData])
 
   useEffect((): any => {
     cd.current = votiingData.votingEndSeconds
