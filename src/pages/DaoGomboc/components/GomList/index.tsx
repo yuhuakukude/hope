@@ -1,28 +1,15 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import './index.scss'
 import { Switch, Input, Table } from 'antd'
 import { ButtonPrimary } from '../../../../components/Button'
-// import GombocApi from '../../../../../api/gomboc.api'
-
+import GombocApi from '../../../../api/gomboc.api'
+import { useActiveWeb3React } from '../../../../hooks'
 const GomList = () => {
+  const { account } = useActiveWeb3React()
   const [searchValue, setSearchValue] = useState('')
   const [isMyVote, setIsMyVote] = useState(false)
-  // const [tableData, setTableData] = useState([])
-
-  function changeSwitch(val: boolean) {
-    console.log(isMyVote)
-    setIsMyVote(val)
-  }
-
-  function changeVal(val: string) {
-    setSearchValue(val)
-  }
-
-  function toSearch() {
-    console.log(searchValue)
-  }
-
-  const dataSource: any = []
+  const [tableData, setTableData] = useState([])
+  const [voterAddress, setVoterAddress] = useState('')
 
   const columns = [
     {
@@ -51,6 +38,45 @@ const GomList = () => {
       key: 'vote'
     }
   ]
+
+  function changeSwitch(val: boolean) {
+    console.log(isMyVote)
+    setIsMyVote(val)
+    if (val && account) {
+      setVoterAddress(account)
+    } else {
+      setVoterAddress('')
+    }
+  }
+
+  function changeVal(val: string) {
+    setSearchValue(val)
+  }
+
+  const init = useCallback(async () => {
+    try {
+      const par = {
+        voter: voterAddress,
+        gombocAddress: searchValue
+      }
+      const res = await GombocApi.getVoteHistoryList(par)
+      if (res.result && res.result.content && res.result.content.length > 0) {
+        setTableData(res.result.content)
+      } else {
+        setTableData([])
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [voterAddress, searchValue])
+
+  function toSearch() {
+    init()
+  }
+
+  useEffect(() => {
+    init()
+  }, [init])
 
   return (
     <div className="gom-list-box">
@@ -81,7 +107,7 @@ const GomList = () => {
         </div>
       </div>
       <div className="m-t-30">
-        <Table pagination={false} className="text-white" columns={columns} dataSource={dataSource} />
+        <Table rowKey={'id'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
       </div>
     </div>
   )
