@@ -16,7 +16,6 @@ export function useToVote() {
     async (address: string, amount: any) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
-      if (Number(amount) === 0) throw new Error('amount is un support')
       const args = [address, amount]
       const method = 'voteForGombocWeights'
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {

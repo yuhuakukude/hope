@@ -58,3 +58,20 @@
     height: 42px;
   }
 }
+.reset-box {
+  .head {
+    height: 75px;
+    position: relative;
+    line-height: 75px;
+    text-align: center;
+    font-size: 18px;
+    color: #fff;
+    text-align: center;
+    .icon-close {
+      position: absolute;
+      line-height: 1;
+      top: 25px;
+      right: 20px;
+    }
+  }
+}

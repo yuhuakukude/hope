@@ -37,7 +37,7 @@ const StyledDialogOverlay = styled(AnimatedDialogOverlay)`
 const AnimatedDialogContent = animated(DialogContent)
 // destructure to not pass custom props to Dialog DOM element
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const StyledDialogContent = styled(({ minHeight, maxHeight, mobile, isOpen, ...rest }) => (
+const StyledDialogContent = styled(({ maxWidth, width, minHeight, maxHeight, mobile, isOpen, ...rest }) => (
   <AnimatedDialogContent {...rest} />
 )).attrs({
   'aria-label': 'dialog'
@@ -49,13 +49,20 @@ const StyledDialogContent = styled(({ minHeight, maxHeight, mobile, isOpen, ...r
     background-color: ${({ theme }) => theme.bg1};
     box-shadow: 0 4px 8px 0 ${({ theme }) => transparentize(0.95, theme.shadow1)};
     padding: 0px;
-    width: 50vw;
     overflow-y: ${({ mobile }) => (mobile ? 'scroll' : 'hidden')};
     overflow-x: hidden;
 
     align-self: ${({ mobile }) => (mobile ? 'flex-end' : 'center')};
-
-    max-width: 500px;
+    ${({ width }) =>
+      width &&
+      css`
+        width: ${width}vw;
+      `}
+    ${({ maxWidth }) =>
+      maxWidth &&
+      css`
+        max-width: ${maxWidth}px;
+      `}
     ${({ maxHeight }) =>
       maxHeight &&
       css`
@@ -90,6 +97,8 @@ interface ModalProps {
   onDismiss: () => void
   minHeight?: number | false
   maxHeight?: number
+  width?: number
+  maxWidth?: number
   initialFocusRef?: React.RefObject<any>
   children?: React.ReactNode
   topRight?: boolean
@@ -100,6 +109,8 @@ export default function Modal({
   onDismiss,
   minHeight = false,
   maxHeight = 90,
+  width = 50,
+  maxWidth = 500,
   initialFocusRef,
   children,
   topRight
@@ -145,6 +156,8 @@ export default function Modal({
                 aria-label="dialog content"
                 minHeight={minHeight}
                 maxHeight={maxHeight}
+                maxWidth={maxWidth}
+                width={width}
                 mobile={isMobile}
               >
                 {/* prevents the automatic focusing of inputs on mobile by the reach dialog */}
