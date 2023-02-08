@@ -120,19 +120,12 @@ const WALLET_VIEWS = {
   PENDING: 'pending'
 }
 
-export default function WalletModal({
-  isAgreeTerms,
-  setIsAgreeTerms,
-  isAgreeTermsError,
-  setIsAgreeTermsError
-}: {
-  isAgreeTerms: boolean
-  isAgreeTermsError: boolean
-  setIsAgreeTerms: (isAgreeTerms: boolean) => void
-  setIsAgreeTermsError: (isAgreeTermsError: boolean) => void
-}) {
+export default function WalletModal({}: {}) {
   // important that these are destructed from the account-specific web3-react context
   const { active, account, connector, activate, error } = useWeb3React()
+
+  const [isAgreeTerms, setIsAgreeTerms] = useState(false)
+  const [isAgreeTermsError, setIsAgreeTermsError] = useState(false)
 
   const [walletView, setWalletView] = useState(WALLET_VIEWS.ACCOUNT)
 
@@ -307,7 +300,13 @@ export default function WalletModal({
     if (error) {
       return (
         <UpperSection>
-          <CloseIcon onClick={toggleWalletModal}>
+          <CloseIcon
+            onClick={() => {
+              setIsAgreeTerms(false)
+              setIsAgreeTermsError(false)
+              toggleWalletModal()
+            }}
+          >
             <CloseColor />
           </CloseIcon>
           <ContentWrapper>
@@ -362,7 +361,13 @@ export default function WalletModal({
     }
     return (
       <UpperSection>
-        <CloseIcon onClick={toggleWalletModal}>
+        <CloseIcon
+          onClick={() => {
+            setIsAgreeTerms(false)
+            setIsAgreeTermsError(false)
+            toggleWalletModal()
+          }}
+        >
           <CloseColor />
         </CloseIcon>
         {walletView !== WALLET_VIEWS.ACCOUNT ? (
@@ -419,7 +424,17 @@ export default function WalletModal({
   }
 
   return (
-    <Modal isOpen={walletModalOpen} onDismiss={toggleWalletModal} minHeight={false} maxHeight={90} topRight>
+    <Modal
+      isOpen={walletModalOpen}
+      onDismiss={() => {
+        setIsAgreeTerms(false)
+        setIsAgreeTermsError(false)
+        toggleWalletModal()
+      }}
+      minHeight={false}
+      maxHeight={90}
+      topRight
+    >
       <Wrapper>{getModalContent()}</Wrapper>
     </Modal>
   )

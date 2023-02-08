@@ -1,6 +1,6 @@
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
 import { darken, lighten } from 'polished'
-import React, { useMemo, useState } from 'react'
+import React, { useMemo } from 'react'
 import { Activity } from 'react-feather'
 import { useTranslation } from 'react-i18next'
 import styled, { css } from 'styled-components'
@@ -169,8 +169,6 @@ function Web3StatusInner() {
 export default function Web3Status() {
   const { active } = useWeb3React()
   const contextNetwork = useWeb3React(NetworkContextName)
-  const [isAgreeTerms, setIsAgreeTerms] = useState(false)
-  const [isAgreeTermsError, setIsAgreeTermsError] = useState(false)
 
   if (!contextNetwork.active && !active) {
     return null
@@ -179,12 +177,7 @@ export default function Web3Status() {
   return (
     <>
       <Web3StatusInner />
-      <WalletModal
-        isAgreeTerms={isAgreeTerms}
-        setIsAgreeTerms={setIsAgreeTerms}
-        isAgreeTermsError={isAgreeTermsError}
-        setIsAgreeTermsError={setIsAgreeTermsError}
-      />
+      <WalletModal />
     </>
   )
 }
