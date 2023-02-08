@@ -23,7 +23,13 @@ import { V1_EXCHANGE_ABI, V1_FACTORY_ABI, V1_FACTORY_ADDRESSES } from '../consta
 import { getContract } from '../utils'
 import { useActiveWeb3React } from './index'
 
-import { STAKING_HOPE_GOMBOC_ADDRESS, LT_MINTER_ADDRESS, TOKEN_SALE_ADDRESS, VELT_TOKEN_ADDRESS, GOMBOC_CONTROLLER_ADDRESS } from '../constants'
+import {
+  STAKING_HOPE_GOMBOC_ADDRESS,
+  LT_MINTER_ADDRESS,
+  TOKEN_SALE_ADDRESS,
+  VELT_TOKEN_ADDRESS,
+  GOMBOC_CONTROLLER_ADDRESS
+} from '../constants'
 import STAKING_HOPE_GOMBOC_ABI from '../constants/abis/ahp/STAKING_HOPE_GOMBOC.json'
 import TOKEN_SALE_ABI from '../constants/abis/ahp/TOKEN_SALE.json'
 import LT_MINTER_ABI from '../constants/abis/ahp/LT_MINTER.json'
