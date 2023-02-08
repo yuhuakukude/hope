@@ -14,7 +14,7 @@ export default function Portfolio() {
       <PortfolioHead />
       {false && <PortfolioConnect />}
       {true && <InvestmentAllocation />}
-      {false && <GömböcRewards />}
+      {true && <GömböcRewards />}
       {false && <VeLTRewards />}
       <Govern />
     </div>
