@@ -173,7 +173,7 @@ export default function StakingModal({ isOpen, onDismiss, stakingInfo, userLiqui
       message
     })
 
-    library
+    return library
       .send('eth_signTypedData_v4', [account, data])
       .then(splitSignature)
       .then(signature => {
@@ -187,8 +187,9 @@ export default function StakingModal({ isOpen, onDismiss, stakingInfo, userLiqui
       .catch(error => {
         // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
         if (error?.code !== 4001) {
-          approveCallback()
+          return approveCallback()
         }
+        return undefined
       })
   }
 

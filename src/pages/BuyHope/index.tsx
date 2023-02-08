@@ -1,6 +1,6 @@
 import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
-import React, { useState, useCallback, useMemo } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import { ButtonPrimary } from '../../components/Button'
 import ActionButton from '../../components/Button/ActionButton'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
@@ -19,7 +19,7 @@ import { useTokenBalance } from '../../state/wallet/hooks'
 import { useBuyHopeContract } from '../../hooks/useContract'
 import { useSingleCallResult } from '../../state/multicall/hooks'
 import { tryParseAmount } from '../../state/swap/hooks'
-import { PERMIT2_ADDRESS, USDT, USDC, HOPE, TOKEN_SALE_ADDRESS } from '../../constants'
+import { HOPE, PERMIT2_ADDRESS, TOKEN_SALE_ADDRESS, USDC, USDT } from '../../constants'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
@@ -42,6 +42,8 @@ export default function BuyHope() {
 
   const [inputTyped, setInputTyped] = useState('')
   const [payToken, setPayToken] = useState<Token>(USDT[chainId ?? 1])
+
+  const [pendingText, setPendingText] = useState('')
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -105,6 +107,36 @@ export default function BuyHope() {
     [chainId, payToken, rateObj]
   )
 
+  const onTxStart = useCallback(() => {
+    setPendingText(`Confirm in your wallet`)
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+  }, [])
+
+  const onTxSubmitted = useCallback((response: TransactionResponse | undefined) => {
+    setPendingText(``)
+    setAttemptingTxn(false)
+    response?.hash && setTxHash(response?.hash)
+    setAttemptingTxn(false)
+  }, [])
+
+  const onTxError = useCallback(error => {
+    setPendingText(``)
+    setAttemptingTxn(false)
+    setErrorStatus({ code: error?.code, message: error.message })
+  }, [])
+
+  const onApprove = useCallback(() => {
+    onTxStart()
+    approveCallback()
+      .then((response: TransactionResponse | undefined) => {
+        onTxSubmitted(response)
+      })
+      .catch(error => {
+        onTxError(error)
+      })
+  }, [approveCallback, onTxError, onTxStart, onTxSubmitted])
+
   const toBuyHope = useCallback(
     async (amount: CurrencyAmount, NONCE, DEADLINE, sigVal) => {
       if (!account) throw new Error('none account')
@@ -133,8 +165,7 @@ export default function BuyHope() {
   const buyHopeCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId || !payToken.symbol) return
     setCurToken(HOPE[chainId ?? 1])
-    setShowConfirm(true)
-    setAttemptingTxn(true)
+    onTxStart()
 
     // sign
     const deadline = toDeadline(PERMIT_EXPIRATION)
@@ -155,19 +186,27 @@ export default function BuyHope() {
       .then(signature => {
         toBuyHope(inputAmount, nonce, deadline, signature)
           .then(hash => {
-            setAttemptingTxn(false)
-            setTxHash(hash)
+            onTxSubmitted(hash)
           })
-          .catch((err: any) => {
-            setAttemptingTxn(false)
-            setErrorStatus({ code: err?.code, message: err.message })
+          .catch((error: any) => {
+            onTxError(error)
           })
       })
       .catch(error => {
-        setAttemptingTxn(false)
-        setErrorStatus({ code: error?.code, message: error.message })
+        onTxError(error)
       })
-  }, [account, inputAmount, library, chainId, payToken.symbol, payToken.address, toBuyHope])
+  }, [
+    account,
+    inputAmount,
+    library,
+    chainId,
+    payToken.symbol,
+    payToken.address,
+    onTxStart,
+    toBuyHope,
+    onTxSubmitted,
+    onTxError
+  ])
 
   const isMaxDisabled = useMemo(() => {
     return false
@@ -305,11 +344,13 @@ export default function BuyHope() {
                 </ButtonPrimary>
               ) : (
                 <ActionButton
-                  pending={approvalState === ApprovalState.PENDING || rateObj?.loading}
-                  pendingText={rateObj?.loading ? ' ' : 'Approving'}
-                  disableAction={isMaxDisabled || !inputAmount || !receiveTokenAmount}
+                  pending={approvalState === ApprovalState.PENDING || rateObj?.loading || !!pendingText}
+                  pendingText={rateObj?.loading ? ' ' : pendingText}
+                  disableAction={
+                    isMaxDisabled || !inputAmount || !receiveTokenAmount || approvalState === ApprovalState.UNKNOWN
+                  }
                   actionText={actionText}
-                  onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : buyHopeCallback}
+                  onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : buyHopeCallback}
                 />
               )}
             </div>
