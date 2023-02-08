@@ -13,7 +13,7 @@ export default function Portfolio() {
     <div className="portfolio-wrap">
       <PortfolioHead />
       {false && <PortfolioConnect />}
-      <InvestmentAllocation />
+      {true && <InvestmentAllocation />}
       {false && <GömböcRewards />}
       {false && <VeLTRewards />}
       <Govern />

@@ -5,7 +5,7 @@ import { PieSeriesOption } from 'echarts/charts'
 
 import './index.scss'
 import Card from '../Card'
-import Tips from 'components/Tips'
+import TitleTips from '../TitleTips'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
 
@@ -82,10 +82,10 @@ export default function InvestmentAllocation() {
           <div className="investment-allocation-head">
             <div className="investment-allocation-title">My Investment Allocation</div>
             <div className="investment-allocation-total">
-              Total Value
-              <span>
-                <Tips title="测试title">测试</Tips>
-              </span>
+              <TitleTips
+                title="Total Value"
+                desc="Total value of holdings, withdrawable liquidity, rewards, staked HOPE, and HOPE held"
+              />
             </div>
             <div className="investment-allocation-total2">12,123,456,789.01 HOPE </div>
             <div className="investment-allocation-total3">~ $123,456,789.00</div>

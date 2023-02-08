@@ -1,6 +1,7 @@
 import Table from 'components/Table'
 import React from 'react'
 import Card from '../Card'
+import TitleTips from '../TitleTips'
 
 import './index.scss'
 
@@ -8,7 +9,14 @@ export default function VeLTRewards() {
   return (
     <div className="velt-rewards-wrap">
       <Card>
-        <div className="velt-rewards-title">veLT Rewards</div>
+        <div className="velt-rewards-title">
+          <TitleTips
+            link=""
+            title="veLT Rewards"
+            desc="veLT holders will receive 25% of all agreed fee income as an reward, as well as a portion of the Gomboc
+              fee income during the voting period if they participate in the weighted vote of a Gomboc."
+          />
+        </div>
         <div className="velt-rewards-desc">Last Period Overview</div>
         <div className="velt-rewards-card">
           <div className="velt-rewards-list">
