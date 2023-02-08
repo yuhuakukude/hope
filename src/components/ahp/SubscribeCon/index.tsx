@@ -65,7 +65,7 @@ const SubscribeCon = ({ subSuccess }: SubscribeConProps) => {
       <p className="m-t-10 text-white">
         I have read, understand, and agree to the{' '}
         <a className="text-primary" href="/">
-          Terms of Service
+          Terms of Service{' '}
         </a>
       </p>
     </div>

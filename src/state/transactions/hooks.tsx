@@ -102,3 +102,23 @@ export function useUserHasSubmittedClaim(
 
   return { claimSubmitted: Boolean(claimTxn), claimTxn }
 }
+
+export function useActionPending(account?: string): { pending: boolean; txn: TransactionDetails | undefined } {
+  const allTransactions = useAllTransactions()
+
+  // get the txn if it has been submitted
+  const txn = useMemo(() => {
+    const txnIndex = Object.keys(allTransactions).find(hash => {
+      const tx = allTransactions[hash]
+      return (
+        tx.actionTag &&
+        tx.actionTag.recipient.toLowerCase() === account?.toLowerCase() &&
+        !tx.receipt &&
+        isTransactionRecent(tx)
+      )
+    })
+    return txnIndex && allTransactions[txnIndex] ? allTransactions[txnIndex] : undefined
+  }, [account, allTransactions])
+
+  return { pending: Boolean(txn), txn }
+}

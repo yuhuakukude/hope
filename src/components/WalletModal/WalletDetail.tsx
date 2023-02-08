@@ -21,6 +21,7 @@ import { HOPE, LT } from '../../constants'
 import Circle from '../../assets/images/blue-loader.svg'
 import { CustomLightSpinner, ExternalLink } from '../../theme'
 import Copy from '../AccountDetails/Copy'
+import { useWalletModalToggle } from '../../state/application/hooks'
 
 export const DivideLine = styled.div`
   border: 0.5px solid ${({ theme }) => theme.bg3};
@@ -102,7 +103,8 @@ export default function WalletDetail({
   showTransaction: boolean
   setShowTransaction: (showTransaction: boolean) => void
 }) {
-  const { account, chainId } = useActiveWeb3React()
+  const { account, chainId, deactivate } = useActiveWeb3React()
+  const toggleWalletModal = useWalletModalToggle()
   const [gas, setGas] = useState(0)
   const theme = useTheme()
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
@@ -155,14 +157,20 @@ export default function WalletDetail({
               <ExternalLink href={`${getEtherscanLink(chainId, account, 'address')}`}>
                 <Share style={{ width: '24px', height: '24px', padding: '3px' }} />
               </ExternalLink>
-              <Disconnect />
+              <Disconnect
+                style={{ cursor: 'pointer' }}
+                onClick={() => {
+                  toggleWalletModal()
+                  deactivate()
+                }}
+              />
             </AutoRowBetween>
           </div>
         )}
       </div>
       {userEthBalance ? (
         <ThemeText style={{ fontSize: '30px' }}>
-          {userEthBalance ? userEthBalance.toFixed(2, { groupSeparator: ',' }) : '--'}
+          {userEthBalance ? userEthBalance.toFixed(6, { groupSeparator: ',' }) : '--'}
         </ThemeText>
       ) : (
         <CustomLightSpinner src={Circle} alt="loader" size={'20px'} />

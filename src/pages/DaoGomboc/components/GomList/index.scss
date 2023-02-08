@@ -11,4 +11,32 @@
       box-shadow: 0 0 0 2px rgba(228, 201, 137, 0.2);
     }
   }
+  .search-input {
+    .ant-input {
+      height: 42px;
+      background: none;
+      border: 1px solid #3D3D3D;
+      border-radius: 10px;
+      width: 440px;
+      font-size: 16px;
+      color: #fff;
+    }
+    &.ant-input-affix-wrapper:hover .ant-input:not(.ant-input-disabled) {
+      border-color: #E4C989;
+    }
+    .ant-input:focus, .ant-input:hover{
+      border: 1px solid #3D3D3D;
+      box-shadow: none;
+    }
+    .ant-input-group-addon {
+      background: none;
+      border-color: #3D3D3D;
+    }
+    .ant-btn-link[disabled] {
+      color: #A8A8AA;
+    }
+  }
+  .search-btn {
+    height: 42px;
+  }
 }

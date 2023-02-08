@@ -1,0 +1,34 @@
+.locker-add-amount-modal {
+  background-color: #26262C;
+  .desc-info{
+    .item{
+      .iconfont{
+        color: #63636A;
+      }
+    }
+  }
+  .inp-box{
+    position: relative;
+    .input-amount {
+      width: 100%;
+      color: #fff;
+      background: none;
+      border-radius: 10px;
+      border: 1px solid #3D3D3D;
+      height: 56px;
+      padding: 0 20px 0 100px;
+      &:hover, &:focus {
+        border: 1px solid #E4C989;
+      }
+      &.error{
+        border: 1px solid #F6465D;
+      }
+    }
+    .coin-box {
+      position: absolute;
+      top: 50%;
+      left: 32px;
+      transform: translate(0, -50%);
+    }
+  }
+}

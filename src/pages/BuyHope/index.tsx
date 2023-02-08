@@ -1,13 +1,11 @@
 import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
-import React, { useState, useCallback, useEffect, useMemo } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import { ButtonPrimary } from '../../components/Button'
 import ActionButton from '../../components/Button/ActionButton'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import SelectCurrency from './component/SelectCurrency/index'
-import { Decimal } from 'decimal.js'
-import format from '../../utils/format'
 import JSBI from 'jsbi'
 import { calculateGasMargin } from '../../utils'
 import { Input as NumericalInput } from '../../components/NumericalInput'
@@ -37,84 +35,67 @@ export default function BuyHope() {
   const buyHopeContract = useBuyHopeContract()
   const addTransaction = useTransactionAdder()
   // state
-  const [currency, setCurrency] = useState<string>('USDT')
   const [currencyModalFlag, setCurrencyModalFlag] = useState(false)
   const [inputBorder, setInputBorder] = useState('')
-  const [rateVal, setRateVal] = useState('')
-  const [coinList, setCoinList] = useState('')
-  const [pay, setPay] = useState('')
-  const [receive, setReceive] = useState('')
   const [txHash, setTxHash] = useState<string>('')
-  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
+
+  const [inputTyped, setInputTyped] = useState('')
+  const [payToken, setPayToken] = useState<Token>(USDT)
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
-  // get balance / rate
-  const rateObj = useSingleCallResult(buyHopeContract, 'currencys', [currency])
-  const usdtBalance = useTokenBalance(account ?? undefined, USDT)
-  const usdcBalance = useTokenBalance(account ?? undefined, USDC)
-  const inputAmount = tryParseAmount(pay, currency === 'USDT' ? USDT : USDC) as TokenAmount | undefined
+  const rateObj = useSingleCallResult(buyHopeContract, 'currencys', [payToken.symbol])
+  const inputAmount = tryParseAmount(inputTyped, payToken)
 
-  // token api
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
 
-  const mulRateFn = (value: any) => {
-    const pow = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(currency === 'USDT' ? USDT.decimals : USDC.decimals))
-    const bigValue = JSBI.BigInt(Number(value) * Number(pow))
-    const bigRate = JSBI.BigInt(Number(rateVal) * 100)
-    return new TokenAmount(USDT, bigValue)
-      .multiply(bigRate)
-      .divide(JSBI.BigInt(100))
-      .toFixed(2)
-  }
+  const receiveTokenAmount = useMemo(() => {
+    if (!inputTyped || !rateObj?.result?.rate || !payToken) {
+      return undefined
+    }
+    return new TokenAmount(
+      HOPE[chainId ?? 1],
+      JSBI.divide(
+        JSBI.multiply(
+          JSBI.BigInt(tryParseAmount(inputTyped, payToken)?.raw.toString() ?? '0'),
+          JSBI.BigInt(rateObj?.result?.rate?.toString())
+        ),
+        JSBI.BigInt(1000)
+      )
+    )
+  }, [chainId, inputTyped, payToken, rateObj?.result?.rate])
 
-  const onUserPayInput = (value: string) => {
-    if (value && value.slice(0, 1) === '.') {
-      value = `0${value}`
-    }
-    if (!value || Number(value) === 0 || rateVal === '' || !USDT) {
-      setReceive('')
-    } else {
-      const resVal = mulRateFn(value)
-      setReceive(`${format.numeral(resVal, 2)}`)
-    }
-    setPay(value)
-  }
-
-  const onUserReceiveInput = (value: string) => {
-    console.warn('====')
-    if (value && value.slice(0, 1) === '.') {
-      value = `0${value}`
-    }
-    if (!value || Number(value) === 0 || rateVal === '') {
-      setPay('')
-      setReceive('')
-    } else {
-      const resVal = new Decimal(value).div(new Decimal(rateVal)).toNumber()
-      setPay(`${format.numeral(resVal, 2)}`)
-      if (`${resVal}`.split('.')[1]?.length > 2) {
-        const receiveInitVal = mulRateFn(`${format.numeral(resVal, 2)}`)
-        setReceive(`${format.numeral(receiveInitVal, 2)}`)
-      } else {
-        setReceive(value)
+  const onOutputType = useCallback(
+    (value: string) => {
+      if (!value) {
+        return setInputTyped('')
       }
-    }
-  }
-
-  const initAmount = () => {
-    setPay('')
-    setReceive('')
-  }
+      return setInputTyped(
+        new TokenAmount(
+          payToken,
+          JSBI.divide(
+            JSBI.multiply(
+              JSBI.BigInt(tryParseAmount(value, HOPE[chainId ?? 1])?.raw.toString() ?? '0'),
+              JSBI.BigInt(1000)
+            ),
+            JSBI.BigInt(rateObj?.result?.rate?.toString())
+          )
+        ).toSignificant(payToken.decimals)
+      )
+    },
+    [chainId, payToken, rateObj?.result?.rate]
+  )
 
   const toBuyHope = useCallback(
     async (amount: CurrencyAmount, NONCE, DEADLINE, sigVal) => {
       if (!account) throw new Error('none account')
       if (!buyHopeContract) throw new Error('none contract')
       if (amount.equalTo(JSBI.BigInt('0'))) throw new Error('amount is un support')
-      const args = [currency, amount.raw.toString(), NONCE, DEADLINE, sigVal]
+      const args = [payToken.symbol, amount.raw.toString(), NONCE, DEADLINE, sigVal]
       const method = 'buy'
       return buyHopeContract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return buyHopeContract[method](...args, {
@@ -123,20 +104,19 @@ export default function BuyHope() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Buy ${amount
-              .multiply(JSBI.BigInt('5'))
-              .toSignificant(4, { groupSeparator: ',' })
-              .toString()}  RAM with ${amount.toSignificant()} USDT`
+            summary: `Buy ${receiveTokenAmount
+              ?.toSignificant(2, { groupSeparator: ',' })
+              .toString()} Hope with ${amount.toSignificant()} ${payToken.symbol}`
           })
           return response.hash
         })
       })
     },
-    [account, addTransaction, buyHopeContract, currency]
+    [account, addTransaction, buyHopeContract, payToken, receiveTokenAmount]
   )
 
   const buyHopeCallback = useCallback(async () => {
-    if (!account || !inputAmount || !library || !chainId) return
+    if (!account || !inputAmount || !library || !chainId || !payToken.symbol) return
     setCurToken(HOPE[chainId ?? 1])
     setShowConfirm(true)
     setAttemptingTxn(true)
@@ -146,7 +126,7 @@ export default function BuyHope() {
     const nonce = ethers.utils.randomBytes(32)
     const permit: Permit = {
       permitted: {
-        token: currency === 'USDT' ? USDT.address : USDC.address,
+        token: payToken.address,
         amount: inputAmount.raw.toString()
       },
       nonce: nonce,
@@ -154,94 +134,58 @@ export default function BuyHope() {
       deadline
     }
     const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
-    const signature = await library.getSigner(account)._signTypedData(domain, types, values)
-    toBuyHope(inputAmount, nonce, deadline, signature)
-      .then(hash => {
-        setAttemptingTxn(false)
-        setTxHash(hash)
-        initAmount()
+    library
+      .getSigner(account)
+      ._signTypedData(domain, types, values)
+      .then(signature => {
+        toBuyHope(inputAmount, nonce, deadline, signature)
+          .then(hash => {
+            setAttemptingTxn(false)
+            setTxHash(hash)
+          })
+          .catch((err: any) => {
+            setAttemptingTxn(false)
+            setErrorStatus({ code: err?.code, message: err.message })
+          })
       })
-      .catch((err: any) => {
+      .catch(error => {
         setAttemptingTxn(false)
-        setErrorMessage(err.message)
+        setErrorStatus({ code: error?.code, message: error.message })
       })
-  }, [account, inputAmount, library, chainId, currency, toBuyHope])
+  }, [account, inputAmount, library, chainId, payToken.symbol, payToken.address, toBuyHope])
 
   const isMaxDisabled = useMemo(() => {
-    let flag = false
-    const max = currency === 'USDT' ? usdtBalance : usdcBalance
-    if (pay && max) {
-      const payAmout = (tryParseAmount(pay, currency === 'USDT' ? USDT : USDC) as TokenAmount | undefined) || ''
-      flag = max?.lessThan(payAmout)
-    }
-    return flag
-  }, [pay, usdtBalance, usdcBalance, currency])
+    return false
+  }, [])
 
-  const balanceAmount = useMemo(() => {
-    return currency === 'USDT'
-      ? usdtBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'
-      : usdcBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'
-  }, [usdtBalance, usdcBalance, currency])
+  const balanceAmount = useTokenBalance(account ?? undefined, payToken)
 
   const actionText = useMemo(() => {
     if (isMaxDisabled) {
-      return `Insufficient ${currency} balance`
+      return `Insufficient ${payToken} balance`
     } else if (!inputAmount) {
       return `Enter Amount`
     } else {
-      return approvalState === ApprovalState.NOT_APPROVED ? 'Confirm in your wallet' : 'Supply'
+      return approvalState === ApprovalState.NOT_APPROVED ? `Approve ${payToken.symbol}` : 'Supply'
     }
-  }, [inputAmount, isMaxDisabled, approvalState, currency])
-
-  const showSelectCurrency = () => {
-    const arr: any = [
-      {
-        coin: 'USDT',
-        dec: USDT.decimals,
-        amount: usdtBalance?.toFixed(2, { groupSeparator: ',' } ?? '--'),
-        icon: 'usdt-icon'
-      },
-      {
-        coin: 'USDC',
-        dec: USDC.decimals,
-        amount: usdcBalance?.toFixed(2, { groupSeparator: ',' } ?? '--'),
-        icon: 'usdc-icon'
-      }
-    ]
-    setCoinList(arr)
-    setCurrencyModalFlag(true)
-  }
-  const onCloseModel = (currency: any) => {
-    setCurrency(currency)
-    setPay('')
-    setReceive('')
-    setCurrencyModalFlag(false)
-  }
-
-  const maxInputFn = () => {
-    const balance = currency === 'USDT' ? usdtBalance?.toFixed(2) : usdcBalance?.toFixed(2)
-    const resAmount = balance?.toString().replace(/(?:\.0*|(\.\d+?)0+)$/, '$1') || '0'
-    setPay(resAmount)
-    onUserPayInput(resAmount)
-  }
+  }, [isMaxDisabled, inputAmount, payToken, approvalState])
 
   const inputOnFocus = (type: string) => {
     setInputBorder(type)
   }
 
   const confirmationContent = useCallback(() => {
-    return errorMessage && <TransactionErrorContent onDismiss={() => setShowConfirm(false)} message={errorMessage} />
-  }, [errorMessage])
+    return (
+      errorStatus && (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
+      )
+    )
+  }, [errorStatus])
 
-  useEffect(() => {
-    const uDec = currency === 'USDT' ? USDT.decimals : USDC.decimals
-    if (rateObj?.result) {
-      const rate = Number(rateObj.result.rate.toString()) || 0
-      setRateVal(`${rate / Math.pow(10, HOPE[chainId ?? 1].decimals - uDec) / 1000}`)
-    } else {
-      setRateVal('')
-    }
-  }, [currency, rateObj, chainId])
   return (
     <>
       <PageWrapper>
@@ -261,9 +205,12 @@ export default function BuyHope() {
               <div className="input-title text-medium font-18 text-normal">You Pay</div>
               {account && (
                 <div className="balance text-normal font-nor">
-                  Available: {balanceAmount}
-                  {balanceAmount !== '-' && account && (
-                    <span className="text-primary m-l-8 cursor-select" onClick={maxInputFn}>
+                  Available: {balanceAmount?.toFixed(2)}
+                  {balanceAmount && (
+                    <span
+                      className="text-primary m-l-8 cursor-select"
+                      onClick={() => setInputTyped(balanceAmount?.toSignificant(payToken.decimals))}
+                    >
                       Max
                     </span>
                   )}
@@ -281,9 +228,9 @@ export default function BuyHope() {
                 inputBorder === 'pay' && 'fouce'
               ].join(' ')}
             >
-              <div className="coin-box flex ai-center cursor-select" onClick={showSelectCurrency}>
-                <div className={`${currency === 'USDT' ? 'usdt-icon' : 'usdc-icon'}`}></div>
-                <div className="currency font-nor text-medium m-l-12">{currency}</div>
+              <div className="coin-box flex ai-center cursor-select" onClick={() => setCurrencyModalFlag(true)}>
+                <div className={`${payToken.symbol === 'USDT' ? 'usdt-icon' : 'usdc-icon'}`}></div>
+                <div className="currency font-nor text-medium m-l-12">{payToken.symbol}</div>
                 <div className="drop m-l-30">
                   <i className="iconfont text-normal">&#xe60d;</i>
                 </div>
@@ -293,10 +240,10 @@ export default function BuyHope() {
                 onBlur={() => setInputBorder('')}
                 className="input m-l-10"
                 decimals={2}
-                value={pay}
+                value={inputTyped}
                 align={'right'}
-                onUserInput={(val: any) => {
-                  onUserPayInput(val)
+                onUserInput={(val: string) => {
+                  setInputTyped(val)
                 }}
               />
             </div>
@@ -321,21 +268,20 @@ export default function BuyHope() {
                 <div className="currency font-nor text-medium m-l-12">HOPE</div>
               </div>
               <NumericalInput
+                disabled={!rateObj?.result}
                 onFocus={() => inputOnFocus('receive')}
                 onBlur={() => setInputBorder('')}
                 className="input m-l-10"
                 decimals={2}
-                value={receive}
+                value={receiveTokenAmount?.toSignificant(HOPE[chainId ?? 1].decimals) ?? ''}
                 align={'right'}
-                onUserInput={(val: any) => {
-                  onUserReceiveInput(val)
-                }}
+                onUserInput={onOutputType}
               />
             </div>
           </div>
           <div className="btn-box m-t-30">
             <p className="font-nor text-normal text-center">
-              1.00 {currency} = {rateVal ? `${rateVal}.00` : '-'} HOPE
+              1.00 {payToken.symbol} = {receiveTokenAmount ? receiveTokenAmount.toFixed(2) : '-'} HOPE
             </p>
             <div className="action-box m-t-30">
               {!account ? (
@@ -344,9 +290,9 @@ export default function BuyHope() {
                 </ButtonPrimary>
               ) : (
                 <ActionButton
-                  pending={approvalState === ApprovalState.PENDING}
-                  pendingText={'Approving'}
-                  disableAction={isMaxDisabled || !inputAmount || balanceAmount === '--'}
+                  pending={approvalState === ApprovalState.PENDING || rateObj?.loading}
+                  pendingText={rateObj?.loading ? ' ' : 'Approving'}
+                  disableAction={isMaxDisabled || !inputAmount || !receiveTokenAmount}
                   actionText={actionText}
                   onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : buyHopeCallback}
                 />
@@ -374,10 +320,11 @@ export default function BuyHope() {
         {currencyModalFlag && (
           <SelectCurrency
             isOpen={currencyModalFlag}
-            currentCurrency={currency}
-            onCloseModel={onCloseModel}
-            list={coinList}
-          ></SelectCurrency>
+            supportedTokens={[USDT, USDC]}
+            selectToken={payToken}
+            onTokenSelect={token => setPayToken(token)}
+            onCloseModel={() => setCurrencyModalFlag(false)}
+          />
         )}
       </PageWrapper>
     </>

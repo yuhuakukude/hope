@@ -45,10 +45,59 @@ export function useToLocker() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Buy ${amount
+            summary: `Locker ${amount
               .multiply(JSBI.BigInt('5'))
               .toSignificant(4, { groupSeparator: ',' })
-              .toString()}  RAM with ${amount.toSignificant()} USDT`
+              .toString()} VELT with ${amount.toSignificant()} LT`
+          })
+          return response.hash
+        })
+      })
+    },
+    [account, addTransaction, contract]
+  )
+  const toAddAmountLocker = useCallback(
+    async (amount: CurrencyAmount, NONCE, DEADLINE, sigVal) => {
+      if (!account) throw new Error('none account')
+      if (!contract) throw new Error('none contract')
+      if (amount.equalTo(JSBI.BigInt('0'))) throw new Error('amount is un support')
+      const args = [amount.raw.toString(), NONCE, DEADLINE, sigVal]
+      const method = 'increaseAmount'
+      console.log('args', args)
+      return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+        return contract[method](...args, {
+          gasLimit: calculateGasMargin(estimatedGasLimit),
+          // gasLimit: '3500000',
+          from: account
+        }).then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Locker ${amount
+              .multiply(JSBI.BigInt('5'))
+              .toSignificant(4, { groupSeparator: ',' })
+              .toString()} VELT with ${amount.toSignificant()} LT`
+          })
+          return response.hash
+        })
+      })
+    },
+    [account, addTransaction, contract]
+  )
+  const toAddTimeLocker = useCallback(
+    async (argTime: any) => {
+      if (!account) throw new Error('none account')
+      if (!contract) throw new Error('none contract')
+      if (!argTime) throw new Error('none Locker Time')
+      const args = [argTime]
+      const method = 'increaseUnlockTime'
+      console.log('args', args)
+      return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+        return contract[method](...args, {
+          gasLimit: calculateGasMargin(estimatedGasLimit),
+          // gasLimit: '3500000',
+          from: account
+        }).then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Locker LT with add time success`
           })
           return response.hash
         })
@@ -57,6 +106,8 @@ export function useToLocker() {
     [account, addTransaction, contract]
   )
   return {
-    toLocker
+    toLocker,
+    toAddAmountLocker,
+    toAddTimeLocker
   }
 }

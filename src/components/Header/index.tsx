@@ -15,6 +15,7 @@ import UniBalanceContent from './UniBalanceContent'
 import useTheme from '../../hooks/useTheme'
 // import Matamask from 'assets/images/metamask-logo.png'
 import { Text } from 'rebass'
+import { CHAIN_ID_NETWORK_ARGUMENT, FormaticSupportedChains } from '../../connectors/Fortmatic'
 
 const HeaderFrame = styled.div`
   display: grid;
@@ -218,7 +219,7 @@ export const StyledMenuButton = styled.button`
 // }
 
 export default function Header({ headers }: { headers?: HeaderEvent[] }) {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
   const theme = useTheme()
   const location = useLocation()
@@ -318,18 +319,20 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
             )}
           </div> */}
           <AccountElement active={!!account} style={{ pointerEvents: 'auto', color: theme.text1, marginRight: '30px' }}>
-            <div style={{ paddingLeft: '14px', paddingRight: '14px', display: 'flex', alignItems: 'center' }}>
-              <div
-                style={{
-                  width: '6px',
-                  height: '6px',
-                  background: theme.green1,
-                  borderRadius: '50%',
-                  marginRight: '5px'
-                }}
-              />
-              <Text>ETH</Text>
-            </div>
+            {account && (
+              <div style={{ paddingLeft: '14px', paddingRight: '14px', display: 'flex', alignItems: 'center' }}>
+                <div
+                  style={{
+                    width: '6px',
+                    height: '6px',
+                    background: theme.green1,
+                    borderRadius: '50%',
+                    marginRight: '5px'
+                  }}
+                />
+                <Text>{CHAIN_ID_NETWORK_ARGUMENT[chainId as FormaticSupportedChains] ?? 'ETH'}</Text>
+              </div>
+            )}
             <Web3Status />
           </AccountElement>
         </HeaderElement>

@@ -63,3 +63,79 @@
     }
   }
 }
+
+// ant date
+
+.ant-calendar-picker-container{
+  color: #fff;
+  .ant-calendar, .ant-calendar-year-panel, .ant-calendar-decade-panel{
+    background-color: #3D3E46;
+    border-color: #3D3E46;
+    font-size: 12px !important;
+  }
+  .ant-calendar-year-panel-year{
+    color: #fff;
+  }
+  .ant-calendar-year-panel-last-decade-cell .ant-calendar-year-panel-year, .ant-calendar-year-panel-next-decade-cell .ant-calendar-year-panel-year{
+    color: #A8A8AA;
+  }
+  .ant-calendar-input-wrap{
+    display: none;
+  }
+  .ant-calendar-date{
+    color: #fff;
+  }
+  .ant-calendar-selected-day .ant-calendar-date, .ant-calendar-date:hover{
+    background: #E4C989;
+    border-radius: 50%;
+    color: #26262C;
+  }
+  .ant-calendar-decade-panel-selected-cell .ant-calendar-decade-panel-decade{
+    background: #E4C989;
+    color: #26262C;
+  }
+  .ant-calendar-decade-panel-decade{
+    color: #fff;
+  }
+  .ant-calendar-disabled-cell .ant-calendar-date{
+    background: #3D3E46;
+    color: #63636A !important;
+  }
+  .ant-calendar-picker-container .ant-calendar-header{
+  }
+  .ant-calendar-header, .ant-calendar-year-panel-header, .ant-calendar-header, .ant-calendar-decade-panel-header{
+    
+    height: 60px;
+    // line-height: 60px;
+    margin: 0px 16px;
+    a:hover::after, a:hover::before{
+      border-color: #E4C989 !important;
+    }
+    .ant-calendar-prev-century-btn, .ant-calendar-next-century-btn, .ant-calendar-prev-decade-btn, .ant-calendar-next-decade-btn, .ant-calendar-prev-month-btn, .ant-calendar-next-month-btn, .ant-calendar-prev-year-btn, .ant-calendar-next-year-btn, .ant-calendar-year-panel-next-decade-btn, .ant-calendar-year-panel-prev-decade-btn{
+      line-height: 60px;
+    }
+    .ant-calendar-century-select, .ant-calendar-decade-select, .ant-calendar-year-select, .ant-calendar-month-select, .ant-calendar-year-panel-decade-select{
+      color: #fff;
+    }
+  }
+  .ant-calendar-next-month-btn-day .ant-calendar-date{
+    color: #A8A8AA;
+  }
+  .ant-calendar-decade-panel-decade:hover, .ant-calendar-year-panel-selected-cell .ant-calendar-year-panel-year, .ant-calendar-year-panel-year:hover{
+    background: #E4C989;
+    color: #26262C;
+  }
+  .ant-calendar-my-select, .ant-calendar-year-panel-decade-select{
+    display: inline-block;
+    margin-top: 10px;
+  }
+  .ant-calendar-decade-panel-header, .ant-calendar-decade-panel-next-century-btn, .ant-calendar-decade-panel-prev-century-btn{
+    line-height: 60px;
+  }
+  .ant-calendar-disabled-cell.ant-calendar-today .ant-calendar-date{
+    color: #E4C989 !important;
+    &::before{
+      display: none;
+    }
+  }
+}

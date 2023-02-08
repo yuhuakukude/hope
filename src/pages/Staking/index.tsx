@@ -23,6 +23,7 @@ import './index.scss'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import { ethers } from 'ethers'
+import { NavLink } from 'react-router-dom'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -46,12 +47,11 @@ export default function Staking() {
   // txn values
   const [txHash, setTxHash] = useState<string>('')
 
-  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
   const hopeBal = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
   const [apyVal, setApyVal] = useState('0')
   const [amount, setAmount] = useState('')
-  const [receiveAmount, setReceiveAmount] = useState('')
 
   const inputAmount = tryParseAmount(amount, HOPE[chainId ?? 1]) as TokenAmount | undefined
   const { stakedVal, lpTotalSupply, unstakedVal, claRewards, mintedVal, unstakingVal } = useStaking()
@@ -112,16 +112,24 @@ export default function Staking() {
     }
 
     const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
-    const signature = await library.getSigner(account)._signTypedData(domain, types, values)
-    toStaked(inputAmount, nonce, deadline, signature)
-      .then(hash => {
-        setAttemptingTxn(false)
-        setTxHash(hash)
-        setAmount('')
+    library
+      .getSigner(account)
+      ._signTypedData(domain, types, values)
+      .then(signature => {
+        toStaked(inputAmount, nonce, deadline, signature)
+          .then(hash => {
+            setAttemptingTxn(false)
+            setTxHash(hash)
+            setAmount('')
+          })
+          .catch((err: any) => {
+            setAttemptingTxn(false)
+            setErrorStatus({ code: err?.code, message: err.message })
+          })
       })
-      .catch((err: any) => {
+      .catch(error => {
         setAttemptingTxn(false)
-        setErrorMessage(err.message)
+        setErrorStatus({ code: error?.code, message: error.message })
       })
   }, [account, inputAmount, library, chainId, toStaked])
 
@@ -155,7 +163,8 @@ export default function Staking() {
       })
       .catch((err: any) => {
         setAttemptingTxn(false)
-        setErrorMessage(err.message)
+        setAttemptingTxn(false)
+        setErrorStatus({ code: err?.code, message: err.message })
       })
   }, [amount, account, inputAmount, toUnStaked, getIsSub])
 
@@ -172,7 +181,8 @@ export default function Staking() {
       })
       .catch((err: any) => {
         setAttemptingTxn(false)
-        setErrorMessage(err.message)
+        setAttemptingTxn(false)
+        setErrorStatus({ code: err?.code, message: err.message })
       })
   }, [account, chainId, toClaim])
 
@@ -189,8 +199,7 @@ export default function Staking() {
       })
       .catch((err: any) => {
         setAttemptingTxn(false)
-        setErrorMessage(err.message)
-        console.error(err)
+        setErrorStatus({ code: err?.code, message: err.message })
       })
   }, [account, chainId, toWithdraw])
 
@@ -213,14 +222,12 @@ export default function Staking() {
 
   function changeStake(type: string) {
     setAmount('')
-    setReceiveAmount('')
     setStakingType(type)
   }
 
   function changeAmount(val: any) {
     console.log(val)
     setAmount(val)
-    setReceiveAmount(val)
   }
 
   const init = useCallback(async () => {
@@ -236,8 +243,12 @@ export default function Staking() {
 
   const confirmationContent = useCallback(
     () =>
-      errorMessage ? (
-        <TransactionErrorContent onDismiss={() => setShowConfirm(false)} message={errorMessage} />
+      errorStatus ? (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
       ) : (
         <div className="staking-claim-box w-100">
           <div className="head">
@@ -265,7 +276,7 @@ export default function Staking() {
           </div>
         </div>
       ),
-    [claRewards, claimCallback, errorMessage, totalRewards]
+    [claRewards, claimCallback, errorStatus, totalRewards]
   )
 
   return (
@@ -355,7 +366,9 @@ export default function Staking() {
                   </div>
                   <div className="flex jc-between m-t-20">
                     <span className="text-white">Receive </span>
-                    <span className="text-white">{receiveAmount || '--'} stHOPE</span>
+                    <span className="text-white">
+                      {amount || '--'} {curType !== 'stake' ? 'HOPE' : 'stHOPE'}
+                    </span>
                   </div>
                   <div className="action-box m-t-40">
                     {!account ? (
@@ -374,8 +387,8 @@ export default function Staking() {
                             : !amount
                             ? 'Enter Amount'
                             : approvalState === ApprovalState.NOT_APPROVED
-                            ? 'Allow RamBox to use your USDT'
-                            : 'Stake'
+                            ? 'Approve Hope'
+                            : 'Stake HOPE Get stHOPE'
                         }
                         onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : stakingCallback}
                       />
@@ -434,7 +447,7 @@ export default function Staking() {
                 </div>
               </HopeCard>
               <div className="m-t-30">
-                <HopeCard title={'Stake'}>
+                <HopeCard title={'My Stake'}>
                   <div className="flex jc-between m-b-20">
                     <span className="text-white">Available</span>
                     <span className="text-white">{hopeBal?.toFixed(2, { groupSeparator: ',' } ?? '-') || '--'}</span>
@@ -482,7 +495,7 @@ export default function Staking() {
                         className="text-primary cursor-select p-x-0"
                         onClick={() => {
                           setTxHash('')
-                          setErrorMessage('')
+                          setErrorStatus(undefined)
                           setAttemptingTxn(false)
                           setShowConfirm(true)
                         }}
@@ -498,7 +511,9 @@ export default function Staking() {
                         Connect Wallet
                       </ButtonPrimary>
                     ) : (
-                      <ButtonPrimary className="hp-button-primary">Get yield up to 2.5x</ButtonPrimary>
+                      <NavLink to={'/dao/locker'}>
+                        <ButtonPrimary className="hp-button-primary">Get yield up to 2.5x</ButtonPrimary>
+                      </NavLink>
                     )}
                   </div>
                 </HopeCard>
