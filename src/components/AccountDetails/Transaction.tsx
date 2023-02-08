@@ -1,7 +1,7 @@
 import React from 'react'
 import styled from 'styled-components'
 import { CheckCircle, Triangle } from 'react-feather'
-
+import moment from 'moment'
 import { useActiveWeb3React } from '../../hooks'
 import { getEtherscanLink } from '../../utils'
 import { ExternalLink } from '../../theme'
@@ -54,9 +54,7 @@ export default function Transaction({ hash }: { hash: string }) {
     <TransactionWrapper>
       <TransactionState href={getEtherscanLink(chainId, hash, 'transaction')} pending={pending} success={success}>
         <RowFixed>
-          <TYPE.main>{`${new Date(tx?.addedTime).getFullYear()}-${new Date(tx?.addedTime).getMonth()}-${new Date(
-            tx?.addedTime
-          ).getDay()}`}</TYPE.main>
+          <TYPE.main>{`${moment(tx?.addedTime).format('YYYY-MM-DD')}`}</TYPE.main>
         </RowFixed>
         <RowFixed>
           <TransactionStatusText>{summary ?? hash}</TransactionStatusText>
