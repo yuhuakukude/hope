@@ -108,7 +108,7 @@ export default function AddTime({ isOpen, onCloseModel }: { isOpen: boolean; onC
         .unix()
     }
     return null
-  }, [weekNumber, lockerRes?.end])
+  }, [weekNumber, lockerRes])
 
   const lockerCallback = useCallback(async () => {
     // return console.log(weekNumber)

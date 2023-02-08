@@ -67,7 +67,7 @@ export default function BuyHope() {
         JSBI.BigInt(1000)
       )
     )
-  }, [rateObj?.result?.rate, chainId, payToken])
+  }, [rateObj, chainId, payToken])
 
   const receiveTokenAmount = useMemo(() => {
     if (!inputTyped || !rateObj?.result?.rate || !payToken) {
