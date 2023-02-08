@@ -20,7 +20,9 @@ const Bar = styled('div')`
   justify-content: space-between;
 
   :hover .showOnHover {
-    display: block;
+    opacity: 1;
+    width: 100%;
+    transition: all 0.5s;
   }
 `
 
@@ -44,8 +46,8 @@ const SidebarIcon = styled('div')`
 const SidebarSelected = styled(SidebarIcon)`
   background-color: ${({ theme }) => theme.bg2};
   border-radius: 30px 0 0 30px;
-  transition: all 1s;
   color: ${({ theme }) => theme.primary1};
+  transition: all 0.5s;
 `
 //const SidebarSelectedNext = styled(SidebarIcon)``
 
@@ -65,12 +67,18 @@ const MenuText = styled(Text)`
 const SidebarText = styled.p`
   margin-left: 10px;
   font-size: 18px;
-  display: none;
+  opacity: 0;
+  width: 0;
 `
 
 const LogoText = styled(PrimaryText)`
   font-size: 30px;
-  display: none;
+  opacity: 0;
+  width: 0;
+`
+
+const TabBox = styled(Column)`
+  padding-left: 5px;
 `
 
 export default function SideBar() {
@@ -94,7 +102,7 @@ export default function SideBar() {
           <Logo style={{ alignSelf: 'center' }} />
           <LogoText className="showOnHover">HOPE</LogoText>
         </div>
-        <Column style={{ width: '100%', paddingLeft: '22px' }}>
+        <TabBox>
           {ROUTERS.map(({ title, router, icon }, index) => {
             if (currentTab() === index) {
               return (
@@ -122,7 +130,7 @@ export default function SideBar() {
               </NavLink>
             )
           })}
-        </Column>
+        </TabBox>
       </Column>
       <Column style={{ width: '100%' }}>
         <AutoColumn gap="10px" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
