@@ -120,6 +120,7 @@ export default function BuyHope() {
   }, [])
 
   const onTxError = useCallback(error => {
+    setTxHash('')
     setPendingText(``)
     setAttemptingTxn(false)
     setErrorStatus({ code: error?.code, message: error.message })
@@ -190,6 +191,7 @@ export default function BuyHope() {
           })
           .catch((error: any) => {
             onTxError(error)
+            throw error
           })
       })
       .catch(error => {
