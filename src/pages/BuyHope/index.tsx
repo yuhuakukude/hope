@@ -41,7 +41,7 @@ export default function BuyHope() {
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
   const [inputTyped, setInputTyped] = useState('')
-  const [payToken, setPayToken] = useState<Token>(USDT)
+  const [payToken, setPayToken] = useState<Token>(USDT[chainId ?? 1])
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -320,7 +320,7 @@ export default function BuyHope() {
         {currencyModalFlag && (
           <SelectCurrency
             isOpen={currencyModalFlag}
-            supportedTokens={[USDT, USDC]}
+            supportedTokens={[USDT[chainId ?? 1], USDC[chainId ?? 1]]}
             selectToken={payToken}
             onTokenSelect={token => setPayToken(token)}
             onCloseModel={() => setCurrencyModalFlag(false)}
