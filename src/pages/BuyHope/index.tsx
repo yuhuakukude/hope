@@ -108,7 +108,6 @@ export default function BuyHope() {
   )
 
   const onTxStart = useCallback(() => {
-    setPendingText(`Confirm in your wallet`)
     setShowConfirm(true)
     setAttemptingTxn(true)
   }, [])
@@ -129,6 +128,7 @@ export default function BuyHope() {
   const onApprove = useCallback(() => {
     setCurToken(undefined)
     onTxStart()
+    setPendingText(`Allow Light Swap to use your ${payToken.symbol}`)
     approveCallback()
       .then((response: TransactionResponse | undefined) => {
         onTxSubmitted(response?.hash)
@@ -136,7 +136,7 @@ export default function BuyHope() {
       .catch(error => {
         onTxError(error)
       })
-  }, [approveCallback, onTxError, onTxStart, onTxSubmitted])
+  }, [approveCallback, onTxError, onTxStart, onTxSubmitted, payToken.symbol])
 
   const toBuyHope = useCallback(
     async (amount: CurrencyAmount, NONCE, DEADLINE, sigVal) => {
@@ -166,8 +166,9 @@ export default function BuyHope() {
   const buyHopeCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId || !payToken.symbol) return
     setCurToken(HOPE[chainId ?? 1])
-    onTxStart()
+    setPendingText(`Allow Light Swap to use your ${payToken.symbol}`)
 
+    onTxStart()
     // sign
     const deadline = toDeadline(PERMIT_EXPIRATION)
     const nonce = ethers.utils.randomBytes(32)
@@ -185,6 +186,11 @@ export default function BuyHope() {
       .getSigner(account)
       ._signTypedData(domain, types, values)
       .then(signature => {
+        setPendingText(
+          `Buy ${receiveTokenAmount
+            ?.toFixed(2, { groupSeparator: ',' })
+            .toString()} Hope with ${inputAmount.toSignificant()} ${payToken.symbol}`
+        )
         toBuyHope(inputAmount, nonce, deadline, signature)
           .then(hash => {
             onTxSubmitted(hash)
@@ -251,7 +257,7 @@ export default function BuyHope() {
           attemptingTxn={attemptingTxn}
           hash={txHash}
           content={confirmationContent}
-          pendingText={''}
+          pendingText={pendingText}
           currencyToAdd={curToken}
         />
         <div className="buy-hope-page">
