@@ -12,7 +12,8 @@ import { VELT } from '../../../../constants'
 import { Select } from 'antd'
 import { useToVote } from '../../../../hooks/ahp/useGomVote'
 import { JSBI, Percent, Token } from '@uniswap/sdk'
-import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
+// import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
+import { useSingleContractMultipleData, useSingleCallResult } from '../../../../state/multicall/hooks'
 import ActionButton from '../../../../components/Button/ActionButton'
 import TransactionConfirmationModal, {
   TransactionErrorContent
@@ -113,12 +114,64 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
     }
   }, [selList, account])
 
+  const lastArg = useMemo(() => {
+    let res: any = [undefined]
+    if (account && curGomAddress) {
+      res = [account, curGomAddress]
+    }
+    return res
+  }, [account, curGomAddress])
+
+  const allVoteData = useSingleContractMultipleData(gomConContract, 'voteUserSlopes', mulArg)
+  const lastVoteData = useSingleCallResult(gomConContract, 'lastUserVote', lastArg)
+
+  const curLastVote = useMemo(() => {
+    let res = false
+    const ld = Number(lastVoteData.result)
+    if (lastVoteData && ld && curGomAddress) {
+      const now = dayjs()
+      const end = dayjs.unix(ld).add(10, 'day')
+      res = now.isBefore(end)
+    }
+    return res
+  }, [lastVoteData, curGomAddress])
+
+  const curIndex = useMemo(() => {
+    let res = 0
+    if (curGomAddress) {
+      selList.forEach((e: any, index: number) => {
+        if (e.value === curGomAddress) {
+          res = index
+        }
+      })
+    }
+    return res
+  }, [selList, curGomAddress])
+
+  const subAmount = useMemo(() => {
+    let sub = 0
+    if (allVoteData && allVoteData[curIndex] && unUseRateVal) {
+      const item: any = allVoteData[curIndex]
+      const po = (item?.power && item?.power.toString()) || 0
+      const ra = new Percent(po, JSBI.BigInt(10000))
+      sub = Number(ra.toFixed(2)) + Number(unUseRateVal)
+    }
+    return sub
+  }, [allVoteData, curIndex, unUseRateVal])
+
   const voteInputError = useMemo(() => {
+    if (curLastVote) {
+      return 'No voting within ten days'
+    }
     if (amount && (Number(amount) > 100 || Number(amount) === 0)) {
       return 'Insufficient Value'
     }
+    if (amount && Number(subAmount) < Number(amount)) {
+      return 'Surplus deficiency'
+    }
+
     return undefined
-  }, [amount])
+  }, [amount, curLastVote, subAmount])
 
   const getActionText = useMemo(() => {
     let res = 'Select a Gömböc for Vote'
@@ -133,8 +186,6 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
     }
     return res
   }, [voteInputError, amount, curGomAddress])
-
-  const allVoteData = useSingleContractMultipleData(gomConContract, 'voteUserSlopes', mulArg)
 
   const handleVoteData = useCallback(() => {
     if (allVoteData && allVoteData.length > 0) {
@@ -311,7 +362,7 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
               <ActionButton
                 error={voteInputError}
                 // pending={approvalState === ApprovalState.PENDING}
-                disableAction={!amount || !curGomAddress}
+                disableAction={!amount || !curGomAddress || curLastVote}
                 actionText={getActionText}
                 onAction={toVoteCallback}
               />

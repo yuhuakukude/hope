@@ -52,7 +52,6 @@ export default function Staking() {
   const hopeBal = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
   const [apyVal, setApyVal] = useState('0')
   const [amount, setAmount] = useState('')
-  const [receiveAmount, setReceiveAmount] = useState('')
 
   const inputAmount = tryParseAmount(amount, HOPE[chainId ?? 1]) as TokenAmount | undefined
   const { stakedVal, lpTotalSupply, unstakedVal, claRewards, mintedVal, unstakingVal } = useStaking()
@@ -113,7 +112,6 @@ export default function Staking() {
     }
 
     const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
-
     library
       .getSigner(account)
       ._signTypedData(domain, types, values)
@@ -224,14 +222,12 @@ export default function Staking() {
 
   function changeStake(type: string) {
     setAmount('')
-    setReceiveAmount('')
     setStakingType(type)
   }
 
   function changeAmount(val: any) {
     console.log(val)
     setAmount(val)
-    setReceiveAmount(val)
   }
 
   const init = useCallback(async () => {
@@ -371,7 +367,7 @@ export default function Staking() {
                   <div className="flex jc-between m-t-20">
                     <span className="text-white">Receive </span>
                     <span className="text-white">
-                      {receiveAmount || '--'} {curType !== 'stake' ? 'HOPE' : 'stHOPE'}
+                      {amount || '--'} {curType !== 'stake' ? 'HOPE' : 'stHOPE'}
                     </span>
                   </div>
                   <div className="action-box m-t-40">

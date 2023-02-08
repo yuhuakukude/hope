@@ -21,7 +21,7 @@ import { useSingleCallResult } from '../../state/multicall/hooks'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { PERMIT2_ADDRESS, USDT, USDC, HOPE, TOKEN_SALE_ADDRESS } from '../../constants'
 import { useTransactionAdder } from '../../state/transactions/hooks'
-import { CurrencyAmount, Token } from '@uniswap/sdk'
+import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 
 const PageWrapper = styled(AutoColumn)`
@@ -41,43 +41,53 @@ export default function BuyHope() {
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
   const [inputTyped, setInputTyped] = useState('')
-  const [payToken, setPayToken] = useState(USDT)
+  const [payToken, setPayToken] = useState<Token>(USDT[chainId ?? 1])
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
-  // get balance / rate
   const rateObj = useSingleCallResult(buyHopeContract, 'currencys', [payToken.symbol])
   const inputAmount = tryParseAmount(inputTyped, payToken)
 
-  // token api
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
 
   const receiveTokenAmount = useMemo(() => {
-    if (!inputTyped || !rateObj?.result?.rate) {
+    if (!inputTyped || !rateObj?.result?.rate || !payToken) {
       return undefined
     }
-    return tryParseAmount(inputTyped, HOPE[chainId ?? 1])
-      ?.multiply(rateObj?.result?.rate)
-      .divide(JSBI.BigInt(1000000000000000))
-  }, [chainId, inputTyped, rateObj])
+    return new TokenAmount(
+      HOPE[chainId ?? 1],
+      JSBI.divide(
+        JSBI.multiply(
+          JSBI.BigInt(tryParseAmount(inputTyped, payToken)?.raw.toString() ?? '0'),
+          JSBI.BigInt(rateObj?.result?.rate?.toString())
+        ),
+        JSBI.BigInt(1000)
+      )
+    )
+  }, [chainId, inputTyped, payToken, rateObj?.result?.rate])
 
   const onOutputType = useCallback(
-    (typed: string) => {
-      if (!typed) {
+    (value: string) => {
+      if (!value) {
         return setInputTyped('')
       }
       return setInputTyped(
-        tryParseAmount(typed, USDT)
-          ?.multiply(JSBI.BigInt(1000000000000000))
-          .divide(rateObj?.result?.rate)
-          .toSignificant(USDT.decimals)
-          ?.toString() ?? ''
+        new TokenAmount(
+          payToken,
+          JSBI.divide(
+            JSBI.multiply(
+              JSBI.BigInt(tryParseAmount(value, HOPE[chainId ?? 1])?.raw.toString() ?? '0'),
+              JSBI.BigInt(1000)
+            ),
+            JSBI.BigInt(rateObj?.result?.rate?.toString())
+          )
+        ).toSignificant(payToken.decimals)
       )
     },
-    [rateObj]
+    [chainId, payToken, rateObj?.result?.rate]
   )
 
   const toBuyHope = useCallback(
@@ -94,16 +104,15 @@ export default function BuyHope() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Buy ${amount
-              .multiply(JSBI.BigInt('5'))
-              .toSignificant(4, { groupSeparator: ',' })
-              .toString()} Hope with ${amount.toSignificant()} {currency}`
+            summary: `Buy ${receiveTokenAmount
+              ?.toSignificant(2, { groupSeparator: ',' })
+              .toString()} Hope with ${amount.toSignificant()} ${payToken.symbol}`
           })
           return response.hash
         })
       })
     },
-    [account, addTransaction, buyHopeContract, payToken.symbol]
+    [account, addTransaction, buyHopeContract, payToken, receiveTokenAmount]
   )
 
   const buyHopeCallback = useCallback(async () => {
@@ -157,7 +166,7 @@ export default function BuyHope() {
     } else if (!inputAmount) {
       return `Enter Amount`
     } else {
-      return approvalState === ApprovalState.NOT_APPROVED ? 'Confirm in your wallet' : 'Supply'
+      return approvalState === ApprovalState.NOT_APPROVED ? `Approve ${payToken.symbol}` : 'Supply'
     }
   }, [isMaxDisabled, inputAmount, payToken, approvalState])
 
@@ -259,6 +268,7 @@ export default function BuyHope() {
                 <div className="currency font-nor text-medium m-l-12">HOPE</div>
               </div>
               <NumericalInput
+                disabled={!rateObj?.result}
                 onFocus={() => inputOnFocus('receive')}
                 onBlur={() => setInputBorder('')}
                 className="input m-l-10"
@@ -280,9 +290,9 @@ export default function BuyHope() {
                 </ButtonPrimary>
               ) : (
                 <ActionButton
-                  pending={approvalState === ApprovalState.PENDING}
-                  pendingText={'Approving'}
-                  disableAction={isMaxDisabled || !inputAmount}
+                  pending={approvalState === ApprovalState.PENDING || rateObj?.loading}
+                  pendingText={rateObj?.loading ? ' ' : 'Approving'}
+                  disableAction={isMaxDisabled || !inputAmount || !receiveTokenAmount}
                   actionText={actionText}
                   onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : buyHopeCallback}
                 />
@@ -310,7 +320,7 @@ export default function BuyHope() {
         {currencyModalFlag && (
           <SelectCurrency
             isOpen={currencyModalFlag}
-            supportedTokens={[USDT, USDC]}
+            supportedTokens={[USDT[chainId ?? 1], USDC[chainId ?? 1]]}
             selectToken={payToken}
             onTokenSelect={token => setPayToken(token)}
             onCloseModel={() => setCurrencyModalFlag(false)}
