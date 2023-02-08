@@ -113,12 +113,14 @@ export default function BuyHope() {
   }, [])
 
   const onTxSubmitted = useCallback((hash: string | undefined) => {
+    setShowConfirm(true)
     setPendingText(``)
     setAttemptingTxn(false)
     hash && setTxHash(hash)
   }, [])
 
   const onTxError = useCallback(error => {
+    setShowConfirm(true)
     setTxHash('')
     setPendingText(``)
     setAttemptingTxn(false)
@@ -128,7 +130,7 @@ export default function BuyHope() {
   const onApprove = useCallback(() => {
     setCurToken(undefined)
     onTxStart()
-    setPendingText(`Allow Light Swap to use your ${payToken.symbol}`)
+    setPendingText(`Approve ${payToken.symbol}`)
     approveCallback()
       .then((response: TransactionResponse | undefined) => {
         onTxSubmitted(response?.hash)
@@ -166,7 +168,7 @@ export default function BuyHope() {
   const buyHopeCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId || !payToken.symbol) return
     setCurToken(HOPE[chainId ?? 1])
-    setPendingText(`Allow Light Swap to use your ${payToken.symbol}`)
+    setPendingText(`Approve ${payToken.symbol}`)
 
     onTxStart()
     // sign
