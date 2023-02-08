@@ -120,7 +120,7 @@ export default function BuyHope() {
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
             summary: `Buy ${receiveTokenAmount
-              ?.toSignificant(2, { groupSeparator: ',' })
+              ?.toFixed(2, { groupSeparator: ',' })
               .toString()} Hope with ${amount.toSignificant()} ${payToken.symbol}`
           })
           return response.hash
