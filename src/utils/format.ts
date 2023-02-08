@@ -92,10 +92,19 @@ export const formatDate = (value: any, formatString = 'YYYY-MM-DD HH:mm:ss') => 
   return '-'
 }
 
+// 地址 脱敏
+export const addressDes = (value: string) => {
+  if (value) {
+    return value.replace(/^(.{6})(?:\w+)(.{4})$/, '$1....$2')
+  }
+  return value
+}
+
 export default {
   rate,
   numeral,
   separate,
   amountFormat,
-  formatDate
+  formatDate,
+  addressDes
 }

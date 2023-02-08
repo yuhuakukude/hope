@@ -59,7 +59,7 @@ export default function DaoGomboc() {
             </div>
           </div>
           <div className="normal-card m-t-30">
-            <GomList />
+            <GomList votiingData={votiingData} gombocList={gombocList} />
           </div>
         </div>
       </PageWrapper>
