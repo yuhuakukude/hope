@@ -4,6 +4,8 @@ import { TitleComponentOption } from 'echarts/components'
 import { PieSeriesOption } from 'echarts/charts'
 
 import './index.scss'
+import Card from '../Card'
+import Tips from 'components/Tips'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
 
@@ -75,32 +77,37 @@ export default function InvestmentAllocation() {
 
   return (
     <div className="investment-allocation">
-      <div className="investment-allocation-top">
-        <div className="investment-allocation-head">
-          <div className="investment-allocation-title">My Investment Allocation</div>
-          <div className="investment-allocation-total">
-            Total Value <span></span>
+      <Card>
+        <div className="investment-allocation-top">
+          <div className="investment-allocation-head">
+            <div className="investment-allocation-title">My Investment Allocation</div>
+            <div className="investment-allocation-total">
+              Total Value
+              <span>
+                <Tips title="测试title">测试</Tips>
+              </span>
+            </div>
+            <div className="investment-allocation-total2">12,123,456,789.01 HOPE </div>
+            <div className="investment-allocation-total3">~ $123,456,789.00</div>
           </div>
-          <div className="investment-allocation-total2">12,123,456,789.01 HOPE </div>
-          <div className="investment-allocation-total3">~ $123,456,789.00</div>
         </div>
-      </div>
-      <div className="investment-allocation-bottom">
-        <div className="investment-allocation-content">
-          {[0, 1, 2, 3, 4, 5].map(index => {
-            return (
-              <div className="investment-allocation-box" key={index}>
-                <div className="investment-allocation-box-head">
-                  <span className="investment-allocation-box-name">HOPE</span>
-                  <span className="investment-allocation-question"></span>
+        <div className="investment-allocation-bottom">
+          <div className="investment-allocation-content">
+            {[0, 1, 2, 3, 4, 5].map(index => {
+              return (
+                <div className="investment-allocation-box" key={index}>
+                  <div className="investment-allocation-box-head">
+                    <span className="investment-allocation-box-name">HOPE</span>
+                    <span className="investment-allocation-question"></span>
+                  </div>
+                  <div className="investment-allocation-box-amount">~ 123,456,789.00 HOPE</div>
                 </div>
-                <div className="investment-allocation-box-amount">~ 123,456,789.00 HOPE</div>
-              </div>
-            )
-          })}
+              )
+            })}
+          </div>
+          <div className="investment-allocation-map" ref={chartRef}></div>
         </div>
-        <div className="investment-allocation-map" ref={chartRef}></div>
-      </div>
+      </Card>
     </div>
   )
 }

@@ -1,9 +1,7 @@
 .portfolio-head {
-  padding: 30px;
-  border-radius: 20px;
-  background-color: rgba(38, 38, 44, 1);
-  margin: 0 30px;
-  box-sizing: border-box;
+  .card-wrap {
+    margin-top: 0;
+  }
 
   .portfolio-head-title {
     font-size: 30px;

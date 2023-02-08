@@ -39,7 +39,24 @@ const GomChart = ({ votiingData }: GomChartProps) => {
 
           const option: EChartsOption = {
             tooltip: {
-              trigger: 'item'
+              trigger: 'item',
+              textStyle: {
+                color: '#fff',
+                fontSize: 14
+              },
+              formatter: (params: { name: string; value: number; percent: number }) => {
+                return `<div>
+                    <div style="font-size: 14px;">
+                    Gömböc Relative Weight
+                    </div>
+                    <div style="font-size: 14px;margin-top: 16px">${params.name}: </div>
+                    <div style="font-size: 18px;margin-top: 8px">${params.value}(${params.percent}%)</div>
+                  </div>`
+              },
+              padding: 20,
+              backgroundColor: 'rgb(51, 51, 60)',
+              borderRadius: 10,
+              borderWidth: 0
             },
             legend: {
               show: false

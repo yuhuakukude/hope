@@ -1,5 +1,6 @@
 import Table from 'components/Table'
 import React from 'react'
+import Card from '../Card'
 
 import './index.scss'
 
@@ -41,7 +42,9 @@ const columns = [
 export default function Rewards() {
   return (
     <div className="rewards-wrap">
-      <Table dataSource={dataSource} columns={columns} title={() => 'Gömböc Rewards'} pagination={false} />
+      <Card>
+        <Table dataSource={dataSource} columns={columns} title={() => 'Gömböc Rewards'} pagination={false} />
+      </Card>
     </div>
   )
 }
