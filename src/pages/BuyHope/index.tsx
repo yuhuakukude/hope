@@ -354,7 +354,7 @@ export default function BuyHope() {
               ) : (
                 <ActionButton
                   pending={approvalState === ApprovalState.PENDING || rateObj?.loading || !!pendingText}
-                  pendingText={rateObj?.loading ? ' ' : pendingText}
+                  pendingText={rateObj?.loading ? 'Waitting' : pendingText}
                   disableAction={
                     isMaxDisabled || !inputAmount || !receiveTokenAmount || approvalState === ApprovalState.UNKNOWN
                   }
