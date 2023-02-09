@@ -13,6 +13,8 @@ import { CloseIcon } from '../../../../theme/components'
 import { useToVote } from '../../../../hooks/ahp/useGomVote'
 import format from '../../../../utils/format'
 import VoteModal from '../VoteModal'
+import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
+import { useGomConContract } from '../../../../hooks/useContract'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
@@ -26,6 +28,7 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
   const endDate = dayjs()
     .add(10, 'day')
     .format('YYYY-MM-DD')
+  const gomConContract = useGomConContract()
   const toggleWalletModal = useWalletModalToggle()
   const { account, chainId } = useActiveWeb3React()
   const [searchValue, setSearchValue] = useState('')
@@ -75,6 +78,40 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
         setErrorStatus({ code: error?.code, message: error.message })
       })
   }, [account, toVote, curGomAddress])
+
+  const argList = useMemo(() => {
+    let res: any = []
+    const arr: any = []
+    if (tableData && tableData.length > 0) {
+      tableData.forEach((e: any) => {
+        if (e.gomboc && account) {
+          arr.push([account, e.gomboc])
+        }
+      })
+      res = arr
+    }
+    return res
+  }, [tableData, account])
+
+  const lastVoteData = useSingleContractMultipleData(gomConContract, 'lastUserVote', argList)
+
+  const isTimeDis = useMemo(() => {
+    let res: any = []
+    const arr: any = []
+    if (tableData.length > 0 && lastVoteData.length > 0 && tableData.length === lastVoteData.length) {
+      lastVoteData.forEach((e: any) => {
+        let item = false
+        if (Number(e.result)) {
+          const now = dayjs()
+          const end = dayjs.unix(Number(e.result)).add(10, 'day')
+          item = now.isBefore(end)
+        }
+        arr.push(item)
+      })
+      res = arr
+    }
+    return res
+  }, [lastVoteData, tableData])
 
   function getViewAmount(value: any) {
     let res = ''
@@ -164,7 +201,7 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
     )
   }
 
-  const actionNode = (text: any, record: any) => {
+  const actionNode = (text: any, record: any, index: number) => {
     return (
       <>
         {!account ? (
@@ -173,17 +210,21 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
           </ButtonPrimary>
         ) : (
           <div>
+            {Number(getViewAmount(record.userPower)) > 0 && (
+              <Button
+                className="text-primary font-bold"
+                disabled={isTimeDis[index]}
+                onClick={() => {
+                  toReset(record)
+                }}
+                type="link"
+              >
+                Reset
+              </Button>
+            )}
             <Button
               className="text-primary font-bold"
-              onClick={() => {
-                toReset(record)
-              }}
-              type="link"
-            >
-              Reset
-            </Button>
-            <Button
-              className="text-primary font-bold"
+              disabled={isTimeDis[index]}
               onClick={() => {
                 toVoteFn()
               }}
