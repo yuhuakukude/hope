@@ -2,7 +2,7 @@ import React from 'react'
 import PortfolioConnect from './component/Connect'
 import PortfolioHead from './component/Head'
 import InvestmentAllocation from './component/InvestmentAllocation'
-import GömböcRewards from './component/GömböcRewards'
+import GombocRewards from './component/GombocRewards'
 import VeLTRewards from './component/VeLTRewards'
 import Govern from './component/Govern'
 
@@ -14,8 +14,8 @@ export default function Portfolio() {
       <PortfolioHead />
       {false && <PortfolioConnect />}
       {true && <InvestmentAllocation />}
-      {true && <GömböcRewards />}
-      {false && <VeLTRewards />}
+      {true && <GombocRewards />}
+      {true && <VeLTRewards />}
       <Govern />
     </div>
   )
