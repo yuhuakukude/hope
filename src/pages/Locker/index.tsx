@@ -39,7 +39,7 @@ export default function DaoLocker() {
   const [addAmounntModal, setAddAmounntModal] = useState(false)
   const [addTimeModal, setAddTimeModal] = useState(false)
   const [lockerDate, setLockerDate] = useState<any>('')
-  const [dateIndex, setDateIndex] = useState<number | string>(2)
+  const [dateIndex, setDateIndex] = useState<number | string>()
   const [unUseRateVal, setUnUseRateVal] = useState<string>('')
   const [unUseVeltAmount, setUnUseVeltAmount] = useState<string>('')
   const [txHash, setTxHash] = useState<string>('')
@@ -165,16 +165,12 @@ export default function DaoLocker() {
     setAttemptingTxn(true)
   }, [])
 
-  const onTxSubmitted = useCallback(
-    (hash: string | undefined) => {
-      setShowConfirm(true)
-      setPendingText(``)
-      setAttemptingTxn(false)
-      hash && setTxHash(hash)
-      changeDateIndex(2)
-    },
-    [changeDateIndex]
-  )
+  const onTxSubmitted = useCallback((hash: string | undefined) => {
+    setShowConfirm(true)
+    setPendingText(``)
+    setAttemptingTxn(false)
+    hash && setTxHash(hash)
+  }, [])
 
   const onTxError = useCallback(error => {
     setShowConfirm(true)
@@ -233,6 +229,7 @@ export default function DaoLocker() {
             onTxSubmitted(hash)
             setAmount('')
             setLockerDate('')
+            setDateIndex('')
           })
           .catch((error: any) => {
             onTxError(error)
@@ -263,12 +260,6 @@ export default function DaoLocker() {
   }
 
   useEffect(() => {
-    if (account) {
-      changeDateIndex(2)
-    }
-  }, [account, changeDateIndex])
-
-  useEffect(() => {
     if (votePowerAmount || votePowerAmount === 0) {
       const total = JSBI.BigInt(10000)
       const apo = JSBI.BigInt(votePowerAmount)
@@ -281,7 +272,7 @@ export default function DaoLocker() {
             veltBalance
               ?.multiply(unUseVal)
               .divide(JSBI.BigInt(10000))
-              .toFixed(2, { groupSeparator: ',' } ?? '0.00')
+              .toFixed(2, { groupSeparator: ',' } ?? '0.00', 0)
           )
         }
       }
@@ -331,11 +322,10 @@ export default function DaoLocker() {
                 <div className="-l">
                   <p className="font-nor text-normal">My veLT Amount</p>
                   <p className="font-20 m-t-20 text-medium">
-                    {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} veLT
+                    {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '--'} veLT
                   </p>
                   <p className="font-nor text-normal m-t-16">unallocated:</p>
                   <p className="font-nor text-normal m-t-12">
-                    {/* {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} ({unUseRateVal || '--'}%) */}
                     {unUseVeltAmount} ({unUseRateVal || '--'}%)
                   </p>
                 </div>
@@ -442,7 +432,9 @@ export default function DaoLocker() {
                 </div>
                 <p className="m-t-40 font-nor flex jc-between">
                   <span className="text-normal">Total voting escrow</span>
-                  <span className="text-medium">{veLtAmount ? veLtAmount.toFixed(2) : '0.00'} veLT</span>
+                  <span className="text-medium">
+                    {veLtAmount ? veLtAmount.toFixed(2, { groupSeparator: ',' }, 0) : '0.00'} veLT
+                  </span>
                 </p>
                 <div className={account && isEthBalanceInsufficient ? 'm-t-30' : 'm-t-100'}>
                   {!account ? (
