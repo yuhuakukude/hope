@@ -166,7 +166,7 @@ export default function AddTime({
       />
       <div className="locker-add-amount-modal p-y-40 p-l-30 p-r-25 flex-1">
         <div className="title flex ai-center cursor-select jc-between">
-          <p className="box-title font-18 text-medium">Add LT Locking Amount</p>
+          <p className="box-title font-18 text-medium">Add LT Locking Time</p>
           <i className="iconfont font-20 m-r-12" onClick={() => onCloseModel()}>
             &#xe612;
           </i>
@@ -203,7 +203,7 @@ export default function AddTime({
         </div>
         <div className="time-box m-t-50">
           <p className="font-nor text-normal">Change Locking Time</p>
-          <p className="font-nor text-normal text-center m-t-30">The maximum increase is 206 weeks</p>
+          <p className="font-nor text-normal text-center m-t-30">The maximum increase is {maxWeek} weeks</p>
           <div className="week-box flex ai-center jc-center m-t-26">
             <span className="font-nor text-medium">Add</span>
             <div className="week-input-box m-x-20">

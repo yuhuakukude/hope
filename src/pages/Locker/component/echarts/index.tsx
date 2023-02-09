@@ -30,7 +30,7 @@ export default function LockerEcharts() {
             valueArr.unshift(valItem)
           })
           const option = {
-            grid: { left: '6%', top: '6%', bottom: '10%', right: '0%' },
+            grid: { top: '6%', bottom: '10%' },
             visualMap: {
               show: false,
               type: 'continuous',

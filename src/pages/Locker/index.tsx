@@ -72,10 +72,10 @@ export default function DaoLocker() {
   const { lockerRes } = useLocker()
   const { toLocker, getVeLtAmount } = useToLocker()
 
-  const changeDateIndex = (val: any) => {
+  const getLockerTime = (val: number) => {
     const weekDate = moment().day() === 0 ? 7 : moment().day()
     let week4
-    if (weekDate > 4) {
+    if (weekDate >= 4) {
       week4 = moment()
         .subtract(weekDate - 4, 'day')
         .format('YYYY-MM-DD')
@@ -84,7 +84,11 @@ export default function DaoLocker() {
         .subtract(7 - 4 + weekDate, 'day')
         .format('YYYY-MM-DD')
     }
-    const time = moment(week4).add(val, 'week')
+    return moment(week4).add(val, 'week')
+  }
+
+  const changeDateIndex = (val: number) => {
+    const time = getLockerTime(val)
     setLockerDate(moment(time))
     setDateIndex(val)
   }
@@ -92,7 +96,8 @@ export default function DaoLocker() {
   const disabledDate = (current: any) =>
     (current && moment(current).day() !== 4) ||
     current < moment().endOf('day') ||
-    moment(current).diff(moment(), 'day') <= 7
+    moment(current).diff(moment(), 'day') <= 7 ||
+    moment(current).isAfter(moment(getLockerTime(208)))
 
   const onDateChange = (date: any, dateString: any) => {
     setLockerDate(moment(dateString))
@@ -312,19 +317,22 @@ export default function DaoLocker() {
                 <p className="font-20 m-t-20 text-medium">
                   {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} LT
                 </p>
-                <p className="font-nor text-normal m-t-16">≈ $ --</p>
+                <p className="font-nor text-normal m-t-16">≈ $ 0.00</p>
               </div>
               <div className="item p-30">
                 <p className="font-nor text-normal">My Locked LT Amount</p>
                 <p className="font-20 m-t-20 text-medium">
                   {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '--'} LT
                 </p>
-                <p className="font-nor text-normal m-t-16">≈ $ --</p>
-                {lockerRes?.end === '--' && Number(lockerRes?.amount) > 0 && (
-                  <NavLink to={'/hope/staking'} className="link-btn text-medium text-primary font-12 m-t-20">
-                    Withdraw
-                  </NavLink>
-                )}
+                <p className="font-nor text-normal m-t-16">≈ $ 0.00</p>
+                {account &&
+                  (lockerRes?.end === '--' && Number(lockerRes?.amount) > 0 ? (
+                    <NavLink to={'/hope/staking'} className="link-btn text-medium text-primary font-12 m-t-20">
+                      Withdraw
+                    </NavLink>
+                  ) : (
+                    <div className="link-btn text-medium disabled font-12 m-t-20">Withdraw</div>
+                  ))}
               </div>
               <div className="item p-30 flex jc-between">
                 <div className="-l">
@@ -338,10 +346,16 @@ export default function DaoLocker() {
                   </p>
                 </div>
                 <div className="-r m-l-20 flex ai-center">
-                  {lockerRes?.end && lockerRes?.end !== '--' && (
+                  {account && (
                     <i
-                      onClick={() => lockerAddAction('amount')}
-                      className="iconfont font-20 cursor-select text-primary"
+                      onClick={() => lockerRes?.end && lockerRes?.end !== '--' && lockerAddAction('amount')}
+                      className={[
+                        'iconfont',
+                        'font-20',
+                        'cursor-select',
+                        'text-primary',
+                        (!lockerRes?.end || lockerRes?.end === '--') && 'disabled'
+                      ].join(' ')}
                     >
                       &#xe621;
                     </i>
@@ -352,11 +366,22 @@ export default function DaoLocker() {
                 <div className="-l">
                   <p className="font-nor text-normal">Locked Until (UTC)</p>
                   <p className="font-20 m-t-20 text-medium">{format.formatUTCDate(Number(`${lockerRes?.end}`))}</p>
-                  <p className="font-nor text-normal m-t-16">Max increase: {maxWeek} weeks</p>
+                  <p className="font-nor text-normal m-t-16">Max increase: {maxWeek || '--'} weeks</p>
                 </div>
                 <div className="-r m-l-20 flex ai-center">
-                  {lockerRes?.end && lockerRes?.end !== '--' && maxWeek > 0 && (
-                    <i onClick={() => lockerAddAction('time')} className="iconfont font-20 cursor-select text-primary">
+                  {account && (
+                    <i
+                      onClick={() =>
+                        lockerRes?.end && lockerRes?.end !== '--' && maxWeek > 0 && lockerAddAction('time')
+                      }
+                      className={[
+                        'iconfont',
+                        'font-20',
+                        'cursor-select',
+                        'text-primary',
+                        (!lockerRes?.end || lockerRes?.end === '--' || maxWeek <= 0) && 'disabled'
+                      ].join(' ')}
+                    >
                       &#xe621;
                     </i>
                   )}
@@ -422,7 +447,7 @@ export default function DaoLocker() {
                 </div>
                 <p className="m-t-40 font-nor flex jc-between">
                   <span className="text-normal">Total voting escrow</span>
-                  <span className="text-medium">{veLtAmount ? veLtAmount.toFixed(2) : '--'} veLT</span>
+                  <span className="text-medium">{veLtAmount ? veLtAmount.toFixed(2) : '0.00'} veLT</span>
                 </p>
                 <div className={account && isEthBalanceInsufficient ? 'm-t-30' : 'm-t-100'}>
                   {!account ? (
