@@ -60,10 +60,10 @@ export function SwapPoolTabs({ active }: { active: 'swap' | 'pool' }) {
   const { t } = useTranslation()
   return (
     <Tabs style={{ marginBottom: '20px', display: 'none' }}>
-      <StyledNavLink id={`swap-nav-link`} to={'/swap'} isActive={() => active === 'swap'}>
+      <StyledNavLink id={`swap-nav-link`} to={'/swap/exchange'} isActive={() => active === 'swap'}>
         {t('swap')}
       </StyledNavLink>
-      <StyledNavLink id={`pool-nav-link`} to={'/pool'} isActive={() => active === 'pool'}>
+      <StyledNavLink id={`pool-nav-link`} to={'/swap/pools'} isActive={() => active === 'pool'}>
         {t('pool')}
       </StyledNavLink>
     </Tabs>
@@ -92,7 +92,7 @@ export function AddRemoveTabs({ adding, creating }: { adding: boolean; creating:
     <Tabs>
       <RowBetween style={{ padding: '1rem 1rem 0 1rem' }}>
         <HistoryLink
-          to="/pool"
+          to="/swap/pools"
           onClick={() => {
             adding && dispatch(resetMintState())
           }}

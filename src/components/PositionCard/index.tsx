@@ -12,7 +12,6 @@ import { TYPE } from '../../theme'
 import { currencyId } from '../../utils/currencyId'
 import { unwrappedToken } from '../../utils/wrappedCurrency'
 import { ButtonPrimary } from '../Button'
-import { transparentize } from 'polished'
 
 import { useColor } from '../../hooks/useColor'
 
@@ -35,10 +34,12 @@ export const HoverCard = styled(Card)`
 `
 const StyledPositionCard = styled(LightCard)<{ bgColor: any }>`
   border: none;
-  background: ${({ theme, bgColor }) =>
-    `radial-gradient(91.85% 100% at 1.84% 0%, ${transparentize(0.8, bgColor)} 0%, ${theme.bg3} 100%) `};
   position: relative;
   overflow: hidden;
+`
+
+const ContentRow = styled(RowFixed)`
+  flex: 1;
 `
 
 interface PositionCardProps {
@@ -104,7 +105,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
             <AutoColumn gap="4px">
               <FixedHeightRow>
                 <Text fontSize={16} fontWeight={500}>
-                  Your pool share:
+                  Your pool share
                 </Text>
                 <Text fontSize={16} fontWeight={500}>
                   {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
@@ -112,7 +113,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
               </FixedHeightRow>
               <FixedHeightRow>
                 <Text fontSize={16} fontWeight={500}>
-                  {currency0.symbol}:
+                  {currency0.symbol}
                 </Text>
                 {token0Deposited ? (
                   <RowFixed>
@@ -126,7 +127,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
               </FixedHeightRow>
               <FixedHeightRow>
                 <Text fontSize={16} fontWeight={500}>
-                  {currency1.symbol}:
+                  {currency1.symbol}
                 </Text>
                 {token1Deposited ? (
                   <RowFixed>
@@ -188,208 +189,206 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
 
   return (
     <StyledPositionCard border={border} bgColor={backgroundColor}>
-      <AutoColumn gap="12px">
-        <FixedHeightRow>
-          <AutoRow gap="8px">
-            <DoubleCurrencyLogo currency0={currency0} currency1={currency1} size={20} />
-            <Text fontWeight={500} fontSize={20}>
-              {shortenAddress(pair.liquidityToken.address)}
-            </Text>
-            <RowFixed>
-              <Text fontSize={16} fontWeight={500}>
-                {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
-              </Text>
-            </RowFixed>
-            <RowFixed>
-              <Text fontSize={16} fontWeight={500}>
-                {`${token0Deposited?.toFixed(2)} ${currency0.symbol} / ${token1Deposited?.toFixed(2)}
+      <AutoRow>
+        <ContentRow>
+          <DoubleCurrencyLogo margin currency0={currency0} currency1={currency1} size={24} />
+          <Text ml={10} fontWeight={500} fontSize={20}>
+            {shortenAddress(pair.liquidityToken.address)}
+          </Text>
+        </ContentRow>
+        <ContentRow>
+          <Text fontSize={16} fontWeight={500}>
+            {`${token0Deposited?.toFixed(2)} ${currency0.symbol} / ${token1Deposited?.toFixed(2)}
                 ${currency1.symbol}`}
-              </Text>
-            </RowFixed>
+          </Text>
+        </ContentRow>
+        <ContentRow>
+          <Text fontSize={16} fontWeight={500}>
+            {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}{' '}Staked(
+            {stakedBalance ? stakedBalance.toSignificant(6) : '--'})
+          </Text>
+        </ContentRow>
+        <ContentRow>
+          <Text fontSize={16} fontWeight={500}>
+            {poolTokenPercentage
+              ? (poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'
+              : '-'}
+          </Text>
+        </ContentRow>
 
-            <RowFixed>
+        {userDefaultPoolBalance && JSBI.greaterThan(userDefaultPoolBalance.raw, BIG_INT_ZERO) && (
+          <ContentRow marginTop="10px">
+            <Link to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
+              <TYPE.link>Increase</TYPE.link>
+            </Link>
+            <Link to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}>
+              <TYPE.error error padding="8px">
+                Remove
+              </TYPE.error>
+            </Link>
+          </ContentRow>
+        )}
+        <AutoColumn gap="8px">
+          {stakedBalance && (
+            <FixedHeightRow>
               <Text fontSize={16} fontWeight={500}>
-                {poolTokenPercentage
-                  ? (poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'
-                  : '-'}
+                Pool tokens in rewards pool:
               </Text>
-            </RowFixed>
+              <Text fontSize={16} fontWeight={500}>
+                {stakedBalance.toSignificant(4)}
+              </Text>
+            </FixedHeightRow>
+          )}
 
-            {userDefaultPoolBalance && JSBI.greaterThan(userDefaultPoolBalance.raw, BIG_INT_ZERO) && (
-              <RowFixed marginTop="10px">
-                <Link to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
-                  <TYPE.link padding="8px">Add</TYPE.link>
-                </Link>
-                <Link to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}>
-                  <TYPE.error error padding="8px">
-                    Remove
-                  </TYPE.error>
-                </Link>
-              </RowFixed>
-            )}
-            <AutoColumn gap="8px">
-              {stakedBalance && (
-                <FixedHeightRow>
-                  <Text fontSize={16} fontWeight={500}>
-                    Pool tokens in rewards pool:
-                  </Text>
-                  <Text fontSize={16} fontWeight={500}>
-                    {stakedBalance.toSignificant(4)}
-                  </Text>
-                </FixedHeightRow>
-              )}
+          {/*<ButtonSecondary padding="8px" borderRadius="8px">*/}
+          {/*  <ExternalLink style={{ textAlign: 'center' }} href={`https://uniswap.info/account/${account}`}>*/}
+          {/*    View accrued fees and analytics<span style={{ fontSize: '11px' }}>↗</span>*/}
+          {/*  </ExternalLink>*/}
+          {/*</ButtonSecondary>*/}
 
-              {/*<ButtonSecondary padding="8px" borderRadius="8px">*/}
-              {/*  <ExternalLink style={{ textAlign: 'center' }} href={`https://uniswap.info/account/${account}`}>*/}
-              {/*    View accrued fees and analytics<span style={{ fontSize: '11px' }}>↗</span>*/}
-              {/*  </ExternalLink>*/}
-              {/*</ButtonSecondary>*/}
+          {stakedBalance && JSBI.greaterThan(stakedBalance.raw, BIG_INT_ZERO) && (
+            <ButtonPrimary
+              padding="8px"
+              borderRadius="8px"
+              as={Link}
+              to={`/uni/${currencyId(currency0)}/${currencyId(currency1)}`}
+            >
+              Manage Liquidity in Rewards Pool
+            </ButtonPrimary>
+          )}
+        </AutoColumn>
+      </AutoRow>
+      {/*<RowFixed gap="8px">*/}
+      {/*  <ButtonEmpty*/}
+      {/*    padding="6px 8px"*/}
+      {/*    borderRadius="12px"*/}
+      {/*    width="fit-content"*/}
+      {/*    onClick={() => setShowMore(!showMore)}*/}
+      {/*  >*/}
+      {/*    {showMore ? (*/}
+      {/*      <>*/}
+      {/*        Manage*/}
+      {/*        <ChevronUp size="20" style={{ marginLeft: '10px' }} />*/}
+      {/*      </>*/}
+      {/*    ) : (*/}
+      {/*      <>*/}
+      {/*        Manage*/}
+      {/*        <ChevronDown size="20" style={{ marginLeft: '10px' }} />*/}
+      {/*      </>*/}
+      {/*    )}*/}
+      {/*  </ButtonEmpty>*/}
+      {/*</RowFixed>*/}
 
-              {stakedBalance && JSBI.greaterThan(stakedBalance.raw, BIG_INT_ZERO) && (
-                <ButtonPrimary
-                  padding="8px"
-                  borderRadius="8px"
-                  as={Link}
-                  to={`/uni/${currencyId(currency0)}/${currencyId(currency1)}`}
-                >
-                  Manage Liquidity in Rewards Pool
-                </ButtonPrimary>
-              )}
-            </AutoColumn>
-          </AutoRow>
-          {/*<RowFixed gap="8px">*/}
-          {/*  <ButtonEmpty*/}
-          {/*    padding="6px 8px"*/}
-          {/*    borderRadius="12px"*/}
-          {/*    width="fit-content"*/}
-          {/*    onClick={() => setShowMore(!showMore)}*/}
-          {/*  >*/}
-          {/*    {showMore ? (*/}
-          {/*      <>*/}
-          {/*        Manage*/}
-          {/*        <ChevronUp size="20" style={{ marginLeft: '10px' }} />*/}
-          {/*      </>*/}
-          {/*    ) : (*/}
-          {/*      <>*/}
-          {/*        Manage*/}
-          {/*        <ChevronDown size="20" style={{ marginLeft: '10px' }} />*/}
-          {/*      </>*/}
-          {/*    )}*/}
-          {/*  </ButtonEmpty>*/}
-          {/*</RowFixed>*/}
-        </FixedHeightRow>
+      {/*{showMore && (*/}
+      {/*  <AutoColumn gap="8px">*/}
+      {/*    <FixedHeightRow>*/}
+      {/*      <Text fontSize={16} fontWeight={500}>*/}
+      {/*        Your total pool tokens:*/}
+      {/*      </Text>*/}
+      {/*      <Text fontSize={16} fontWeight={500}>*/}
+      {/*        {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}*/}
+      {/*      </Text>*/}
+      {/*    </FixedHeightRow>*/}
+      {/*    {stakedBalance && (*/}
+      {/*      <FixedHeightRow>*/}
+      {/*        <Text fontSize={16} fontWeight={500}>*/}
+      {/*          Pool tokens in rewards pool:*/}
+      {/*        </Text>*/}
+      {/*        <Text fontSize={16} fontWeight={500}>*/}
+      {/*          {stakedBalance.toSignificant(4)}*/}
+      {/*        </Text>*/}
+      {/*      </FixedHeightRow>*/}
+      {/*    )}*/}
+      {/*    <FixedHeightRow>*/}
+      {/*      <RowFixed>*/}
+      {/*        <Text fontSize={16} fontWeight={500}>*/}
+      {/*          Pooled {currency0.symbol}:*/}
+      {/*        </Text>*/}
+      {/*      </RowFixed>*/}
+      {/*      {token0Deposited ? (*/}
+      {/*        <RowFixed>*/}
+      {/*          <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>*/}
+      {/*            {token0Deposited?.toSignificant(6)}*/}
+      {/*          </Text>*/}
+      {/*          <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency0} />*/}
+      {/*        </RowFixed>*/}
+      {/*      ) : (*/}
+      {/*        '-'*/}
+      {/*      )}*/}
+      {/*    </FixedHeightRow>*/}
 
-        {/*{showMore && (*/}
-        {/*  <AutoColumn gap="8px">*/}
-        {/*    <FixedHeightRow>*/}
-        {/*      <Text fontSize={16} fontWeight={500}>*/}
-        {/*        Your total pool tokens:*/}
-        {/*      </Text>*/}
-        {/*      <Text fontSize={16} fontWeight={500}>*/}
-        {/*        {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}*/}
-        {/*      </Text>*/}
-        {/*    </FixedHeightRow>*/}
-        {/*    {stakedBalance && (*/}
-        {/*      <FixedHeightRow>*/}
-        {/*        <Text fontSize={16} fontWeight={500}>*/}
-        {/*          Pool tokens in rewards pool:*/}
-        {/*        </Text>*/}
-        {/*        <Text fontSize={16} fontWeight={500}>*/}
-        {/*          {stakedBalance.toSignificant(4)}*/}
-        {/*        </Text>*/}
-        {/*      </FixedHeightRow>*/}
-        {/*    )}*/}
-        {/*    <FixedHeightRow>*/}
-        {/*      <RowFixed>*/}
-        {/*        <Text fontSize={16} fontWeight={500}>*/}
-        {/*          Pooled {currency0.symbol}:*/}
-        {/*        </Text>*/}
-        {/*      </RowFixed>*/}
-        {/*      {token0Deposited ? (*/}
-        {/*        <RowFixed>*/}
-        {/*          <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>*/}
-        {/*            {token0Deposited?.toSignificant(6)}*/}
-        {/*          </Text>*/}
-        {/*          <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency0} />*/}
-        {/*        </RowFixed>*/}
-        {/*      ) : (*/}
-        {/*        '-'*/}
-        {/*      )}*/}
-        {/*    </FixedHeightRow>*/}
+      {/*    <FixedHeightRow>*/}
+      {/*      <RowFixed>*/}
+      {/*        <Text fontSize={16} fontWeight={500}>*/}
+      {/*          Pooled {currency1.symbol}:*/}
+      {/*        </Text>*/}
+      {/*      </RowFixed>*/}
+      {/*      {token1Deposited ? (*/}
+      {/*        <RowFixed>*/}
+      {/*          <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>*/}
+      {/*            {token1Deposited?.toSignificant(6)}*/}
+      {/*          </Text>*/}
+      {/*          <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency1} />*/}
+      {/*        </RowFixed>*/}
+      {/*      ) : (*/}
+      {/*        '-'*/}
+      {/*      )}*/}
+      {/*    </FixedHeightRow>*/}
 
-        {/*    <FixedHeightRow>*/}
-        {/*      <RowFixed>*/}
-        {/*        <Text fontSize={16} fontWeight={500}>*/}
-        {/*          Pooled {currency1.symbol}:*/}
-        {/*        </Text>*/}
-        {/*      </RowFixed>*/}
-        {/*      {token1Deposited ? (*/}
-        {/*        <RowFixed>*/}
-        {/*          <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>*/}
-        {/*            {token1Deposited?.toSignificant(6)}*/}
-        {/*          </Text>*/}
-        {/*          <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency1} />*/}
-        {/*        </RowFixed>*/}
-        {/*      ) : (*/}
-        {/*        '-'*/}
-        {/*      )}*/}
-        {/*    </FixedHeightRow>*/}
+      {/*    <FixedHeightRow>*/}
+      {/*      <Text fontSize={16} fontWeight={500}>*/}
+      {/*        Your pool share:*/}
+      {/*      </Text>*/}
+      {/*      <Text fontSize={16} fontWeight={500}>*/}
+      {/*        {poolTokenPercentage*/}
+      {/*          ? (poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'*/}
+      {/*          : '-'}*/}
+      {/*      </Text>*/}
+      {/*    </FixedHeightRow>*/}
 
-        {/*    <FixedHeightRow>*/}
-        {/*      <Text fontSize={16} fontWeight={500}>*/}
-        {/*        Your pool share:*/}
-        {/*      </Text>*/}
-        {/*      <Text fontSize={16} fontWeight={500}>*/}
-        {/*        {poolTokenPercentage*/}
-        {/*          ? (poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'*/}
-        {/*          : '-'}*/}
-        {/*      </Text>*/}
-        {/*    </FixedHeightRow>*/}
-
-        {/*    <ButtonSecondary padding="8px" borderRadius="8px">*/}
-        {/*      <ExternalLink*/}
-        {/*        style={{ width: '100%', textAlign: 'center' }}*/}
-        {/*        href={`https://uniswap.info/account/${account}`}*/}
-        {/*      >*/}
-        {/*        View accrued fees and analytics<span style={{ fontSize: '11px' }}>↗</span>*/}
-        {/*      </ExternalLink>*/}
-        {/*    </ButtonSecondary>*/}
-        {/*    {userDefaultPoolBalance && JSBI.greaterThan(userDefaultPoolBalance.raw, BIG_INT_ZERO) && (*/}
-        {/*      <RowBetween marginTop="10px">*/}
-        {/*        <ButtonPrimary*/}
-        {/*          padding="8px"*/}
-        {/*          borderRadius="8px"*/}
-        {/*          as={Link}*/}
-        {/*          to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}*/}
-        {/*          width="48%"*/}
-        {/*        >*/}
-        {/*          Add*/}
-        {/*        </ButtonPrimary>*/}
-        {/*        <ButtonPrimary*/}
-        {/*          padding="8px"*/}
-        {/*          borderRadius="8px"*/}
-        {/*          as={Link}*/}
-        {/*          width="48%"*/}
-        {/*          to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}*/}
-        {/*        >*/}
-        {/*          Remove*/}
-        {/*        </ButtonPrimary>*/}
-        {/*      </RowBetween>*/}
-        {/*    )}*/}
-        {/*    {stakedBalance && JSBI.greaterThan(stakedBalance.raw, BIG_INT_ZERO) && (*/}
-        {/*      <ButtonPrimary*/}
-        {/*        padding="8px"*/}
-        {/*        borderRadius="8px"*/}
-        {/*        as={Link}*/}
-        {/*        to={`/uni/${currencyId(currency0)}/${currencyId(currency1)}`}*/}
-        {/*        width="100%"*/}
-        {/*      >*/}
-        {/*        Manage Liquidity in Rewards Pool*/}
-        {/*      </ButtonPrimary>*/}
-        {/*    )}*/}
-        {/*  </AutoColumn>*/}
-        {/*)}*/}
-      </AutoColumn>
+      {/*    <ButtonSecondary padding="8px" borderRadius="8px">*/}
+      {/*      <ExternalLink*/}
+      {/*        style={{ width: '100%', textAlign: 'center' }}*/}
+      {/*        href={`https://uniswap.info/account/${account}`}*/}
+      {/*      >*/}
+      {/*        View accrued fees and analytics<span style={{ fontSize: '11px' }}>↗</span>*/}
+      {/*      </ExternalLink>*/}
+      {/*    </ButtonSecondary>*/}
+      {/*    {userDefaultPoolBalance && JSBI.greaterThan(userDefaultPoolBalance.raw, BIG_INT_ZERO) && (*/}
+      {/*      <RowBetween marginTop="10px">*/}
+      {/*        <ButtonPrimary*/}
+      {/*          padding="8px"*/}
+      {/*          borderRadius="8px"*/}
+      {/*          as={Link}*/}
+      {/*          to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}*/}
+      {/*          width="48%"*/}
+      {/*        >*/}
+      {/*          Add*/}
+      {/*        </ButtonPrimary>*/}
+      {/*        <ButtonPrimary*/}
+      {/*          padding="8px"*/}
+      {/*          borderRadius="8px"*/}
+      {/*          as={Link}*/}
+      {/*          width="48%"*/}
+      {/*          to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}*/}
+      {/*        >*/}
+      {/*          Remove*/}
+      {/*        </ButtonPrimary>*/}
+      {/*      </RowBetween>*/}
+      {/*    )}*/}
+      {/*    {stakedBalance && JSBI.greaterThan(stakedBalance.raw, BIG_INT_ZERO) && (*/}
+      {/*      <ButtonPrimary*/}
+      {/*        padding="8px"*/}
+      {/*        borderRadius="8px"*/}
+      {/*        as={Link}*/}
+      {/*        to={`/uni/${currencyId(currency0)}/${currencyId(currency1)}`}*/}
+      {/*        width="100%"*/}
+      {/*      >*/}
+      {/*        Manage Liquidity in Rewards Pool*/}
+      {/*      </ButtonPrimary>*/}
+      {/*    )}*/}
+      {/*  </AutoColumn>*/}
+      {/*)}*/}
     </StyledPositionCard>
   )
 }

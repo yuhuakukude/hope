@@ -9,15 +9,15 @@ import { useTokenBalancesWithLoadingIndicator } from '../../state/wallet/hooks'
 import { ExternalLink, TYPE, HideSmall } from '../../theme'
 
 import Card from '../../components/Card'
-import { RowBetween, RowFixed } from '../../components/Row'
+import { AutoRow, RowBetween, RowFixed } from '../../components/Row'
 import { ButtonOutlined, ButtonPrimary } from '../../components/Button'
-import { AutoColumn } from '../../components/Column'
+import { AutoColumn, GapColumn } from '../../components/Column'
 
 import { useActiveWeb3React } from '../../hooks'
 import { usePairs } from '../../data/Reserves'
 import { toV2LiquidityToken, useTrackedTokenPairs } from '../../state/user/hooks'
 import { Dots } from '../../components/swap/styleds'
-import { CardSection, DataCard } from '../../components/earn/styled'
+import { CardSection } from '../../components/earn/styled'
 import { useStakingInfo } from '../../state/stake/hooks'
 import { BIG_INT_ZERO } from '../../constants'
 import empty from '../../assets/images/empty.png'
@@ -27,8 +27,9 @@ const PageWrapper = styled(AutoColumn)`
   width: 100%;
 `
 
-const VoteCard = styled(DataCard)`
+const VoteCard = styled(GapColumn)`
   background: ${({ theme }) => theme.bg1};
+  border-radius: 20px;
   overflow: hidden;
   padding: 40px;
   justify-content: center;
@@ -80,6 +81,16 @@ const EmptyProposals = styled.div`
 const EmptyCover = styled.img`
   width: 80%;
   height: fit-content;
+`
+
+const PositionTitleWrapper = styled(AutoRow)`
+  border-radius: 10px;
+  background-color: ${({ theme }) => theme.bg3};
+  padding: 20px;
+`
+
+const PositionTitle = styled(TYPE.subHeader)`
+  flex: 1;
 `
 
 export default function Pool() {
@@ -148,7 +159,7 @@ export default function Pool() {
           </ButtonRow>
         </TitleRow>
         <SwapPoolTabs active={'pool'} />
-        <VoteCard>
+        <VoteCard gap={'lg'}>
           {!account && (
             <CardSection style={{ maxWidth: 580 }} justify={'center'}>
               <AutoColumn justify={'center'} gap="md">
@@ -170,8 +181,8 @@ export default function Pool() {
               <EmptyCover src={empty} />
             </CardSection>
           )}
-          <AutoColumn gap="lg" justify="center">
-            <AutoColumn gap="lg" style={{ width: '100%' }}>
+          <GapColumn gap="lg">
+            <GapColumn gap="lg" style={{ width: '100%' }}>
               {!account ? (
                 <Card padding="40px">
                   <TYPE.white textAlign="center">Connect to a wallet to view your liquidity.</TYPE.white>
@@ -195,6 +206,13 @@ export default function Pool() {
                   {/*    <span> ↗</span>*/}
                   {/*  </RowBetween>*/}
                   {/*</ButtonSecondary>*/}
+                  <PositionTitleWrapper>
+                    <PositionTitle>Pool</PositionTitle>
+                    <PositionTitle>My Liquidity</PositionTitle>
+                    <PositionTitle>My Pool Tokens</PositionTitle>
+                    <PositionTitle>My Pool Share</PositionTitle>
+                    <PositionTitle>Actions</PositionTitle>
+                  </PositionTitleWrapper>
                   {v2PairsWithoutStakedAmount.map(v2Pair => (
                     <FullPositionCard key={v2Pair.liquidityToken.address} pair={v2Pair} />
                   ))}
@@ -226,8 +244,8 @@ export default function Pool() {
                   </CardSection>
                 </EmptyProposals>
               )}
-            </AutoColumn>
-          </AutoColumn>
+            </GapColumn>
+          </GapColumn>
         </VoteCard>
       </PageWrapper>
     </>

@@ -175,7 +175,7 @@ export default function PoolFinder() {
       </AutoColumn>
 
       {hasPosition && (
-        <LightCard padding="45px 10px">
+        <LightCard padding="0px 10px 30px 10px">
           <ButtonPrimary as={Link} to={'/swap/pools'}>
             <Text textAlign="center">Add to my liquidity list</Text>
           </ButtonPrimary>
