@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useSingleCallResult } from '../../state/multicall/hooks'
-import { useLockerContract, useLTContract } from '../useContract'
+import { useLockerContract, useLTContract, useGomConContract } from '../useContract'
 import { useActiveWeb3React } from '../index'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 import moment from 'moment'
@@ -15,10 +15,12 @@ import format from '../../utils/format'
 export function useLocker() {
   const { account } = useActiveWeb3React()
   const lockerContract = useLockerContract()
+  const gomConContract = useGomConContract()
   const ltContract = useLTContract()
   const lockerRes = useSingleCallResult(lockerContract, 'locked', [account ?? undefined])
   const ltTotalAmounnt = useSingleCallResult(ltContract, 'totalSupply', [])
   const veltTotalAmounnt = useSingleCallResult(lockerContract, 'totalSupply', [])
+  const votePowerAmount = useSingleCallResult(gomConContract, 'voteUserPower', [account ?? undefined])
   return {
     lockerRes: lockerRes?.result
       ? {
@@ -27,7 +29,8 @@ export function useLocker() {
         }
       : undefined,
     ltTotalAmounnt: ltTotalAmounnt?.result ? CurrencyAmount.ether(ltTotalAmounnt?.result?.[0]) : undefined,
-    veltTotalAmounnt: veltTotalAmounnt?.result ? CurrencyAmount.ether(veltTotalAmounnt?.result?.[0]) : undefined
+    veltTotalAmounnt: veltTotalAmounnt?.result ? CurrencyAmount.ether(veltTotalAmounnt?.result?.[0]) : undefined,
+    votePowerAmount: votePowerAmount?.result ? Number(votePowerAmount?.result) : undefined
   }
 }
 

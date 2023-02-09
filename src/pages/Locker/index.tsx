@@ -18,7 +18,7 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { useActiveWeb3React } from '../../hooks'
 import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS } from '../../constants'
 import { tryParseAmount } from '../../state/swap/hooks'
-import { Token, TokenAmount } from '@uniswap/sdk'
+import { Token, TokenAmount, JSBI, Percent } from '@uniswap/sdk'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import { useLocker, useToLocker } from '../../hooks/ahp/useLocker'
@@ -27,7 +27,6 @@ import AddAmount from './component/AddAmount'
 import AddTime from './component/AddTime'
 import LockerBanner from './component/Banner'
 import { useWalletModalToggle } from '../../state/application/hooks'
-
 import { useEstimate } from '../../hooks/ahp'
 
 const PageWrapper = styled(AutoColumn)`
@@ -40,7 +39,9 @@ export default function DaoLocker() {
   const [addAmounntModal, setAddAmounntModal] = useState(false)
   const [addTimeModal, setAddTimeModal] = useState(false)
   const [lockerDate, setLockerDate] = useState<any>('')
-  const [dateIndex, setDateIndex] = useState<any>(2)
+  const [dateIndex, setDateIndex] = useState<number | string>(2)
+  const [unUseRateVal, setUnUseRateVal] = useState<string>('')
+  const [unUseVeltAmount, setUnUseVeltAmount] = useState<string>('')
   const [txHash, setTxHash] = useState<string>('')
   const toggleWalletModal = useWalletModalToggle()
   const [pendingText, setPendingText] = useState('')
@@ -70,7 +71,7 @@ export default function DaoLocker() {
 
   // token
 
-  const { lockerRes } = useLocker()
+  const { lockerRes, votePowerAmount } = useLocker()
   const { toLocker, getVeLtAmount } = useToLocker()
 
   const getLockerTime = (val: number) => {
@@ -170,8 +171,6 @@ export default function DaoLocker() {
       setPendingText(``)
       setAttemptingTxn(false)
       hash && setTxHash(hash)
-      setAmount('')
-      setLockerDate('')
       changeDateIndex(2)
     },
     [changeDateIndex]
@@ -232,6 +231,8 @@ export default function DaoLocker() {
         toLocker(inputAmount, lockTimeArg, nonce, deadline, signature, veLtAmount)
           .then(hash => {
             onTxSubmitted(hash)
+            setAmount('')
+            setLockerDate('')
           })
           .catch((error: any) => {
             onTxError(error)
@@ -266,6 +267,26 @@ export default function DaoLocker() {
       changeDateIndex(2)
     }
   }, [account, changeDateIndex])
+
+  useEffect(() => {
+    if (votePowerAmount || votePowerAmount === 0) {
+      const total = JSBI.BigInt(10000)
+      const apo = JSBI.BigInt(votePowerAmount)
+      const unUseVal = JSBI.subtract(total, apo)
+      const ra = new Percent(unUseVal, JSBI.BigInt(10000))
+      if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
+        setUnUseRateVal(ra.toFixed(2))
+        if (veltBalance) {
+          setUnUseVeltAmount(
+            veltBalance
+              ?.multiply(unUseVal)
+              .divide(JSBI.BigInt(10000))
+              .toFixed(2, { groupSeparator: ',' } ?? '0.00')
+          )
+        }
+      }
+    }
+  }, [votePowerAmount, veltBalance])
 
   return (
     <>
@@ -314,7 +335,8 @@ export default function DaoLocker() {
                   </p>
                   <p className="font-nor text-normal m-t-16">unallocated:</p>
                   <p className="font-nor text-normal m-t-12">
-                    {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} (100.00%)
+                    {/* {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} ({unUseRateVal || '--'}%) */}
+                    {unUseVeltAmount} ({unUseRateVal || '--'}%)
                   </p>
                 </div>
                 <div className="-r m-l-20 flex ai-center">
@@ -404,6 +426,7 @@ export default function DaoLocker() {
                     format="YYYY-MM-DD"
                     placeholder="0000-00-00"
                     showToday={false}
+                    getCalendarContainer={(triggerNode: any) => triggerNode.parentNode}
                   />
                 </div>
                 <div className="date-btn flex jc-between m-t-30">
