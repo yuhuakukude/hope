@@ -12,19 +12,13 @@ import { LT, VELT } from '../../../../constants'
 import { CloseIcon } from '../../../../theme/components'
 import { useToVote } from '../../../../hooks/ahp/useGomVote'
 import format from '../../../../utils/format'
-import VoteModal from '../VoteModal'
 import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
 import { useGomConContract } from '../../../../hooks/useContract'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
 
-interface VoteProps {
-  votiingData: any
-  gombocList: any
-}
-
-const GomList = ({ votiingData, gombocList }: VoteProps) => {
+const GomList = () => {
   const endDate = dayjs()
     .add(10, 'day')
     .format('YYYY-MM-DD')
@@ -36,7 +30,6 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
   const [tableData, setTableData] = useState([])
   const [voterAddress, setVoterAddress] = useState('')
   const [curTableItem, setCurTableItem] = useState<any>({})
-  const [voteOpen, setVoteOpen] = useState(false)
   const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
   const { toVote } = useToVote()
   // modal and loading
@@ -134,7 +127,10 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
   }
 
   function toVoteFn() {
-    setVoteOpen(true)
+    const dom = document.getElementById('votepoint')
+    if (dom) {
+      dom.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }
   }
 
   const confirmationContent = useCallback(
@@ -304,10 +300,6 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
     setSearchValue(val)
   }
 
-  function hideVoteModal() {
-    setVoteOpen(false)
-  }
-
   function toSearch() {
     init(voterAddress, searchValue)
   }
@@ -368,7 +360,6 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
           <Table rowKey={'gomboc'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
         </div>
       </div>
-      <VoteModal isOpen={voteOpen} onDismiss={hideVoteModal} votiingData={votiingData} gombocList={gombocList} />
     </>
   )
 }
