@@ -37,7 +37,7 @@ export default function DaoLocker() {
   const [addAmounntModal, setAddAmounntModal] = useState(false)
   const [addTimeModal, setAddTimeModal] = useState(false)
   const [lockerDate, setLockerDate] = useState<any>('')
-  const [dateIndex, setDateIndex] = useState(2)
+  const [dateIndex, setDateIndex] = useState<any>(2)
   const [txHash, setTxHash] = useState<string>('')
   const toggleWalletModal = useWalletModalToggle()
   const [pendingText, setPendingText] = useState('')
@@ -93,6 +93,7 @@ export default function DaoLocker() {
 
   const onDateChange = (date: any, dateString: any) => {
     setLockerDate(moment(dateString))
+    setDateIndex('')
   }
 
   const maxInputFn = () => {
