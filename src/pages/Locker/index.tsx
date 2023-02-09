@@ -19,13 +19,15 @@ import { useActiveWeb3React } from '../../hooks'
 import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS } from '../../constants'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { Token, TokenAmount } from '@uniswap/sdk'
-import { useTokenBalance, useETHBalances } from '../../state/wallet/hooks'
+import { useTokenBalance } from '../../state/wallet/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import { useLocker, useToLocker } from '../../hooks/ahp/useLocker'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import AddAmount from './component/AddAmount'
 import AddTime from './component/AddTime'
 import { useWalletModalToggle } from '../../state/application/hooks'
+
+import { useEstimate } from '../../hooks/ahp'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -51,7 +53,8 @@ export default function DaoLocker() {
   ]
 
   const { account, chainId, library } = useActiveWeb3React()
-  const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
+
+  const isEthBalanceInsufficient = useEstimate()
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const inputAmount = tryParseAmount(amount, LT[chainId ?? 1]) as TokenAmount | undefined
@@ -111,13 +114,6 @@ export default function DaoLocker() {
     }
     return moment(format.formatDate(Number(`${lockerRes?.end}`))).diff(moment(), 'days') < 14
   }, [lockerRes])
-
-  const isEthBalanceInsufficient = useMemo(() => {
-    if (!userEthBalance) {
-      return false
-    }
-    return Number(userEthBalance?.toFixed(4)) < 0.001
-  }, [userEthBalance])
 
   const maxWeek = useMemo(() => {
     if (!lockerRes?.end) {
@@ -181,10 +177,10 @@ export default function DaoLocker() {
 
   const onTxError = useCallback(error => {
     setShowConfirm(true)
-    setTxHash('')
-    setPendingText(``)
     setAttemptingTxn(false)
     setErrorStatus({ code: error?.code, message: error.message })
+    setTxHash('')
+    setPendingText(``)
   }, [])
 
   const onApprove = useCallback(() => {
@@ -203,7 +199,7 @@ export default function DaoLocker() {
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
     setCurToken(VELT[chainId ?? 1])
-    setPendingText(`Approve LT`)
+    setPendingText(`Locker LT`)
     onTxStart()
 
     const deadline = toDeadline(PERMIT_EXPIRATION)
@@ -355,11 +351,11 @@ export default function DaoLocker() {
               <div className="item p-30 flex jc-between">
                 <div className="-l">
                   <p className="font-nor text-normal">Locked Until (UTC)</p>
-                  <p className="font-20 m-t-20 text-medium">{format.formatDate(Number(`${lockerRes?.end}`))}</p>
+                  <p className="font-20 m-t-20 text-medium">{format.formatUTCDate(Number(`${lockerRes?.end}`))}</p>
                   <p className="font-nor text-normal m-t-16">Max increase: {maxWeek} weeks</p>
                 </div>
                 <div className="-r m-l-20 flex ai-center">
-                  {lockerRes?.end && lockerRes?.end !== '--' && (
+                  {lockerRes?.end && lockerRes?.end !== '--' && maxWeek > 0 && (
                     <i onClick={() => lockerAddAction('time')} className="iconfont font-20 cursor-select text-primary">
                       &#xe621;
                     </i>

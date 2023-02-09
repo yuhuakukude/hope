@@ -19,7 +19,6 @@ export function useLocker() {
   const lockerRes = useSingleCallResult(lockerContract, 'locked', [account ?? undefined])
   const ltTotalAmounnt = useSingleCallResult(ltContract, 'totalSupply', [])
   const veltTotalAmounnt = useSingleCallResult(lockerContract, 'totalSupply', [])
-  console.log(`lockerRes: ${lockerRes?.result?.end}`)
   return {
     lockerRes: lockerRes?.result
       ? {
@@ -112,7 +111,7 @@ export function useToLocker() {
   )
 
   const { chainId } = useActiveWeb3React()
-  const getVeLtAmount = (amount: string, endDate: any) => {
+  const getVeLtAmount = (amount: string, endDate: any, starDate?: any) => {
     if (!amount || !endDate || !LT || !chainId) {
       return undefined
     }
@@ -120,7 +119,8 @@ export function useToLocker() {
       JSBI.multiply(JSBI.multiply(JSBI.BigInt(365), JSBI.BigInt(24)), JSBI.BigInt(60)),
       JSBI.BigInt(60)
     )
-    const lockPeriod = moment(endDate).diff(moment(), 'second')
+    const initStartDate = starDate ? moment(starDate) : moment()
+    const lockPeriod = moment(endDate).diff(initStartDate, 'second')
     const veltGetAmount = new TokenAmount(
       VELT[chainId ?? 1],
       JSBI.divide(

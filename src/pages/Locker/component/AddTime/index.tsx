@@ -121,7 +121,8 @@ export default function AddTime({
     }
     const velt = getVeLtAmount(
       lockerRes?.amount.toFixed(2) ?? '0',
-      format.formatDate(Number(`${argTime}`), 'YYYY-MM-DD')
+      format.formatDate(Number(`${argTime}`), 'YYYY-MM-DD'),
+      format.formatDate(Number(`${lockerRes?.end}`))
     )
     const res = new TokenAmount(
       VELT[chainId ?? 1],
@@ -133,7 +134,7 @@ export default function AddTime({
   const lockerCallback = useCallback(async () => {
     if (!account || !chainId) return
     setCurToken(VELT[chainId ?? 1])
-    setPendingText(`Approve LT`)
+    setPendingText(`Locker LT`)
     setShowConfirm(true)
     setAttemptingTxn(true)
 
@@ -194,9 +195,9 @@ export default function AddTime({
           <div className="item m-t-20">
             <div className="label text-normal font-nor">Unlock Time : </div>
             <div className="value font-nor flex m-t-12 ai-center">
-              <p className="text-medium">{format.formatDate(Number(`${lockerRes?.end}`))} (UTC)</p>
+              <p className="text-medium">{format.formatUTCDate(Number(`${lockerRes?.end}`))} (UTC)</p>
               <i className="iconfont m-x-12">&#xe619;</i>
-              <p className="text-medium text-primary">{argTime ? format.formatDate(argTime) : '--'} (UTC)</p>
+              <p className="text-medium text-primary">{argTime ? format.formatUTCDate(argTime) : '--'} (UTC)</p>
             </div>
           </div>
         </div>
