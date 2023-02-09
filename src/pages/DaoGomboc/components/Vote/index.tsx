@@ -10,25 +10,30 @@ import { useTokenBalance } from '../../../../state/wallet/hooks'
 import { useGomConContract } from '../../../../hooks/useContract'
 import { VELT } from '../../../../constants'
 import { Select } from 'antd'
-import { useToVote } from '../../../../hooks/ahp/useGomVote'
+import { useToVote, conFnNameEnum } from '../../../../hooks/ahp/useGomVote'
 import { JSBI, Percent, Token } from '@uniswap/sdk'
 import { useSingleCallResult } from '../../../../state/multicall/hooks'
 import ActionButton from '../../../../components/Button/ActionButton'
 import { NavLink } from 'react-router-dom'
+
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
 
+import { useActionPending } from '../../../../state/transactions/hooks'
+
 interface VoteProps {
   votiingData: any
   gombocList: any
+  isNoVelt: boolean
 }
 
-const Vote = ({ votiingData, gombocList }: VoteProps) => {
+const Vote = ({ votiingData, gombocList, isNoVelt }: VoteProps) => {
   const { account, chainId } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const gomConContract = useGomConContract()
   const { toVote } = useToVote()
+
   const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
   const veLtBal = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const [voteAmount, setVoteAmount] = useState('')
@@ -40,6 +45,7 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [pendingText, setPendingText] = useState('')
+  const { pending: isTranPending } = useActionPending(account ? `${account}-${conFnNameEnum.VoteForGombocWeights}` : '')
 
   const { Option } = Select
   const endDate = dayjs()
@@ -162,7 +168,9 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
   }, [amount, curLastVote, subAmount])
 
   const getActionText = useMemo(() => {
-    if (!curGomAddress) {
+    if (isNoVelt) {
+      return 'need to LT locked'
+    } else if (!curGomAddress) {
       return 'Select a Gömböc for Vote'
     } else if (!amount) {
       return 'Enter amount'
@@ -171,7 +179,7 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
     } else {
       return 'Confirm Vote'
     }
-  }, [voteInputError, amount, curGomAddress])
+  }, [voteInputError, amount, curGomAddress, isNoVelt])
 
   const toVoteCallback = useCallback(async () => {
     if (!amount || !account) return
@@ -306,16 +314,18 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
           </Select>
           <div className="flex jc-between m-t-30 m-b-10">
             <span className="text-normal">Vote weight:</span>
-            <p>
-              unallocated votes : {unUseRateVal}%
-              <NavLink to={'/dao/locker'}>
-                <span className="text-primary">Locker</span>
-              </NavLink>
-            </p>
+            {account && (
+              <p>
+                unallocated votes : {unUseRateVal}%
+                <NavLink to={'/dao/locker'}>
+                  <span className="text-primary">Locker</span>
+                </NavLink>
+              </p>
+            )}
           </div>
           <div className="hp-amount-box">
             <NumericalInput
-              className={['hp-amount'].join(' ')}
+              className={['hp-amount', voteInputError && 'error'].join(' ')}
               value={amount}
               decimals={2}
               align={'right'}
@@ -336,8 +346,9 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
             ) : (
               <ActionButton
                 error={voteInputError}
-                pending={!!pendingText}
-                disableAction={!amount || !curGomAddress || curLastVote}
+                pending={!!pendingText || isTranPending}
+                pendingText={'Waitting'}
+                disableAction={!amount || !curGomAddress || curLastVote || isNoVelt}
                 actionText={getActionText}
                 onAction={toVoteCallback}
               />
