@@ -2,7 +2,7 @@ import { Currency, ETHER, JSBI, TokenAmount } from '@uniswap/sdk'
 import React, { useCallback, useEffect, useState } from 'react'
 import { PlusCircle } from 'react-feather'
 import { Text } from 'rebass'
-import { ButtonDropdownLight, ButtonPrimary } from '../../components/Button'
+import { ButtonDropdownLight, ButtonError, ButtonOutlined, ButtonPrimary } from '../../components/Button'
 import { GreyCard, LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
@@ -14,7 +14,6 @@ import { PairState, usePair } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { usePairAdder } from '../../state/user/hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
-import { StyledInternalLink } from '../../theme'
 import { currencyId } from '../../utils/currencyId'
 import AppBody from '../AppBody'
 import { Dots } from '../Pool/styleds'
@@ -141,11 +140,9 @@ export default function PoolFinder() {
               <LightCard padding="45px 10px">
                 <AutoColumn gap="lg" justify="center">
                   <Text textAlign="center">You don’t have liquidity in this pool yet.</Text>
-                  <StyledInternalLink to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
-                    <ButtonPrimary>
-                      <Text textAlign="center">Add liquidity.</Text>
-                    </ButtonPrimary>
-                  </StyledInternalLink>
+                  <ButtonPrimary as={Link} to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
+                    <Text textAlign="center">Add liquidity.</Text>
+                  </ButtonPrimary>
                 </AutoColumn>
               </LightCard>
             )
@@ -153,27 +150,23 @@ export default function PoolFinder() {
             <LightCard padding="45px 10px">
               <AutoColumn gap="lg" justify="center">
                 <Text textAlign="center">No pool found.</Text>
-                <StyledInternalLink to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
+                <ButtonPrimary as={Link} to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
                   Create pool.
-                </StyledInternalLink>
+                </ButtonPrimary>
               </AutoColumn>
             </LightCard>
           ) : pairState === PairState.INVALID ? (
             <LightCard padding="45px 10px">
-              <AutoColumn gap="lg" justify="center">
-                <Text textAlign="center" fontWeight={500}>
-                  Invalid pair.
-                </Text>
-              </AutoColumn>
+              <ButtonError error disabled>
+                Invalid pair.
+              </ButtonError>
             </LightCard>
           ) : pairState === PairState.LOADING ? (
             <LightCard padding="45px 10px">
-              <AutoColumn gap="lg" justify="center">
-                <Text textAlign="center">
-                  Loading
-                  <Dots />
-                </Text>
-              </AutoColumn>
+              <ButtonOutlined disabled>
+                Loading
+                <Dots />
+              </ButtonOutlined>
             </LightCard>
           ) : null
         ) : (
@@ -182,9 +175,11 @@ export default function PoolFinder() {
       </AutoColumn>
 
       {hasPosition && (
-        <ButtonPrimary style={{ margin: 30, width: 'auto' }} as={Link} to={'/swap/pools'}>
-          Add to my liquidity list
-        </ButtonPrimary>
+        <LightCard padding="45px 10px">
+          <ButtonPrimary as={Link} to={'/swap/pools'}>
+            <Text textAlign="center">Add to my liquidity list</Text>
+          </ButtonPrimary>
+        </LightCard>
       )}
 
       <CurrencySearchModal
