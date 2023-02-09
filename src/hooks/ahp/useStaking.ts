@@ -51,7 +51,7 @@ export function useToStaked() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Stake ${amount.toFixed(2, { groupSeparator: ',' }).toString()}  HOPE`
+            summary: `Stake ${amount.toFixed(2, { groupSeparator: ',' }).toString()}  HOPE`,
           })
           return response.hash
         })

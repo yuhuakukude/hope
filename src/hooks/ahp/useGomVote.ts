@@ -8,6 +8,10 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 
+export enum conFnNameEnum {
+  VoteForGombocWeights = 'voteForGombocWeights'
+}
+
 export function useToVote() {
   const addTransaction = useTransactionAdder()
   const contract = useGomConContract()
@@ -17,7 +21,7 @@ export function useToVote() {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [address, amount]
-      const method = 'voteForGombocWeights'
+      const method = conFnNameEnum.VoteForGombocWeights
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
@@ -25,7 +29,10 @@ export function useToVote() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `vote success`
+            summary: `vote success`,
+            actionTag: {
+              recipient: `${account}-${conFnNameEnum.VoteForGombocWeights}`
+            }
           })
           return response.hash
         })

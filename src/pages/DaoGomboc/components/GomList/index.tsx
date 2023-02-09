@@ -3,7 +3,7 @@ import './index.scss'
 import { Switch, Input, Table, Button } from 'antd'
 import dayjs from 'dayjs'
 import { JSBI, Token } from '@uniswap/sdk'
-import { useWalletModalToggle } from '../../../../state/application/hooks'
+// import { useWalletModalToggle } from '../../../../state/application/hooks'
 import { ButtonPrimary } from '../../../../components/Button'
 import GombocApi from '../../../../api/gomboc.api'
 import { useActiveWeb3React } from '../../../../hooks'
@@ -23,7 +23,7 @@ const GomList = () => {
     .add(10, 'day')
     .format('YYYY-MM-DD')
   const gomConContract = useGomConContract()
-  const toggleWalletModal = useWalletModalToggle()
+  // const toggleWalletModal = useWalletModalToggle()
   const { account, chainId } = useActiveWeb3React()
   const [searchValue, setSearchValue] = useState('')
   const [isMyVote, setIsMyVote] = useState(false)
@@ -201,9 +201,7 @@ const GomList = () => {
     return (
       <>
         {!account ? (
-          <ButtonPrimary className="hp-button-primary" onClick={toggleWalletModal}>
-            Connect Wallet
-          </ButtonPrimary>
+          <span>--</span>
         ) : (
           <div>
             {Number(getViewAmount(record.userPower)) > 0 && (
@@ -257,7 +255,7 @@ const GomList = () => {
       title: 'My votes',
       dataIndex: 'userPower',
       render: votesNote,
-      sorter: (a: any, b: any) => a.userPower - b.userPower,
+      sorter: account ? (a: any, b: any) => a.userPower - b.userPower : false,
       key: 'userPower'
     },
     {
@@ -328,8 +326,12 @@ const GomList = () => {
       <div className="gom-list-box">
         <div className="flex jc-between">
           <div className="flex ai-center">
-            <span className="text-white">My voted Only</span>
-            <Switch className="m-l-10" onChange={changeSwitch} />
+            {account && (
+              <>
+                <span className="text-white">My voted Only</span>
+                <Switch className="m-l-10" onChange={changeSwitch} />
+              </>
+            )}
           </div>
           <div className="flex ai-center">
             <Input
