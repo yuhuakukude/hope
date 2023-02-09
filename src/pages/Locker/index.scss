@@ -1,21 +1,4 @@
 .dao-locker-page{
-  .banner{
-    background: url('../../assets/images/locker_banner.png') no-repeat center;
-    background-size: 100% 100%;
-    border-radius: 20px;
-    h2{
-      color: #fff;
-      font-size: 30px;
-    }
-    .link{
-      &:hover{
-        color: #E4C989;
-      }
-    }
-    ul li{
-      line-height: 24px;
-    }
-  }
   .content-box{
     .card-box{
       gap: 30px;

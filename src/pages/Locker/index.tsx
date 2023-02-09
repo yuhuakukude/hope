@@ -25,6 +25,7 @@ import { useLocker, useToLocker } from '../../hooks/ahp/useLocker'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import AddAmount from './component/AddAmount'
 import AddTime from './component/AddTime'
+import LockerBanner from './component/Banner'
 import { useWalletModalToggle } from '../../state/application/hooks'
 
 import { useEstimate } from '../../hooks/ahp'
@@ -87,11 +88,11 @@ export default function DaoLocker() {
     return moment(week4).add(val, 'week')
   }
 
-  const changeDateIndex = (val: number) => {
+  const changeDateIndex = useCallback((val: number) => {
     const time = getLockerTime(val)
     setLockerDate(moment(time))
     setDateIndex(val)
-  }
+  }, [])
 
   const disabledDate = (current: any) =>
     (current && moment(current).day() !== 4) ||
@@ -112,13 +113,6 @@ export default function DaoLocker() {
   const veLtAmount = useMemo(() => {
     return getVeLtAmount(amount, lockerDate)
   }, [amount, lockerDate, getVeLtAmount])
-
-  const isShowTip = useMemo(() => {
-    if (!lockerRes?.end) {
-      return false
-    }
-    return moment(format.formatDate(Number(`${lockerRes?.end}`))).diff(moment(), 'days') < 14
-  }, [lockerRes])
 
   const maxWeek = useMemo(() => {
     if (!lockerRes?.end) {
@@ -170,15 +164,18 @@ export default function DaoLocker() {
     setAttemptingTxn(true)
   }, [])
 
-  const onTxSubmitted = useCallback((hash: string | undefined) => {
-    setShowConfirm(true)
-    setPendingText(``)
-    setAttemptingTxn(false)
-    hash && setTxHash(hash)
-    setAmount('')
-    setLockerDate('')
-    changeDateIndex(2)
-  }, [])
+  const onTxSubmitted = useCallback(
+    (hash: string | undefined) => {
+      setShowConfirm(true)
+      setPendingText(``)
+      setAttemptingTxn(false)
+      hash && setTxHash(hash)
+      setAmount('')
+      setLockerDate('')
+      changeDateIndex(2)
+    },
+    [changeDateIndex]
+  )
 
   const onTxError = useCallback(error => {
     setShowConfirm(true)
@@ -260,11 +257,15 @@ export default function DaoLocker() {
     setAddTimeModal(false)
   }
 
+  const toLockerDom = () => {
+    lockerRef.current?.scrollIntoView()
+  }
+
   useEffect(() => {
     if (account) {
       changeDateIndex(2)
     }
-  }, [account])
+  }, [account, changeDateIndex])
 
   return (
     <>
@@ -279,36 +280,7 @@ export default function DaoLocker() {
           currencyToAdd={curToken}
         />
         <div className="dao-locker-page">
-          <div className="banner p-30">
-            <h2 className="text-medium">Lock your LT to acquire veLT</h2>
-            <p className="font-nor m-t-20">
-              Extra earnings & voting power{' '}
-              <a
-                href="https://docs.hope.money/light/lRGc3srjpd2008mDaMdR/light-hyfi-applications-roadmap/roadmap"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="link text-primary m-l-20"
-              >
-                Learn more <i className="iconfont">&#xe619;</i>{' '}
-              </a>
-            </p>
-            <ul className="m-t-20">
-              <li className="font-nor">- Boost liquidity mining yield up to 2.5x</li>
-              <li className="font-nor">- Vote to direct liquidity mining emissions</li>
-              <li className="font-nor">- Earn your share of protocol revenue</li>
-            </ul>
-          </div>
-          {isShowTip && (
-            <div className="tip-box flex ai-center jc-center m-t-30">
-              <i className="iconfont text-primary">&#xe61e;</i>
-              <p className="font-nor text-normal m-l-12">
-                Your lock expires soon. You need to lock at least for two weeks in{' '}
-                <span className="text-primary cursor-select" onClick={() => lockerRef.current?.scrollIntoView()}>
-                  Locker
-                </span>
-              </p>
-            </div>
-          )}
+          <LockerBanner toLocker={toLockerDom} lockerEndDate={lockerRes?.end}></LockerBanner>
           <div className="content-box m-t-30" ref={lockerRef as RefObject<HTMLInputElement>}>
             <h3 className="text-medium font-20">My veLT</h3>
             <div className="card-box m-t-30 flex jc-between">
