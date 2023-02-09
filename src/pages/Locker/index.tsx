@@ -108,7 +108,7 @@ export default function DaoLocker() {
     if (!lockerRes?.end) {
       return false
     }
-    return moment(format.formatDate(Number(`${lockerRes?.end}`))).diff(moment(), 'days') <= 14
+    return moment(format.formatDate(Number(`${lockerRes?.end}`))).diff(moment(), 'days') < 14
   }, [lockerRes])
 
   const isEthBalanceInsufficient = useMemo(() => {
