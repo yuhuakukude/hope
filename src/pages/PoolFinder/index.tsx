@@ -3,7 +3,7 @@ import React, { useCallback, useEffect, useState } from 'react'
 import { Plus } from 'react-feather'
 import { Text } from 'rebass'
 import { ButtonDropdownLight } from '../../components/Button'
-import { LightCard } from '../../components/Card'
+import { GreyCard, LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import { FindPoolTabs } from '../../components/NavigationTabs'
@@ -18,7 +18,6 @@ import { StyledInternalLink } from '../../theme'
 import { currencyId } from '../../utils/currencyId'
 import AppBody from '../AppBody'
 import { Dots } from '../Pool/styleds'
-import { BlueCard } from '../../components/Card'
 import { TYPE } from '../../theme'
 
 enum Fields {
@@ -82,13 +81,13 @@ export default function PoolFinder() {
     <AppBody>
       <FindPoolTabs />
       <AutoColumn style={{ padding: '1rem' }} gap="md">
-        <BlueCard>
+        <GreyCard>
           <AutoColumn gap="10px">
             <TYPE.link fontWeight={400} color={'primaryText1'}>
               <b>Tip:</b> Use this tool to find pairs that don&apos;t automatically appear in the interface.
             </TYPE.link>
           </AutoColumn>
-        </BlueCard>
+        </GreyCard>
         <ButtonDropdownLight
           onClick={() => {
             setShowSearch(true)

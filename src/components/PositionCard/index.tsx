@@ -1,6 +1,6 @@
 import { JSBI, Pair, Percent, TokenAmount } from '@uniswap/sdk'
 import { darken } from 'polished'
-import React from 'react'
+import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { Text } from 'rebass'
 import styled from 'styled-components'
@@ -16,7 +16,7 @@ import { transparentize } from 'polished'
 
 import { useColor } from '../../hooks/useColor'
 
-import Card, { GreyCard, LightCard } from '../Card'
+import Card, { LightCard } from '../Card'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed, AutoRow } from '../Row'
@@ -54,7 +54,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
   const currency0 = showUnwrapped ? pair.token0 : unwrappedToken(pair.token0)
   const currency1 = showUnwrapped ? pair.token1 : unwrappedToken(pair.token1)
 
-  //const [showMore, setShowMore] = useState(false)
+  const [showMore, setShowMore] = useState(false)
 
   const userPoolBalance = useTokenBalance(account ?? undefined, pair.liquidityToken)
   const totalPoolTokens = useTotalSupply(pair.liquidityToken)
@@ -79,75 +79,68 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
   return (
     <>
       {userPoolBalance && JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
-        <GreyCard border={border}>
-          <AutoRow gap="12px">
-            <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin={true} size={20} />
-            <Text fontWeight={500} fontSize={20}>
-              {pair.liquidityToken.address}
-            </Text>
-            <RowFixed>
-              {currency0.symbol}
-              {token0Deposited}/{currency1.symbol}
-              {token1Deposited}
-            </RowFixed>
-            {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
-            {/*<>*/}
-            {/*  <>*/}
-            {/*    <Text fontWeight={500} fontSize={16}>*/}
-            {/*      Your position*/}
-            {/*    </Text>*/}
-            {/*  </>*/}
-            {/*</>*/}
-            {/*<div onClick={() => setShowMore(!showMore)}>*/}
-            {/*  <>*/}
-
-            {/*  </>*/}
-            {/*  <>*/}
-            {/*    <Text fontWeight={500} fontSize={20}>*/}
-            {/*      {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}*/}
-            {/*    </Text>*/}
-            {/*  </>*/}
-            {/*</div>*/}
-            {/*<>*/}
-            {/*  <>*/}
-            {/*    <Text fontSize={16} fontWeight={500}>*/}
-            {/*      Your pool share:*/}
-            {/*    </Text>*/}
-            {/*    <Text fontSize={16} fontWeight={500}>*/}
-            {/*      {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}*/}
-            {/*    </Text>*/}
-            {/*  </>*/}
-            {/*  <>*/}
-            {/*    <Text fontSize={16} fontWeight={500}>*/}
-            {/*      {currency0.symbol}:*/}
-            {/*    </Text>*/}
-            {/*    {token0Deposited ? (*/}
-            {/*      <>*/}
-            {/*        <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>*/}
-            {/*          {token0Deposited?.toSignificant(6)}*/}
-            {/*        </Text>*/}
-            {/*      </>*/}
-            {/*    ) : (*/}
-            {/*      '-'*/}
-            {/*    )}*/}
-            {/*  </>*/}
-            {/*  <>*/}
-            {/*    <Text fontSize={16} fontWeight={500}>*/}
-            {/*      {currency1.symbol}:*/}
-            {/*    </Text>*/}
-            {/*    {token1Deposited ? (*/}
-            {/*      <>*/}
-            {/*        <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>*/}
-            {/*          {token1Deposited?.toSignificant(6)}*/}
-            {/*        </Text>*/}
-            {/*      </>*/}
-            {/*    ) : (*/}
-            {/*      '-'*/}
-            {/*    )}*/}
-            {/*  </>*/}
-            {/*</>*/}
-          </AutoRow>
-        </GreyCard>
+        <LightCard border={border}>
+          <AutoColumn gap="12px">
+            <FixedHeightRow>
+              <RowFixed>
+                <Text fontWeight={500} fontSize={16}>
+                  Your position
+                </Text>
+              </RowFixed>
+            </FixedHeightRow>
+            <FixedHeightRow onClick={() => setShowMore(!showMore)}>
+              <RowFixed>
+                <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin={true} size={20} />
+                <Text fontWeight={500} fontSize={20}>
+                  {currency0.symbol}/{currency1.symbol}
+                </Text>
+              </RowFixed>
+              <RowFixed>
+                <Text fontWeight={500} fontSize={20}>
+                  {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
+                </Text>
+              </RowFixed>
+            </FixedHeightRow>
+            <AutoColumn gap="4px">
+              <FixedHeightRow>
+                <Text fontSize={16} fontWeight={500}>
+                  Your pool share:
+                </Text>
+                <Text fontSize={16} fontWeight={500}>
+                  {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
+                </Text>
+              </FixedHeightRow>
+              <FixedHeightRow>
+                <Text fontSize={16} fontWeight={500}>
+                  {currency0.symbol}:
+                </Text>
+                {token0Deposited ? (
+                  <RowFixed>
+                    <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
+                      {token0Deposited?.toSignificant(6)}
+                    </Text>
+                  </RowFixed>
+                ) : (
+                  '-'
+                )}
+              </FixedHeightRow>
+              <FixedHeightRow>
+                <Text fontSize={16} fontWeight={500}>
+                  {currency1.symbol}:
+                </Text>
+                {token1Deposited ? (
+                  <RowFixed>
+                    <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
+                      {token1Deposited?.toSignificant(6)}
+                    </Text>
+                  </RowFixed>
+                ) : (
+                  '-'
+                )}
+              </FixedHeightRow>
+            </AutoColumn>
+          </AutoColumn>
+        </LightCard>
       ) : (
         <LightCard>
           <TYPE.subHeader style={{ textAlign: 'center' }}>
