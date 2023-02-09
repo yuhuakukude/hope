@@ -92,6 +92,17 @@ export const formatDate = (value: any, formatString = 'YYYY-MM-DD HH:mm:ss') => 
   return '-'
 }
 
+// date utc
+export const formatUTCDate = (value: any, formatString = 'YYYY-MM-DD HH:mm:ss') => {
+  if (value) {
+    return moment
+      .unix(value)
+      .utc()
+      .format(formatString)
+  }
+  return '-'
+}
+
 // numFormat
 export const numFormat = (num: number, digits: number) => {
   const si = [
@@ -125,5 +136,6 @@ export default {
   amountFormat,
   formatDate,
   numFormat,
-  addressDes
+  addressDes,
+  formatUTCDate
 }

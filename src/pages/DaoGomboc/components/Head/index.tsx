@@ -1,7 +1,9 @@
 import React from 'react'
 import './index.scss'
-import headImg1 from '../../../../assets/images/ahp/icon-submit.png'
-
+import headImg1 from '../../../../assets/images/ahp/icon-gom1.png'
+import headImg2 from '../../../../assets/images/ahp/icon-gom2.png'
+import headImg3 from '../../../../assets/images/ahp/icon-gom3.png'
+import headImg4 from '../../../../assets/images/ahp/icon-gom4.png'
 /**
  *
  * @param props
@@ -36,19 +38,19 @@ const Head = () => {
           </div>
           <div className="flex-1">
             <div className="flex jc-center">
-              <img className="head-img" src={headImg1} alt="" />
+              <img className="head-img" src={headImg2} alt="" />
             </div>
             <p className="text-center text-white m-t-30">Stake LP Token</p>
           </div>
           <div className="flex-1">
             <div className="flex jc-center">
-              <img className="head-img" src={headImg1} alt="" />
+              <img className="head-img" src={headImg3} alt="" />
             </div>
             <p className="text-center text-white m-t-30">Stake LP Token</p>
           </div>
           <div className="flex-1">
             <div className="flex jc-center">
-              <img className="head-img" src={headImg1} alt="" />
+              <img className="head-img" src={headImg4} alt="" />
             </div>
             <p className="text-center text-white m-t-30">Claim anytime</p>
           </div>

@@ -123,10 +123,10 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
 
   const onTxError = useCallback(error => {
     setShowConfirm(true)
-    setTxHash('')
-    setPendingText(``)
     setAttemptingTxn(false)
     setErrorStatus({ code: error?.code, message: error.message })
+    setTxHash('')
+    setPendingText(``)
   }, [])
 
   const onApprove = useCallback(() => {
@@ -144,8 +144,8 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
 
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
-    setCurToken(LT[chainId ?? 1])
-    setPendingText(`Approve LT`)
+    setCurToken(VELT[chainId ?? 1])
+    setPendingText(`Locker LT`)
     onTxStart()
 
     const deadline = toDeadline(PERMIT_EXPIRATION)
@@ -238,9 +238,9 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
           <div className="item m-t-20">
             <div className="label text-normal font-nor">Unlock Time : </div>
             <div className="value font-nor flex m-t-12 ai-center">
-              <p className="text-medium">{format.formatDate(Number(`${lockerRes?.end}`))} (UTC)</p>
+              <p className="text-medium">{format.formatUTCDate(Number(`${lockerRes?.end}`))} (UTC)</p>
               <i className="iconfont m-x-12">&#xe619;</i>
-              <p className="text-medium">{format.formatDate(Number(`${lockerRes?.end}`))} (UTC)</p>
+              <p className="text-medium">{format.formatUTCDate(Number(`${lockerRes?.end}`))} (UTC)</p>
             </div>
           </div>
         </div>
@@ -272,7 +272,7 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
         </div>
         <div className="m-t-30">
           <ActionButton
-            pending={approvalState === ApprovalState.PENDING || !pendingText}
+            pending={approvalState === ApprovalState.PENDING || !!pendingText}
             pendingText={'Confirm in your wallet'}
             disableAction={isMaxDisabled || !inputAmount || !ltBalance || approvalState === ApprovalState.UNKNOWN}
             actionText={actionText}

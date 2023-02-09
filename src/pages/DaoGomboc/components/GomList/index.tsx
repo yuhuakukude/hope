@@ -12,20 +12,17 @@ import { LT, VELT } from '../../../../constants'
 import { CloseIcon } from '../../../../theme/components'
 import { useToVote } from '../../../../hooks/ahp/useGomVote'
 import format from '../../../../utils/format'
-import VoteModal from '../VoteModal'
+import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
+import { useGomConContract } from '../../../../hooks/useContract'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
 
-interface VoteProps {
-  votiingData: any
-  gombocList: any
-}
-
-const GomList = ({ votiingData, gombocList }: VoteProps) => {
+const GomList = () => {
   const endDate = dayjs()
     .add(10, 'day')
     .format('YYYY-MM-DD')
+  const gomConContract = useGomConContract()
   const toggleWalletModal = useWalletModalToggle()
   const { account, chainId } = useActiveWeb3React()
   const [searchValue, setSearchValue] = useState('')
@@ -33,7 +30,6 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
   const [tableData, setTableData] = useState([])
   const [voterAddress, setVoterAddress] = useState('')
   const [curTableItem, setCurTableItem] = useState<any>({})
-  const [voteOpen, setVoteOpen] = useState(false)
   const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
   const { toVote } = useToVote()
   // modal and loading
@@ -76,6 +72,40 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
       })
   }, [account, toVote, curGomAddress])
 
+  const argList = useMemo(() => {
+    let res: any = []
+    const arr: any = []
+    if (tableData && tableData.length > 0) {
+      tableData.forEach((e: any) => {
+        if (e.gomboc && account) {
+          arr.push([account, e.gomboc])
+        }
+      })
+      res = arr
+    }
+    return res
+  }, [tableData, account])
+
+  const lastVoteData = useSingleContractMultipleData(gomConContract, 'lastUserVote', argList)
+
+  const isTimeDis = useMemo(() => {
+    let res: any = []
+    const arr: any = []
+    if (tableData.length > 0 && lastVoteData.length > 0 && tableData.length === lastVoteData.length) {
+      lastVoteData.forEach((e: any) => {
+        let item = false
+        if (Number(e.result)) {
+          const now = dayjs()
+          const end = dayjs.unix(Number(e.result)).add(10, 'day')
+          item = now.isBefore(end)
+        }
+        arr.push(item)
+      })
+      res = arr
+    }
+    return res
+  }, [lastVoteData, tableData])
+
   function getViewAmount(value: any) {
     let res = ''
     if (value && value !== '0') {
@@ -97,7 +127,10 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
   }
 
   function toVoteFn() {
-    setVoteOpen(true)
+    const dom = document.getElementById('votepoint')
+    if (dom) {
+      dom.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }
   }
 
   const confirmationContent = useCallback(
@@ -164,7 +197,7 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
     )
   }
 
-  const actionNode = (text: any, record: any) => {
+  const actionNode = (text: any, record: any, index: number) => {
     return (
       <>
         {!account ? (
@@ -173,17 +206,21 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
           </ButtonPrimary>
         ) : (
           <div>
+            {Number(getViewAmount(record.userPower)) > 0 && (
+              <Button
+                className="text-primary font-bold"
+                disabled={isTimeDis[index]}
+                onClick={() => {
+                  toReset(record)
+                }}
+                type="link"
+              >
+                Reset
+              </Button>
+            )}
             <Button
               className="text-primary font-bold"
-              onClick={() => {
-                toReset(record)
-              }}
-              type="link"
-            >
-              Reset
-            </Button>
-            <Button
-              className="text-primary font-bold"
+              disabled={isTimeDis[index]}
               onClick={() => {
                 toVoteFn()
               }}
@@ -231,29 +268,11 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
     }
   ]
 
-  function changeSwitch(val: boolean) {
-    setIsMyVote(val)
-    console.log(isMyVote)
-    if (val && account) {
-      setVoterAddress(account)
-    } else {
-      setVoterAddress('')
-    }
-  }
-
-  function changeVal(val: string) {
-    setSearchValue(val)
-  }
-
-  function hideVoteModal() {
-    setVoteOpen(false)
-  }
-
-  const init = useCallback(async () => {
+  const init = useCallback(async (voter = '', token = '') => {
     try {
       const par = {
-        voter: voterAddress,
-        token: searchValue
+        voter: voter,
+        token: token
       }
       const res = await GombocApi.getGombocsPoolsList(par)
       if (res.result && res.result && res.result.length > 0) {
@@ -264,15 +283,36 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
     } catch (error) {
       console.log(error)
     }
-  }, [voterAddress, searchValue])
+  }, [])
+
+  function changeSwitch(val: boolean) {
+    setIsMyVote(val)
+    console.log(voterAddress, isMyVote)
+    let res = ''
+    if (val && account) {
+      res = account
+    }
+    setVoterAddress(res)
+    init(res)
+  }
+
+  function changeVal(val: string) {
+    setSearchValue(val)
+  }
 
   function toSearch() {
-    init()
+    init(voterAddress, searchValue)
   }
 
   useEffect(() => {
     init()
   }, [init])
+
+  useEffect(() => {
+    if (!searchValue) {
+      init()
+    }
+  }, [searchValue, init])
 
   return (
     <>
@@ -296,6 +336,10 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
               onChange={e => {
                 changeVal(e.target.value)
               }}
+              allowClear={true}
+              onPressEnter={() => {
+                init(voterAddress, searchValue)
+              }}
               prefix={<i className="iconfont text-normal font-16 m-r-12">&#xe61b;</i>}
               className="search-input"
               placeholder="Search Token Symbol / Pool Address"
@@ -316,7 +360,6 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
           <Table rowKey={'gomboc'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
         </div>
       </div>
-      <VoteModal isOpen={voteOpen} onDismiss={hideVoteModal} votiingData={votiingData} gombocList={gombocList} />
     </>
   )
 }
