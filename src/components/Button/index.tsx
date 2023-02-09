@@ -200,8 +200,8 @@ export const ButtonUNIGradient = styled(ButtonPrimary)`
   }
 `
 
-export const ButtonOutlined = styled(Base)`
-  border: 1px solid ${({ theme }) => theme.bg2};
+export const ButtonOutlined = styled(Base)<{ primary?: any }>`
+  border: 1px solid ${({ primary, theme }) => (primary ? theme.primary1 : theme.bg2)};
   background-color: transparent;
   color: ${({ theme }) => theme.text1};
 
