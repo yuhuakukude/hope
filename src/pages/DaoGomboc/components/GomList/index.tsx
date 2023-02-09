@@ -272,29 +272,11 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
     }
   ]
 
-  function changeSwitch(val: boolean) {
-    setIsMyVote(val)
-    console.log(isMyVote)
-    if (val && account) {
-      setVoterAddress(account)
-    } else {
-      setVoterAddress('')
-    }
-  }
-
-  function changeVal(val: string) {
-    setSearchValue(val)
-  }
-
-  function hideVoteModal() {
-    setVoteOpen(false)
-  }
-
-  const init = useCallback(async () => {
+  const init = useCallback(async (voter = '', token = '') => {
     try {
       const par = {
-        voter: voterAddress,
-        token: searchValue
+        voter: voter,
+        token: token
       }
       const res = await GombocApi.getGombocsPoolsList(par)
       if (res.result && res.result && res.result.length > 0) {
@@ -305,15 +287,40 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
     } catch (error) {
       console.log(error)
     }
-  }, [voterAddress, searchValue])
+  }, [])
+
+  function changeSwitch(val: boolean) {
+    setIsMyVote(val)
+    console.log(voterAddress, isMyVote)
+    let res = ''
+    if (val && account) {
+      res = account
+    }
+    setVoterAddress(res)
+    init(res)
+  }
+
+  function changeVal(val: string) {
+    setSearchValue(val)
+  }
+
+  function hideVoteModal() {
+    setVoteOpen(false)
+  }
 
   function toSearch() {
-    init()
+    init(voterAddress, searchValue)
   }
 
   useEffect(() => {
     init()
   }, [init])
+
+  useEffect(() => {
+    if (!searchValue) {
+      init()
+    }
+  }, [searchValue, init])
 
   return (
     <>
@@ -336,6 +343,10 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
             <Input
               onChange={e => {
                 changeVal(e.target.value)
+              }}
+              allowClear={true}
+              onPressEnter={() => {
+                init(voterAddress, searchValue)
               }}
               prefix={<i className="iconfont text-normal font-16 m-r-12">&#xe61b;</i>}
               className="search-input"
