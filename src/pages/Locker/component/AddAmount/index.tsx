@@ -109,17 +109,13 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
     setAttemptingTxn(true)
   }, [])
 
-  const onTxSubmitted = useCallback(
-    (hash: string | undefined) => {
-      setShowConfirm(true)
-      setPendingText(``)
-      setAttemptingTxn(false)
-      hash && setTxHash(hash)
-      setAmount('')
-      onCloseModel()
-    },
-    [onCloseModel]
-  )
+  const onTxSubmitted = useCallback((hash: string | undefined) => {
+    setShowConfirm(true)
+    setPendingText(``)
+    setAttemptingTxn(false)
+    hash && setTxHash(hash)
+    setAmount('')
+  }, [])
 
   const onTxError = useCallback(error => {
     setShowConfirm(true)

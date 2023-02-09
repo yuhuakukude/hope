@@ -27,7 +27,7 @@ export default function LockerEcharts() {
           arr.forEach((e: any) => {
             dateArr.unshift(e.snapshotDate)
             const valItem = new TokenAmount(LT[chainId ?? 1], e.lightLockedTotal).toFixed(2)
-            valueArr.unshift(valItem)
+            valueArr.unshift(Number(valItem))
           })
           const option = {
             grid: { top: '6%', bottom: '10%' },
@@ -46,7 +46,24 @@ export default function LockerEcharts() {
               show: false
             },
             tooltip: {
-              trigger: 'axis'
+              trigger: 'axis',
+              backgroundColor: 'rgba(51, 51, 60, 1)',
+              borderColor: 'rgba(51, 51, 60, 1)',
+              padding: 20,
+              textStyle: {
+                color: '#FFFFFF'
+              },
+              formatter: (params: any) => {
+                return `
+                <p style="font-family: 'Arboria-Book'; font-size: 16px;">${params[0].name}</p>
+                <p style="font-family: 'Arboria-Medium'; font-size: 20px; margin-top: 12px;">
+                  <span style="display: inline-block; margin-right: 8px;background-color: #33333C;width:10px;height:10px;border-radius: 50%;border:3px solid ${
+                    params[0].color
+                  };"></span>
+                  ${format.amountFormat(params[0].value, 2)}
+                </p>
+                `
+              }
             },
             xAxis: {
               data: dateArr,
@@ -82,9 +99,28 @@ export default function LockerEcharts() {
               {
                 type: 'line',
                 showSymbol: false,
+                symbolSize: 10,
                 data: valueArr,
                 lineStyle: {
                   width: 3
+                },
+                emphasis: {
+                  scale: 1.5
+                },
+                symbol: 'circle',
+                itemStyle: {
+                  borderColor: '#E4C989',
+                  borderWidth: 3,
+                  color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+                    {
+                      offset: 0.1,
+                      color: '#E4C989'
+                    },
+                    {
+                      offset: 1,
+                      color: '#B5884C'
+                    }
+                  ])
                 }
               }
             ]
