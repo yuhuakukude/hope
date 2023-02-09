@@ -50,7 +50,7 @@ export default function DaoGomboc() {
       <PageWrapper>
         <div className="dao-gomboc-page">
           <Head />
-          <div className="flex m-t-30 jc-center">
+          {/* <div className="flex m-t-30 jc-center">
             <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
             <div>
               <p className="text-white lh15">
@@ -58,7 +58,7 @@ export default function DaoGomboc() {
                 is completed.
               </p>
             </div>
-          </div>
+          </div> */}
           <div className="flex m-t-30">
             <div className="flex-3 normal-card m-r-30">
               <GomChart votiingData={votiingData} />
