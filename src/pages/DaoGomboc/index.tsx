@@ -59,7 +59,7 @@ export default function DaoGomboc() {
               </p>
             </div>
           </div> */}
-          <div className="flex m-t-30">
+          <div id="votepoint" className="flex m-t-30">
             <div className="flex-3 normal-card m-r-30">
               <GomChart votiingData={votiingData} />
             </div>
@@ -68,7 +68,7 @@ export default function DaoGomboc() {
             </div>
           </div>
           <div className="normal-card m-t-30">
-            <GomList votiingData={votiingData} gombocList={gombocList} />
+            <GomList />
           </div>
         </div>
       </PageWrapper>
