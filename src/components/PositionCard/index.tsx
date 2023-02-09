@@ -204,7 +204,7 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
         </ContentRow>
         <ContentRow>
           <Text fontSize={16} fontWeight={500}>
-            {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}{' '}Staked(
+            {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'} Staked(
             {stakedBalance ? stakedBalance.toSignificant(6) : '--'})
           </Text>
         </ContentRow>
