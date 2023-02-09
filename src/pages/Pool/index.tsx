@@ -5,14 +5,12 @@ import { Link } from 'react-router-dom'
 import { SwapPoolTabs } from '../../components/NavigationTabs'
 
 import FullPositionCard from '../../components/PositionCard'
-import { useUserHasLiquidityInAllTokens } from '../../data/V1'
 import { useTokenBalancesWithLoadingIndicator } from '../../state/wallet/hooks'
-import { StyledInternalLink, ExternalLink, TYPE, HideSmall } from '../../theme'
-import { Text } from 'rebass'
+import { ExternalLink, TYPE, HideSmall } from '../../theme'
 
 import Card from '../../components/Card'
 import { RowBetween, RowFixed } from '../../components/Row'
-import { ButtonOutlined, ButtonPrimary, ButtonSecondary } from '../../components/Button'
+import { ButtonOutlined, ButtonPrimary } from '../../components/Button'
 import { AutoColumn } from '../../components/Column'
 
 import { useActiveWeb3React } from '../../hooks'
@@ -47,6 +45,7 @@ const TitleRow = styled(RowBetween)`
 `
 
 const ButtonRow = styled(RowFixed)`
+  width: 300px;
   gap: 8px;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     width: 100%;
@@ -55,19 +54,19 @@ const ButtonRow = styled(RowFixed)`
   `};
 `
 
-const ResponsiveButtonPrimary = styled(ButtonPrimary)`
-  width: fit-content;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    width: 48%;
-  `};
-`
+// const ResponsiveButtonPrimary = styled(ButtonPrimary)`
+//   width: fit-content;
+//   ${({ theme }) => theme.mediaWidth.upToSmall`
+//     width: 48%;
+//   `};
+// `
 
-const ResponsiveButtonSecondary = styled(ButtonSecondary)`
-  width: fit-content;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    width: 48%;
-  `};
-`
+// const ResponsiveButtonSecondary = styled(ButtonSecondary)`
+//   width: fit-content;
+//   ${({ theme }) => theme.mediaWidth.upToSmall`
+//     width: 48%;
+//   `};
+// `
 
 const EmptyProposals = styled.div`
   border: 1px solid ${({ theme }) => theme.text4};
@@ -116,8 +115,6 @@ export default function Pool() {
 
   const allV2PairsWithLiquidity = v2Pairs.map(([, pair]) => pair).filter((v2Pair): v2Pair is Pair => Boolean(v2Pair))
 
-  const hasV1Liquidity = useUserHasLiquidityInAllTokens()
-
   // show liquidity even if its deposited in rewards contract
   const stakingInfo = useStakingInfo()
   const stakingInfosWithBalance = stakingInfo?.filter(pool => JSBI.greaterThan(pool.stakedAmount.raw, BIG_INT_ZERO))
@@ -142,51 +139,45 @@ export default function Pool() {
             </TYPE.mediumHeader>
           </HideSmall>
           <ButtonRow>
-            <ResponsiveButtonSecondary as={Link} padding="6px 8px" to="/create/ETH">
-              Create a pair
-            </ResponsiveButtonSecondary>
-            <ResponsiveButtonPrimary
-              id="join-pool-button"
-              as={Link}
-              padding="6px 8px"
-              borderRadius="12px"
-              to="/add/ETH"
-            >
-              <Text fontWeight={500} fontSize={16}>
-                Add Liquidity
-              </Text>
-            </ResponsiveButtonPrimary>
+            <ButtonPrimary as={Link} padding="12px 16px" to="/swap/find">
+              Import
+            </ButtonPrimary>
+            <ButtonPrimary id="join-pool-button" as={Link} padding="12px 16px" borderRadius="12px" to="/add/ETH">
+              New Position
+            </ButtonPrimary>
           </ButtonRow>
         </TitleRow>
         <SwapPoolTabs active={'pool'} />
         <VoteCard>
-          <CardSection style={{ maxWidth: 580 }} justify={'center'}>
-            <AutoColumn justify={'center'} gap="md">
-              <RowBetween>
-                <TYPE.white fontSize={14}>
-                  {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
-                </TYPE.white>
-              </RowBetween>
-              <RowBetween>
-                <ExternalLink
-                  style={{ color: 'white', textDecoration: 'underline' }}
-                  target="_blank"
-                  href="https://uniswap.org/docs/v2/core-concepts/pools/"
-                >
-                  <TYPE.link fontSize={14}>Read more about providing liquidity</TYPE.link>
-                </ExternalLink>
-              </RowBetween>
-            </AutoColumn>
-            <EmptyCover src={empty} />
-          </CardSection>
+          {!account && (
+            <CardSection style={{ maxWidth: 580 }} justify={'center'}>
+              <AutoColumn justify={'center'} gap="md">
+                <RowBetween>
+                  <TYPE.white fontSize={14}>
+                    {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
+                  </TYPE.white>
+                </RowBetween>
+                <RowBetween>
+                  <ExternalLink
+                    style={{ color: 'white', textDecoration: 'underline' }}
+                    target="_blank"
+                    href="https://uniswap.org/docs/v2/core-concepts/pools/"
+                  >
+                    <TYPE.link fontSize={14}>Read more about providing liquidity</TYPE.link>
+                  </ExternalLink>
+                </RowBetween>
+              </AutoColumn>
+              <EmptyCover src={empty} />
+            </CardSection>
+          )}
           <AutoColumn gap="lg" justify="center">
             <AutoColumn gap="lg" style={{ width: '100%' }}>
               {!account ? (
                 <Card padding="40px">
-                  <TYPE.white color={theme.text3} textAlign="center">
-                    Connect to a wallet to view your liquidity.
-                  </TYPE.white>
-                  <ButtonOutlined mt={'40px'} primary>Connect Wallet</ButtonOutlined>
+                  <TYPE.white textAlign="center">Connect to a wallet to view your liquidity.</TYPE.white>
+                  <ButtonOutlined mt={'40px'} primary>
+                    Connect Wallet
+                  </ButtonOutlined>
                 </Card>
               ) : v2IsLoading ? (
                 <EmptyProposals>
@@ -220,20 +211,21 @@ export default function Pool() {
                 </>
               ) : (
                 <EmptyProposals>
-                  <TYPE.body color={theme.text3} textAlign="center">
-                    No liquidity found.
-                  </TYPE.body>
+                  <CardSection style={{ maxWidth: 620 }} justify={'center'}>
+                    <AutoColumn justify={'center'} gap="lg">
+                      <EmptyCover src={empty} />
+                      <RowBetween>
+                        <TYPE.white fontSize={14}>
+                          {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
+                        </TYPE.white>
+                      </RowBetween>
+                      <ButtonOutlined primary mt={20} width={'70%'}>
+                        <TYPE.link textAlign="center">Learn about providing liquidity</TYPE.link>
+                      </ButtonOutlined>
+                    </AutoColumn>
+                  </CardSection>
                 </EmptyProposals>
               )}
-
-              <AutoColumn justify={'center'} gap="md">
-                <Text textAlign="center" fontSize={14} style={{ padding: '.5rem 0 .5rem 0' }}>
-                  {hasV1Liquidity ? 'Uniswap V1 liquidity found!' : "Don't see a pool you joined?"}{' '}
-                  <StyledInternalLink id="import-pool-link" to={hasV1Liquidity ? '/migrate/v1' : '/find'}>
-                    {hasV1Liquidity ? 'Migrate now.' : 'Import it.'}
-                  </StyledInternalLink>
-                </Text>
-              </AutoColumn>
             </AutoColumn>
           </AutoColumn>
         </VoteCard>
