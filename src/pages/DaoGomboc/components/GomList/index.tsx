@@ -42,6 +42,8 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
   // txn values
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
+  const [pendingText, setPendingText] = useState('')
+
   const CompositionNode = (text: any) => <span>{text || '--'}</span>
 
   const curGomAddress = useMemo(() => {
@@ -57,16 +59,20 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
     setCurToken(undefined)
     setShowConfirm(true)
     setAttemptingTxn(true)
+    setPendingText(`Reset voting power`)
     const argAmount = 0
     toVote(curGomAddress, argAmount)
       .then((hash: any) => {
+        setShowConfirm(true)
+        setPendingText(``)
         setAttemptingTxn(false)
         setTxHash(hash)
       })
-      .catch((err: any) => {
+      .catch((error: any) => {
+        setShowConfirm(true)
+        setPendingText(``)
         setAttemptingTxn(false)
-        console.log(err)
-        setErrorStatus({ code: err?.code, message: err.message })
+        setErrorStatus({ code: error?.code, message: error.message })
       })
   }, [account, toVote, curGomAddress])
 
@@ -207,12 +213,14 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
       title: 'Weight',
       dataIndex: 'weight',
       render: weightNode,
+      sorter: (a: any, b: any) => a.weight - b.weight,
       key: 'weight'
     },
     {
       title: 'My votes',
       dataIndex: 'userPower',
       render: votesNote,
+      sorter: (a: any, b: any) => a.userPower - b.userPower,
       key: 'userPower'
     },
     {
@@ -274,9 +282,8 @@ const GomList = ({ votiingData, gombocList }: VoteProps) => {
         attemptingTxn={attemptingTxn}
         hash={txHash}
         content={confirmationContent}
-        pendingText={''}
+        pendingText={pendingText}
         currencyToAdd={curToken}
-        isShowSubscribe={false}
       />
       <div className="gom-list-box">
         <div className="flex jc-between">
