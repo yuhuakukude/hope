@@ -6,7 +6,7 @@ import ReactGA from 'react-ga'
 import { Redirect, RouteComponentProps } from 'react-router'
 import { Text } from 'rebass'
 import { ButtonConfirmed } from '../../components/Button'
-import { LightCard, PinkCard, YellowCard } from '../../components/Card'
+import { GreyCard, LightCard, YellowCard } from '../../components/Card'
 import { AutoColumn } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import FormattedCurrencyAmount from '../../components/FormattedCurrencyAmount'
@@ -239,7 +239,7 @@ function V1PairMigration({ liquidityTokenAmount, token }: { liquidityTokenAmount
       ) : null}
 
       {isFirstLiquidityProvider && (
-        <PinkCard>
+        <GreyCard>
           <TYPE.body style={{ marginBottom: 8, fontWeight: 400 }}>
             You are the first liquidity provider for this pair on Uniswap V2. Your liquidity will be migrated at the
             current V1 price. Your transaction cost also includes the gas to create the pool.
@@ -259,7 +259,7 @@ function V1PairMigration({ liquidityTokenAmount, token }: { liquidityTokenAmount
               </TYPE.black>
             </RowBetween>
           </AutoColumn>
-        </PinkCard>
+        </GreyCard>
       )}
 
       <LightCard>

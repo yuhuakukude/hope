@@ -341,7 +341,7 @@ export default function Swap({ history }: RouteComponentProps) {
               <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
                 <ArrowWrapper clickable>
                   <ArrowDownCircle
-                    size="16"
+                    size="20"
                     onClick={() => {
                       setApprovalSubmitted(false) // reset 2 step UI for approvals
                       onSwitchTokens()
@@ -524,7 +524,16 @@ export default function Swap({ history }: RouteComponentProps) {
           </BottomGrouping>
         </Wrapper>
         {!swapIsUnsupported ? (
-          <AdvancedSwapDetailsDropdown trade={trade} />
+          <AdvancedSwapDetailsDropdown
+            error={
+              !currencies[Field.INPUT] || !currencies[Field.OUTPUT]
+                ? 'Select a token to see more trading details'
+                : !formattedAmounts[Field.INPUT] || !formattedAmounts[Field.INPUT]
+                ? 'Enter an amount to see more trading details'
+                : undefined
+            }
+            trade={trade}
+          />
         ) : (
           <UnsupportedCurrencyFooter show={swapIsUnsupported} currencies={[currencies.INPUT, currencies.OUTPUT]} />
         )}
