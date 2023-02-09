@@ -19,6 +19,7 @@ import TransactionConfirmationModal, {
 } from '../../../../components/TransactionConfirmationModal'
 import Modal from '../../../../components/Modal'
 import { CloseIcon } from '../../../../theme/components'
+import { NavLink } from 'react-router-dom'
 
 interface VoteProps {
   isOpen: boolean
@@ -41,7 +42,8 @@ const Vote = ({ isOpen, onDismiss, votiingData, gombocList }: VoteProps) => {
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
   // txn values
   const [txHash, setTxHash] = useState<string>('')
-  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
+  const [pendingText, setPendingText] = useState('')
 
   const { Option } = Select
   const endDate = dayjs()
@@ -128,7 +130,7 @@ const Vote = ({ isOpen, onDismiss, votiingData, gombocList }: VoteProps) => {
 
   const unUseRateVal = useMemo(() => {
     let res = ''
-    if (votePowerAmount && Number(votePowerAmount.result)) {
+    if (votePowerAmount && (Number(votePowerAmount.result) || Number(votePowerAmount.result) === 0)) {
       const total = JSBI.BigInt(10000)
       const apo = JSBI.BigInt(Number(votePowerAmount.result))
       const unUseVal = JSBI.subtract(total, apo)
@@ -183,19 +185,22 @@ const Vote = ({ isOpen, onDismiss, votiingData, gombocList }: VoteProps) => {
     setCurToken(undefined)
     setShowConfirm(true)
     setAttemptingTxn(true)
+    setPendingText(`${amount}% of your voting power`)
     const argAmount = Math.floor(Number(amount) * 100)
-    console.log(curGomAddress)
     toVote(curGomAddress, argAmount)
       .then((hash: any) => {
+        setShowConfirm(true)
+        setPendingText(``)
         setAttemptingTxn(false)
         setTxHash(hash)
         setAmount('')
         setCurGomAddress('')
       })
-      .catch((err: any) => {
+      .catch((error: any) => {
+        setShowConfirm(true)
+        setPendingText(``)
         setAttemptingTxn(false)
-        console.log(err)
-        setErrorMessage(err.message)
+        setErrorStatus({ code: error?.code, message: error.message })
       })
   }, [amount, curGomAddress, account, toVote])
 
@@ -225,12 +230,14 @@ const Vote = ({ isOpen, onDismiss, votiingData, gombocList }: VoteProps) => {
 
   const confirmationContent = useCallback(
     () =>
-      errorMessage ? (
-        <TransactionErrorContent onDismiss={() => setShowConfirm(false)} message={errorMessage} />
-      ) : (
-        <div></div>
+      errorStatus && (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
       ),
-    [errorMessage]
+    [errorStatus]
   )
 
   return (
@@ -242,9 +249,8 @@ const Vote = ({ isOpen, onDismiss, votiingData, gombocList }: VoteProps) => {
           attemptingTxn={attemptingTxn}
           hash={txHash}
           content={confirmationContent}
-          pendingText={''}
+          pendingText={pendingText}
           currencyToAdd={curToken}
-          isShowSubscribe={false}
         />
         <div className="vote-modal-box ">
           <div className="vote-modal-head">
@@ -324,7 +330,10 @@ const Vote = ({ isOpen, onDismiss, votiingData, gombocList }: VoteProps) => {
                 <div className="flex jc-between m-t-30 m-b-10">
                   <span className="text-normal">Vote weight:</span>
                   <p>
-                    unallocated votes : {unUseRateVal}%<span className="text-primary m-l-5">Lock</span>
+                    unallocated votes : {unUseRateVal}%
+                    <NavLink to={'/dao/locker'}>
+                      <span className="text-primary">Locker</span>
+                    </NavLink>
                   </p>
                 </div>
                 <div className="hp-amount-box">
@@ -350,7 +359,7 @@ const Vote = ({ isOpen, onDismiss, votiingData, gombocList }: VoteProps) => {
                   ) : (
                     <ActionButton
                       error={voteInputError}
-                      // pending={approvalState === ApprovalState.PENDING}
+                      pending={!!pendingText}
                       disableAction={!amount || !curGomAddress || curLastVote}
                       actionText={getActionText}
                       onAction={toVoteCallback}

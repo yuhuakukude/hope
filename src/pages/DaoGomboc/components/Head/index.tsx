@@ -18,7 +18,12 @@ const Head = () => {
             Babe Protocol liquidity incentives are directed to pools by veBABE voters. Stake in these pools to earn
             incentives. Boost with veBABE for up to 2.5x extra on pools.
           </p>
-          <a className="learn-more m-t-20" href="/">
+          <a
+            className="learn-more m-t-20"
+            href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/governance/vote-locking"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
             Learn more
           </a>
         </div>

@@ -91,6 +91,7 @@ export default function BuyHope() {
               : '',
           bottomValue: typed
         }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [chainId, payToken, rateObj?.result?.rate, typed, typedType])
 
   const rateScale = useMemo(() => {

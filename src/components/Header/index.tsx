@@ -240,7 +240,7 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
     if (location?.pathname?.startsWith('/dao')) {
       return [
         { id: 'hope-nav-link', title: 'Gomboc', router: '/dao/gomboc' },
-        { id: 'pool-nav-link', title: 'LOcker', router: '/dao/locker' }
+        { id: 'pool-nav-link', title: 'Locker', router: '/dao/locker' }
       ]
     }
     return []

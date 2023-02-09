@@ -1,0 +1,109 @@
+.velt-rewards-wrap {
+  .hope-dapp-table {
+    padding: 30px 0 0 0;
+  }
+
+  .velt-rewards-title {
+    font-size: 20px;
+    color: #fff;
+  }
+
+  .velt-rewards-desc {
+    font-size: 18px;
+    color: #fff;
+    margin-top: 30px;
+  }
+
+  .velt-rewards-card {
+    margin-top: 20px;
+    border-radius: 8px;
+    background-color: rgba(61, 62, 70, 1);
+
+    .velt-rewards-list {
+      padding: 30px;
+      border-bottom: 1px solid rgba(99, 99, 106, 1);
+      display: flex;
+      justify-content: space-between;
+
+      .velt-rewards-item {
+        flex: 1;
+
+        .velt-rewards-item-title {
+          color: #fff;
+          font-size: 16px;
+        }
+
+        .velt-rewards-item-amount {
+          color: rgba(14, 203, 129, 1);
+          font-size: 30px;
+          margin-top: 20px;
+        }
+
+        .velt-rewards-item-date {
+          margin-top: 12px;
+          color: rgba(168, 168, 170, 1);
+          font-size: 14px;
+        }
+      }
+    }
+
+    .velt-rewards-bottom {
+      padding: 30px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+
+      .velt-rewards-bottom-left,
+      .velt-rewards-bottom-right {
+        flex: 1;
+      }
+
+      .velt-rewards-bottom-left {
+        color: rgba(168, 168, 170, 1);
+
+        .velt-rewards-bottom-question {
+          margin: 0 8px;
+        }
+      }
+
+      .velt-rewards-bottom-right {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        .velt-rewards-bottom-button,
+        .velt-rewards-bottom-button2 {
+          border-radius: 10px;
+          border: 1px solid rgba(228, 201, 137, 1);
+          padding: 13px 44px;
+          cursor: pointer;
+        }
+
+        .velt-rewards-bottom-button2 {
+          border-color: #fff;
+        }
+
+        .velt-rewards-bottom-hover {
+          flex: 1;
+          display: flex;
+          margin: 0 10px;
+          flex-direction: column;
+
+          .velt-rewards-bottom-hover-line {
+            height: 1px;
+            width: 100%;
+            margin-top: 9px;
+            background-color: rgba(151, 151, 151, 1);
+          }
+
+          .velt-rewards-bottom-hover-text {
+            color: rgba(255, 255, 255, 1);
+            width: 100%;
+            margin-top: 9px;
+            text-align: center;
+          }
+        }
+      }
+    }
+  }
+}

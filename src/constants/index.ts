@@ -96,6 +96,11 @@ export const VELT_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.SEPOLIA]: '0xc9B94F82E9C760CefCdbAD892B58E42216159241',
   [ChainId.HOPE]: '0xb928e3E9f51Dfd4a698Ed2e35cefa69F1d137b38'
 }
+export const LT_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
+  [ChainId.MAINNET]: '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E',
+  [ChainId.SEPOLIA]: '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E',
+  [ChainId.HOPE]: '0xdA3BE87aB604E89feBd93fc055a8E4d864335012'
+}
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
 export const AVERAGE_BLOCK_TIME_IN_SECS = 13
