@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useMemo, useRef } from 'react'
 import * as echarts from 'echarts'
 import { TitleComponentOption } from 'echarts/components'
 import { PieSeriesOption } from 'echarts/charts'
@@ -6,19 +6,47 @@ import { PieSeriesOption } from 'echarts/charts'
 import './index.scss'
 import Card from '../Card'
 import TitleTips from '../TitleTips'
+import { IPortfolio } from 'api/portfolio.api'
+import Tips from 'components/Tips'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
 
-export default function InvestmentAllocation() {
+export default function InvestmentAllocation({ data }: { data: IPortfolio }) {
   const chartRef = useRef<any>()
-  const arr = [
-    { name: 'HOPE', value: '1' },
-    { name: 'stHOPE', value: '2' },
-    { name: 'Pool', value: '3' },
-    { name: 'Farming', value: '4' },
-    { name: 'Govern', value: '5' },
-    { name: 'LT', value: '6' }
-  ]
+  const allocations = useMemo(() => {
+    return [
+      {
+        name: 'HOPE',
+        value: data.hope,
+        tips: 'Total amount of HOPE held'
+      },
+      {
+        name: 'stHOPE',
+        value: data.stHope,
+        tips: 'Total amount of stHOPE held'
+      },
+      {
+        name: 'Pool',
+        value: data.hopeOfPool,
+        tips: 'Total value of assets withdrawable from liquidity pools'
+      },
+      {
+        name: 'Farming',
+        value: data.hopeOfFarming,
+        tips: 'Total value of LP Tokens staked and pending rewards'
+      },
+      {
+        name: 'Govern',
+        value: data.hopeOfGovern,
+        tips: 'Total value of locked LT'
+      },
+      {
+        name: 'LT',
+        value: data.hopeOfLt,
+        tips: 'Total value of LT held'
+      }
+    ]
+  }, [data])
   useEffect(() => {
     const option: EChartsOption = {
       tooltip: {
@@ -33,7 +61,7 @@ export default function InvestmentAllocation() {
           orient: 'vertical',
           right: 'right',
           top: 'center',
-          data: arr.slice(0, (arr.length / 2) | 0),
+          data: allocations.slice(0, (allocations.length / 2) | 0),
           textStyle: {
             color: '#fff',
             fontSize: 16
@@ -47,7 +75,7 @@ export default function InvestmentAllocation() {
           orient: 'vertical',
           right: '18%',
           top: 'center',
-          data: arr.slice((arr.length / 2) | 0),
+          data: allocations.slice((allocations.length / 2) | 0),
           textStyle: {
             color: '#fff',
             fontSize: 16
@@ -64,7 +92,7 @@ export default function InvestmentAllocation() {
             show: false
           },
           bottom: 0,
-          data: arr as any
+          data: allocations as any
         }
       ]
     }
@@ -73,7 +101,7 @@ export default function InvestmentAllocation() {
     return () => {
       myChart.dispose()
     }
-  }, [arr])
+  }, [allocations])
 
   return (
     <div className="investment-allocation">
@@ -93,14 +121,16 @@ export default function InvestmentAllocation() {
         </div>
         <div className="investment-allocation-bottom">
           <div className="investment-allocation-content">
-            {[0, 1, 2, 3, 4, 5].map(index => {
+            {allocations.map((item, index) => {
               return (
                 <div className="investment-allocation-box" key={index}>
                   <div className="investment-allocation-box-head">
-                    <span className="investment-allocation-box-name">HOPE</span>
-                    <span className="investment-allocation-question"></span>
+                    <span className="investment-allocation-box-name">{item.name}</span>
+                    <span className="investment-allocation-box-question">
+                      <Tips title={item.tips} />
+                    </span>
                   </div>
-                  <div className="investment-allocation-box-amount">~ 123,456,789.00 HOPE</div>
+                  <div className="investment-allocation-box-amount">~ {item.value} HOPE</div>
                 </div>
               )
             })}

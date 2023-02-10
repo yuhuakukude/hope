@@ -17,7 +17,11 @@
 
   .portfolio-connect-button {
     text-align: center;
-    margin-top: 40px;
+    margin: 40px auto 0 auto;
     width: 400px;
+
+    .portfolio-button {
+      background-color: transparent;
+    }
   }
 }
