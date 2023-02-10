@@ -112,9 +112,19 @@ export default function DaoLocker() {
     const resAmount = balance?.toString().replace(/(?:\.0*|(\.\d+?)0+)$/, '$1') || '0'
     setAmount(resAmount)
   }
+  const lockTimeArg = useMemo(() => {
+    if (!lockerDate) {
+      return undefined
+    }
+    return momentTz(lockerDate)
+      .tz('Africa/Bissau', true)
+      .unix()
+  }, [lockerDate])
+
   const veLtAmount = useMemo(() => {
-    return getVeLtAmount(amount, lockerDate)
-  }, [amount, lockerDate, getVeLtAmount])
+    if (!lockTimeArg || !amount) return undefined
+    return getVeLtAmount(amount, format.formatDate(lockTimeArg))
+  }, [amount, getVeLtAmount, lockTimeArg])
 
   const maxWeek = useMemo(() => {
     if (!lockerRes?.end) {
@@ -195,7 +205,7 @@ export default function DaoLocker() {
   }, [approveCallback, onTxError, onTxStart, onTxSubmitted])
 
   const lockerCallback = useCallback(async () => {
-    if (!account || !inputAmount || !library || !chainId) return
+    if (!account || !inputAmount || !library || !chainId || !lockTimeArg) return
     setCurToken(VELT[chainId ?? 1])
     setPendingText(`Locker LT`)
     onTxStart()
@@ -222,9 +232,6 @@ export default function DaoLocker() {
             ?.toFixed(2, { groupSeparator: ',' })
             .toString()} VELT with ${inputAmount.toSignificant()} LT`
         )
-        const lockTimeArg = momentTz(lockerDate)
-          .tz('Africa/Bissau', true)
-          .unix()
         toLocker(inputAmount, lockTimeArg, nonce, deadline, signature, veLtAmount)
           .then(hash => {
             onTxSubmitted(hash)
@@ -241,7 +248,7 @@ export default function DaoLocker() {
         onTxError(error)
         throw error
       })
-  }, [account, inputAmount, library, chainId, lockerDate, veLtAmount, toLocker, onTxStart, onTxSubmitted, onTxError])
+  }, [account, inputAmount, library, chainId, veLtAmount, lockTimeArg, toLocker, onTxStart, onTxSubmitted, onTxError])
 
   const lockerAddAction = (type: string) => {
     if (type === 'amount') {
@@ -351,20 +358,20 @@ export default function DaoLocker() {
                 <div className="-l">
                   <p className="font-nor text-normal">Locked Until (UTC)</p>
                   <p className="font-20 m-t-20 text-medium">{format.formatUTCDate(Number(`${lockerRes?.end}`))}</p>
-                  <p className="font-nor text-normal m-t-16">Max increase: {maxWeek || '--'} weeks</p>
+                  <p className="font-nor text-normal m-t-16">Max increase: {maxWeek >= 2 ? maxWeek : '--'} weeks</p>
                 </div>
                 <div className="-r m-l-20 flex ai-center">
                   {account && (
                     <i
                       onClick={() =>
-                        lockerRes?.end && lockerRes?.end !== '--' && maxWeek > 0 && lockerAddAction('time')
+                        lockerRes?.end && lockerRes?.end !== '--' && maxWeek >= 2 && lockerAddAction('time')
                       }
                       className={[
                         'iconfont',
                         'font-20',
                         'cursor-select',
                         'text-primary',
-                        (!lockerRes?.end || lockerRes?.end === '--' || maxWeek <= 0) && 'disabled'
+                        (!lockerRes?.end || lockerRes?.end === '--' || maxWeek < 2) && 'disabled'
                       ].join(' ')}
                     >
                       &#xe621;

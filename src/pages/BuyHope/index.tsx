@@ -163,13 +163,15 @@ export default function BuyHope() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Buy ${formattedAmounts.bottomValue} Hope with ${formattedAmounts.topValue} ${payToken.symbol}`
+            summary: `Buy ${payAmount
+              ?.toFixed(2, { groupSeparator: ',' })
+              .toString()} Hope with ${amount.toSignificant()} ${payToken.symbol}`
           })
           return response.hash
         })
       })
     },
-    [account, addTransaction, buyHopeContract, formattedAmounts.bottomValue, formattedAmounts.topValue, payToken.symbol]
+    [account, addTransaction, buyHopeContract, payAmount, payToken.symbol]
   )
 
   const buyHopeCallback = useCallback(async () => {
