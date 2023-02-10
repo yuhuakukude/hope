@@ -193,7 +193,9 @@ export default function AddTime({
             <div className="value font-nor flex m-t-12 ai-center">
               <p className="text-medium">{veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}</p>
               <i className="iconfont m-x-12">&#xe619;</i>
-              <p className="text-medium text-primary">{afterVeLtAmount ? afterVeLtAmount.toFixed(2) : '--'}</p>
+              <p className="text-medium text-primary">
+                {afterVeLtAmount ? afterVeLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '--'}
+              </p>
             </div>
           </div>
           <div className="item m-t-20">
