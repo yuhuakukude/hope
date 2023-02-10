@@ -10,6 +10,6 @@ export function useEstimate() {
     if (!userEthBalance) {
       return false
     }
-    return Number(userEthBalance?.toFixed(4)) < 0.2
+    return Number(userEthBalance?.toFixed(4)) < 0.001
   }, [userEthBalance])
 }
