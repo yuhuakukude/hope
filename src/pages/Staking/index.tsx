@@ -74,6 +74,7 @@ export default function Staking() {
   const { toClaim } = useToClaim()
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
 
+
   const isUnSub = useMemo(() => {
     let res = false
     if (curBuzType === 'unStaking' && isSubscribed) {
@@ -312,14 +313,13 @@ export default function Staking() {
             <div className="flex jc-between">
               <span className="text-white">Total Rewards</span>
               <span className="text-white">
-              {totalRewards ? totalRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
-                
+                {totalRewards ? totalRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
               </span>
             </div>
             <div className="flex jc-between m-t-20 m-b-40">
               <span className="text-white">Claimable Rewards</span>
               <span className="text-white">
-              {claRewards ? claRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
+                {claRewards ? claRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
               </span>
             </div>
             <ButtonPrimary className="hp-button-primary" onClick={claimCallback}>

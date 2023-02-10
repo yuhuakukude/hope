@@ -83,18 +83,22 @@ export default function DaoGomboc() {
         <div className="dao-gomboc-page">
           <Head />
           {isNoVelt && (
-            <div className="flex m-t-30 jc-center">
-              <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
+            <div className="flex m-t-30 ai-center jc-center">
+              <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
               <div>
                 <p className="text-white lh15">
-                  You need to have LT locked in Locker in order to vote for gömböc weights
+                  You need to have LT{' '}
+                  <NavLink to={'/dao/locker'}>
+                    <span className="text-primary">Locker</span>
+                  </NavLink>{' '}
+                  in Locker in order to vote for gömböc weights
                 </p>
               </div>
             </div>
           )}
           {isShowTip && (
             <div className="flex m-t-30 ai-center jc-center">
-              <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
+              <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
               <div>
                 <p className="text-white lh15">
                   Your lock expires soon. You need to lock at least for two weeks in

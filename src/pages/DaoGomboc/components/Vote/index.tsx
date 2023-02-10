@@ -264,7 +264,7 @@ const Vote = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps) => 
         currencyToAdd={curToken}
       />
       <div className="gom-vote-box">
-        <h3 className="font-bolder text-white font-20">Proposed Gömböc Weight Changes</h3>
+        <h3 className="font-bolder text-white font-20">Gömböc Weight Vote</h3>
         <p className="m-t-20 text-white lh15">
           - Your vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.
         </p>
