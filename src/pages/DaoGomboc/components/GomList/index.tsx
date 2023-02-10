@@ -1,8 +1,8 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useEffect, useCallback, useMemo, useImperativeHandle, forwardRef } from 'react'
 import './index.scss'
 import { Switch, Input, Table, Button } from 'antd'
 import dayjs from 'dayjs'
-import { JSBI, Token } from '@uniswap/sdk'
+import { JSBI, Token, Percent } from '@uniswap/sdk'
 // import { useWalletModalToggle } from '../../../../state/application/hooks'
 import { ButtonPrimary } from '../../../../components/Button'
 import GombocApi from '../../../../api/gomboc.api'
@@ -18,7 +18,7 @@ import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
 
-const GomList = () => {
+const GomListF = (props: any, ref: any) => {
   const endDate = dayjs()
     .add(10, 'day')
     .format('YYYY-MM-DD')
@@ -118,6 +118,18 @@ const GomList = () => {
     return res
   }
 
+  function getMyVoteAmount(value: any) {
+    let res = ''
+    if (value && value !== '0') {
+      const ta = JSBI.BigInt(value)
+      const ra = new Percent(ta, JSBI.BigInt(10000))
+      if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
+        res = `${ra.toFixed(2)} %`
+      }
+    }
+    return res
+  }
+
   function toReset(item: any) {
     setCurTableItem(item)
     setTxHash('')
@@ -191,7 +203,7 @@ const GomList = () => {
   const votesNote = (text: any) => {
     return (
       <>
-        <p> {getViewAmount(text) || '--'}</p>
+        <p> {getMyVoteAmount(text) || '--'}</p>
         <p>of my voting power</p>
       </>
     )
@@ -302,6 +314,12 @@ const GomList = () => {
     init(voterAddress, searchValue)
   }
 
+  useImperativeHandle(ref, () => ({
+    initTableData: () => {
+      init(voterAddress, searchValue)
+    }
+  }))
+
   useEffect(() => {
     init()
   }, [init])
@@ -365,5 +383,5 @@ const GomList = () => {
     </>
   )
 }
-
+const GomList = forwardRef(GomListF)
 export default GomList

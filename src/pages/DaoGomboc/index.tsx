@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState, useMemo } from 'react'
+import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
 import './index.scss'
@@ -21,6 +21,7 @@ const PageWrapper = styled(AutoColumn)`
 `
 
 export default function DaoGomboc() {
+  const childRef = useRef<any>()
   const { account, chainId } = useActiveWeb3React()
   const [votiingData, setVotiingData] = useState({})
   const [gombocList, setGombocList] = useState([])
@@ -59,6 +60,12 @@ export default function DaoGomboc() {
       }
     } catch (error) {
       console.log(error)
+    }
+  }
+
+  function updateTable() {
+    if (childRef && childRef.current) {
+      childRef.current?.initTableData()
     }
   }
 
@@ -104,11 +111,11 @@ export default function DaoGomboc() {
               <GomChart votiingData={votiingData} />
             </div>
             <div className="flex-2 normal-card">
-              <Vote isNoVelt={isNoVelt} votiingData={votiingData} gombocList={gombocList} />
+              <Vote updateTable={updateTable} isNoVelt={isNoVelt} votiingData={votiingData} gombocList={gombocList} />
             </div>
           </div>
           <div className="normal-card m-t-30">
-            <GomList />
+            <GomList ref={childRef} />
           </div>
         </div>
       </PageWrapper>
