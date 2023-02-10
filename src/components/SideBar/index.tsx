@@ -79,12 +79,13 @@ export default function SideBar() {
   const ROUTERS = [
     { title: 'Dashboard', icon: '&#xe607;', router: '' },
     { title: 'Portfolio', icon: '&#xe609;', router: '/portfolio' },
+    { title: 'Dashboard', icon: '&#xe607;', router: '/dashboard' },
     { title: 'Staking', icon: '&#xe606;', baseRouter: '/hope', router: '/hope/staking' },
     { title: 'LightSwap', icon: '&#xe605;', baseRouter: '/swap', router: '/swap/exchange' },
     { title: 'LT&DAO', icon: '&#xe608;', baseRouter: '/dao', router: '/dao/gomboc' }
   ]
   const currentTab = useCallback(() => {
-    return ROUTERS.findIndex(router => router.router === location.pathname)
+    return ROUTERS.findIndex(({ baseRouter }) => baseRouter && location.pathname.startsWith(baseRouter))
   }, [ROUTERS, location.pathname])
 
   return (

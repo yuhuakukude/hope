@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState } from 'react'
+import React, { useEffect, useCallback, useState, useMemo } from 'react'
 import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
 import './index.scss'
@@ -7,14 +7,39 @@ import GomChart from './components/GomChart'
 import Vote from './components/Vote'
 import GomList from './components/GomList'
 import GombocApi from '../../api/gomboc.api'
+import { useActiveWeb3React } from '../../hooks'
+import { useTokenBalance } from '../../state/wallet/hooks'
+import { VELT } from '../../constants'
+import moment from 'moment'
+import format from '../../utils/format'
+import { useLocker } from '../../hooks/ahp/useLocker'
+import { NavLink } from 'react-router-dom'
+
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
   width: 100%;
 `
 
 export default function DaoGomboc() {
+  const { account, chainId } = useActiveWeb3React()
   const [votiingData, setVotiingData] = useState({})
   const [gombocList, setGombocList] = useState([])
+  const { lockerRes } = useLocker()
+  const isShowTip = useMemo(() => {
+    const lockerEndDate = lockerRes?.end
+    if (!lockerEndDate || lockerEndDate === '--') {
+      return false
+    }
+    return moment(format.formatDate(Number(`${lockerEndDate}`))).diff(moment(), 'days') < 14
+  }, [lockerRes])
+  const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
+  const isNoVelt = useMemo(() => {
+    let res = false
+    if (veltBalance && Number(veltBalance.toFixed(2)) <= 0) {
+      res = true
+    }
+    return res
+  }, [veltBalance])
   async function initVotiingData() {
     try {
       const res = await GombocApi.getGombocsVotiing()
@@ -50,25 +75,40 @@ export default function DaoGomboc() {
       <PageWrapper>
         <div className="dao-gomboc-page">
           <Head />
-          <div className="flex m-t-30 jc-center">
-            <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
-            <div>
-              <p className="text-white lh15">
-                The $stHOPE unstake will take 28 days to processing and you can withdraw your $HOPE at any time after it
-                is completed.
-              </p>
+          {isNoVelt && (
+            <div className="flex m-t-30 jc-center">
+              <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
+              <div>
+                <p className="text-white lh15">
+                  You need to have LT locked in Locker in order to vote for gömböc weights
+                </p>
+              </div>
             </div>
-          </div>
-          <div className="flex m-t-30">
+          )}
+          {isShowTip && (
+            <div className="flex m-t-30 ai-center jc-center">
+              <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
+              <div>
+                <p className="text-white lh15">
+                  Your lock expires soon. You need to lock at least for two weeks in
+                  <NavLink to={'/dao/locker'}>
+                    <span className="text-primary">Locker</span>
+                  </NavLink>
+                </p>
+              </div>
+            </div>
+          )}
+
+          <div id="votepoint" className="flex m-t-30">
             <div className="flex-3 normal-card m-r-30">
               <GomChart votiingData={votiingData} />
             </div>
             <div className="flex-2 normal-card">
-              <Vote votiingData={votiingData} gombocList={gombocList} />
+              <Vote isNoVelt={isNoVelt} votiingData={votiingData} gombocList={gombocList} />
             </div>
           </div>
           <div className="normal-card m-t-30">
-            <GomList votiingData={votiingData} gombocList={gombocList} />
+            <GomList />
           </div>
         </div>
       </PageWrapper>

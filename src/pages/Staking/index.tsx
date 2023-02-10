@@ -435,7 +435,9 @@ export default function Staking() {
                     ) : curType === 'stake' ? (
                       <ActionButton
                         error={stakeInputError}
-                        pendingText={approvalState === ApprovalState.PENDING ? 'Approving HOPE' : 'Confirm in your wallet'}
+                        pendingText={
+                          approvalState === ApprovalState.PENDING ? 'Approving HOPE' : 'Confirm in your wallet'
+                        }
                         pending={(approvalState === ApprovalState.PENDING && curType === 'stake') || !!stakePendingText}
                         disableAction={!inputAmount || !hopeBal}
                         actionText={

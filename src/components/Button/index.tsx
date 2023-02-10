@@ -50,6 +50,7 @@ export const ButtonPrimary = styled(Base)`
 
   &:hover {
     background-color: ${({ theme }) => darken(0.05, theme.primary1)};
+    color: ${({ theme }) => theme.text3};
   }
 
   &:active {
@@ -200,8 +201,8 @@ export const ButtonUNIGradient = styled(ButtonPrimary)`
   }
 `
 
-export const ButtonOutlined = styled(Base)`
-  border: 1px solid ${({ theme }) => theme.bg2};
+export const ButtonOutlined = styled(Base)<{ primary?: any }>`
+  border: 1px solid ${({ primary, theme }) => (primary ? theme.primary1 : theme.bg3)};
   background-color: transparent;
   color: ${({ theme }) => theme.text1};
 
@@ -210,6 +211,7 @@ export const ButtonOutlined = styled(Base)`
   }
 
   &:hover {
+    border: 1px solid ${({ primary, theme }) => (primary ? theme.primary1 : theme.primary1)};
     box-shadow: 0 0 0 1px ${({ theme }) => theme.bg4};
   }
 
@@ -304,8 +306,9 @@ const ButtonErrorStyle = styled(Base)`
     opacity: 50%;
     cursor: auto;
     box-shadow: none;
-    background-color: ${({ theme }) => theme.red1};
-    border: 1px solid ${({ theme }) => theme.red1};
+    color: ${({ theme }) => theme.text5};
+    background-color: ${({ theme }) => theme.red2};
+    border: 1px solid ${({ theme }) => theme.red2};
   }
 `
 

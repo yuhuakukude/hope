@@ -14,12 +14,15 @@
 // const KLEROS_LIST = 't2crtokens.eth'
 // const GEMINI_LIST = 'https://www.gemini.com/uniswap/manifest.json'
 
+const HOPE_TOKEN_LIST = 'https://dapp-dev1.hivefin.net/v1/light/dao/base/getAllCoins?chainId=11155111'
+
 export const UNSUPPORTED_LIST_URLS: string[] = []
 
 // lower index == higher priority for token import
 export const DEFAULT_LIST_OF_LISTS: string[] = [
   // need to load unsupported tokens as well
+  HOPE_TOKEN_LIST
 ]
 
 // default lists to be 'active' aka searched across
-export const DEFAULT_ACTIVE_LIST_URLS: string[] = []
+export const DEFAULT_ACTIVE_LIST_URLS: string[] = [HOPE_TOKEN_LIST]

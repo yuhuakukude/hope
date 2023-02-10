@@ -21,6 +21,7 @@ import { HOPE, PERMIT2_ADDRESS, TOKEN_SALE_ADDRESS, USDC, USDT } from '../../con
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
+import { useEstimate } from '../../hooks/ahp'
 import './index.scss'
 
 const PageWrapper = styled(AutoColumn)`
@@ -38,6 +39,7 @@ export default function BuyHope() {
   const { account, chainId, library } = useActiveWeb3React()
   const buyHopeContract = useBuyHopeContract()
   const addTransaction = useTransactionAdder()
+  const isEthBalanceInsufficient = useEstimate()
   // state
   const [currencyModalFlag, setCurrencyModalFlag] = useState(false)
   const [inputBorder, setInputBorder] = useState('')
@@ -161,15 +163,13 @@ export default function BuyHope() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Buy ${payAmount
-              ?.toFixed(2, { groupSeparator: ',' })
-              .toString()} Hope with ${amount.toSignificant()} ${payToken.symbol}`
+            summary: `Buy ${formattedAmounts.bottomValue} Hope with ${formattedAmounts.topValue} ${payToken.symbol}`
           })
           return response.hash
         })
       })
     },
-    [account, addTransaction, buyHopeContract, payAmount, payToken.symbol]
+    [account, addTransaction, buyHopeContract, formattedAmounts.bottomValue, formattedAmounts.topValue, payToken.symbol]
   )
 
   const buyHopeCallback = useCallback(async () => {
@@ -378,7 +378,7 @@ export default function BuyHope() {
               <div className="value font-nor text-medium">≈0.001 ETH</div>
             </div>
           )}
-          {/* {account && (
+          {account && isEthBalanceInsufficient && (
             <div className="tip flex p-t-30">
               <div className="icon m-r-15">
                 <i className="iconfont font-28">&#xe614;</i>
@@ -388,7 +388,7 @@ export default function BuyHope() {
                 have deposit additional funds to complete them.
               </p>
             </div>
-          )} */}
+          )}
         </div>
         {currencyModalFlag && (
           <SelectCurrency

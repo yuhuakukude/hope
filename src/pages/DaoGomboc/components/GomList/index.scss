@@ -35,6 +35,9 @@
     .ant-btn-link[disabled] {
       color: #A8A8AA;
     }
+    .ant-input-clear-icon {
+      color: rgba(255, 255, 255, 0.65);
+    }
   }
   .search-btn {
     height: 42px;
@@ -58,7 +61,7 @@
     .ant-table-thead > tr > th .ant-table-column-sorter .ant-table-column-sorter-inner .ant-table-column-sorter-up.on, .ant-table-thead > tr > th .ant-table-column-sorter .ant-table-column-sorter-inner .ant-table-column-sorter-down.on {
       color: #E4C989;
     }
-    
+  
   }
   .hp-button-primary {
     height: 42px;
