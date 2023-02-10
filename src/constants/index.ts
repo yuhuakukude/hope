@@ -3,6 +3,8 @@ import { AbstractConnector } from '@web3-react/abstract-connector'
 
 import { injected, walletconnect } from '../connectors'
 
+export const SUBGRAPH = 'https://hope-dapp-dev1.hivefin.net/subgraphs/name/light/light-subgraph'
+
 export const ROUTER_ADDRESS = '0x812Cd1878203Ff2Bdf46b38FFc1e62A93f3cE9dD'
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
