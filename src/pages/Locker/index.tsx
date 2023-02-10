@@ -21,13 +21,14 @@ import { tryParseAmount } from '../../state/swap/hooks'
 import { Token, TokenAmount, JSBI, Percent } from '@uniswap/sdk'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
-import { useLocker, useToLocker } from '../../hooks/ahp/useLocker'
+import { useLocker, useToLocker, conFnNameEnum } from '../../hooks/ahp/useLocker'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import AddAmount from './component/AddAmount'
 import AddTime from './component/AddTime'
 import LockerBanner from './component/Banner'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useEstimate } from '../../hooks/ahp'
+import { useActionPending } from '../../state/transactions/hooks'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -60,6 +61,7 @@ export default function DaoLocker() {
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const inputAmount = tryParseAmount(amount, LT[chainId ?? 1]) as TokenAmount | undefined
+  const { pending: isLockerPending } = useActionPending(account ? `${account}-${conFnNameEnum.CreateLock}` : '')
 
   // token api
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
@@ -70,7 +72,6 @@ export default function DaoLocker() {
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
   // token
-
   const { lockerRes, votePowerAmount } = useLocker()
   const { toLocker, getVeLtAmount } = useToLocker()
 
@@ -144,7 +145,7 @@ export default function DaoLocker() {
     } else if (!inputAmount || !lockerDate) {
       return `Enter Amount & Date`
     } else {
-      return approvalState === ApprovalState.NOT_APPROVED ? 'Approve LT' : 'Submit'
+      return approvalState === ApprovalState.NOT_APPROVED ? 'Approve LT' : 'Lock'
     }
   }, [isMaxDisabled, inputAmount, lockerDate, approvalState])
 
@@ -174,10 +175,10 @@ export default function DaoLocker() {
 
   const onTxError = useCallback(error => {
     setShowConfirm(true)
-    setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
     setTxHash('')
     setPendingText(``)
+    setAttemptingTxn(false)
+    setErrorStatus({ code: error?.code, message: error.message })
   }, [])
 
   const onApprove = useCallback(() => {
@@ -443,8 +444,12 @@ export default function DaoLocker() {
                     </ButtonPrimary>
                   ) : (
                     <ActionButton
-                      pending={approvalState === ApprovalState.PENDING || !!pendingText}
-                      pendingText={'Confirm in your wallet'}
+                      pending={approvalState === ApprovalState.PENDING || !!pendingText || isLockerPending}
+                      pendingText={
+                        isLockerPending || approvalState === ApprovalState.PENDING
+                          ? 'Pending'
+                          : 'Confirm in your wallet'
+                      }
                       disableAction={
                         isMaxDisabled ||
                         !inputAmount ||

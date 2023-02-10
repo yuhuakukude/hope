@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import Modal from '../../../../components/Modal'
-import { useLocker, useToLocker } from '../../../../hooks/ahp/useLocker'
+import { useLocker, useToLocker, conFnNameEnum } from '../../../../hooks/ahp/useLocker'
 import { InputNumber } from 'antd'
 import ActionButton from '../../../../components/Button/ActionButton'
 import moment from 'moment'
@@ -14,6 +14,7 @@ import { JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
 import { useActiveWeb3React } from '../../../../hooks'
 import { LT, VELT } from '../../../../constants'
+import { useActionPending } from '../../../../state/transactions/hooks'
 
 export default function AddTime({
   isOpen,
@@ -31,6 +32,9 @@ export default function AddTime({
   const [pendingText, setPendingText] = useState('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
+  const { pending: isLocerkTimePending } = useActionPending(
+    account ? `${account}-${conFnNameEnum.IncreaseUnlockTime}` : ''
+  )
 
   // token api
   const [curToken, setCurToken] = useState<Token | undefined>(LT[chainId ?? 1])
@@ -227,8 +231,8 @@ export default function AddTime({
         </div>
         <div className="m-t-30">
           <ActionButton
-            pending={pendingText !== ''}
-            pendingText={'Confirm in your wallet'}
+            pending={!!pendingText || isLocerkTimePending}
+            pendingText={isLocerkTimePending ? 'Pending' : 'Confirm in your wallet'}
             disableAction={!weekNumber || !ltBalance}
             actionText="Submit"
             onAction={lockerCallback}
