@@ -235,7 +235,7 @@ export default function AddTime({
           <ActionButton
             pending={!!pendingText || isLocerkTimePending}
             pendingText={isLocerkTimePending ? 'Pending' : 'Confirm in your wallet'}
-            disableAction={!weekNumber || !ltBalance}
+            disableAction={!weekNumber || weekNumber < 2 || !ltBalance}
             actionText="Submit"
             onAction={lockerCallback}
           />
