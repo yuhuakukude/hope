@@ -33,6 +33,7 @@ const VoteCard = styled(GapColumn)`
   overflow: hidden;
   padding: 40px;
   justify-content: center;
+  align-items: center;
 `
 
 const TitleRow = styled(RowBetween)`
@@ -186,7 +187,7 @@ export default function Pool() {
               {!account ? (
                 <Card padding="40px">
                   <TYPE.white textAlign="center">Connect to a wallet to view your liquidity.</TYPE.white>
-                  <ButtonOutlined mt={'40px'} primary>
+                  <ButtonOutlined width={'400px'} mt={'40px'} primary>
                     Connect Wallet
                   </ButtonOutlined>
                 </Card>

@@ -40,6 +40,7 @@ import './App.css'
 import '../assets/style/index.scss'
 import SideBar from '../components/SideBar'
 import { ModalProvider } from '../context/ModalContext'
+import SettingPage from './Settings'
 
 const PageWrapper = styled.div`
   display: flex;
@@ -113,6 +114,7 @@ export default function App() {
                   <Route exact strict path="/swap/exchange" component={Swap} />
                   <Route exact strict path="/swap/pools" component={Pool} />
                   <Route exact strict path="/swap/find" component={PoolFinder} />
+                  <Route exact strict path="/swap/settings" component={SettingPage} />
                   <Route exact strict path="/claim" component={OpenClaimAddressModalAndRedirectToSwap} />
                   <Route exact strict path="/swap/:outputCurrency" component={RedirectToSwap} />
                   <Route exact strict path="/send" component={RedirectPathToSwapOnly} />

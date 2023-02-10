@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback } from 'react'
 import Modal from '../../../../components/Modal'
-import { useLocker, useToLocker } from '../../../../hooks/ahp/useLocker'
+import { useLocker, useToLocker, conFnNameEnum } from '../../../../hooks/ahp/useLocker'
 import NumericalInput from '../../../../components/NumericalInput'
 import ActionButton from '../../../../components/Button/ActionButton'
 import format from '../../../../utils/format'
@@ -15,6 +15,7 @@ import { useTokenBalance } from '../../../../state/wallet/hooks'
 import { JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../../hooks'
 import { tryParseAmount } from '../../../../state/swap/hooks'
+import { useActionPending } from '../../../../state/transactions/hooks'
 import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS } from '../../../../constants'
 import { ApprovalState, useApproveCallback } from '../../../../hooks/useApproveCallback'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../../../permit2/domain'
@@ -28,6 +29,9 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
   const [pendingText, setPendingText] = useState('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
+  const { pending: isLocerkAmountPending } = useActionPending(
+    account ? `${account}-${conFnNameEnum.IncreaseAmount}` : ''
+  )
 
   // token api
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
@@ -119,10 +123,10 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
 
   const onTxError = useCallback(error => {
     setShowConfirm(true)
-    setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
     setTxHash('')
     setPendingText(``)
+    setAttemptingTxn(false)
+    setErrorStatus({ code: error?.code, message: error.message })
   }, [])
 
   const onApprove = useCallback(() => {
@@ -220,7 +224,9 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
                 {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '--'}
               </p>
               <i className="iconfont m-x-12">&#xe619;</i>
-              <p className="text-medium text-primary">{afterLtAmount ? afterLtAmount.toFixed(2) : '--'}</p>
+              <p className="text-medium text-primary">
+                {afterLtAmount ? afterLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '--'}
+              </p>
             </div>
           </div>
           <div className="item m-t-20">
@@ -228,7 +234,9 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
             <div className="value font-nor flex m-t-12 ai-center">
               <p className="text-medium">{veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}</p>
               <i className="iconfont m-x-12">&#xe619;</i>
-              <p className="text-medium text-primary">{afterVeLtAmount ? afterVeLtAmount.toFixed(2) : '--'}</p>
+              <p className="text-medium text-primary">
+                {afterVeLtAmount ? afterVeLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '--'}
+              </p>
             </div>
           </div>
           <div className="item m-t-20">
@@ -268,8 +276,10 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
         </div>
         <div className="m-t-30">
           <ActionButton
-            pending={approvalState === ApprovalState.PENDING || !!pendingText}
-            pendingText={'Confirm in your wallet'}
+            pending={approvalState === ApprovalState.PENDING || !!pendingText || isLocerkAmountPending}
+            pendingText={
+              isLocerkAmountPending || approvalState === ApprovalState.PENDING ? 'Pending' : 'Confirm in your wallet'
+            }
             disableAction={isMaxDisabled || !inputAmount || !ltBalance || approvalState === ApprovalState.UNKNOWN}
             actionText={actionText}
             onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : lockerCallback}

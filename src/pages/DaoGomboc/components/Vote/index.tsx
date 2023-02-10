@@ -26,9 +26,10 @@ interface VoteProps {
   votiingData: any
   gombocList: any
   isNoVelt: boolean
+  updateTable: () => void
 }
 
-const Vote = ({ votiingData, gombocList, isNoVelt }: VoteProps) => {
+const Vote = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps) => {
   const { account, chainId } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const gomConContract = useGomConContract()
@@ -158,14 +159,14 @@ const Vote = ({ votiingData, gombocList, isNoVelt }: VoteProps) => {
     if (curLastVote) {
       return 'No voting within ten days'
     }
-    if (amount && (Number(amount) > 100 || Number(amount) === 0)) {
+    if (curGomAddress && amount && (Number(amount) > 100 || Number(amount) === 0)) {
       return 'Insufficient Value'
     }
-    if (amount && Number(subAmount) < Number(amount)) {
+    if (curGomAddress && amount && Number(subAmount) < Number(amount)) {
       return 'Surplus deficiency'
     }
     return undefined
-  }, [amount, curLastVote, subAmount])
+  }, [amount, curLastVote, subAmount, curGomAddress])
 
   const getActionText = useMemo(() => {
     if (isNoVelt) {
@@ -186,6 +187,7 @@ const Vote = ({ votiingData, gombocList, isNoVelt }: VoteProps) => {
     setCurToken(undefined)
     setShowConfirm(true)
     setAttemptingTxn(true)
+    setTxHash('')
     setPendingText(`${amount}% of your voting power`)
     const argAmount = Math.floor(Number(amount) * 100)
     toVote(curGomAddress, argAmount)
@@ -198,6 +200,7 @@ const Vote = ({ votiingData, gombocList, isNoVelt }: VoteProps) => {
         setCurGomAddress('')
       })
       .catch((error: any) => {
+        setTxHash('')
         setShowConfirm(true)
         setPendingText(``)
         setAttemptingTxn(false)
@@ -214,12 +217,19 @@ const Vote = ({ votiingData, gombocList, isNoVelt }: VoteProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [votiingData])
 
+  useEffect(() => {
+    if (txHash && isTranPending === false) {
+      setTxHash('')
+      updateTable()
+    }
+  }, [updateTable, txHash, isTranPending])
+
   function changeAmount(val: any) {
     setAmount(val)
-    if (val && veLtBal && Number(veLtBal.toFixed(2)) > 0) {
+    if (val && veLtBal && Number(veLtBal.toFixed(2)) > 0 && Number(val) <= 100) {
       const rate = Math.floor(Number(val) * 100)
-      const bal = veLtBal.multiply(JSBI.BigInt(rate)).divide(JSBI.BigInt(100))
-      setVoteAmount(bal?.toFixed(2))
+      const bal = veLtBal.multiply(JSBI.BigInt(rate)).divide(JSBI.BigInt(10000))
+      setVoteAmount(bal?.toFixed(2, { groupSeparator: ',' }, 0))
     } else {
       setVoteAmount('')
     }
@@ -253,7 +263,7 @@ const Vote = ({ votiingData, gombocList, isNoVelt }: VoteProps) => {
         currencyToAdd={curToken}
       />
       <div className="gom-vote-box">
-        <h3 className="font-bolder text-white font-20">Proposed Gömböc Weight Changes</h3>
+        <h3 className="font-bolder text-white font-20">Gömböc Weight Vote</h3>
         <p className="m-t-20 text-white lh15">
           - Your vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.
         </p>
@@ -316,9 +326,9 @@ const Vote = ({ votiingData, gombocList, isNoVelt }: VoteProps) => {
             <span className="text-normal">Vote weight:</span>
             {account && (
               <p>
-                unallocated votes : {unUseRateVal}%
+                unallocated votes : {isNoVelt ? '--' : `${unUseRateVal}%`}
                 <NavLink to={'/dao/locker'}>
-                  <span className="text-primary">Locker</span>
+                  <span className="text-primary"> Locker </span>
                 </NavLink>
               </p>
             )}

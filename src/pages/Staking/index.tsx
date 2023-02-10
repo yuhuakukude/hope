@@ -25,6 +25,7 @@ import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../perm
 import { ethers } from 'ethers'
 import { NavLink } from 'react-router-dom'
 import { TransactionResponse } from '@ethersproject/providers'
+import { useEstimate } from '../../hooks/ahp'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -50,6 +51,8 @@ export default function Staking() {
   const [stakePendingText, setStakePendingText] = useState('')
   const [claimPendingText, setClaimPendingText] = useState('')
   const [withdrawPendingText, setWithdrawPendingText] = useState('')
+
+  const isEthBalanceInsufficient = useEstimate()
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -223,7 +226,7 @@ export default function Staking() {
     setCurBuzType('')
     setCurToken(LT[chainId ?? 1])
     onTxStart()
-    setClaimPendingText(`claim HOPE`)
+    setClaimPendingText(`claim LT`)
     setActionType(ACTION.CLAIM)
     toClaim()
       .then(hash => {
@@ -312,13 +315,13 @@ export default function Staking() {
             <div className="flex jc-between">
               <span className="text-white">Total Rewards</span>
               <span className="text-white">
-                {claRewards ? claRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
+                {totalRewards ? totalRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
               </span>
             </div>
             <div className="flex jc-between m-t-20 m-b-40">
               <span className="text-white">Claimable Rewards</span>
               <span className="text-white">
-                {totalRewards ? totalRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
+                {claRewards ? claRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
               </span>
             </div>
             <ButtonPrimary className="hp-button-primary" onClick={claimCallback}>
@@ -465,6 +468,17 @@ export default function Staking() {
                     )}
                   </div>
                   <div className="staking-tip">
+                    {account && isEthBalanceInsufficient && (
+                      <div className="flex m-t-15">
+                        <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
+                        <div>
+                          <p className="text-white lh15">
+                            Your wallet balance is below 0.001 ETH. The approve action require small transaction fees,
+                            so you may have deposit additional funds to complete them.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     {curType === 'unstake' && (
                       <div className="flex m-t-15">
                         <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
@@ -476,9 +490,9 @@ export default function Staking() {
                           <p className="text-white lh15 m-t-5">
                             Note that you do not receive the $LT bonus when you confirm your submission. You can also
                             try{' '}
-                            <a className="text-primary" href="/">
-                              LightSwap
-                            </a>{' '}
+                            <NavLink to={'/swap/exchange'}>
+                              <div className="text-primary">LightSwap</div>{' '}
+                            </NavLink>
                             to convert $stHOPE to $HOPE or other assets quickly.
                           </p>
                         </div>

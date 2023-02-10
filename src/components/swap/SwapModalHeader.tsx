@@ -64,7 +64,7 @@ export default function SwapModalHeader({
         </AutoColumn>
         <AutoColumn gap={'md'}>
           <TYPE.body color={theme.text2} fontWeight={500} fontSize={14}>
-            You will pay
+            You will receive
           </TYPE.body>
           <RowFixed>
             <CurrencyLogo currency={trade.outputAmount.currency} size={'24px'} style={{ marginRight: '12px' }} />
