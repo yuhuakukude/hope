@@ -235,6 +235,7 @@ export default function Swap({ history }: RouteComponentProps) {
         })
       })
       .catch(error => {
+        setApprovePending(true)
         setSwapState({
           pendingMessage: undefined,
           attemptingTxn: false,

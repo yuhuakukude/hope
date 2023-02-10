@@ -208,19 +208,7 @@ export default function BuyHope() {
       .catch(error => {
         onTxError(error)
       })
-  }, [
-    account,
-    payAmount,
-    library,
-    chainId,
-    payToken.symbol,
-    payToken.address,
-    onTxStart,
-    formattedAmounts.bottomValue,
-    toBuyHope,
-    onTxSubmitted,
-    onTxError
-  ])
+  }, [account, payAmount, library, chainId, payToken, onTxStart, formattedAmounts, toBuyHope, onTxSubmitted, onTxError])
 
   const balanceAmount = useTokenBalance(account ?? undefined, payToken)
 
