@@ -41,7 +41,6 @@ import '../assets/style/index.scss'
 import SideBar from '../components/SideBar'
 import { ModalProvider } from '../context/ModalContext'
 
-
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: row;
