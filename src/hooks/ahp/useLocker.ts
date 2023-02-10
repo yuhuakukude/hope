@@ -12,6 +12,12 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { tryParseAmount } from '../../state/swap/hooks'
 import format from '../../utils/format'
 
+export enum conFnNameEnum {
+  CreateLock = 'createLock',
+  IncreaseAmount = 'increaseAmount',
+  IncreaseUnlockTime = 'increaseUnlockTime'
+}
+
 export function useLocker() {
   const { account } = useActiveWeb3React()
   const lockerContract = useLockerContract()
@@ -46,7 +52,7 @@ export function useToLocker() {
       if (!date) throw new Error('none date')
       const args = [amount.raw.toString(), date, NONCE, DEADLINE, sigVal]
       console.log(args)
-      const method = 'createLock'
+      const method = conFnNameEnum.CreateLock
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
@@ -56,7 +62,10 @@ export function useToLocker() {
           addTransaction(response, {
             summary: `Locker ${veLtAmount
               ?.toFixed(2, { groupSeparator: ',' })
-              .toString()} VELT with ${amount.toSignificant()} LT`
+              .toString()} VELT with ${amount.toSignificant()} LT`,
+            actionTag: {
+              recipient: `${account}-${conFnNameEnum.CreateLock}`
+            }
           })
           return response.hash
         })
@@ -70,7 +79,7 @@ export function useToLocker() {
       if (!contract) throw new Error('none contract')
       if (amount.equalTo(JSBI.BigInt('0'))) throw new Error('amount is un support')
       const args = [amount.raw.toString(), NONCE, DEADLINE, sigVal]
-      const method = 'increaseAmount'
+      const method = conFnNameEnum.IncreaseAmount
       console.log('args', args)
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
@@ -81,7 +90,10 @@ export function useToLocker() {
           addTransaction(response, {
             summary: `Locker ${getVeLtArg
               ?.toFixed(2, { groupSeparator: ',' })
-              .toString()} VELT with ${amount.toSignificant()} LT`
+              .toString()} VELT with ${amount.toSignificant()} LT`,
+            actionTag: {
+              recipient: `${account}-${conFnNameEnum.IncreaseAmount}`
+            }
           })
           return response.hash
         })
@@ -95,7 +107,7 @@ export function useToLocker() {
       if (!contract) throw new Error('none contract')
       if (!argTime) throw new Error('none Locker Time')
       const args = [argTime]
-      const method = 'increaseUnlockTime'
+      const method = conFnNameEnum.IncreaseUnlockTime
       console.log('args', args)
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
@@ -104,7 +116,10 @@ export function useToLocker() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Lock Time to ${format.formatDate(argTime)}`
+            summary: `Lock Time to ${format.formatDate(argTime)}`,
+            actionTag: {
+              recipient: `${account}-${conFnNameEnum.IncreaseUnlockTime}`
+            }
           })
           return response.hash
         })
