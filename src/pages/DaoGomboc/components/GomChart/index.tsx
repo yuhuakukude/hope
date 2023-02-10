@@ -116,7 +116,7 @@ const GomChart = ({ votiingData }: GomChartProps) => {
 
   return (
     <div className="gom-chart-box">
-      <h3 className="font-bolder text-white font-20">Gömböc Weight Vote</h3>
+      <h3 className="font-bolder text-white font-20">Proposed Gömböc Weight Changes</h3>
       <p className="m-t-20 text-white lh15">
         Gömböc weights are used to determine how much $LT does each protocol or pool get. You can vote for gömböc weight
         with your veLT ( locked $LT tokens in

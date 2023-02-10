@@ -1,4 +1,4 @@
-import React, { useEffect, useCallback, useState, useMemo } from 'react'
+import React, { useEffect, useCallback, useState, useMemo, useRef } from 'react'
 import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
 import './index.scss'
@@ -21,6 +21,7 @@ const PageWrapper = styled(AutoColumn)`
 `
 
 export default function DaoGomboc() {
+  const childRef = useRef<any>()
   const { account, chainId } = useActiveWeb3React()
   const [votiingData, setVotiingData] = useState({})
   const [gombocList, setGombocList] = useState([])
@@ -62,6 +63,12 @@ export default function DaoGomboc() {
     }
   }
 
+  function updateTable() {
+    if (childRef && childRef.current) {
+      childRef.current?.initTableData()
+    }
+  }
+
   const init = useCallback(async () => {
     await initVotiingData()
     await initGombocsList()
@@ -76,18 +83,22 @@ export default function DaoGomboc() {
         <div className="dao-gomboc-page">
           <Head />
           {isNoVelt && (
-            <div className="flex m-t-30 jc-center">
-              <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
+            <div className="flex m-t-30 ai-center jc-center">
+              <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
               <div>
                 <p className="text-white lh15">
-                  You need to have LT locked in Locker in order to vote for gömböc weights
+                  You need to have LT{' '}
+                  <NavLink to={'/dao/locker'}>
+                    <span className="text-primary">Locker</span>
+                  </NavLink>{' '}
+                  in Locker in order to vote for gömböc weights
                 </p>
               </div>
             </div>
           )}
           {isShowTip && (
             <div className="flex m-t-30 ai-center jc-center">
-              <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
+              <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
               <div>
                 <p className="text-white lh15">
                   Your lock expires soon. You need to lock at least for two weeks in
@@ -104,11 +115,11 @@ export default function DaoGomboc() {
               <GomChart votiingData={votiingData} />
             </div>
             <div className="flex-2 normal-card">
-              <Vote isNoVelt={isNoVelt} votiingData={votiingData} gombocList={gombocList} />
+              <Vote updateTable={updateTable} isNoVelt={isNoVelt} votiingData={votiingData} gombocList={gombocList} />
             </div>
           </div>
           <div className="normal-card m-t-30">
-            <GomList />
+            <GomList ref={childRef} />
           </div>
         </div>
       </PageWrapper>

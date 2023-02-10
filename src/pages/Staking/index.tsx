@@ -74,6 +74,7 @@ export default function Staking() {
   const { toClaim } = useToClaim()
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
 
+
   const isUnSub = useMemo(() => {
     let res = false
     if (curBuzType === 'unStaking' && isSubscribed) {
@@ -223,7 +224,7 @@ export default function Staking() {
     setCurBuzType('')
     setCurToken(LT[chainId ?? 1])
     onTxStart()
-    setClaimPendingText(`claim HOPE`)
+    setClaimPendingText(`claim LT`)
     setActionType(ACTION.CLAIM)
     toClaim()
       .then(hash => {
@@ -312,13 +313,13 @@ export default function Staking() {
             <div className="flex jc-between">
               <span className="text-white">Total Rewards</span>
               <span className="text-white">
-                {claRewards ? claRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
+                {totalRewards ? totalRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
               </span>
             </div>
             <div className="flex jc-between m-t-20 m-b-40">
               <span className="text-white">Claimable Rewards</span>
               <span className="text-white">
-                {totalRewards ? totalRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
+                {claRewards ? claRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
               </span>
             </div>
             <ButtonPrimary className="hp-button-primary" onClick={claimCallback}>
@@ -476,9 +477,9 @@ export default function Staking() {
                           <p className="text-white lh15 m-t-5">
                             Note that you do not receive the $LT bonus when you confirm your submission. You can also
                             try{' '}
-                            <a className="text-primary" href="/">
-                              LightSwap
-                            </a>{' '}
+                            <NavLink to={'/swap/exchange'}>
+                              <div className="text-primary">LightSwap</div>{' '}
+                            </NavLink>
                             to convert $stHOPE to $HOPE or other assets quickly.
                           </p>
                         </div>
