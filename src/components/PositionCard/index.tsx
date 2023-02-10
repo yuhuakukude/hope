@@ -33,9 +33,13 @@ export const HoverCard = styled(Card)`
   }
 `
 const StyledPositionCard = styled(LightCard)<{ bgColor: any }>`
+  border-radius: 0;
   border: none;
   position: relative;
   overflow: hidden;
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.bg3};
+  }
 `
 
 const ContentRow = styled(RowFixed)`
@@ -198,15 +202,20 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
         </ContentRow>
         <ContentRow>
           <Text fontSize={16} fontWeight={500}>
-            {`${token0Deposited?.toFixed(2)} ${currency0.symbol} / ${token1Deposited?.toFixed(2)}
-                ${currency1.symbol}`}
+            {`${token0Deposited ? token0Deposited?.toFixed(2) : '-'} ${currency0 ? currency0.symbol : '-'} / ${
+              token1Deposited ? token1Deposited?.toFixed(2) : '-'
+            }
+                ${currency1 ? currency1.symbol : '-'}`}
           </Text>
         </ContentRow>
         <ContentRow>
           <Text fontSize={16} fontWeight={500}>
-            {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'} Staked(
-            {stakedBalance ? stakedBalance.toSignificant(6) : '--'})
+            {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}{' '}
           </Text>
+          <TYPE.gray ml={10} alignSelf={'end'} fontSize={12}>
+            Staked(
+            {stakedBalance ? stakedBalance.toSignificant(6) : '--'})
+          </TYPE.gray>
         </ContentRow>
         <ContentRow>
           <Text fontSize={16} fontWeight={500}>
