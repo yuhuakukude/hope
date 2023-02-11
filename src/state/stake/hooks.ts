@@ -1,10 +1,11 @@
 import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount, WETH, Pair } from '@uniswap/sdk'
 import { useMemo } from 'react'
-import { DAI, HOPE, UNI, USDC, USDT, WBTC } from '../../constants'
+import { DAI, HOPE, SUBGRAPH, UNI, USDC, USDT, WBTC } from '../../constants'
 import { STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
 import { useActiveWeb3React } from '../../hooks'
 import { useMultipleContractSingleData } from '../multicall/hooks'
 import { tryParseAmount } from '../swap/hooks'
+import { postQuery } from '../../utils/graph'
 
 export const STAKING_GENESIS = 1600387200
 
@@ -275,5 +276,48 @@ export function useDerivedUnstakeInfo(
   return {
     parsedAmount,
     error
+  }
+}
+
+interface StakeInfo {
+  pair?: {
+    id: boolean
+    totalStakedBalance: string
+    token0: {
+      decimals: string
+      id: string
+      symbol: string
+    }
+  }
+}
+
+export async function fetchStakeList(): Promise<StakeInfo[] | null> {
+  const query = `{
+  poolGombocs {
+    id
+    pair {
+      id
+      reserve0
+      token0 {
+        id
+        symbol
+        decimals
+      }
+      reserve1
+      token1 {
+        id
+        symbol
+        decimals
+      }
+    }
+    totalStakedBalance
+  }
+}`
+  try {
+    const response = await postQuery(SUBGRAPH, query)
+    console.log('response', response)
+    return response.data.subgraphError
+  } catch (error) {
+    return []
   }
 }

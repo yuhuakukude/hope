@@ -203,7 +203,7 @@ export default function BuyHope() {
       .getSigner(account)
       ._signTypedData(domain, types, values)
       .then(signature => {
-        setPendingText(`Buy ${formattedAmounts.bottomValue} Hope with ${payAmount?.toFixed(2)} ${payToken.symbol}`)
+        setPendingText(`Buy ${formattedAmounts.bottomValue} Hope with ${formattedAmounts?.topValue} ${payToken.symbol}`)
         toBuyHope(payAmount, nonce, deadline, signature)
           .then(hash => {
             onTxSubmitted(hash)
@@ -217,19 +217,7 @@ export default function BuyHope() {
       .catch(error => {
         onTxError(error)
       })
-  }, [
-    account,
-    payAmount,
-    library,
-    chainId,
-    payToken.symbol,
-    payToken.address,
-    onTxStart,
-    formattedAmounts.bottomValue,
-    toBuyHope,
-    onTxSubmitted,
-    onTxError
-  ])
+  }, [account, payAmount, library, chainId, payToken, onTxStart, formattedAmounts, toBuyHope, onTxSubmitted, onTxError])
 
   const balanceAmount = useTokenBalance(account ?? undefined, payToken)
 
@@ -282,7 +270,10 @@ export default function BuyHope() {
                   {balanceAmount && (
                     <span
                       className="text-primary m-l-8 cursor-select"
-                      onClick={() => setType(balanceAmount?.toFixed(2, undefined, 0))}
+                      onClick={() => {
+                        setTypedType(TYPE.TOP_INPUT)
+                        setType(balanceAmount?.toFixed(2, undefined, 0))
+                      }}
                     >
                       Max
                     </span>

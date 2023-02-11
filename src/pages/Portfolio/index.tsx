@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useState } from 'react'
 import PortfolioConnect from './component/Connect'
 import PortfolioHead from './component/Head'
 import InvestmentAllocation from './component/InvestmentAllocation'
@@ -7,32 +7,51 @@ import VeLTRewards from './component/VeLTRewards'
 import Govern from './component/Govern'
 
 import './index.scss'
-import PortfolioApi from 'api/portfolio.api'
+import { useActiveWeb3React } from 'hooks'
+import styled from 'styled-components'
+import { AutoColumn } from 'components/Column'
+import PortfolioApi, { IPortfolio } from 'api/portfolio.api'
+import { data } from './mock'
 
-async function getData() {
-  const data = await PortfolioApi.getOverview()
-  console.log('data::::', data)
-}
+const PageWrapper = styled(AutoColumn)`
+  max-width: 1280px;
+  width: 100%;
+`
 
 export default function Portfolio() {
+  const { account } = useActiveWeb3React()
+  const [overViewData, setOverViewData] = useState<IPortfolio>({} as IPortfolio)
   useEffect(() => {
-    getData()
-  }, [])
+    if (!account) {
+      return
+    }
+    PortfolioApi.getOverview(account)
+      .then(data => {
+        console.log('data::::', data)
+        if (data.success && data.result) {
+          setOverViewData(data.result)
+        }
+      })
+      .catch(() => {
+        setOverViewData(data.result)
+      })
+  }, [account])
 
-  const isConnect = useRef(false)
   return (
-    <div className="portfolio-wrap">
-      <PortfolioHead />
-      {!isConnect ? (
-        <PortfolioConnect />
-      ) : (
-        <>
-          <InvestmentAllocation />
-          <GombocRewards />
-          <VeLTRewards />
-          <Govern />
-        </>
-      )}
-    </div>
+    <PageWrapper>
+      <div className="portfolio-wrap">
+        <PortfolioHead />
+        {!account ? (
+          <PortfolioConnect />
+        ) : (
+          <>
+            <InvestmentAllocation data={overViewData} />
+            <GombocRewards data={overViewData.rewards} />
+            <VeLTRewards />
+            <Govern />
+          </>
+        )}
+      </div>
+    </PageWrapper>
   )
 }
