@@ -192,7 +192,7 @@ export default function Swap({ history }: RouteComponentProps) {
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
 
-  const [approvePending, setApprovePending] = useState<boolean>(false)
+  const [pending, setPending] = useState<boolean>(false)
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
@@ -221,9 +221,10 @@ export default function Swap({ history }: RouteComponentProps) {
       txHash: undefined,
       errorCode: undefined
     })
-    setApprovePending(true)
+    setPending(true)
     approveCallback()
       .then(response => {
+        setPending(true)
         setSwapState({
           pendingMessage: undefined,
           attemptingTxn: false,
@@ -235,7 +236,7 @@ export default function Swap({ history }: RouteComponentProps) {
         })
       })
       .catch(error => {
-        setApprovePending(true)
+        setPending(true)
         setSwapState({
           pendingMessage: undefined,
           attemptingTxn: false,
@@ -255,7 +256,7 @@ export default function Swap({ history }: RouteComponentProps) {
     if (!swapCallback) {
       return
     }
-    setApprovePending(false)
+    setPending(false)
     setSwapState({
       pendingMessage: `Swap ${trade?.inputAmount.toSignificant()} ${
         trade?.inputAmount.currency.symbol
@@ -269,7 +270,7 @@ export default function Swap({ history }: RouteComponentProps) {
     })
     swapCallback()
       .then(hash => {
-        setApprovePending(false)
+        setPending(true)
         setSwapState({
           pendingMessage: undefined,
           attemptingTxn: false,
@@ -301,7 +302,7 @@ export default function Swap({ history }: RouteComponentProps) {
         })
       })
       .catch(error => {
-        setApprovePending(false)
+        setPending(true)
         setSwapState({
           pendingMessage: undefined,
           attemptingTxn: false,
@@ -336,7 +337,7 @@ export default function Swap({ history }: RouteComponentProps) {
     !swapInputError && (approval === ApprovalState.NOT_APPROVED || approval === ApprovalState.PENDING)
 
   const handleConfirmDismiss = useCallback(() => {
-    setApprovePending(false)
+    setPending(false)
     setSwapState({
       pendingMessage: undefined,
       showConfirm: false,
@@ -395,7 +396,7 @@ export default function Swap({ history }: RouteComponentProps) {
         <SwapHeader />
         <Wrapper id="swap-page">
           <ConfirmSwapModal
-            isOpen={showConfirm || approvePending}
+            isOpen={showConfirm || pending}
             errorCode={errorCode}
             pendingMessage={pendingMessage}
             trade={trade}

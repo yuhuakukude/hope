@@ -1,25 +1,22 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { AutoColumn } from '../../components/Column'
 import styled from 'styled-components'
-import { fetchStakeList, STAKING_REWARDS_INFO, useStakingInfo } from '../../state/stake/hooks'
-import { TYPE, ExternalLink } from '../../theme'
-import PoolCard from '../../components/earn/PoolCard'
-import { RowBetween } from '../../components/Row'
-import { CardSection, DataCard, CardNoise, CardBGImage } from '../../components/earn/styled'
-import { Countdown } from './Countdown'
+import { TYPE } from '../../theme'
+import { RowFixed } from '../../components/Row'
+import { CardSection, DataCard, EarnBGImage } from '../../components/earn/styled'
 import Loader from '../../components/Loader'
-import { useActiveWeb3React } from '../../hooks'
-import { JSBI } from '@uniswap/sdk'
-import { BIG_INT_ZERO } from '../../constants'
 import { OutlineCard } from '../../components/Card'
+import { SearchInput } from '../../components/SearchModal/styleds'
+import { ButtonGray } from '../../components/Button'
+import { useLPStakingInfos } from '../../hooks/useLPStaking'
+import LTPoolCard from '../../components/earn/LTPoolCard'
 
 const PageWrapper = styled(AutoColumn)`
-  max-width: 640px;
   width: 100%;
+  padding: 0 30px;
 `
 
 const TopSection = styled(AutoColumn)`
-  max-width: 720px;
   width: 100%;
 `
 
@@ -32,75 +29,68 @@ const PoolSection = styled.div`
   justify-self: center;
 `
 
-const DataRow = styled(RowBetween)`
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-flex-direction: column;
-`};
-`
+// const DataRow = styled(RowBetween)`
+//   ${({ theme }) => theme.mediaWidth.upToSmall`
+// flex-direction: column;
+// `};
+// `
+
+type Sort = 'asc' | 'desc'
 
 export default function Earn() {
-  const { chainId } = useActiveWeb3React()
-  fetchStakeList()
-
+  const [curType, setCurType] = useState(1)
+  const [searchContent, setSearchContent] = useState('')
+  const [sort, setSort] = useState<Sort>('desc')
+  console.log(curType, setCurType, setSearchContent, setSort)
+  const { result: stakingInfos, loading, page } = useLPStakingInfos(searchContent, sort)
+  console.log('poolStakingInfos', stakingInfos, page)
   // staking info for connected account
-  const stakingInfos = useStakingInfo()
-
-  /**
-   * only show staking cards with balance
-   * @todo only account for this if rewards are inactive
-   */
-  const stakingInfosWithBalance = stakingInfos?.filter(s => JSBI.greaterThanOrEqual(s.stakedAmount.raw, BIG_INT_ZERO))
-
-  // toggle copy if rewards are inactive
-  const stakingRewardsExist = Boolean(typeof chainId === 'number' && (STAKING_REWARDS_INFO[chainId]?.length ?? 0) > 0)
 
   return (
     <PageWrapper gap="lg" justify="center">
       <TopSection gap="md">
         <DataCard>
-          <CardBGImage />
-          <CardNoise />
           <CardSection>
-            <AutoColumn gap="md">
-              <RowBetween>
-                <TYPE.white fontWeight={600}>Uniswap liquidity mining</TYPE.white>
-              </RowBetween>
-              <RowBetween>
-                <TYPE.white fontSize={14}>
-                  Deposit your Liquidity Provider tokens to receive UNI, the Uniswap protocol governance token.
+            <AutoColumn style={{ padding: 30 }} gap="lg">
+              <RowFixed>
+                <TYPE.white fontSize={28} fontWeight={600}>
+                  Provide Liquidity, Earn $LT
                 </TYPE.white>
-              </RowBetween>{' '}
-              <ExternalLink
-                style={{ color: 'white', textDecoration: 'underline' }}
-                href="https://uniswap.org/blog/uni/"
-                target="_blank"
-              >
-                <TYPE.white fontSize={14}>Read more about UNI</TYPE.white>
-              </ExternalLink>
+                <TYPE.link>Tutorial</TYPE.link>
+              </RowFixed>
+              <AutoColumn gap={'sm'}>
+                <TYPE.main>Total Value Locked(TVL)</TYPE.main>
+                <TYPE.white fontSize={28}>$1,934,015,678.26</TYPE.white>
+              </AutoColumn>
+              <RowFixed gap={'md'}>
+                <SearchInput
+                  width={440}
+                  type="text"
+                  id="token-search-input"
+                  placeholder={'Search Token Symbol / Address'}
+                  autoComplete="off"
+                  value={''}
+                  onChange={() => {}}
+                  onKeyDown={() => {}}
+                />
+                <ButtonGray>Search</ButtonGray>
+              </RowFixed>
             </AutoColumn>
           </CardSection>
-          <CardBGImage />
-          <CardNoise />
+          <EarnBGImage />
         </DataCard>
       </TopSection>
 
-      <AutoColumn gap="lg" style={{ width: '100%', maxWidth: '720px' }}>
-        <DataRow style={{ alignItems: 'baseline' }}>
-          <TYPE.mediumHeader style={{ marginTop: '0.5rem' }}>Participating pools</TYPE.mediumHeader>
-          <Countdown exactEnd={stakingInfos?.[0]?.periodFinish} />
-        </DataRow>
-
+      <AutoColumn gap="lg" style={{ width: '100%' }}>
         <PoolSection>
-          {stakingRewardsExist && stakingInfos?.length === 0 ? (
+          {loading ? (
             <Loader style={{ margin: 'auto' }} />
-          ) : !stakingRewardsExist ? (
-            <OutlineCard>No active pools</OutlineCard>
-          ) : stakingInfos?.length !== 0 && stakingInfosWithBalance.length === 0 ? (
+          ) : stakingInfos && stakingInfos?.length === 0 ? (
             <OutlineCard>No active pools</OutlineCard>
           ) : (
-            stakingInfosWithBalance?.map(stakingInfo => {
+            stakingInfos.map((stakingInfo, index) => {
               // need to sort by added liquidity here
-              return <PoolCard key={stakingInfo.stakingRewardAddress} stakingInfo={stakingInfo} />
+              return <LTPoolCard key={index} stakingInfo={stakingInfo} />
             })
           )}
         </PoolSection>

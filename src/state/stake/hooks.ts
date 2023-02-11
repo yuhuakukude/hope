@@ -279,11 +279,17 @@ export function useDerivedUnstakeInfo(
   }
 }
 
-interface StakeInfo {
-  pair?: {
+export interface StakeInfo {
+  pair: {
     id: boolean
-    totalStakedBalance: string
+    reserveUSD: string
+    totalStakedBalanceUSD: string
     token0: {
+      decimals: string
+      id: string
+      symbol: string
+    }
+    token1: {
       decimals: string
       id: string
       symbol: string
@@ -291,32 +297,48 @@ interface StakeInfo {
   }
 }
 
-export async function fetchStakeList(): Promise<StakeInfo[] | null> {
+export async function fetchStakeList(
+  searchContent: string | undefined,
+  sort: 'asc' | 'desc',
+  orderBy: 'apr',
+  skip = 0,
+  size = 10
+): Promise<StakeInfo[]> {
   const query = `{
   poolGombocs {
     id
-    pair {
+    totalStakedBalanceUSD
+    pair{
       id
-      reserve0
-      token0 {
+      reserveUSD
+      token0{
         id
         symbol
         decimals
       }
-      reserve1
-      token1 {
+      token1{
         id
         symbol
         decimals
       }
     }
-    totalStakedBalance
+    stakedPoolPositions {
+      pool {
+        totalStakedBalance
+        totalStakedBalanceUSD
+        stakedPoolPositions(where: {user: "0x62214327CB0CB4041F84e6B7e6FeC6418af26F34"}) {
+          id
+          stakedPoolBalanceUSD
+          stakedPoolBalance
+        }
+      }
+    }
   }
 }`
   try {
     const response = await postQuery(SUBGRAPH, query)
     console.log('response', response)
-    return response.data.subgraphError
+    return response.data.poolGombocs ?? []
   } catch (error) {
     return []
   }

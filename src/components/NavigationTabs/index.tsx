@@ -5,9 +5,9 @@ import { useTranslation } from 'react-i18next'
 import { NavLink, Link as HistoryLink } from 'react-router-dom'
 
 import { ArrowLeft } from 'react-feather'
-import { RowBetween } from '../Row'
+import { AutoRowBetween, RowBetween } from '../Row'
 // import QuestionHelper from '../QuestionHelper'
-import Settings from '../Settings'
+import { Settings } from 'react-feather'
 import { useDispatch } from 'react-redux'
 import { AppDispatch } from 'state'
 import { resetMintState } from 'state/mint/actions'
@@ -17,6 +17,7 @@ const Tabs = styled.div`
   align-items: center;
   border-radius: 3rem;
   justify-content: space-evenly;
+  justify-self: flex-start;
 `
 
 const activeClassName = 'ACTIVE'
@@ -56,6 +57,21 @@ const StyledArrowLeft = styled(ArrowLeft)`
   color: ${({ theme }) => theme.text1};
 `
 
+export const StyledMenuIcon = styled(Settings)`
+  height: 20px;
+  width: fit-content;
+  margin-left: auto;
+  cursor: pointer;
+
+  > * {
+    stroke: ${({ theme }) => theme.text2};
+  }
+
+  :hover {
+    opacity: 0.7;
+  }
+`
+
 export function SwapPoolTabs({ active }: { active: 'swap' | 'pool' }) {
   const { t } = useTranslation()
   return (
@@ -73,13 +89,12 @@ export function SwapPoolTabs({ active }: { active: 'swap' | 'pool' }) {
 export function FindPoolTabs() {
   return (
     <Tabs>
-      <RowBetween style={{ padding: '1rem 1rem 0 1rem' }}>
+      <AutoRowBetween gap={'20px'} style={{ padding: '0rem 1rem 0 40px' }}>
         <HistoryLink to="/swap/pools">
           <StyledArrowLeft />
         </HistoryLink>
         <ActiveText>Import Pool</ActiveText>
-        <Settings />
-      </RowBetween>
+      </AutoRowBetween>
     </Tabs>
   )
 }
@@ -100,7 +115,6 @@ export function AddRemoveTabs({ adding, creating }: { adding: boolean; creating:
           <StyledArrowLeft />
         </HistoryLink>
         <ActiveText>{creating ? 'Create a pair' : adding ? 'Add Liquidity' : 'Remove Liquidity'}</ActiveText>
-        <Settings />
       </RowBetween>
     </Tabs>
   )

@@ -4,6 +4,7 @@ import { AutoColumn } from '../Column'
 import uImage from '../../assets/images/big_unicorn.png'
 import xlUnicorn from '../../assets/images/xl_uni.png'
 import noise from '../../assets/images/noise.png'
+import mining from '../../assets/images/mining.png'
 
 export const TextBox = styled.div`
   display: flex;
@@ -25,6 +26,21 @@ export const DataCard = styled(AutoColumn)<{ disabled?: boolean }>`
 
 export const CardBGImage = styled.span<{ desaturate?: boolean }>`
   background: url(${uImage});
+  width: 1000px;
+  height: 600px;
+  position: absolute;
+  border-radius: 12px;
+  opacity: 0.4;
+  top: -100px;
+  left: -100px;
+  transform: rotate(-15deg);
+  user-select: none;
+
+  ${({ desaturate }) => desaturate && `filter: saturate(0)`}
+`
+
+export const EarnBGImage = styled.span<{ desaturate?: boolean }>`
+  background: url(${mining});
   width: 1000px;
   height: 600px;
   position: absolute;
