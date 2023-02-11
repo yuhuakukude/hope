@@ -1,8 +1,10 @@
 import { useEffect, useState } from 'react'
-import { fetchStakeList, StakeInfo } from '../state/stake/hooks'
+import { fetchStakeList, PoolInfo } from '../state/stake/hooks'
+import { useActiveWeb3React } from './index'
 
 export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
-  const [result, setResult] = useState<StakeInfo[]>([])
+  const { account } = useActiveWeb3React()
+  const [result, setResult] = useState<PoolInfo[]>([])
   const [currentPage, setCurrentPage] = useState(1)
 
   const [loading, setLoading] = useState<boolean>(false)
@@ -18,7 +20,14 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
     ;(async () => {
       setLoading(true)
       try {
-        const list = await fetchStakeList(searchName, sort, 'apr', (currentPage - 1) * pageSize, pageSize)
+        const list = await fetchStakeList(
+          account ?? '',
+          searchName,
+          sort,
+          'apr',
+          (currentPage - 1) * pageSize,
+          pageSize
+        )
         setLoading(false)
         console.log('list', list)
         setResult(list)
@@ -28,7 +37,7 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
         console.error('useRankingList', error)
       }
     })()
-  }, [searchName, sort, currentPage])
+  }, [searchName, sort, currentPage, account])
 
   return {
     loading: loading,
