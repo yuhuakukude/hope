@@ -35,7 +35,7 @@ export default function Portfolio() {
       .catch(() => {
         setOverViewData(data.result)
       })
-  }, [])
+  }, [account])
 
   return (
     <PageWrapper>
