@@ -38,7 +38,12 @@ export default function TitleTips({ options }: { options: ITitleTips[] }) {
   }
   return (
     <div className="select-tips-wrap">
-      <Tooltip title={getTitle} overlayClassName="select-tips-tool" onVisibleChange={onVisibleChange}>
+      <Tooltip
+        title={getTitle}
+        placement="bottomRight"
+        overlayClassName="select-tips-tool"
+        onVisibleChange={onVisibleChange}
+      >
         <span className="select-tips-more">
           More
           <i className={`iconfont ${visible ? 'iconfont-visible' : ''}`}>&#xe60d;</i>
