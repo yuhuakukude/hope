@@ -112,7 +112,7 @@ const GomListF = (props: any, ref: any) => {
       const ta = new TokenAmount(LT[chainId ?? 1], JSBI.BigInt(value))
       const ra = ta.multiply(JSBI.BigInt(100))
       if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
-        res = `${ra.toFixed(2)} %`
+        res = `${ra.toFixed(2)}`
       }
     }
     return res
@@ -124,7 +124,7 @@ const GomListF = (props: any, ref: any) => {
       const ta = JSBI.BigInt(value)
       const ra = new Percent(ta, JSBI.BigInt(10000))
       if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
-        res = `${ra.toFixed(2)} %`
+        res = `${ra.toFixed(2)}`
       }
     }
     return res
@@ -194,8 +194,8 @@ const GomListF = (props: any, ref: any) => {
   const weightNode = (text: any, record: any) => {
     return (
       <>
-        <p>This period: {getViewAmount(text) || '--'}</p>
-        <p>Next Period: {getViewAmount(record.nextWeight) || '--'}</p>
+        <p>This period: {getViewAmount(text) ? `${getViewAmount(text)} %` : '--'}</p>
+        <p>Next Period: {getViewAmount(record.nextWeight) ? `${getViewAmount(record.nextWeight)} %` : '--'}</p>
       </>
     )
   }
@@ -203,7 +203,7 @@ const GomListF = (props: any, ref: any) => {
   const votesNote = (text: any) => {
     return (
       <>
-        <p> {getMyVoteAmount(text) || '--'}</p>
+        <p> {getMyVoteAmount(text) ? `${getMyVoteAmount(text)} %` : '--'}</p>
         <p>of my voting power</p>
       </>
     )
@@ -216,7 +216,7 @@ const GomListF = (props: any, ref: any) => {
           <span>--</span>
         ) : (
           <div>
-            {Number(getViewAmount(record.userPower)) > 0 && (
+            {Number(getMyVoteAmount(record.userPower)) > 0 && (
               <Button
                 className="text-primary font-bold"
                 disabled={isTimeDis[index]}
