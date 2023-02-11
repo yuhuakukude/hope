@@ -22,6 +22,7 @@ export default function Portfolio() {
   const { account } = useActiveWeb3React()
   const [overViewData, setOverViewData] = useState<IPortfolio>({} as IPortfolio)
   useEffect(() => {
+    setOverViewData(data.result)
     if (!account) {
       return
     }
@@ -32,10 +33,8 @@ export default function Portfolio() {
           setOverViewData(data.result)
         }
       })
-      .catch(() => {
-        setOverViewData(data.result)
-      })
-  }, [])
+      .catch(() => {})
+  }, [account])
 
   return (
     <PageWrapper>

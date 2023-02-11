@@ -10,6 +10,8 @@ export const data = {
     hopeOfFarming: '1293.7689',
     hopeOfGovern: '0',
     hopeOfLt: '3777647040.01',
+    totalHope: '12,123,456,789.01',
+    usdOfTotalHope: '123,456,789.00',
     rewards: [
       {
         name: 'HOPE Staking',

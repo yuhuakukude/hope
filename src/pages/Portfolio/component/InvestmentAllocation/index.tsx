@@ -115,8 +115,8 @@ export default function InvestmentAllocation({ data }: { data: IPortfolio }) {
                 desc="Total value of holdings, withdrawable liquidity, rewards, staked HOPE, and HOPE held"
               />
             </div>
-            <div className="investment-allocation-total2">12,123,456,789.01 HOPE </div>
-            <div className="investment-allocation-total3">~ $123,456,789.00</div>
+            <div className="investment-allocation-total2">{data.totalHope} HOPE </div>
+            <div className="investment-allocation-total3">~ ${data.usdOfTotalHope}</div>
           </div>
         </div>
         <div className="investment-allocation-bottom">

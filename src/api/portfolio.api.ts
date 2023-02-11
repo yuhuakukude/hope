@@ -14,7 +14,8 @@ export interface IPortfolioReward {
   stakeSymbol:string,
   reward:string|number,
   usdOfReward: string|number,
-  rewardSymbol: string
+  rewardSymbol: string,
+  
 }
 export interface IPortfolio {
     hope: string|number,
@@ -25,7 +26,9 @@ export interface IPortfolio {
     hopeOfFarming: string|number,
     hopeOfGovern: string|number,
     hopeOfLt: string|number,
-    rewards: IPortfolioReward[]
+    totalHope: string|number,
+    usdOfTotalHope: string|number,
+    rewards: IPortfolioReward[],
 }
 
 

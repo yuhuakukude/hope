@@ -241,3 +241,24 @@
     color: rgba(38, 38, 44, 1);
   }
 }
+
+.select-tips-list {
+  min-width: 100px;
+  border-radius: 8px;
+  background-color: rgb(61, 62, 70);
+  overflow: hidden;
+
+  .select-tips-item {
+    height: 34px;
+    line-height: 34px;
+    font-size: 14px;
+    color: #fff;
+    text-align: center;
+    cursor: pointer;
+  }
+
+  .select-tips-item:hover {
+    color: rgba(38, 38, 44, 1);
+    background-color: rgba(228, 201, 137, 1);
+  }
+}
