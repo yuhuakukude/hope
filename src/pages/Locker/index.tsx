@@ -444,7 +444,9 @@ export default function DaoLocker() {
                     {veLtAmount ? veLtAmount.toFixed(2, { groupSeparator: ',' }, 0) : '0.00'} veLT
                   </span>
                 </p>
-                <div className={account && isEthBalanceInsufficient ? 'm-t-30' : 'm-t-100'}>
+                <div
+                  className={account && (isEthBalanceInsufficient || lockerRes?.end !== '--') ? 'm-t-30' : 'm-t-100'}
+                >
                   {!account ? (
                     <ButtonPrimary className="hp-button-primary text-medium font-nor" onClick={toggleWalletModal}>
                       Connect Wallet
@@ -470,14 +472,18 @@ export default function DaoLocker() {
                     />
                   )}
                 </div>
-                {account && isEthBalanceInsufficient && (
+                {account && lockerRes && (isEthBalanceInsufficient || lockerRes?.end !== '--') && (
                   <div className="tip flex m-t-30">
                     <div className="icon m-r-15">
                       <i className="iconfont font-28 text-primary font-bold">&#xe614;</i>
                     </div>
                     <p className="text-normal font-nor">
-                      Your wallet balance is below 0.001 ETH. The approve action require small transaction fees, so you
-                      may have deposit additional funds to complete them.
+                      {lockerRes?.end !== '--'
+                        ? `You already have an LT lock. The date of this lock cannot be less than ${format.formatUTCDate(
+                            Number(`${lockerRes?.end}`),
+                            'YYYY-MM-DD'
+                          )}`
+                        : 'Your wallet balance is below 0.001 ETH. The approve action require small transaction fees, so you may have deposit additional funds to complete them.'}
                     </p>
                   </div>
                 )}

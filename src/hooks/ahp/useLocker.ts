@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { useSingleCallResult } from '../../state/multicall/hooks'
-import { useLockerContract, useLTContract, useGomConContract } from '../useContract'
+import { useLockerContract, useGomConContract } from '../useContract'
 import { useActiveWeb3React } from '../index'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 import moment from 'moment'
@@ -22,9 +22,8 @@ export function useLocker() {
   const { account } = useActiveWeb3React()
   const lockerContract = useLockerContract()
   const gomConContract = useGomConContract()
-  const ltContract = useLTContract()
   const lockerRes = useSingleCallResult(lockerContract, 'locked', [account ?? undefined])
-  const ltTotalAmounnt = useSingleCallResult(ltContract, 'totalSupply', [])
+  const ltTotalAmounnt = useSingleCallResult(lockerContract, 'supply', [])
   const veltTotalAmounnt = useSingleCallResult(lockerContract, 'totalSupply', [])
   const votePowerAmount = useSingleCallResult(gomConContract, 'voteUserPower', [account ?? undefined])
   return {

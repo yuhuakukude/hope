@@ -60,37 +60,45 @@ export default function BuyHope() {
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
 
   const formattedAmounts = useMemo(() => {
+    let resOf = ''
+    if (typedType === TYPE.TOP_INPUT && rateObj?.result?.rate && typed) {
+      resOf = new TokenAmount(
+        HOPE[chainId ?? 1],
+        JSBI.divide(
+          JSBI.multiply(
+            JSBI.BigInt(tryParseAmount(typed, payToken)?.raw.toString() ?? '0'),
+            JSBI.BigInt(rateObj?.result?.rate?.toString())
+          ),
+          JSBI.BigInt(1000)
+        )
+      ).toSignificant(HOPE[chainId ?? 1].decimals)
+    }
+    if (typedType === TYPE.BOTTOM_INPUT && rateObj?.result?.rate && typed) {
+      resOf = new TokenAmount(
+        payToken,
+        JSBI.divide(
+          JSBI.multiply(
+            JSBI.BigInt(tryParseAmount(typed, HOPE[chainId ?? 1])?.raw.toString() ?? '0'),
+            JSBI.BigInt(1000)
+          ),
+          JSBI.BigInt(rateObj?.result?.rate?.toString())
+        )
+      ).toSignificant(payToken.decimals)
+      if (resOf.includes('.') && resOf.split('.')[1].length > 2) {
+        setType(
+          new TokenAmount(payToken, tryParseAmount(resOf, payToken)?.raw.toString() ?? '0').toFixed(2, undefined, 0) ||
+            ''
+        )
+        setTypedType(TYPE.TOP_INPUT)
+      }
+    }
     return typedType === TYPE.TOP_INPUT
       ? {
           topValue: typed,
-          bottomValue:
-            rateObj?.result?.rate && typed
-              ? new TokenAmount(
-                  HOPE[chainId ?? 1],
-                  JSBI.divide(
-                    JSBI.multiply(
-                      JSBI.BigInt(tryParseAmount(typed, payToken)?.raw.toString() ?? '0'),
-                      JSBI.BigInt(rateObj?.result?.rate?.toString())
-                    ),
-                    JSBI.BigInt(1000)
-                  )
-                ).toSignificant(HOPE[chainId ?? 1].decimals)
-              : ''
+          bottomValue: resOf
         }
       : {
-          topValue:
-            rateObj?.result?.rate && typed
-              ? new TokenAmount(
-                  payToken,
-                  JSBI.divide(
-                    JSBI.multiply(
-                      JSBI.BigInt(tryParseAmount(typed, HOPE[chainId ?? 1])?.raw.toString() ?? '0'),
-                      JSBI.BigInt(1000)
-                    ),
-                    JSBI.BigInt(rateObj?.result?.rate?.toString())
-                  )
-                ).toSignificant(payToken.decimals)
-              : '',
+          topValue: resOf,
           bottomValue: typed
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -199,6 +207,7 @@ export default function BuyHope() {
         toBuyHope(payAmount, nonce, deadline, signature)
           .then(hash => {
             onTxSubmitted(hash)
+            setType('')
           })
           .catch((error: any) => {
             onTxError(error)
@@ -273,7 +282,7 @@ export default function BuyHope() {
                   {balanceAmount && (
                     <span
                       className="text-primary m-l-8 cursor-select"
-                      onClick={() => setType(balanceAmount?.toSignificant(payToken.decimals))}
+                      onClick={() => setType(balanceAmount?.toFixed(2, undefined, 0))}
                     >
                       Max
                     </span>
