@@ -22,6 +22,7 @@ export default function Portfolio() {
   const { account } = useActiveWeb3React()
   const [overViewData, setOverViewData] = useState<IPortfolio>({} as IPortfolio)
   useEffect(() => {
+    // setOverViewData(data.result)
     if (!account) {
       return
     }

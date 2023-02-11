@@ -40,6 +40,7 @@ export default function TitleTips({ options }: { options: ITitleTips[] }) {
     <div className="select-tips-wrap">
       <Tooltip
         title={getTitle}
+        autoAdjustOverflow
         placement="bottomRight"
         overlayClassName="select-tips-tool"
         onVisibleChange={onVisibleChange}
