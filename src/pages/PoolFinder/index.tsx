@@ -87,8 +87,8 @@ export default function PoolFinder() {
     <Wrapper gap={'lg'} justify={'center'}>
       <FindPoolTabs />
       <AppBody>
-        <AutoColumn style={{ padding: '1rem' }} gap="lg">
-          <StyledInternalLink to={'/swap/settings'}>
+        <AutoColumn style={{ padding: '20px' }} gap="lg">
+          <StyledInternalLink style={{ justifySelf: 'flex-end' }} to={'/swap/settings'}>
             <StyledMenuIcon />
           </StyledInternalLink>
           <GreyCard borderRadius={'10px'} padding={'20px'}>

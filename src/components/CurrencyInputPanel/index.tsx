@@ -40,7 +40,7 @@ const CurrencySelect = styled.button<{ selected: boolean }>`
 
   :focus,
   :hover {
-    background-color: ${({ selected, theme }) => (selected ? theme.bg2 : darken(0.05, theme.bg2))};
+    background-color: ${({ selected, theme }) => (selected ? theme.bg3 : darken(0.05, theme.bg3))};
   }
 `
 

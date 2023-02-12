@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchStakeList, PoolInfo } from '../state/stake/hooks'
+import { fetchStakeList, fetchStakingPool, PoolInfo } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
 
 export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
@@ -48,6 +48,41 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
       hasNext: result?.length === pageSize,
       pageSize
     },
+    result
+  }
+}
+
+export function useStakingPool(address: string) {
+  const { account } = useActiveWeb3React()
+  const [result, setResult] = useState<PoolInfo | undefined>(undefined)
+  const [currentPage, setCurrentPage] = useState(1)
+
+  const [loading, setLoading] = useState<boolean>(false)
+  // const [total, setTotal] = useState<number>(0)
+
+  useEffect(() => {
+    setCurrentPage(1)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [address])
+
+  useEffect(() => {
+    ;(async () => {
+      setLoading(true)
+      try {
+        const pool = await fetchStakingPool(address ?? '')
+        setLoading(false)
+        console.log('list', pool)
+        setResult(pool)
+      } catch (error) {
+        setResult(undefined)
+        setLoading(false)
+        console.error('useRankingList', error)
+      }
+    })()
+  }, [currentPage, account, address])
+
+  return {
+    loading: loading,
     result
   }
 }

@@ -41,14 +41,11 @@ export const CardBGImage = styled.span<{ desaturate?: boolean }>`
 
 export const EarnBGImage = styled.span<{ desaturate?: boolean }>`
   background: url(${mining});
-  width: 1000px;
+  width: 100%;
   height: 600px;
   position: absolute;
   border-radius: 12px;
   opacity: 0.4;
-  top: -100px;
-  left: -100px;
-  transform: rotate(-15deg);
   user-select: none;
 
   ${({ desaturate }) => desaturate && `filter: saturate(0)`}

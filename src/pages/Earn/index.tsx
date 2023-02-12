@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react'
 import { AutoColumn } from '../../components/Column'
 import styled from 'styled-components'
 import { TYPE } from '../../theme'
-import { RowFixed } from '../../components/Row'
+import { AutoRow, RowFixed } from '../../components/Row'
 import { CardSection, DataCard, EarnBGImage } from '../../components/earn/styled'
 import Loader from '../../components/Loader'
 import { OutlineCard } from '../../components/Card'
@@ -134,7 +134,6 @@ export default function Earn() {
       if (amount.equalTo(JSBI.BigInt('0'))) throw new Error('amount is un support')
       const args = [amount.raw.toString(), NONCE, DEADLINE, sigVal]
       const method = 'deposit'
-      console.log('stakingContract', stakingContract)
       return stakingContract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return stakingContract[method](...args, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
@@ -257,7 +256,7 @@ export default function Earn() {
         onTxError(error)
         throw error
       })
-  }, [account, typedAmount, library, chainId, poolInfo, onTxStart, onClaim, onTxSubmitted, onTxError])
+  }, [account, library, chainId, poolInfo, onTxStart, onClaim, onTxSubmitted, onTxError])
 
   return (
     <PageWrapper gap="lg" justify="center">
@@ -301,19 +300,19 @@ export default function Earn() {
         <DataCard>
           <CardSection>
             <AutoColumn style={{ padding: 30 }} gap="lg">
-              <RowFixed>
+              <AutoRow gap={'20px'}>
                 <TYPE.white fontSize={28} fontWeight={600}>
                   Provide Liquidity, Earn $LT
                 </TYPE.white>
                 <TYPE.link>Tutorial</TYPE.link>
-              </RowFixed>
+              </AutoRow>
               <AutoColumn gap={'sm'}>
                 <TYPE.main>Total Value Locked(TVL)</TYPE.main>
                 <TYPE.white fontSize={28}>$1,934,015,678.26</TYPE.white>
               </AutoColumn>
-              <RowFixed gap={'md'}>
+              <RowFixed>
                 <SearchInput
-                  width={440}
+                  width={640}
                   type="text"
                   id="token-search-input"
                   placeholder={'Search Token Symbol / Address'}
@@ -322,7 +321,7 @@ export default function Earn() {
                   onChange={() => {}}
                   onKeyDown={() => {}}
                 />
-                <ButtonGray>Search</ButtonGray>
+                <ButtonGray ml={'20px'}>Search</ButtonGray>
               </RowFixed>
             </AutoColumn>
           </CardSection>
@@ -333,7 +332,7 @@ export default function Earn() {
       <AutoColumn gap="lg" style={{ width: '100%' }}>
         <PoolSection>
           {loading ? (
-            <Loader style={{ margin: 'auto' }} />
+            <Loader size={'50px'} style={{ margin: 'auto' }} />
           ) : stakingInfos && stakingInfos?.length === 0 ? (
             <OutlineCard>No active pools</OutlineCard>
           ) : (

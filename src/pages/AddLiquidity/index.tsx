@@ -9,7 +9,7 @@ import { Text } from 'rebass'
 import styled, { ThemeContext } from 'styled-components'
 import { ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
 import { GreyCard, LightCard } from '../../components/Card'
-import { AutoColumn, ColumnCenter } from '../../components/Column'
+import { AutoColumn, ColumnCenter, GapColumn } from '../../components/Column'
 import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
@@ -42,9 +42,10 @@ import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
 import { usePosition } from '../../hooks/usePosition'
 
-const PageWrapper = styled(AutoColumn)`
+const PageWrapper = styled(GapColumn)`
   width: 100%;
   align-items: center;
+  justify-content: center;
 `
 
 export default function AddLiquidity({
@@ -317,11 +318,11 @@ export default function AddLiquidity({
   const addIsUnsupported = useIsTransactionUnsupported(currencies?.CURRENCY_A, currencies?.CURRENCY_B)
 
   return (
-    <PageWrapper>
+    <PageWrapper gap={'20px'}>
       <AddRemoveTabs creating={isCreate} adding={true} />
       <AppBody>
         <AutoColumn>
-          <StyledInternalLink to={'/swap/settings'}>
+          <StyledInternalLink style={{ justifySelf: 'flex-end', marginTop: 20, marginRight: 20 }} to={'/swap/settings'}>
             <StyledMenuIcon />
           </StyledInternalLink>
           <Wrapper>
@@ -403,7 +404,7 @@ export default function AddLiquidity({
               />
               {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
                 <>
-                  <LightCard padding="0px" borderRadius={'20px'}>
+                  <LightCard margin={'20px 0'} padding="0px" borderRadius={'20px'}>
                     <RowBetween padding="1rem 0">
                       <TYPE.subHeader fontWeight={500} fontSize={18}>
                         {noLiquidity ? 'Initial prices' : 'Prices'} and pool share

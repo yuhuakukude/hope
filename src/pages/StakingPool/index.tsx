@@ -17,6 +17,7 @@ const PageWrapper = styled(AutoColumn)`
 `
 
 const PoolsWrapper = styled(AutoColumn)`
+  width: 100%;
   padding: 30px;
   border-radius: 20px;
   background-color: ${({ theme }) => theme.bg1};

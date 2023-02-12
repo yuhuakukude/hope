@@ -74,7 +74,6 @@ export default function Staking() {
   const { toClaim } = useToClaim()
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
 
-
   const isUnSub = useMemo(() => {
     let res = false
     if (curBuzType === 'unStaking' && isSubscribed) {

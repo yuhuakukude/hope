@@ -8,6 +8,7 @@ import { shortenAddress } from '../../utils'
 import { TYPE } from '../../theme'
 import Column, { GapColumn } from '../Column'
 import React from 'react'
+import { Link } from 'react-router-dom'
 
 const StyledPoolCard = styled(Card)`
   border-radius: 0;
@@ -47,32 +48,31 @@ export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>1111111</TYPE.white>
-            <TYPE.white>1111111</TYPE.white>
+            <TYPE.white>{`${pool.token0Amount.toFixed(2, { groupSeparator: ',' })} / ${token0.symbol}`}</TYPE.white>
+            <TYPE.white>{`${pool.token1Amount.toFixed(2, { groupSeparator: ',' })} / ${token1.symbol}`}</TYPE.white>
           </Column>
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>1111111</TYPE.white>
-            <TYPE.white>1111111</TYPE.white>
+            <TYPE.white>{`${pool.volume0Amount.toFixed(2, { groupSeparator: ',' })} / ${token0.symbol}`}</TYPE.white>
+            <TYPE.white>{`${pool.volume1Amount.toFixed(2, { groupSeparator: ',' })} / ${token0.symbol}`}</TYPE.white>
           </Column>
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>1111111</TYPE.white>
-            <TYPE.white>1111111</TYPE.white>
+            <TYPE.white>{`$${pool.volumeAmount.toFixed(2, { groupSeparator: ',' })}`}</TYPE.white>
           </Column>
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>1111111</TYPE.white>
-            <TYPE.white>1111111</TYPE.white>
+            <TYPE.white>--</TYPE.white>
           </Column>
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>1111111</TYPE.white>
-            <TYPE.white>1111111</TYPE.white>
+            <Link to={`/swap/pool-detail/${pool.stakingRewardAddress}`}>
+              <TYPE.link>details</TYPE.link>
+            </Link>
           </Column>
         </ContentRow>
       </AutoRow>
