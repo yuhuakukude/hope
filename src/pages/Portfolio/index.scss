@@ -1,5 +1,5 @@
 .portfolio-wrap {
-  flex: 1;
+  width: 100%;
 
   .portfolio-button {
     color: rgba(228, 201, 137, 1);
@@ -12,6 +12,4 @@
     min-height: 42px;
     cursor: pointer;
   }
-
-
 }

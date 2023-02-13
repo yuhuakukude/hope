@@ -39,11 +39,16 @@
 
       .investment-allocation-box {
         margin-bottom: 30px;
+        min-width: 170px;
 
         .investment-allocation-box-head {
           .investment-allocation-box-name {
             color: rgba(168, 168, 170, 1);
             font-size: 16px;
+          }
+
+          .investment-allocation-box-question {
+            margin-left: 8px;
           }
         }
 

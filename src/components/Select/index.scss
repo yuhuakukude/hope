@@ -1,0 +1,30 @@
+.dapp-select-wrap {
+  .ant-select {
+    font-size: 14px;
+    color: #E4C989;
+  }
+
+  .ant-select-arrow {
+    color: #E4C989;
+  }
+
+  .ant-select-selection-selected-value {
+    padding-right: 5px;
+  }
+
+  .ant-select-selection {
+    background-color: transparent;
+    border: 0;
+  }
+
+  .ant-select-dropdown-menu {
+    border-radius: 8px;
+    background-color: rgba(61, 62, 70, 1);
+    box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.2);
+  }
+
+  .ant-select-open .ant-select-selection {
+    border-color: transparent;
+    box-shadow: none;
+  }
+}

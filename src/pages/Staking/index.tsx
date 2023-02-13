@@ -25,6 +25,7 @@ import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../perm
 import { ethers } from 'ethers'
 import { NavLink } from 'react-router-dom'
 import { TransactionResponse } from '@ethersproject/providers'
+import { useEstimate } from '../../hooks/ahp'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -50,6 +51,8 @@ export default function Staking() {
   const [stakePendingText, setStakePendingText] = useState('')
   const [claimPendingText, setClaimPendingText] = useState('')
   const [withdrawPendingText, setWithdrawPendingText] = useState('')
+
+  const isEthBalanceInsufficient = useEstimate()
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -465,6 +468,17 @@ export default function Staking() {
                     )}
                   </div>
                   <div className="staking-tip">
+                    {account && isEthBalanceInsufficient && (
+                      <div className="flex m-t-15">
+                        <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
+                        <div>
+                          <p className="text-white lh15">
+                            Your wallet balance is below 0.001 ETH. The approve action require small transaction fees,
+                            so you may have deposit additional funds to complete them.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     {curType === 'unstake' && (
                       <div className="flex m-t-15">
                         <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>

@@ -159,14 +159,14 @@ const Vote = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps) => 
     if (curLastVote) {
       return 'No voting within ten days'
     }
-    if (amount && (Number(amount) > 100 || Number(amount) === 0)) {
+    if (curGomAddress && amount && (Number(amount) > 100 || Number(amount) === 0)) {
       return 'Insufficient Value'
     }
-    if (amount && Number(subAmount) < Number(amount)) {
+    if (curGomAddress && amount && Number(subAmount) < Number(amount)) {
       return 'Surplus deficiency'
     }
     return undefined
-  }, [amount, curLastVote, subAmount])
+  }, [amount, curLastVote, subAmount, curGomAddress])
 
   const getActionText = useMemo(() => {
     if (isNoVelt) {
@@ -219,7 +219,6 @@ const Vote = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps) => 
 
   useEffect(() => {
     if (txHash && isTranPending === false) {
-      console.log(txHash, isTranPending)
       setTxHash('')
       updateTable()
     }
@@ -227,10 +226,10 @@ const Vote = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps) => 
 
   function changeAmount(val: any) {
     setAmount(val)
-    if (val && veLtBal && Number(veLtBal.toFixed(2)) > 0) {
+    if (val && veLtBal && Number(veLtBal.toFixed(2)) > 0 && Number(val) <= 100) {
       const rate = Math.floor(Number(val) * 100)
-      const bal = veLtBal.multiply(JSBI.BigInt(rate)).divide(JSBI.BigInt(100))
-      setVoteAmount(bal?.toFixed(2))
+      const bal = veLtBal.multiply(JSBI.BigInt(rate)).divide(JSBI.BigInt(10000))
+      setVoteAmount(bal?.toFixed(2, { groupSeparator: ',' }, 0))
     } else {
       setVoteAmount('')
     }

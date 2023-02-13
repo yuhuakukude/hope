@@ -50,7 +50,13 @@
   .ant-table-tbody>tr:last-child {
     td {
       border-bottom: 0;
-      padding-bottom: 0;
+      // padding-bottom: 0;
     }
+  }
+
+  .ant-table-tbody>tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)>td {
+
+    background: rgb(61, 62, 70);
+
   }
 }
