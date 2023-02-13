@@ -22,7 +22,7 @@ export default function Rewards({ data }: { data: IPortfolioReward[] }) {
     if (value && value !== '0') {
       const num = new TokenAmount(coin[chainId ?? 1], JSBI.BigInt(value))
       if (num.toFixed(2)) {
-        res = `${num.toFixed(2)}`
+        res = `${num.toFixed(2, { groupSeparator: ',' })}`
       }
     }
     return res
