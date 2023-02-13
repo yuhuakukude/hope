@@ -9,6 +9,7 @@ import { TokenAmount, JSBI } from '@uniswap/sdk'
 import { LT, HOPE } from '../../../../constants'
 import { useActiveWeb3React } from '../../../../hooks'
 import './index.scss'
+// import { useStaking } from '../../../../hooks/ahp/useStaking'
 
 const isNotNull = (val: string | number | null) => {
   return val && Number(val) !== 0
@@ -16,6 +17,7 @@ const isNotNull = (val: string | number | null) => {
 
 export default function Rewards({ data }: { data: IPortfolioReward[] }) {
   const { account, chainId } = useActiveWeb3React()
+  // const { claRewards, mintedVal } = useStaking()
   console.log(account)
   const formatAmount = (value: string | number, coin: any) => {
     let res = ''

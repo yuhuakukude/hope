@@ -34,7 +34,6 @@ export default class PortfolioApi {
   static getOverview(address: string) {
     return get<IPortfolio>('/light/portfolio/gomboc/overview', { params: { address } })
   }
- 
   static getRewardsList(params: any): Promise<any> {
     return get('/light/dao/veLT/rewards/list', { params })
   }

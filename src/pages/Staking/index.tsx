@@ -10,6 +10,7 @@ import { HOPE, LT, PERMIT2_ADDRESS, ST_HOPE, STAKING_HOPE_GOMBOC_ADDRESS } from 
 import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
 import HopeCard from '../../components/ahp/card'
+import ClaimCon from '../../components/ahp/ClaimCon'
 import { useStaking, useToStaked, useToWithdraw, useToUnStaked, useToClaim } from '../../hooks/ahp/useStaking'
 import format from '../../utils/format'
 import { useWalletModalToggle } from '../../state/application/hooks'
@@ -17,7 +18,6 @@ import { ButtonPrimary } from '../../components/Button'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import ActionButton from '../../components/Button/ActionButton'
-import { CloseIcon } from '../../theme/components'
 import { Token, TokenAmount } from '@uniswap/sdk'
 import './index.scss'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
@@ -304,31 +304,12 @@ export default function Staking() {
           message={errorStatus.message}
         />
       ) : (
-        <div className="staking-claim-box w-100">
-          <div className="head">
-            $LT Rewards Claim
-            <div className="icon-close">
-              <CloseIcon onClick={() => setShowConfirm(false)} />
-            </div>
-          </div>
-          <div className="claim-con p-30">
-            <div className="flex jc-between">
-              <span className="text-white">Total Rewards</span>
-              <span className="text-white">
-                {totalRewards ? totalRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
-              </span>
-            </div>
-            <div className="flex jc-between m-t-20 m-b-40">
-              <span className="text-white">Claimable Rewards</span>
-              <span className="text-white">
-                {claRewards ? claRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
-              </span>
-            </div>
-            <ButtonPrimary className="hp-button-primary" onClick={claimCallback}>
-              Claim
-            </ButtonPrimary>
-          </div>
-        </div>
+        <ClaimCon
+          onSubmit={claimCallback}
+          onDismiss={() => setShowConfirm(false)}
+          totalRewards={totalRewards}
+          claRewards={claRewards}
+        />
       ),
     [claRewards, claimCallback, errorStatus, totalRewards]
   )
