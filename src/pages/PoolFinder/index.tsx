@@ -6,7 +6,7 @@ import { ButtonDropdownLight, ButtonError, ButtonOutlined, ButtonPrimary } from 
 import { GreyCard, LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
-import { FindPoolTabs } from '../../components/NavigationTabs'
+import { FindPoolTabs, StyledMenuIcon } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import Row from '../../components/Row'
 import CurrencySearchModal from '../../components/SearchModal/CurrencySearchModal'
@@ -17,13 +17,19 @@ import { useTokenBalance } from '../../state/wallet/hooks'
 import { currencyId } from '../../utils/currencyId'
 import AppBody from '../AppBody'
 import { Dots } from '../Pool/styleds'
-import { TYPE } from '../../theme'
+import { StyledInternalLink, TYPE } from '../../theme'
 import { Link } from 'react-router-dom'
+import styled from 'styled-components'
 
 enum Fields {
   TOKEN0 = 0,
   TOKEN1 = 1
 }
+
+const Wrapper = styled(AutoColumn)`
+  width: 100%;
+  align-items: center;
+`
 
 export default function PoolFinder() {
   const { account } = useActiveWeb3React()
@@ -78,117 +84,122 @@ export default function PoolFinder() {
   )
 
   return (
-    <AppBody>
+    <Wrapper gap={'lg'} justify={'center'}>
       <FindPoolTabs />
-      <AutoColumn style={{ padding: '1rem' }} gap="lg">
-        <GreyCard borderRadius={'10px'} padding={'20px'}>
-          <AutoColumn gap="10px">
-            <TYPE.link fontWeight={400} color={'text1'}>
-              <b>Tip:</b> Use this tool to find pairs that don&apos;t automatically appear in the interface.
-            </TYPE.link>
-          </AutoColumn>
-        </GreyCard>
-        <ButtonDropdownLight
-          onClick={() => {
-            setShowSearch(true)
-            setActiveField(Fields.TOKEN0)
-          }}
-        >
-          {currency0 ? (
-            <Row>
-              <CurrencyLogo currency={currency0} />
-              <Text fontWeight={500} marginLeft={'12px'}>
-                {currency0.symbol}
-              </Text>
-            </Row>
-          ) : (
-            <Text fontWeight={500} marginLeft={'12px'}>
-              Select a Token
-            </Text>
-          )}
-        </ButtonDropdownLight>
-
-        <ColumnCenter>
-          <PlusCircle size="20" color="#888D9B" />
-        </ColumnCenter>
-
-        <ButtonDropdownLight
-          onClick={() => {
-            setShowSearch(true)
-            setActiveField(Fields.TOKEN1)
-          }}
-        >
-          {currency1 ? (
-            <Row>
-              <CurrencyLogo currency={currency1} />
-              <Text fontWeight={500} marginLeft={'12px'}>
-                {currency1.symbol}
-              </Text>
-            </Row>
-          ) : (
-            <Text fontWeight={500} marginLeft={'12px'}>
-              Select a Token
-            </Text>
-          )}
-        </ButtonDropdownLight>
-
-        {currency0 && currency1 ? (
-          pairState === PairState.EXISTS ? (
-            hasPosition && pair ? (
-              <MinimalPositionCard pair={pair} border="1px solid #CED0D9" />
+      <AppBody>
+        <AutoColumn style={{ padding: '20px' }} gap="lg">
+          <StyledInternalLink style={{ justifySelf: 'flex-end' }} to={'/swap/settings'}>
+            <StyledMenuIcon />
+          </StyledInternalLink>
+          <GreyCard borderRadius={'10px'} padding={'20px'}>
+            <AutoColumn gap="10px">
+              <TYPE.link fontWeight={400} color={'text1'}>
+                <b>Tip:</b> Use this tool to find pairs that don&apos;t automatically appear in the interface.
+              </TYPE.link>
+            </AutoColumn>
+          </GreyCard>
+          <ButtonDropdownLight
+            onClick={() => {
+              setShowSearch(true)
+              setActiveField(Fields.TOKEN0)
+            }}
+          >
+            {currency0 ? (
+              <Row>
+                <CurrencyLogo currency={currency0} />
+                <Text fontWeight={500} marginLeft={'12px'}>
+                  {currency0.symbol}
+                </Text>
+              </Row>
             ) : (
+              <Text fontWeight={500} marginLeft={'12px'}>
+                Select a Token
+              </Text>
+            )}
+          </ButtonDropdownLight>
+
+          <ColumnCenter>
+            <PlusCircle size="20" color="#888D9B" />
+          </ColumnCenter>
+
+          <ButtonDropdownLight
+            onClick={() => {
+              setShowSearch(true)
+              setActiveField(Fields.TOKEN1)
+            }}
+          >
+            {currency1 ? (
+              <Row>
+                <CurrencyLogo currency={currency1} />
+                <Text fontWeight={500} marginLeft={'12px'}>
+                  {currency1.symbol}
+                </Text>
+              </Row>
+            ) : (
+              <Text fontWeight={500} marginLeft={'12px'}>
+                Select a Token
+              </Text>
+            )}
+          </ButtonDropdownLight>
+
+          {currency0 && currency1 ? (
+            pairState === PairState.EXISTS ? (
+              hasPosition && pair ? (
+                <MinimalPositionCard pair={pair} border="1px solid #CED0D9" />
+              ) : (
+                <LightCard padding="45px 10px">
+                  <AutoColumn gap="lg" justify="center">
+                    <Text textAlign="center">You don’t have liquidity in this pool yet.</Text>
+                    <ButtonPrimary as={Link} to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
+                      <Text textAlign="center">Add liquidity.</Text>
+                    </ButtonPrimary>
+                  </AutoColumn>
+                </LightCard>
+              )
+            ) : validPairNoLiquidity ? (
               <LightCard padding="45px 10px">
                 <AutoColumn gap="lg" justify="center">
-                  <Text textAlign="center">You don’t have liquidity in this pool yet.</Text>
+                  <Text textAlign="center">No pool found.</Text>
                   <ButtonPrimary as={Link} to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
-                    <Text textAlign="center">Add liquidity.</Text>
+                    Create pool.
                   </ButtonPrimary>
                 </AutoColumn>
               </LightCard>
-            )
-          ) : validPairNoLiquidity ? (
-            <LightCard padding="45px 10px">
-              <AutoColumn gap="lg" justify="center">
-                <Text textAlign="center">No pool found.</Text>
-                <ButtonPrimary as={Link} to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
-                  Create pool.
-                </ButtonPrimary>
-              </AutoColumn>
-            </LightCard>
-          ) : pairState === PairState.INVALID ? (
-            <LightCard padding="45px 10px">
-              <ButtonError error disabled>
-                Invalid pair.
-              </ButtonError>
-            </LightCard>
-          ) : pairState === PairState.LOADING ? (
-            <LightCard padding="45px 10px">
-              <ButtonOutlined disabled>
-                Loading
-                <Dots />
-              </ButtonOutlined>
-            </LightCard>
-          ) : null
-        ) : (
-          prerequisiteMessage
+            ) : pairState === PairState.INVALID ? (
+              <LightCard padding="45px 10px">
+                <ButtonError error disabled>
+                  Invalid pair.
+                </ButtonError>
+              </LightCard>
+            ) : pairState === PairState.LOADING ? (
+              <LightCard padding="45px 10px">
+                <ButtonOutlined disabled>
+                  Loading
+                  <Dots />
+                </ButtonOutlined>
+              </LightCard>
+            ) : null
+          ) : (
+            prerequisiteMessage
+          )}
+        </AutoColumn>
+
+        {hasPosition && (
+          <LightCard padding="0px 10px 30px 10px">
+            <ButtonPrimary as={Link} to={'/swap/pools'}>
+              <Text textAlign="center">Add to my liquidity list</Text>
+            </ButtonPrimary>
+          </LightCard>
         )}
-      </AutoColumn>
 
-      {hasPosition && (
-        <LightCard padding="0px 10px 30px 10px">
-          <ButtonPrimary as={Link} to={'/swap/pools'}>
-            <Text textAlign="center">Add to my liquidity list</Text>
-          </ButtonPrimary>
-        </LightCard>
-      )}
-
-      <CurrencySearchModal
-        isOpen={showSearch}
-        onCurrencySelect={handleCurrencySelect}
-        onDismiss={handleSearchDismiss}
-        showCommonBases
-        selectedCurrency={(activeField === Fields.TOKEN0 ? currency1 : currency0) ?? undefined}
-      />
-    </AppBody>
+        <CurrencySearchModal
+          isOpen={showSearch}
+          onCurrencySelect={handleCurrencySelect}
+          onDismiss={handleSearchDismiss}
+          showCommonBases
+          selectedCurrency={(activeField === Fields.TOKEN0 ? currency1 : currency0) ?? undefined}
+        />
+      </AppBody>
+    </Wrapper>
   )
 }

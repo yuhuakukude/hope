@@ -41,6 +41,10 @@ import '../assets/style/index.scss'
 import SideBar from '../components/SideBar'
 import { ModalProvider } from '../context/ModalContext'
 import SettingPage from './Settings'
+import StakingPool from './StakingPool'
+import StakingPoolDetail from './StakingPoolDetail'
+import LiquidityStake from './LiquidityStake'
+import LiquidityUnStake from "./LiquidityUnStake";
 
 const PageWrapper = styled.div`
   display: flex;
@@ -112,13 +116,17 @@ export default function App() {
               <Web3ReactManager>
                 <Switch>
                   <Route exact strict path="/swap/exchange" component={Swap} />
-                  <Route exact strict path="/swap/pools" component={Pool} />
+                  <Route exact strict path="/swap/liquidity" component={Pool} />
+                  <Route exact strict path="/swap/mining" component={Earn} />
                   <Route exact strict path="/swap/find" component={PoolFinder} />
+                  <Route exact strict path="/swap/pools" component={StakingPool} />
+                  <Route exact strict path="/swap/pool-detail/:address" component={StakingPoolDetail} />
+                  <Route exact strict path="/swap/stake/:stakingRewardAddress" component={LiquidityStake} />
+                  <Route exact strict path="/swap/withdraw/:stakingRewardAddress" component={LiquidityUnStake} />
                   <Route exact strict path="/swap/settings" component={SettingPage} />
                   <Route exact strict path="/claim" component={OpenClaimAddressModalAndRedirectToSwap} />
                   <Route exact strict path="/swap/:outputCurrency" component={RedirectToSwap} />
                   <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
-                  <Route exact strict path="/uni" component={Earn} />
                   <Route exact strict path="/vote" component={Vote} />
                   <Route exact strict path="/create" component={RedirectToAddLiquidity} />
                   <Route exact path="/add" component={AddLiquidity} />

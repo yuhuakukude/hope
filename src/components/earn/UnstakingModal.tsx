@@ -5,13 +5,17 @@ import styled from 'styled-components'
 import { RowBetween } from '../Row'
 import { TYPE, CloseIcon } from '../../theme'
 import { ButtonError } from '../Button'
-import { StakingInfo } from '../../state/stake/hooks'
+import { PoolInfo } from '../../state/stake/hooks'
 import { useStakingContract } from '../../hooks/useContract'
 import { SubmittedView, LoadingView } from '../ModalViews'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import FormattedCurrencyAmount from '../FormattedCurrencyAmount'
 import { useActiveWeb3React } from '../../hooks'
+import { useTokenBalance } from '../../state/wallet/hooks'
+import { useSingleCallResult } from '../../state/multicall/hooks'
+import { TokenAmount } from '@uniswap/sdk'
+import { LT } from '../../constants'
 
 const ContentWrapper = styled(AutoColumn)`
   width: 100%;
@@ -21,12 +25,15 @@ const ContentWrapper = styled(AutoColumn)`
 interface StakingModalProps {
   isOpen: boolean
   onDismiss: () => void
-  stakingInfo: StakingInfo
+  stakingInfo: PoolInfo
 }
 
 export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: StakingModalProps) {
-  const { account } = useActiveWeb3React()
-
+  const { account, chainId } = useActiveWeb3React()
+  const stakingContract = useStakingContract(stakingInfo.stakingRewardAddress)
+  const stakedAmount = useTokenBalance(account ?? undefined, stakingInfo.lpToken)
+  const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
+  const earnedAmount = new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0] ?? '0')
   // monitor call to help UI loading state
   const addTransaction = useTransactionAdder()
   const [hash, setHash] = useState<string | undefined>()
@@ -38,10 +45,8 @@ export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: Staki
     onDismiss()
   }
 
-  const stakingContract = useStakingContract(stakingInfo.stakingRewardAddress)
-
   async function onWithdraw() {
-    if (stakingContract && stakingInfo?.stakedAmount) {
+    if (stakingContract && stakedAmount) {
       setAttempting(true)
       await stakingContract
         .exit({ gasLimit: 300000 })
@@ -62,7 +67,7 @@ export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: Staki
   if (!account) {
     error = 'Connect Wallet'
   }
-  if (!stakingInfo?.stakedAmount) {
+  if (!stakedAmount) {
     error = error ?? 'Enter an amount'
   }
 
@@ -74,18 +79,18 @@ export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: Staki
             <TYPE.mediumHeader>Withdraw</TYPE.mediumHeader>
             <CloseIcon onClick={wrappedOndismiss} />
           </RowBetween>
-          {stakingInfo?.stakedAmount && (
+          {stakedAmount && (
             <AutoColumn justify="center" gap="md">
               <TYPE.body fontWeight={600} fontSize={36}>
-                {<FormattedCurrencyAmount currencyAmount={stakingInfo.stakedAmount} />}
+                {<FormattedCurrencyAmount currencyAmount={stakedAmount} />}
               </TYPE.body>
               <TYPE.body>Deposited liquidity:</TYPE.body>
             </AutoColumn>
           )}
-          {stakingInfo?.earnedAmount && (
+          {earnedAmount && (
             <AutoColumn justify="center" gap="md">
               <TYPE.body fontWeight={600} fontSize={36}>
-                {<FormattedCurrencyAmount currencyAmount={stakingInfo?.earnedAmount} />}
+                {<FormattedCurrencyAmount currencyAmount={earnedAmount} />}
               </TYPE.body>
               <TYPE.body>Unclaimed UNI</TYPE.body>
             </AutoColumn>
@@ -93,7 +98,7 @@ export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: Staki
           <TYPE.subHeader style={{ textAlign: 'center' }}>
             When you withdraw, your UNI is claimed and your liquidity is removed from the mining pool.
           </TYPE.subHeader>
-          <ButtonError disabled={!!error} error={!!error && !!stakingInfo?.stakedAmount} onClick={onWithdraw}>
+          <ButtonError disabled={!!error} error={!!error && !!stakedAmount} onClick={onWithdraw}>
             {error ?? 'Withdraw & Claim'}
           </ButtonError>
         </ContentWrapper>
@@ -101,8 +106,8 @@ export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: Staki
       {attempting && !hash && (
         <LoadingView onDismiss={wrappedOndismiss}>
           <AutoColumn gap="12px" justify={'center'}>
-            <TYPE.body>Withdrawing {stakingInfo?.stakedAmount?.toSignificant(4)} UNI-V2</TYPE.body>
-            <TYPE.body>Claiming {stakingInfo?.earnedAmount?.toSignificant(4)} UNI</TYPE.body>
+            <TYPE.body>Withdrawing {stakedAmount?.toFixed(2)} UNI-V2</TYPE.body>
+            <TYPE.body>Claiming {stakedAmount?.toFixed(2)} UNI</TYPE.body>
           </AutoColumn>
         </LoadingView>
       )}

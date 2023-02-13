@@ -1,8 +1,8 @@
 import React from 'react'
 import styled from 'styled-components'
-import Settings from '../Settings'
 import { RowBetween } from '../Row'
-import { TYPE } from '../../theme'
+import { StyledInternalLink, TYPE } from '../../theme'
+import { Settings } from 'react-feather'
 
 const StyledSwapHeader = styled.div`
   padding: 30px 20px 0px 20px;
@@ -12,6 +12,19 @@ const StyledSwapHeader = styled.div`
   color: ${({ theme }) => theme.text2};
 `
 
+const StyledMenuIcon = styled(Settings)`
+  height: 20px;
+  width: 20px;
+
+  > * {
+    stroke: ${({ theme }) => theme.text2};
+  }
+
+  :hover {
+    opacity: 0.7;
+  }
+`
+
 export default function SwapHeader() {
   return (
     <StyledSwapHeader>
@@ -19,7 +32,9 @@ export default function SwapHeader() {
         <TYPE.white fontSize={20} fontWeight={500}>
           Swap
         </TYPE.white>
-        <Settings />
+        <StyledInternalLink to={'/swap/settings'}>
+          <StyledMenuIcon />
+        </StyledInternalLink>
       </RowBetween>
     </StyledSwapHeader>
   )

@@ -182,7 +182,7 @@ export default function Pool() {
               <EmptyCover src={empty} />
             </CardSection>
           )}
-          <GapColumn gap="lg">
+          <GapColumn gap="lg" style={{ width: '100%' }}>
             <GapColumn gap="lg" style={{ width: '100%' }}>
               {!account ? (
                 <Card padding="40px">

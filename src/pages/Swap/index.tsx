@@ -5,9 +5,9 @@ import ReactGA from 'react-ga'
 import { Text } from 'rebass'
 import { ThemeContext } from 'styled-components'
 import AddressInputPanel from '../../components/AddressInputPanel'
-import { ButtonError, ButtonLight, ButtonPrimary, ButtonConfirmed } from '../../components/Button'
+import { ButtonConfirmed, ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
 import Card, { GreyCard } from '../../components/Card'
-import Column, { AutoColumn } from '../../components/Column'
+import { AutoColumn } from '../../components/Column'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import { SwapPoolTabs } from '../../components/NavigationTabs'
@@ -18,13 +18,12 @@ import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpa
 import { ArrowWrapper, BottomGrouping, Dots, SwapCallbackError, Wrapper } from '../../components/swap/styleds'
 import TradePrice from '../../components/swap/TradePrice'
 import TokenWarningModal from '../../components/TokenWarningModal'
-import ProgressSteps from '../../components/ProgressSteps'
 import SwapHeader from '../../components/swap/SwapHeader'
 
 //import { INITIAL_ALLOWED_SLIPPAGE } from '../../constants'
 import { getTradeVersion } from '../../data/V1'
 import { useActiveWeb3React } from '../../hooks'
-import { useCurrency, useAllTokens } from '../../hooks/Tokens'
+import { useAllTokens, useCurrency } from '../../hooks/Tokens'
 import { ApprovalState, useApproveCallbackFromTrade } from '../../hooks/useApproveCallback'
 import useENSAddress from '../../hooks/useENSAddress'
 import { useSwapCallback } from '../../hooks/useSwapCallback'
@@ -38,7 +37,7 @@ import {
   useSwapActionHandlers,
   useSwapState
 } from '../../state/swap/hooks'
-import { useExpertModeManager, useUserSlippageTolerance, useUserSingleHopOnly } from '../../state/user/hooks'
+import { useExpertModeManager, useUserSingleHopOnly, useUserSlippageTolerance } from '../../state/user/hooks'
 import { CustomLightSpinner, LinkStyledButton, TYPE } from '../../theme'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from '../../utils/prices'
@@ -192,7 +191,7 @@ export default function Swap({ history }: RouteComponentProps) {
   // check if user has gone through approval process, used to show two step buttons, reset on token change
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
 
-  const [approvePending, setApprovePending] = useState<boolean>(false)
+  const [pending, setPending] = useState<boolean>(false)
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
@@ -215,15 +214,16 @@ export default function Swap({ history }: RouteComponentProps) {
     setSwapState({
       pendingMessage: `Approve ${approveToken?.symbol}`,
       attemptingTxn: true,
-      tradeToConfirm,
+      tradeToConfirm: undefined,
       showConfirm,
       swapErrorMessage: undefined,
       txHash: undefined,
       errorCode: undefined
     })
-    setApprovePending(true)
+    setPending(true)
     approveCallback()
       .then(response => {
+        setPending(true)
         setSwapState({
           pendingMessage: undefined,
           attemptingTxn: false,
@@ -235,7 +235,7 @@ export default function Swap({ history }: RouteComponentProps) {
         })
       })
       .catch(error => {
-        setApprovePending(true)
+        setPending(true)
         setSwapState({
           pendingMessage: undefined,
           attemptingTxn: false,
@@ -255,7 +255,7 @@ export default function Swap({ history }: RouteComponentProps) {
     if (!swapCallback) {
       return
     }
-    setApprovePending(false)
+    setPending(false)
     setSwapState({
       pendingMessage: `Swap ${trade?.inputAmount.toSignificant()} ${
         trade?.inputAmount.currency.symbol
@@ -269,7 +269,7 @@ export default function Swap({ history }: RouteComponentProps) {
     })
     swapCallback()
       .then(hash => {
-        setApprovePending(false)
+        setPending(true)
         setSwapState({
           pendingMessage: undefined,
           attemptingTxn: false,
@@ -301,7 +301,7 @@ export default function Swap({ history }: RouteComponentProps) {
         })
       })
       .catch(error => {
-        setApprovePending(false)
+        setPending(true)
         setSwapState({
           pendingMessage: undefined,
           attemptingTxn: false,
@@ -336,7 +336,7 @@ export default function Swap({ history }: RouteComponentProps) {
     !swapInputError && (approval === ApprovalState.NOT_APPROVED || approval === ApprovalState.PENDING)
 
   const handleConfirmDismiss = useCallback(() => {
-    setApprovePending(false)
+    setPending(false)
     setSwapState({
       pendingMessage: undefined,
       showConfirm: false,
@@ -347,10 +347,10 @@ export default function Swap({ history }: RouteComponentProps) {
       errorCode: undefined
     })
     // if there was a tx hash, we want to clear the input
-    if (txHash) {
-      onUserInput(Field.INPUT, '')
-    }
-  }, [attemptingTxn, onUserInput, swapErrorMessage, tradeToConfirm, txHash])
+    // if (txHash) {
+    //   onUserInput(Field.INPUT, '')
+    // }
+  }, [attemptingTxn, swapErrorMessage, tradeToConfirm, txHash])
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
@@ -395,7 +395,7 @@ export default function Swap({ history }: RouteComponentProps) {
         <SwapHeader />
         <Wrapper id="swap-page">
           <ConfirmSwapModal
-            isOpen={showConfirm || approvePending}
+            isOpen={showConfirm || pending}
             errorCode={errorCode}
             pendingMessage={pendingMessage}
             trade={trade}
@@ -610,11 +610,6 @@ export default function Swap({ history }: RouteComponentProps) {
                   </ButtonError>
                 )}
               </>
-            )}
-            {showApproveFlow && (
-              <Column style={{ marginTop: '1rem' }}>
-                <ProgressSteps steps={[approval === ApprovalState.APPROVED]} />
-              </Column>
             )}
             {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
             {betterTradeLinkV2 && !swapIsUnsupported && toggledVersion === Version.v1 ? (

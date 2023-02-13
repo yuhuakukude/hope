@@ -1,109 +1,80 @@
-import React, { useState } from 'react'
+import React from 'react'
 import Modal from '../Modal'
 import { AutoColumn } from '../Column'
 import styled from 'styled-components'
-import { RowBetween } from '../Row'
+import { RowBetween, RowFixed } from '../Row'
 import { TYPE, CloseIcon } from '../../theme'
 import { ButtonError } from '../Button'
-import { StakingInfo } from '../../state/stake/hooks'
+import { PoolInfo } from '../../state/stake/hooks'
 import { useStakingContract } from '../../hooks/useContract'
-import { SubmittedView, LoadingView } from '../ModalViews'
-import { TransactionResponse } from '@ethersproject/providers'
-import { useTransactionAdder } from '../../state/transactions/hooks'
 import { useActiveWeb3React } from '../../hooks'
+import { useSingleCallResult } from '../../state/multicall/hooks'
+import { TokenAmount } from '@uniswap/sdk'
+import { LT } from '../../constants'
+import CurrencyLogo from '../CurrencyLogo'
 
 const ContentWrapper = styled(AutoColumn)`
   width: 100%;
-  padding: 1rem;
+  padding: 2rem;
 `
 
 interface StakingModalProps {
   isOpen: boolean
   onDismiss: () => void
-  stakingInfo: StakingInfo
+  onClaim: () => void
+  stakingInfo: PoolInfo
 }
 
-export default function ClaimRewardModal({ isOpen, onDismiss, stakingInfo }: StakingModalProps) {
-  const { account } = useActiveWeb3React()
-
-  // monitor call to help UI loading state
-  const addTransaction = useTransactionAdder()
-  const [hash, setHash] = useState<string | undefined>()
-  const [attempting, setAttempting] = useState(false)
-
-  function wrappedOnDismiss() {
-    setHash(undefined)
-    setAttempting(false)
-    onDismiss()
-  }
+export default function ClaimRewardModal({ isOpen, onDismiss, stakingInfo, onClaim }: StakingModalProps) {
+  const { account, chainId } = useActiveWeb3React()
 
   const stakingContract = useStakingContract(stakingInfo.stakingRewardAddress)
 
-  async function onClaimReward() {
-    if (stakingContract && stakingInfo?.stakedAmount) {
-      setAttempting(true)
-      await stakingContract
-        .getReward({ gasLimit: 350000 })
-        .then((response: TransactionResponse) => {
-          addTransaction(response, {
-            summary: `Claim accumulated UNI rewards`
-          })
-          setHash(response.hash)
-        })
-        .catch((error: any) => {
-          setAttempting(false)
-          console.log(error)
-        })
-    }
-  }
+  const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
+  const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
 
-  let error: string | undefined
-  if (!account) {
-    error = 'Connect Wallet'
-  }
-  if (!stakingInfo?.stakedAmount) {
-    error = error ?? 'Enter an amount'
-  }
+  const claimedRes = useSingleCallResult(stakingContract, 'rewardsReceiver', [account ?? undefined])
+  const totalRewardAmount = claimedRes?.result?.[0]
+    ? new TokenAmount(LT[chainId ?? 1], claimedRes?.result?.[0])
+    : undefined
 
   return (
-    <Modal isOpen={isOpen} onDismiss={wrappedOnDismiss} maxHeight={90}>
-      {!attempting && !hash && (
-        <ContentWrapper gap="lg">
-          <RowBetween>
-            <TYPE.mediumHeader>Claim</TYPE.mediumHeader>
-            <CloseIcon onClick={wrappedOnDismiss} />
-          </RowBetween>
-          {stakingInfo?.earnedAmount && (
-            <AutoColumn justify="center" gap="md">
-              <TYPE.body fontWeight={600} fontSize={36}>
-                {stakingInfo?.earnedAmount?.toSignificant(6)}
-              </TYPE.body>
-              <TYPE.body>Unclaimed UNI</TYPE.body>
-            </AutoColumn>
-          )}
-          <TYPE.subHeader style={{ textAlign: 'center' }}>
-            When you claim without withdrawing your liquidity remains in the mining pool.
-          </TYPE.subHeader>
-          <ButtonError disabled={!!error} error={!!error && !!stakingInfo?.stakedAmount} onClick={onClaimReward}>
-            {error ?? 'Claim'}
-          </ButtonError>
-        </ContentWrapper>
-      )}
-      {attempting && !hash && (
-        <LoadingView onDismiss={wrappedOnDismiss}>
-          <AutoColumn gap="12px" justify={'center'}>
-            <TYPE.body fontSize={20}>Claiming {stakingInfo?.earnedAmount?.toSignificant(6)} UNI</TYPE.body>
+    <Modal isOpen={isOpen} onDismiss={onDismiss} maxHeight={90}>
+      <ContentWrapper gap="lg">
+        <RowBetween>
+          <TYPE.mediumHeader>LT Rewards Claim</TYPE.mediumHeader>
+          <CloseIcon onClick={onDismiss} />
+        </RowBetween>
+        <AutoColumn gap={'lg'}>
+          <AutoColumn gap={'md'}>
+            <TYPE.gray color={'text2'} fontSize={18}>
+              Total Rewards
+            </TYPE.gray>
+            <RowFixed>
+              <CurrencyLogo currency={stakingInfo.lpToken} />
+              <TYPE.white ml={'8px'} mr={'8px'} fontSize={20} fontWeight={500}>
+                {totalRewardAmount?.toFixed(2, { groupSeparator: ',' }) ?? '0'}
+              </TYPE.white>
+              <TYPE.gray alignSelf={'end'}>LT</TYPE.gray>
+            </RowFixed>
           </AutoColumn>
-        </LoadingView>
-      )}
-      {hash && (
-        <SubmittedView onDismiss={wrappedOnDismiss} hash={hash}>
-          <AutoColumn gap="12px" justify={'center'}>
-            <TYPE.largeHeader>Transaction Submitted</TYPE.largeHeader>
-            <TYPE.body fontSize={20}>Claimed UNI!</TYPE.body>
+          <AutoColumn gap={'md'}>
+            <TYPE.gray color={'text2'} fontSize={18}>
+              Claimable Rewards
+            </TYPE.gray>
+            <RowFixed>
+              <CurrencyLogo currency={stakingInfo.lpToken} />
+              <TYPE.white ml={'8px'} mr={'8px'} fontSize={20} fontWeight={500}>
+                {earnedAmount?.toFixed(2, { groupSeparator: ',' }) ?? '0'}
+              </TYPE.white>
+              <TYPE.gray alignSelf={'end'}>LT</TYPE.gray>
+            </RowFixed>
           </AutoColumn>
-        </SubmittedView>
-      )}
+        </AutoColumn>
+        <ButtonError disabled={!earnedAmount} onClick={onClaim}>
+          {'Submit'}
+        </ButtonError>
+      </ContentWrapper>
     </Modal>
   )
 }

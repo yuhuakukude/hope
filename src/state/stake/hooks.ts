@@ -1,4 +1,4 @@
-import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount, WETH, Pair } from '@uniswap/sdk'
+import { ChainId, CurrencyAmount, JSBI, Pair, Token, TokenAmount, WETH } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import { DAI, HOPE, SUBGRAPH, UNI, USDC, USDT, WBTC } from '../../constants'
 import { STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
@@ -279,11 +279,24 @@ export function useDerivedUnstakeInfo(
   }
 }
 
-interface StakeInfo {
-  pair?: {
+export interface StakeInfo {
+  id: string
+  totalStakedBalance: string
+  totalStakedBalanceUSD: string
+  pair: {
     id: boolean
-    totalStakedBalance: string
+    reserveUSD: string
+    volumeUSD: string
+    reserve0: string
+    reserve1: string
+    volumeToken0: string
+    volumeToken1: string
     token0: {
+      decimals: string
+      id: string
+      symbol: string
+    }
+    token1: {
       decimals: string
       id: string
       symbol: string
@@ -291,33 +304,210 @@ interface StakeInfo {
   }
 }
 
-export async function fetchStakeList(): Promise<StakeInfo[] | null> {
+export interface PoolInfo {
+  // the address of the reward contract
+  stakingRewardAddress: string
+  // the tokens involved in this pair
+  tokens: Token[]
+
+  lpToken: Token
+
+  stakingToken: Token
+
+  tvl: TokenAmount
+
+  pair: Pair
+
+  volumeAmount: TokenAmount
+
+  token0Amount: TokenAmount
+
+  token1Amount: TokenAmount
+
+  volume0Amount: TokenAmount
+
+  volume1Amount: TokenAmount
+
+  // the amount of token currently staked, or undefined if no account
+  //stakedAmount: TokenAmount
+  // the amount of reward token earned by the active account, or undefined if no account
+  //earnedAmount: TokenAmount
+  // the total amount of token staked in the contract
+  totalStakedAmount: TokenAmount
+  // the amount of token distributed per second to all LPs, constant
+  //totalRewardRate: TokenAmount
+  // the current amount of token distributed to the active account per second.
+  // equivalent to percent of total supply * reward rate
+  //rewardRate: TokenAmount
+  // when the period ends
+  //periodFinish: Date | undefined
+  // if pool is active
+  //active: boolean
+  // calculates a hypothetical amount of token distributed to the active account per second.
+}
+
+export async function fetchStakeList(
+  account: string,
+  searchContent: string | undefined,
+  sort: 'asc' | 'desc',
+  orderBy: 'apr',
+  skip = 0,
+  size = 10
+): Promise<PoolInfo[]> {
   const query = `{
   poolGombocs {
     id
-    pair {
+    totalStakedBalanceUSD
+    totalStakedBalance
+    pair{
       id
+      reserveUSD
+      volumeUSD
       reserve0
-      token0 {
+      reserve1
+      volumeToken0
+      volumeToken1
+      token0{
         id
         symbol
         decimals
       }
-      reserve1
-      token1 {
+      token1{
         id
         symbol
         decimals
       }
     }
-    totalStakedBalance
+    stakedPoolPositions {
+      pool {
+        totalStakedBalance
+        totalStakedBalanceUSD
+        stakedPoolPositions(where: {user: "${account}"}) {
+          id
+          stakedPoolBalanceUSD
+          stakedPoolBalance
+        }
+      }
+    }
   }
 }`
   try {
     const response = await postQuery(SUBGRAPH, query)
-    console.log('response', response)
-    return response.data.subgraphError
+    const pools = response.data.poolGombocs
+    const poolInfos = pools.map((pool: StakeInfo) => {
+      const stakingRewardAddress = pool.id
+      const token0 = new Token(
+        ChainId.SEPOLIA,
+        pool.pair.token0.id,
+        Number(pool.pair.token0.decimals),
+        pool.pair.token0.symbol
+      )
+      const token1 = new Token(
+        ChainId.SEPOLIA,
+        pool.pair.token1.id,
+        Number(pool.pair.token1.decimals),
+        pool.pair.token1.symbol
+      )
+      const tokens = [token0, token1]
+      const token0Amount = tryParseAmount(pool.pair.reserve0, tokens[0])
+      const token1Amount = tryParseAmount(pool.pair.reserve1, tokens[1])
+      const volume0Amount = tryParseAmount(pool.pair.volumeToken0, tokens[0])
+      const volume1Amount = tryParseAmount(pool.pair.volumeToken1, tokens[1])
+      const dummyPair = new Pair(
+        token0Amount ? (token0Amount as TokenAmount) : new TokenAmount(tokens[0], '0'),
+        token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
+      )
+      const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken)
+      const stakingToken = new Token(11155111, pool.id, 18, '')
+      return {
+        stakingRewardAddress,
+        tokens,
+        pair: dummyPair,
+        lpToken: dummyPair.liquidityToken,
+        token0Amount,
+        token1Amount,
+        volume0Amount,
+        volume1Amount,
+        totalStakedAmount,
+        stakingToken,
+        tvl: tryParseAmount(pool.pair.reserveUSD, dummyPair.liquidityToken),
+        volumeAmount: tryParseAmount(pool.pair.volumeUSD, dummyPair.liquidityToken)
+      }
+    }, [])
+    return poolInfos
   } catch (error) {
     return []
+  }
+}
+
+export async function fetchStakingPool(stakingAddress: string): Promise<PoolInfo | undefined> {
+  const query = `{
+  poolGombocs(where: {id:"${stakingAddress}"}) {
+    id
+    totalStakedBalanceUSD
+    totalStakedBalance
+    pair{
+      id
+      reserveUSD
+      volumeUSD
+      reserve0
+      reserve1
+      volumeToken0
+      volumeToken1
+      token0{
+        id
+        symbol
+        decimals
+      }
+      token1{
+        id
+        symbol
+        decimals
+      }
+    }
+  }
+}`
+  try {
+    const response = await postQuery(SUBGRAPH, query)
+    const pool = response.data.poolGombocs[0]
+    const token0 = new Token(
+      ChainId.SEPOLIA,
+      pool.pair.token0.id,
+      Number(pool.pair.token0.decimals),
+      pool.pair.token0.symbol
+    )
+    const token1 = new Token(
+      ChainId.SEPOLIA,
+      pool.pair.token1.id,
+      Number(pool.pair.token1.decimals),
+      pool.pair.token1.symbol
+    )
+    const tokens = [token0, token1]
+    const token0Amount = tryParseAmount(pool.pair.reserve0, tokens[0]) as TokenAmount
+    const token1Amount = tryParseAmount(pool.pair.reserve1, tokens[1]) as TokenAmount
+    const volume0Amount = tryParseAmount(pool.pair.volumeToken0, tokens[0]) as TokenAmount
+    const volume1Amount = tryParseAmount(pool.pair.volumeToken1, tokens[1]) as TokenAmount
+    const dummyPair = new Pair(
+      token0Amount ? (token0Amount as TokenAmount) : new TokenAmount(tokens[0], '0'),
+      token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
+    )
+    const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
+    const stakingToken = new Token(11155111, pool.id, 18, '')
+    return {
+      stakingRewardAddress: stakingAddress,
+      pair: dummyPair,
+      tokens,
+      lpToken: dummyPair.liquidityToken,
+      token0Amount,
+      token1Amount,
+      volume0Amount,
+      volume1Amount,
+      totalStakedAmount,
+      stakingToken,
+      tvl: tryParseAmount(pool.pair.reserveUSD, dummyPair.liquidityToken) as TokenAmount,
+      volumeAmount: tryParseAmount(pool.pair.volumeUSD, dummyPair.liquidityToken) as TokenAmount
+    }
+  } catch (error) {
+    return undefined
   }
 }

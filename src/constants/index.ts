@@ -16,6 +16,12 @@ type ChainTokenList = {
   readonly [chainId in ChainId]: Token[]
 }
 
+export const REWARD_CONTRACT: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: '',
+  [ChainId.SEPOLIA]: '',
+  [ChainId.HOPE]: ''
+}
+
 export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth')
 export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin')
 // export const USDC = new Token(ChainId.SEPOLIA, '0xf9B7E9bb840b7BBf7E0C42724f11121D4D1eFC22', 18, 'USDC', 'USD//C')
@@ -341,3 +347,8 @@ export const BLOCKED_ADDRESSES: string[] = [
   '0xA7e5d5A720f06526557c513402f2e6B5fA20b008',
   '0x8576aCC5C05D6Ce88f4e49bf65BdF0C62F91353C'
 ]
+
+export enum ACTION_TYPE {
+  APPROVE,
+  SWAP
+}
