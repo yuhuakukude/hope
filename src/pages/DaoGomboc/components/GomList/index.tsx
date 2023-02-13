@@ -158,7 +158,7 @@ const GomListF = (props: any, ref: any) => {
       ) : (
         <div className="reset-box w-100">
           <div className="head">
-            $LT Rewards Claim
+            Reset To Vote
             <div className="icon-close">
               <CloseIcon onClick={() => setShowConfirm(false)} />
             </div>
