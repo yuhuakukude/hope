@@ -1,15 +1,16 @@
 import React, { useState } from 'react'
 import { AutoColumn } from '../../components/Column'
 import styled from 'styled-components'
-import { AutoRow, RowFixed } from '../../components/Row'
+import { AutoRow, RowBetween, RowFixed } from '../../components/Row'
 import { CardSection, DataCard } from '../../components/earn/styled'
 import Loader from '../../components/Loader'
 import { OutlineCard } from '../../components/Card'
 import { SearchInput } from '../../components/SearchModal/styleds'
-import { ButtonGray } from '../../components/Button'
+import { ButtonPrimary } from '../../components/Button'
 import { useLPStakingInfos } from '../../hooks/useLPStaking'
 import StakingPoolCard from '../../components/stakingPool/StakingPoolCard'
 import { TYPE } from '../../theme'
+import useTheme from '../../hooks/useTheme'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -48,11 +49,126 @@ const PoolSection = styled.div`
   justify-self: center;
 `
 
+interface OverviewData {
+  title: string
+  isRise: boolean
+  rate: string
+  amount: string
+}
+
+const Text2 = styled.p`
+  color: ${({ theme }) => theme.text2};
+`
+const RateText = styled.p`
+  font-size: 16px;
+  margin-left: 22px;
+`
+
+function RiseText({ data }: { data: OverviewData }) {
+  const theme = useTheme()
+  return (
+    <>
+      {data.isRise ? (
+        <RateText style={{ color: theme.red1, fontSize: '16px' }}>{data.rate} ↑</RateText>
+      ) : (
+        <RateText style={{ color: theme.green1, fontSize: '16px' }}>{data.rate} ↓</RateText>
+      )}
+    </>
+  )
+}
+
+function OverviewBlock({ data }: { data: OverviewData }) {
+  return (
+    <div>
+      <RowBetween>
+        <Text2>{data.title}</Text2>
+        <RiseText data={data} />
+      </RowBetween>
+      <p style={{ color: 'white', fontSize: '20px', marginTop: '30px' }}>{data.amount}</p>
+    </div>
+  )
+}
+
+function PoolOverview() {
+  const fakeData: OverviewData[] = [
+    {
+      title: 'Pool Overview',
+      isRise: true,
+      rate: '2.53%',
+      amount: '$ 10,123,435.32'
+    },
+    {
+      title: 'Volume(24H)',
+      isRise: false,
+      rate: '2.53%',
+      amount: '$ 13,156,678.34'
+    },
+    {
+      title: 'Fees(24H)',
+      isRise: true,
+      rate: '2.53%',
+      amount: '$ 10,123,435.32'
+    },
+    {
+      title: 'Fess(7d)',
+      isRise: true,
+      rate: '2.53%',
+      amount: '$ 10,123,435.32'
+    }
+  ]
+  return (
+    <TopSection>
+      <RowBetween>
+        <p style={{ fontSize: '28px' }}>Pool Overview</p>
+        <ButtonPrimary style={{ width: 'max-content' }}>New Position</ButtonPrimary>
+      </RowBetween>
+      <PoolsWrapper style={{ marginTop: '30px' }}>
+        <RowBetween style={{ padding: '0px 50px', marginTop: '30px' }}>
+          {fakeData.map((data, index) => {
+            return <OverviewBlock data={data} key={index} />
+          })}
+        </RowBetween>
+      </PoolsWrapper>
+    </TopSection>
+  )
+}
+
 // const DataRow = styled(RowBetween)`
 //   ${({ theme }) => theme.mediaWidth.upToSmall`
 // flex-direction: column;
 // `};
 // `
+const NameText = styled.p`
+  color: ${({ theme }) => theme.text1};
+  font-size: 18px;
+`
+const TimeText = styled.p`
+  color: ${({ theme }) => theme.text2};
+  font-size: 16px;
+`
+
+function ChartView() {
+  const fakeData = {
+    name: 'TVL',
+    value: '$78.34 M',
+    time: 'last 7Days'
+  }
+
+  return (
+    <PoolsWrapper style={{ width: '49%', height: '340px' }}>
+      <div>
+        <AutoRow gap={'10px'}>
+          <NameText>{fakeData.name}</NameText>
+          <NameText>{fakeData.value}</NameText>
+          <TimeText>{fakeData.time}</TimeText>
+        </AutoRow>
+        <div>
+          <p>temp chart</p>
+        </div>
+      </div>
+    </PoolsWrapper>
+  )
+}
 
 type Sort = 'asc' | 'desc'
 
@@ -68,6 +184,11 @@ export default function StakingPool() {
 
   return (
     <PageWrapper gap="lg" justify="center">
+      <PoolOverview />
+      <RowBetween style={{ width: '100%' }}>
+        <ChartView />
+        <ChartView />
+      </RowBetween>
       <PoolsWrapper>
         <TopSection gap="md">
           <DataCard>
@@ -84,13 +205,12 @@ export default function StakingPool() {
                     onChange={() => {}}
                     onKeyDown={() => {}}
                   />
-                  <ButtonGray>Search</ButtonGray>
+                  <ButtonPrimary>Search</ButtonPrimary>
                 </RowFixed>
               </AutoColumn>
             </CardSection>
           </DataCard>
         </TopSection>
-
         <AutoColumn gap="lg" style={{ width: '100%' }}>
           <PositionTitleWrapper>
             <PositionTitle>Pool</PositionTitle>
