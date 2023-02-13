@@ -160,7 +160,10 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
         // check for account, if no account set to 0
 
         const stakedAmount = new TokenAmount(dummyPair.liquidityToken, JSBI.BigInt(balanceState?.result?.[0] ?? 0))
-        const totalStakedAmount = new TokenAmount(dummyPair.liquidityToken, JSBI.BigInt(totalSupplyState.result?.[0]))
+        const totalStakedAmount = new TokenAmount(
+          dummyPair.liquidityToken,
+          JSBI.BigInt(totalSupplyState.result?.[0] ?? 0)
+        )
         //const totalRewardRate = new TokenAmount(uni, JSBI.BigInt(rewardDataState.result?.rate))
 
         const getHypotheticalRewardRate = (
