@@ -15,14 +15,20 @@ const columns = [
       text: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined,
       record: IItem
     ) => {
+      if (0) {
+        return (
+          <div className="veLT-rewards-item-title">
+            <span className="veLT-rewards-item-other">others</span>
+            <Tips title="other tips" />
+          </div>
+        )
+      }
       return (
         <>
-          <div className="">{text}</div>
-          <div className="">
-            <span className="">{record.gomboc.gombocAddress}</span>
-            <span className="">
-              <CopyHelper toCopy="gombocName" />
-            </span>
+          <div className="veLT-rewards-item-title">{text}</div>
+          <div className="veLT-rewards-item-desc">
+            <span className="veLT-rewards-item-name">{record.gomboc.gombocAddress}</span>
+            <CopyHelper toCopy="gombocName" />
           </div>
         </>
       )
@@ -42,8 +48,8 @@ const columns = [
     render: (text: string, record: IItem) => {
       return (
         <>
-          <div className="">{text}</div>
-          <div className=""></div>
+          <div className="veLT-rewards-item-title">{text}</div>
+          <div className="veLT-rewards-item-desc">{record.gomboc.IpTokenDecimal}</div>
         </>
       )
     }
@@ -55,8 +61,8 @@ const columns = [
     render: (text: string, record: IItem) => {
       return (
         <>
-          <div className="">{text}</div>
-          <div className=""></div>
+          <div className="veLT-rewards-item-title">{text}</div>
+          <div className="veLT-rewards-item-desc">{record.gomboc.IpTokenDecimal}</div>
         </>
       )
     }
@@ -66,7 +72,8 @@ const columns = [
     dataIndex: 'Actions',
     key: 'Actions',
     render: (text: string, record: IItem) => {
-      return <span>Withdraw</span>
+      console.log(text, record)
+      return <span className="veLT-rewards-item-button">Withdraw</span>
     }
   }
 ]
