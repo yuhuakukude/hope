@@ -95,10 +95,17 @@ export default function BuyHope() {
     return typedType === TYPE.TOP_INPUT
       ? {
           topValue: typed,
-          bottomValue: resOf
+          bottomValue: typed
+            ? new TokenAmount(payToken, tryParseAmount(resOf, payToken)?.raw.toString() ?? '0').toFixed(2, undefined, 0)
+            : ''
         }
       : {
-          topValue: resOf,
+          topValue: typed
+            ? new TokenAmount(
+                HOPE[chainId ?? 1],
+                tryParseAmount(resOf, HOPE[chainId ?? 1])?.raw.toString() ?? '0'
+              ).toFixed(2, undefined, 0)
+            : '',
           bottomValue: typed
         }
     // eslint-disable-next-line react-hooks/exhaustive-deps
