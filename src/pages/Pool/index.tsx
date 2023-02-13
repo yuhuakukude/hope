@@ -187,7 +187,7 @@ export default function Pool() {
               {!account ? (
                 <Card padding="40px">
                   <TYPE.white textAlign="center">Connect to a wallet to view your liquidity.</TYPE.white>
-                  <ButtonOutlined width={'400px'} mt={'40px'} primary>
+                  <ButtonOutlined margin={'auto'} width={'400px'} mt={'40px'} primary>
                     Connect Wallet
                   </ButtonOutlined>
                 </Card>
