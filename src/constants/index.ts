@@ -18,7 +18,7 @@ type ChainTokenList = {
 
 export const REWARD_CONTRACT: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: '',
-  [ChainId.SEPOLIA]: ','
+  [ChainId.SEPOLIA]: '',
   [ChainId.HOPE]: ''
 }
 
