@@ -1,28 +1,27 @@
-import PortfolioApi from 'api/portfolio.api'
+import PortfolioApi, { IDetail } from 'api/portfolio.api'
 import Tips from 'components/Tips'
-import React, { useCallback, useEffect, useState } from 'react'
+import { useActiveWeb3React } from 'hooks'
+import React, { useEffect, useState } from 'react'
+import { formatDate } from 'utils/format'
 
-export default function Empty() {
-  const [overviewData, setOverviewData] = useState({})
-  console.log(overviewData)
-  async function initOverview() {
-    try {
-      const res = await PortfolioApi.getRewardsOverview({})
+const startTimestamp = (new Date().getTime() - 1000 * 60 * 60 * 24 * 7 * 2) / 1000
+const endTimestamp = (new Date().getTime() - 1000 * 60 * 60 * 24 * 7) / 1000
+
+export default function Detail() {
+  const { account } = useActiveWeb3React()
+  const [overviewData, setOverviewData] = useState<IDetail>({} as IDetail)
+
+  useEffect(() => {
+    PortfolioApi.getRewardsOverview({
+      startTimestamp,
+      endTimestamp,
+      userAddress: account
+    }).then(res => {
       if (res && res.result) {
         setOverviewData(res.result)
       }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
-  const init = useCallback(async () => {
-    await initOverview()
-  }, [])
-
-  useEffect(() => {
-    init()
-  }, [init])
+    })
+  }, [account])
 
   return (
     <>
@@ -38,16 +37,18 @@ export default function Empty() {
         <div className="velt-rewards-list">
           <div className="velt-rewards-item">
             <div className="velt-rewards-item-title">Platform Fees Gain</div>
-            <div className="velt-rewards-item-amount">≈ $523,456,789.00 </div>
-            <div className="velt-rewards-item-date">Period : 01-09 ~ 01-16</div>
+            <div className="velt-rewards-item-amount">≈ ${overviewData.withdrawable} </div>
+            <div className="velt-rewards-item-date">
+              Period : {formatDate(startTimestamp, 'MM-DD')} ~ {formatDate(endTimestamp, 'MM-DD')}
+            </div>
           </div>
           <div className="velt-rewards-item">
             <div className="velt-rewards-item-title">Belongs to veLT</div>
-            <div className="velt-rewards-item-amount">≈ 101,123,273.45 stHOPE</div>
+            <div className="velt-rewards-item-amount">≈ {overviewData.belongsToVeLT} stHOPE</div>
           </div>
           <div className="velt-rewards-item">
             <div className="velt-rewards-item-title">Belongs to me</div>
-            <div className="velt-rewards-item-amount">≈ 202,123,456.09 stHOPE</div>
+            <div className="velt-rewards-item-amount">≈ ${overviewData.belongsToMe} stHOPE</div>
             <div className="velt-rewards-item-date">≈ ~ $10,123,456,789.00</div>
           </div>
         </div>

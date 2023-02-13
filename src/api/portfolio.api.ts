@@ -29,6 +29,12 @@ export interface IPortfolio {
   rewards: IPortfolioReward[]
 }
 
+export interface IDetail {
+  belongsToMe: string
+  belongsToVeLT: string
+  withdrawable: string
+}
+
 export default class PortfolioApi {
   // 查询LT锁仓记录
   static getOverview(address: string) {
@@ -38,7 +44,7 @@ export default class PortfolioApi {
   static getRewardsList(params: any): Promise<any> {
     return get('/light/dao/veLT/rewards/list', { params })
   }
-  static getRewardsOverview(params: any): Promise<any> {
-    return get('/light/dao/veLT/rewards/overview', { params })
+  static getRewardsOverview(params: any) {
+    return get<IDetail>('/light/dao/veLT/rewards/overview', { params })
   }
 }
