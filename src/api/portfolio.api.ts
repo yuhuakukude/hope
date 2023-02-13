@@ -1,4 +1,3 @@
-import { ChainId } from '@uniswap/sdk'
 import { get } from '../utils/http'
 
 export interface IPortfolioReward {
@@ -35,10 +34,7 @@ export default class PortfolioApi {
   static getOverview(address: string) {
     return get<IPortfolio>('/light/portfolio/gomboc/overview', { params: { address } })
   }
-
-  static getAllCoins(chainId?: ChainId): Promise<any> {
-    return get('/light/dao/base/getAllCoins', { params: { chainId } })
-  }
+ 
   static getRewardsList(params: any): Promise<any> {
     return get('/light/dao/veLT/rewards/list', { params })
   }
