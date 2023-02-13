@@ -2,16 +2,20 @@ import PortfolioApi, { IDetail } from 'api/portfolio.api'
 import Tips from 'components/Tips'
 import { useActiveWeb3React } from 'hooks'
 import React, { useEffect, useState } from 'react'
-import { formatDate } from 'utils/format'
+import { formatDate, getDateForLastOccurence } from 'utils/format'
 
-const startTimestamp = (new Date().getTime() - 1000 * 60 * 60 * 24 * 7 * 2) / 1000
-const endTimestamp = (new Date().getTime() - 1000 * 60 * 60 * 24 * 7) / 1000
+const diffTime = getDateForLastOccurence('Thurs')
+export const endTimestamp = (diffTime.getTime() / 1000) | 0
+export const startTimestamp = ((diffTime.getTime() - 1000 * 60 * 60 * 24 * 7) / 1000) | 0
 
 export default function Detail() {
   const { account } = useActiveWeb3React()
   const [overviewData, setOverviewData] = useState<IDetail>({} as IDetail)
 
   useEffect(() => {
+    if (!account) {
+      return
+    }
     PortfolioApi.getRewardsOverview({
       startTimestamp,
       endTimestamp,

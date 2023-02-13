@@ -35,15 +35,51 @@ export interface IDetail {
   withdrawable: string
 }
 
+export enum POOL_TYPE {
+  HOPE,
+  SWAP
+}
+export interface IGomboc {
+  id: string
+  networkId: number
+  gombocType: number
+  poolType: POOL_TYPE 
+  gombocTypeName: string
+  gombocAddress: string
+  gombocName:string
+  ItTokenAddress:string
+  ItTokenSymbol:string
+  ItTokenName:string
+  IpTokenAddress:string
+  IpTokenSymbol:string
+  IpTokenName:string
+  composition:string
+  IpTokenDecimal:number
+  enable:boolean
+  createAt:string
+  updateAt:string
+}
+export interface IItem {
+  gomboc: IGomboc
+  totalFees: number
+  withdrawable: number
+}
+
+interface IParams {
+  startTimestamp: number
+  endTimestamp: number
+  userAddress: string
+}
+
 export default class PortfolioApi {
   // 查询LT锁仓记录
   static getOverview(address: string) {
     return get<IPortfolio>('/light/portfolio/gomboc/overview', { params: { address } })
   }
-  static getRewardsList(params: any): Promise<any> {
-    return get('/light/dao/veLT/rewards/list', { params })
+  static getRewardsList(params: IParams) {
+    return get<IItem[]>('/light/dao/veLT/rewards/list', { params })
   }
-  static getRewardsOverview(params: any) {
+  static getRewardsOverview(params: IParams) {
     return get<IDetail>('/light/dao/veLT/rewards/overview', { params })
   }
 }

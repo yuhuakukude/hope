@@ -129,6 +129,18 @@ export const addressDes = (value: string) => {
   return value
 }
 
+const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat']
+export function getDateForLastOccurence(strDay: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thurs' | 'Fri' | 'Sat') {
+  const date = new Date()
+  const index = weekDays.indexOf(strDay)
+  let difference = date.getDay() - index
+  if (difference < 0) {
+    difference = -7 - difference
+  }
+  date.setDate(date.getDate() + difference)
+  return date
+}
+
 export default {
   rate,
   numeral,
