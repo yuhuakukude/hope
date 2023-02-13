@@ -1,9 +1,10 @@
 import { ButtonPrimary } from 'components/Button'
 import Table from 'components/Table'
 import Tips from 'components/Tips'
-import React from 'react'
+import React, { useCallback, useState, useEffect } from 'react'
 import Card from '../Card'
 import TitleTips from '../TitleTips'
+import PortfolioApi from '../../../../api/portfolio.api'
 
 import './index.scss'
 
@@ -23,6 +24,26 @@ function Empty() {
 }
 
 export default function VeLTRewards() {
+  const [overviewData, setOverviewData] = useState({})
+  console.log(overviewData)
+  async function initOverview() {
+    try {
+      const res = await PortfolioApi.getRewardsOverview({})
+      if (res && res.result) {
+        setOverviewData(res.result)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const init = useCallback(async () => {
+    await initOverview()
+  }, [])
+
+  useEffect(() => {
+    init()
+  }, [init])
   return (
     <div className="velt-rewards-wrap">
       <Card>
@@ -56,8 +77,6 @@ export default function VeLTRewards() {
                 <div className="velt-rewards-item">
                   <div className="velt-rewards-item-title">Belongs to veLT</div>
                   <div className="velt-rewards-item-amount">≈ 101,123,273.45 stHOPE</div>
-                  <div className="velt-rewards-item-date">Collected : ≈ $ 223,456,789.00 </div>
-                  <div className="velt-rewards-item-date">Uncollected : ≈ $ 300,456,789.00 </div>
                 </div>
                 <div className="velt-rewards-item">
                   <div className="velt-rewards-item-title">Belongs to me</div>
