@@ -10,13 +10,14 @@ import { useActiveWeb3React } from '../../../../hooks'
 import { TokenAmount } from '@uniswap/sdk'
 import { LT, VELT } from '../../../../constants'
 import { CloseIcon } from '../../../../theme/components'
-import { useToVote } from '../../../../hooks/ahp/useGomVote'
+import { useToVote, conFnNameEnum } from '../../../../hooks/ahp/useGomVote'
 import format from '../../../../utils/format'
 import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
 import { useGomConContract } from '../../../../hooks/useContract'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
+import { useActionPending } from '../../../../state/transactions/hooks'
 
 const GomListF = (props: any, ref: any) => {
   const endDate = dayjs()
@@ -39,6 +40,7 @@ const GomListF = (props: any, ref: any) => {
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [pendingText, setPendingText] = useState('')
+  const { pending: isTranPending } = useActionPending(account ? `${account}-${conFnNameEnum.VoteForGombocWeights}` : '')
 
   const CompositionNode = (text: any) => <span>{text || '--'}</span>
 
@@ -65,6 +67,7 @@ const GomListF = (props: any, ref: any) => {
         setTxHash(hash)
       })
       .catch((error: any) => {
+        setTxHash('')
         setShowConfirm(true)
         setPendingText(``)
         setAttemptingTxn(false)
@@ -87,7 +90,6 @@ const GomListF = (props: any, ref: any) => {
   }, [tableData, account])
 
   const lastVoteData = useSingleContractMultipleData(gomConContract, 'lastUserVote', argList)
-
   const isTimeDis = useMemo(() => {
     let res: any = []
     const arr: any = []
@@ -313,6 +315,13 @@ const GomListF = (props: any, ref: any) => {
   function toSearch() {
     init(voterAddress, searchValue)
   }
+
+  useEffect(() => {
+    if (txHash && isTranPending === false) {
+      setTxHash('')
+      init(voterAddress, searchValue)
+    }
+  }, [init, txHash, isTranPending, voterAddress, searchValue])
 
   useImperativeHandle(ref, () => ({
     initTableData: () => {
