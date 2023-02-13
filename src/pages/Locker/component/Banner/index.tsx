@@ -1,7 +1,7 @@
 import React from 'react'
 import './index.scss'
 
-export default function LockerBanner({}: {}) {
+export default function LockerBanner() {
   return (
     <div className="locker-banner-box">
       <div className="banner p-30">
