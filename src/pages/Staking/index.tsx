@@ -24,6 +24,8 @@ import TransactionConfirmationModal, { TransactionErrorContent } from '../../com
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import { ethers } from 'ethers'
 import { NavLink } from 'react-router-dom'
+import { TransactionResponse } from '@ethersproject/providers'
+import { useEstimate } from '../../hooks/ahp'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -31,12 +33,26 @@ const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
 `
 
+enum ACTION {
+  STAKE,
+  UNSTAKING,
+  WITHDRAW,
+  CLAIM
+}
+
 export default function Staking() {
   const { account, chainId, library } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const [curType, setStakingType] = useState('stake')
   const [curBuzType, setCurBuzType] = useState('')
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
+  const [actionType, setActionType] = useState(ACTION.STAKE)
+
+  const [stakePendingText, setStakePendingText] = useState('')
+  const [claimPendingText, setClaimPendingText] = useState('')
+  const [withdrawPendingText, setWithdrawPendingText] = useState('')
+
+  const isEthBalanceInsufficient = useEstimate()
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -91,13 +107,46 @@ export default function Staking() {
     return undefined
   }, [stakedVal, inputAmount])
 
+  const onTxStart = useCallback(() => {
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+  }, [])
+
+  const onTxSubmitted = useCallback((hash: string | undefined) => {
+    setShowConfirm(true)
+    setAttemptingTxn(false)
+    hash && setTxHash(hash)
+  }, [])
+
+  const onTxError = useCallback(error => {
+    setShowConfirm(true)
+    setTxHash('')
+    setAttemptingTxn(false)
+    setErrorStatus({ code: error?.code, message: error.message })
+  }, [])
+
+  const onApprove = useCallback(() => {
+    setActionType(ACTION.STAKE)
+    setCurToken(undefined)
+    onTxStart()
+    setStakePendingText(`Approve ${HOPE[chainId ?? 1].symbol}`)
+    approveCallback()
+      .then((response: TransactionResponse | undefined) => {
+        setStakePendingText('')
+        onTxSubmitted(response?.hash)
+      })
+      .catch(error => {
+        setStakePendingText('')
+        onTxError(error)
+      })
+  }, [approveCallback, chainId, onTxError, onTxStart, onTxSubmitted])
+
   const stakingCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
     setCurBuzType('')
     setCurToken(ST_HOPE[chainId ?? 1])
-    setShowConfirm(true)
-    setAttemptingTxn(true)
-
+    onTxStart()
+    setActionType(ACTION.STAKE)
     const deadline = toDeadline(PERMIT_EXPIRATION)
     const nonce = ethers.utils.randomBytes(32)
 
@@ -112,26 +161,30 @@ export default function Staking() {
     }
 
     const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
+    setStakePendingText(`Approve HOPE`)
+
     library
       .getSigner(account)
       ._signTypedData(domain, types, values)
       .then(signature => {
+        setStakePendingText(`Stake ${inputAmount.toFixed(2)} HOPE`)
         toStaked(inputAmount, nonce, deadline, signature)
           .then(hash => {
-            setAttemptingTxn(false)
-            setTxHash(hash)
             setAmount('')
+            setStakePendingText('')
+            onTxSubmitted(hash)
           })
-          .catch((err: any) => {
-            setAttemptingTxn(false)
-            setErrorStatus({ code: err?.code, message: err.message })
+          .catch((error: any) => {
+            setStakePendingText('')
+            onTxError(error)
+            throw error
           })
       })
       .catch(error => {
-        setAttemptingTxn(false)
-        setErrorStatus({ code: error?.code, message: error.message })
+        setStakePendingText('')
+        onTxError(error)
       })
-  }, [account, inputAmount, library, chainId, toStaked])
+  }, [account, inputAmount, library, chainId, onTxStart, toStaked, onTxSubmitted, onTxError])
 
   const getIsSub = useCallback(async () => {
     try {
@@ -152,56 +205,57 @@ export default function Staking() {
     if (!amount || !account || !inputAmount) return
     setCurBuzType('unStaking')
     setCurToken(undefined)
-    setShowConfirm(true)
-    setAttemptingTxn(true)
+    onTxStart()
+    setActionType(ACTION.UNSTAKING)
+    setStakePendingText(`Unstake ${inputAmount.toFixed(2)} HOPE`)
     toUnStaked(inputAmount)
       .then(hash => {
-        setAttemptingTxn(false)
-        setTxHash(hash)
+        setStakePendingText('')
+        onTxSubmitted(hash)
         setAmount('')
         getIsSub()
       })
       .catch((err: any) => {
-        setAttemptingTxn(false)
-        setAttemptingTxn(false)
-        setErrorStatus({ code: err?.code, message: err.message })
+        setStakePendingText('')
+        onTxError(err)
       })
-  }, [amount, account, inputAmount, toUnStaked, getIsSub])
+  }, [amount, account, inputAmount, onTxStart, toUnStaked, onTxSubmitted, getIsSub, onTxError])
 
   const claimCallback = useCallback(async () => {
     if (!account) return
     setCurBuzType('')
     setCurToken(LT[chainId ?? 1])
-    setAttemptingTxn(true)
+    onTxStart()
+    setClaimPendingText(`claim LT`)
+    setActionType(ACTION.CLAIM)
     toClaim()
       .then(hash => {
-        setAttemptingTxn(false)
-        setTxHash(hash)
-        setAmount('')
+        setClaimPendingText('')
+        onTxSubmitted(hash)
       })
-      .catch((err: any) => {
-        setAttemptingTxn(false)
-        setAttemptingTxn(false)
-        setErrorStatus({ code: err?.code, message: err.message })
+      .catch((error: any) => {
+        setClaimPendingText('')
+        onTxError(error)
       })
-  }, [account, chainId, toClaim])
+  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaim])
 
   const toWithdrawCallback = useCallback(async () => {
     if (!account) return
     setCurBuzType('')
     setCurToken(HOPE[chainId ?? 1])
-    setShowConfirm(true)
-    setAttemptingTxn(true)
+    onTxStart()
+    setActionType(ACTION.WITHDRAW)
+    setWithdrawPendingText('Withdraw')
     toWithdraw()
       .then(hash => {
-        setAttemptingTxn(false)
-        setTxHash(hash)
+        setWithdrawPendingText('')
+        onTxSubmitted(hash)
       })
-      .catch((err: any) => {
-        setAttemptingTxn(false)
-        setErrorStatus({ code: err?.code, message: err.message })
+      .catch((error: any) => {
+        setWithdrawPendingText('')
+        onTxError(error)
       })
-  }, [account, chainId, toWithdraw])
+  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toWithdraw])
 
   function toMax() {
     const balance = curType === 'stake' ? hopeBal?.toFixed(2) : stakedVal?.toFixed(2)
@@ -261,13 +315,13 @@ export default function Staking() {
             <div className="flex jc-between">
               <span className="text-white">Total Rewards</span>
               <span className="text-white">
-                {claRewards ? claRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
+                {totalRewards ? totalRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
               </span>
             </div>
             <div className="flex jc-between m-t-20 m-b-40">
               <span className="text-white">Claimable Rewards</span>
               <span className="text-white">
-                {totalRewards ? totalRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
+                {claRewards ? claRewards?.toFixed(2, { groupSeparator: ',' }).toString() : '--'}
               </span>
             </div>
             <ButtonPrimary className="hp-button-primary" onClick={claimCallback}>
@@ -288,7 +342,13 @@ export default function Staking() {
           attemptingTxn={attemptingTxn}
           hash={txHash}
           content={confirmationContent}
-          pendingText={''}
+          pendingText={
+            actionType === ACTION.STAKE || actionType === ACTION.UNSTAKING
+              ? stakePendingText
+              : actionType === ACTION.WITHDRAW
+              ? withdrawPendingText
+              : claimPendingText
+          }
           currencyToAdd={curToken}
           isShowSubscribe={isUnSub}
         />
@@ -378,8 +438,10 @@ export default function Staking() {
                     ) : curType === 'stake' ? (
                       <ActionButton
                         error={stakeInputError}
-                        pendingText={'Approving'}
-                        pending={approvalState === ApprovalState.PENDING}
+                        pendingText={
+                          approvalState === ApprovalState.PENDING ? 'Approving HOPE' : 'Confirm in your wallet'
+                        }
+                        pending={(approvalState === ApprovalState.PENDING && curType === 'stake') || !!stakePendingText}
                         disableAction={!inputAmount || !hopeBal}
                         actionText={
                           stakeInputError
@@ -390,12 +452,13 @@ export default function Staking() {
                             ? 'Approve Hope'
                             : 'Stake HOPE Get stHOPE'
                         }
-                        onAction={approvalState === ApprovalState.NOT_APPROVED ? approveCallback : stakingCallback}
+                        onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : stakingCallback}
                       />
                     ) : (
                       <ActionButton
                         error={unstakeInputError}
-                        pending={approvalState === ApprovalState.PENDING}
+                        pendingText={'Confirm in your wallet'}
+                        pending={!!stakePendingText && actionType === ACTION.UNSTAKING}
                         disableAction={!inputAmount || !stakedVal}
                         actionText={
                           unstakeInputError ? unstakeInputError : !inputAmount ? 'Enter amount' : 'Commit to unstake'
@@ -405,6 +468,17 @@ export default function Staking() {
                     )}
                   </div>
                   <div className="staking-tip">
+                    {account && isEthBalanceInsufficient && (
+                      <div className="flex m-t-15">
+                        <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
+                        <div>
+                          <p className="text-white lh15">
+                            Your wallet balance is below 0.001 ETH. The approve action require small transaction fees,
+                            so you may have deposit additional funds to complete them.
+                          </p>
+                        </div>
+                      </div>
+                    )}
                     {curType === 'unstake' && (
                       <div className="flex m-t-15">
                         <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
@@ -416,9 +490,9 @@ export default function Staking() {
                           <p className="text-white lh15 m-t-5">
                             Note that you do not receive the $LT bonus when you confirm your submission. You can also
                             try{' '}
-                            <a className="text-primary" href="/">
-                              LightSwap
-                            </a>{' '}
+                            <NavLink to={'/swap/exchange'}>
+                              <div className="text-primary">LightSwap</div>{' '}
+                            </NavLink>
                             to convert $stHOPE to $HOPE or other assets quickly.
                           </p>
                         </div>

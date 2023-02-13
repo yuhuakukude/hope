@@ -1,0 +1,68 @@
+.investment-allocation {
+  .investment-allocation-head {
+    .investment-allocation-title {
+      font-size: 20px;
+      color: #fff;
+    }
+
+    .investment-allocation-total {
+      margin-top: 30px;
+      font-size: 18px;
+      color: #fff;
+    }
+
+    .investment-allocation-total2 {
+      margin-top: 18px;
+
+      font-size: 30px;
+    }
+
+    .investment-allocation-total3 {
+      color: rgba(168, 168, 170, 1);
+      font-size: 14px;
+      margin-top: 12px;
+    }
+  }
+
+
+
+  .investment-allocation-bottom {
+    display: flex;
+    margin-top: 30px;
+
+    .investment-allocation-content {
+      display: flex;
+      flex-wrap: wrap;
+      flex: 1;
+      justify-content: space-between;
+      max-width: 490px;
+
+      .investment-allocation-box {
+        margin-bottom: 30px;
+        min-width: 170px;
+
+        .investment-allocation-box-head {
+          .investment-allocation-box-name {
+            color: rgba(168, 168, 170, 1);
+            font-size: 16px;
+          }
+
+          .investment-allocation-box-question {
+            margin-left: 8px;
+          }
+        }
+
+        .investment-allocation-box-amount {
+          margin-top: 10px;
+          font-size: 16px;
+          color: #fff;
+        }
+      }
+    }
+
+    .investment-allocation-map {
+      flex: 1;
+      width: 100%;
+    }
+  }
+}

@@ -1,10 +1,11 @@
 import { ChainId, CurrencyAmount, JSBI, Token, TokenAmount, WETH, Pair } from '@uniswap/sdk'
 import { useMemo } from 'react'
-import { DAI, HOPE, UNI, USDC, USDT, WBTC } from '../../constants'
+import { DAI, HOPE, SUBGRAPH, UNI, USDC, USDT, WBTC } from '../../constants'
 import { STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
 import { useActiveWeb3React } from '../../hooks'
 import { useMultipleContractSingleData } from '../multicall/hooks'
 import { tryParseAmount } from '../swap/hooks'
+import { postQuery } from '../../utils/graph'
 
 export const STAKING_GENESIS = 1600387200
 
@@ -23,11 +24,11 @@ export const STAKING_REWARDS_INFO: {
       stakingRewardAddress: '0xa1484C3aa22a66C62b77E0AE78E15258bd0cB711'
     },
     {
-      tokens: [WETH[ChainId.MAINNET], USDC],
+      tokens: [WETH[ChainId.MAINNET], USDC[ChainId.MAINNET]],
       stakingRewardAddress: '0x7FBa4B8Dc5E7616e59622806932DBea72537A56b'
     },
     {
-      tokens: [WETH[ChainId.MAINNET], USDT],
+      tokens: [WETH[ChainId.MAINNET], USDT[ChainId.MAINNET]],
       stakingRewardAddress: '0x6C3e4cb2E96B01F4b866965A91ed4437839A121a'
     },
     {
@@ -37,7 +38,7 @@ export const STAKING_REWARDS_INFO: {
   ],
   [ChainId.SEPOLIA]: [
     {
-      tokens: [HOPE[ChainId.SEPOLIA], USDT],
+      tokens: [HOPE[ChainId.SEPOLIA], USDT[ChainId.SEPOLIA]],
       stakingRewardAddress: '0x4C190d74706FB64E3865808Eefd5Cbb1d6B3a9c1'
     }
   ]
@@ -275,5 +276,48 @@ export function useDerivedUnstakeInfo(
   return {
     parsedAmount,
     error
+  }
+}
+
+interface StakeInfo {
+  pair?: {
+    id: boolean
+    totalStakedBalance: string
+    token0: {
+      decimals: string
+      id: string
+      symbol: string
+    }
+  }
+}
+
+export async function fetchStakeList(): Promise<StakeInfo[] | null> {
+  const query = `{
+  poolGombocs {
+    id
+    pair {
+      id
+      reserve0
+      token0 {
+        id
+        symbol
+        decimals
+      }
+      reserve1
+      token1 {
+        id
+        symbol
+        decimals
+      }
+    }
+    totalStakedBalance
+  }
+}`
+  try {
+    const response = await postQuery(SUBGRAPH, query)
+    console.log('response', response)
+    return response.data.subgraphError
+  } catch (error) {
+    return []
   }
 }

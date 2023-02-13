@@ -92,10 +92,50 @@ export const formatDate = (value: any, formatString = 'YYYY-MM-DD HH:mm:ss') => 
   return '-'
 }
 
+// date utc
+export const formatUTCDate = (value: any, formatString = 'YYYY-MM-DD HH:mm:ss') => {
+  if (value) {
+    return moment
+      .unix(value)
+      .utc()
+      .format(formatString)
+  }
+  return '-'
+}
+
+// numFormat
+export const numFormat = (num: number, digits: number) => {
+  const si = [
+    { value: 1, symbol: '' },
+    { value: 1e3, symbol: 'K' },
+    { value: 1e4, symbol: 'W' },
+    { value: 1e6, symbol: 'M' }
+  ]
+  const rx = /\.0+$|(\.[0-9]*[1-9])0+$/
+  let i
+  for (i = si.length - 1; i > 0; i--) {
+    if (num >= si[i].value) {
+      break
+    }
+  }
+  return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
+}
+
+// 地址 脱敏
+export const addressDes = (value: string) => {
+  if (value) {
+    return value.replace(/^(.{6})(?:\w+)(.{4})$/, '$1....$2')
+  }
+  return value
+}
+
 export default {
   rate,
   numeral,
   separate,
   amountFormat,
-  formatDate
+  formatDate,
+  numFormat,
+  addressDes,
+  formatUTCDate
 }

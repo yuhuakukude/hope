@@ -33,6 +33,8 @@ export default function ConfirmSwapModal({
   swapErrorMessage,
   isOpen,
   attemptingTxn,
+  pendingMessage,
+  errorCode,
   txHash
 }: {
   isOpen: boolean
@@ -42,9 +44,11 @@ export default function ConfirmSwapModal({
   txHash: string | undefined
   recipient: string | null
   allowedSlippage: number
+  pendingMessage: string | undefined
   onAcceptChanges: () => void
   onConfirm: () => void
   swapErrorMessage: string | undefined
+  errorCode?: number | undefined
   onDismiss: () => void
 }) {
   const showAcceptChanges = useMemo(
@@ -77,14 +81,16 @@ export default function ConfirmSwapModal({
   }, [allowedSlippage, onConfirm, showAcceptChanges, swapErrorMessage, trade])
 
   // text to show while loading
-  const pendingText = `Swapping ${trade?.inputAmount?.toSignificant(6)} ${
-    trade?.inputAmount?.currency?.symbol
-  } for ${trade?.outputAmount?.toSignificant(6)} ${trade?.outputAmount?.currency?.symbol}`
+  const pendingText = pendingMessage
+    ? pendingMessage
+    : `Swapping ${trade?.inputAmount?.toSignificant(6)} ${
+        trade?.inputAmount?.currency?.symbol
+      } for ${trade?.outputAmount?.toSignificant(6)} ${trade?.outputAmount?.currency?.symbol}`
 
   const confirmationContent = useCallback(
     () =>
       swapErrorMessage ? (
-        <TransactionErrorContent onDismiss={onDismiss} message={swapErrorMessage} />
+        <TransactionErrorContent errorCode={errorCode} onDismiss={onDismiss} message={swapErrorMessage} />
       ) : (
         <ConfirmationModalContent
           title="Confirm Swap"
@@ -93,7 +99,7 @@ export default function ConfirmSwapModal({
           bottomContent={modalBottom}
         />
       ),
-    [onDismiss, modalBottom, modalHeader, swapErrorMessage]
+    [swapErrorMessage, errorCode, onDismiss, modalHeader, modalBottom]
   )
 
   return (

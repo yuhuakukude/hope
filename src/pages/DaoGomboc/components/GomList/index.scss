@@ -35,8 +35,52 @@
     .ant-btn-link[disabled] {
       color: #A8A8AA;
     }
+    .ant-input-clear-icon {
+      color: rgba(255, 255, 255, 0.65);
+    }
   }
   .search-btn {
     height: 42px;
+  }
+  .hp-table {
+    .ant-table-thead > tr > th {
+      background: #3D3E46;
+      color: #fff;
+      border-bottom: none;
+    }
+    .ant-table-tbody > tr > td {
+      color: #fff;
+      border-bottom: 1px solid #3D3E46;
+    }
+    .ant-table-thead > tr.ant-table-row-hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td, .ant-table-tbody > tr.ant-table-row-hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td, .ant-table-thead > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td, .ant-table-tbody > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td {
+      background: none;
+    }
+    .ant-table-thead > tr > th.ant-table-column-has-actions.ant-table-column-has-sorters:hover {
+      background: #3D3E46;
+    }
+    .ant-table-thead > tr > th .ant-table-column-sorter .ant-table-column-sorter-inner .ant-table-column-sorter-up.on, .ant-table-thead > tr > th .ant-table-column-sorter .ant-table-column-sorter-inner .ant-table-column-sorter-down.on {
+      color: #E4C989;
+    }
+  
+  }
+  .hp-button-primary {
+    height: 42px;
+  }
+}
+.reset-box {
+  .head {
+    height: 75px;
+    position: relative;
+    line-height: 75px;
+    text-align: center;
+    font-size: 18px;
+    color: #fff;
+    text-align: center;
+    .icon-close {
+      position: absolute;
+      line-height: 1;
+      top: 25px;
+      right: 20px;
+    }
   }
 }

@@ -44,7 +44,6 @@ export function useToStaked() {
       if (amount.equalTo(JSBI.BigInt('0'))) throw new Error('amount is un support')
       const args = [amount.raw.toString(), NONCE, DEADLINE, sigVal]
       const method = 'staking'
-      console.log('args', args)
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
@@ -52,10 +51,7 @@ export function useToStaked() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Buy ${amount
-              .multiply(JSBI.BigInt('5'))
-              .toSignificant(4, { groupSeparator: ',' })
-              .toString()}  RAM with ${amount.toSignificant()} USDT`
+            summary: `Stake ${amount.toFixed(2, { groupSeparator: ',' }).toString()}  HOPE`,
           })
           return response.hash
         })
@@ -86,7 +82,7 @@ export function useToUnStaked() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `unstake success`
+            summary: `Unstake ${amount.toFixed(2)} HOPE`
           })
           return response.hash
         })
@@ -115,7 +111,7 @@ export function useToWithdraw() {
         from: account
       }).then((response: TransactionResponse) => {
         addTransaction(response, {
-          summary: `Withdraw Success`
+          summary: `Withdraw`
         })
         return response.hash
       })
@@ -142,7 +138,7 @@ export function useToClaim() {
         from: account
       }).then((response: TransactionResponse) => {
         addTransaction(response, {
-          summary: `Claim Success`
+          summary: `Claim`
         })
         return response.hash
       })

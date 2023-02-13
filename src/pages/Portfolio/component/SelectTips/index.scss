@@ -1,0 +1,29 @@
+.select-tips-wrap {
+  .select-tips-more {
+    color: rgb(228, 201, 137);
+    font-size: 14px;
+    cursor: pointer;
+
+    .iconfont {
+      font-size: 9px;
+      margin-left: 5px;
+    }
+
+    .iconfont-visible {
+      transform: rotate(180deg);
+      display: inline-block;
+    }
+  }
+}
+
+.select-tips-tool {
+  .ant-tooltip-inner {
+    padding: 0;
+    border-color: transparent;
+    background-color: transparent;
+  }
+
+  .ant-tooltip-arrow {
+    display: none;
+  }
+}

@@ -75,10 +75,11 @@ function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippag
 }
 
 export interface AdvancedSwapDetailsProps {
+  error?: string
   trade?: Trade
 }
 
-export function AdvancedSwapDetails({ trade }: AdvancedSwapDetailsProps) {
+export function AdvancedSwapDetails({ trade, error }: AdvancedSwapDetailsProps) {
   const theme = useContext(ThemeContext)
   const [allowedSlippage] = useUserSlippageTolerance()
 
@@ -114,7 +115,7 @@ export function AdvancedSwapDetails({ trade }: AdvancedSwapDetailsProps) {
           {/*)}*/}
         </>
       ) : (
-        <Text textAlign={'center'}>Enter an amount to see more trading details</Text>
+        <Text textAlign={'center'}>{error ? error : ''}</Text>
       )}
     </AutoColumn>
   )

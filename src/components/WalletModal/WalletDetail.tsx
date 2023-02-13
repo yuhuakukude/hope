@@ -17,7 +17,7 @@ import Test1 from 'assets/images/test1.jpg'
 import Test2 from 'assets/images/test2.jpg'
 import Test3 from 'assets/images/test3.jpg'
 import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
-import { HOPE, LT } from '../../constants'
+import { HOPE, LT, ST_HOPE } from '../../constants'
 import Circle from '../../assets/images/blue-loader.svg'
 import { CustomLightSpinner, ExternalLink } from '../../theme'
 import Copy from '../AccountDetails/Copy'
@@ -109,7 +109,7 @@ export default function WalletDetail({
   const theme = useTheme()
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   const hopeBalance = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
-  const stHopeBalance = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
+  const stHopeBalance = useTokenBalance(account ?? undefined, ST_HOPE[chainId ?? 1])
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
 
   const gasType: GasTypeData[] = [

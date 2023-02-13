@@ -34,11 +34,13 @@ import BuyHope from './BuyHope'
 import Staking from './Staking'
 import DaoGomboc from './DaoGomboc'
 import DaoLocker from './Locker'
+import Portfolio from './Portfolio'
 
 import './App.css'
 import '../assets/style/index.scss'
 import SideBar from '../components/SideBar'
 import { ModalProvider } from '../context/ModalContext'
+import SettingPage from './Settings'
 
 const PageWrapper = styled.div`
   display: flex;
@@ -111,10 +113,11 @@ export default function App() {
                 <Switch>
                   <Route exact strict path="/swap/exchange" component={Swap} />
                   <Route exact strict path="/swap/pools" component={Pool} />
+                  <Route exact strict path="/swap/find" component={PoolFinder} />
+                  <Route exact strict path="/swap/settings" component={SettingPage} />
                   <Route exact strict path="/claim" component={OpenClaimAddressModalAndRedirectToSwap} />
                   <Route exact strict path="/swap/:outputCurrency" component={RedirectToSwap} />
                   <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
-                  <Route exact strict path="/find" component={PoolFinder} />
                   <Route exact strict path="/uni" component={Earn} />
                   <Route exact strict path="/vote" component={Vote} />
                   <Route exact strict path="/create" component={RedirectToAddLiquidity} />
@@ -135,6 +138,11 @@ export default function App() {
                   <Route exact strict path="/hope/buy-hope" component={BuyHope} />
                   <Route exact strict path="/dao/gomboc" component={DaoGomboc} />
                   <Route exact strict path="/dao/locker" component={DaoLocker} />
+                  <Route exact strict path="/staking" component={Staking} />
+                  <Route exact strict path="/buy-hope" component={BuyHope} />
+                  <Route exact strict path="/dao-gomboc" component={DaoGomboc} />
+                  <Route exact strict path="/dao-locker" component={DaoLocker} />
+                  <Route exact strict path="/portfolio" component={Portfolio} />
                   <Route component={RedirectPathToSwapOnly} />
                 </Switch>
               </Web3ReactManager>

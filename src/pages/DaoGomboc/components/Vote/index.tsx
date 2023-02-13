@@ -10,35 +10,43 @@ import { useTokenBalance } from '../../../../state/wallet/hooks'
 import { useGomConContract } from '../../../../hooks/useContract'
 import { VELT } from '../../../../constants'
 import { Select } from 'antd'
-import { useToVote } from '../../../../hooks/ahp/useGomVote'
+import { useToVote, conFnNameEnum } from '../../../../hooks/ahp/useGomVote'
 import { JSBI, Percent, Token } from '@uniswap/sdk'
-import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
+import { useSingleCallResult } from '../../../../state/multicall/hooks'
 import ActionButton from '../../../../components/Button/ActionButton'
+import { NavLink } from 'react-router-dom'
+
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
 
+import { useActionPending } from '../../../../state/transactions/hooks'
+
 interface VoteProps {
   votiingData: any
   gombocList: any
+  isNoVelt: boolean
+  updateTable: () => void
 }
 
-const Vote = ({ votiingData, gombocList }: VoteProps) => {
+const Vote = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps) => {
   const { account, chainId } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const gomConContract = useGomConContract()
   const { toVote } = useToVote()
+
   const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
   const veLtBal = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const [voteAmount, setVoteAmount] = useState('')
-  const [unUseRateVal, setUnUseRateVal] = useState('')
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
   // txn values
   const [txHash, setTxHash] = useState<string>('')
-  const [errorMessage, setErrorMessage] = useState<string | undefined>()
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
+  const [pendingText, setPendingText] = useState('')
+  const { pending: isTranPending } = useActionPending(account ? `${account}-${conFnNameEnum.VoteForGombocWeights}` : '')
 
   const { Option } = Select
   const endDate = dayjs()
@@ -100,80 +108,105 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
     }
   }, [gombocList])
 
-  const mulArg = useMemo(() => {
-    if (selList && account) {
-      const arr: any = []
-      selList.forEach((e: any) => {
-        const item = [account, e.value]
-        arr.push(item)
-      })
-      return arr
-    } else {
-      return []
-    }
-  }, [selList, account])
-
-  const voteInputError = useMemo(() => {
-    if (amount && (Number(amount) > 100 || Number(amount) === 0)) {
-      return 'Insufficient Value'
-    }
-    return undefined
-  }, [amount])
-
-  const getActionText = useMemo(() => {
-    let res = 'Select a Gömböc for Vote'
-    if (voteInputError) {
-      res = voteInputError
-    } else if (!curGomAddress) {
-      res = 'Select a Gömböc for Vote'
-    } else if (!amount) {
-      res = 'Enter amount'
-    } else {
-      res = 'Confirm Vote'
+  const lastArg = useMemo(() => {
+    let res: any = [undefined]
+    if (account && curGomAddress) {
+      res = [account, curGomAddress]
     }
     return res
-  }, [voteInputError, amount, curGomAddress])
+  }, [account, curGomAddress])
 
-  const allVoteData = useSingleContractMultipleData(gomConContract, 'voteUserSlopes', mulArg)
+  const votePowerAmount = useSingleCallResult(gomConContract, 'voteUserPower', [account ?? undefined])
+  const lastVoteData = useSingleCallResult(gomConContract, 'lastUserVote', lastArg)
+  const curPower = useSingleCallResult(gomConContract, 'voteUserSlopes', lastArg)
 
-  const handleVoteData = useCallback(() => {
-    if (allVoteData && allVoteData.length > 0) {
-      let unUseVal = JSBI.BigInt(10000)
-      allVoteData.forEach((e: any) => {
-        const po = (e.power && e.power.toString()) || 0
-        unUseVal = JSBI.subtract(unUseVal, JSBI.BigInt(po))
-      })
+  const curLastVote = useMemo(() => {
+    let res = false
+    const ld = Number(lastVoteData.result)
+    if (lastVoteData && ld && curGomAddress) {
+      const now = dayjs()
+      const end = dayjs.unix(ld).add(10, 'day')
+      res = now.isBefore(end)
+    }
+    return res
+  }, [lastVoteData, curGomAddress])
+
+  const unUseRateVal = useMemo(() => {
+    let res = ''
+    if (votePowerAmount && (Number(votePowerAmount.result) || Number(votePowerAmount.result) === 0)) {
+      const total = JSBI.BigInt(10000)
+      const apo = JSBI.BigInt(Number(votePowerAmount.result))
+      const unUseVal = JSBI.subtract(total, apo)
       const ra = new Percent(unUseVal, JSBI.BigInt(10000))
       if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
-        setUnUseRateVal(ra.toFixed(2))
+        res = ra.toFixed(2)
       }
     }
-  }, [allVoteData])
+    return res
+  }, [votePowerAmount])
+
+  const subAmount = useMemo(() => {
+    let sub = 0
+    if (unUseRateVal && curPower.result && curPower.result.power) {
+      const cp = JSBI.BigInt(Number(curPower.result.power))
+      const ra = new Percent(cp, JSBI.BigInt(10000))
+      sub = Number(ra.toFixed(2)) + Number(unUseRateVal)
+    }
+    return sub
+  }, [unUseRateVal, curPower])
+
+  const voteInputError = useMemo(() => {
+    if (curLastVote) {
+      return 'No voting within ten days'
+    }
+    if (curGomAddress && amount && (Number(amount) > 100 || Number(amount) === 0)) {
+      return 'Insufficient Value'
+    }
+    if (curGomAddress && amount && Number(subAmount) < Number(amount)) {
+      return 'Surplus deficiency'
+    }
+    return undefined
+  }, [amount, curLastVote, subAmount, curGomAddress])
+
+  const getActionText = useMemo(() => {
+    if (isNoVelt) {
+      return 'need to LT locked'
+    } else if (!curGomAddress) {
+      return 'Select a Gömböc for Vote'
+    } else if (!amount) {
+      return 'Enter amount'
+    } else if (voteInputError) {
+      return voteInputError
+    } else {
+      return 'Confirm Vote'
+    }
+  }, [voteInputError, amount, curGomAddress, isNoVelt])
 
   const toVoteCallback = useCallback(async () => {
     if (!amount || !account) return
     setCurToken(undefined)
     setShowConfirm(true)
     setAttemptingTxn(true)
+    setTxHash('')
+    setPendingText(`${amount}% of your voting power`)
     const argAmount = Math.floor(Number(amount) * 100)
-    console.log(curGomAddress)
     toVote(curGomAddress, argAmount)
       .then((hash: any) => {
+        setShowConfirm(true)
+        setPendingText(``)
         setAttemptingTxn(false)
         setTxHash(hash)
         setAmount('')
         setCurGomAddress('')
       })
-      .catch((err: any) => {
+      .catch((error: any) => {
+        setTxHash('')
+        setShowConfirm(true)
+        setPendingText(``)
         setAttemptingTxn(false)
-        console.log(err)
-        setErrorMessage(err.message)
+        setErrorStatus({ code: error?.code, message: error.message })
       })
   }, [amount, curGomAddress, account, toVote])
-
-  useEffect(() => {
-    handleVoteData()
-  }, [allVoteData, handleVoteData])
 
   useEffect((): any => {
     cd.current = votiingData.votingEndSeconds
@@ -184,12 +217,19 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [votiingData])
 
+  useEffect(() => {
+    if (txHash && isTranPending === false) {
+      setTxHash('')
+      updateTable()
+    }
+  }, [updateTable, txHash, isTranPending])
+
   function changeAmount(val: any) {
     setAmount(val)
-    if (val && veLtBal && Number(veLtBal.toFixed(2)) > 0) {
+    if (val && veLtBal && Number(veLtBal.toFixed(2)) > 0 && Number(val) <= 100) {
       const rate = Math.floor(Number(val) * 100)
-      const bal = veLtBal.multiply(JSBI.BigInt(rate)).divide(JSBI.BigInt(100))
-      setVoteAmount(bal?.toFixed(2))
+      const bal = veLtBal.multiply(JSBI.BigInt(rate)).divide(JSBI.BigInt(10000))
+      setVoteAmount(bal?.toFixed(2, { groupSeparator: ',' }, 0))
     } else {
       setVoteAmount('')
     }
@@ -201,12 +241,14 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
 
   const confirmationContent = useCallback(
     () =>
-      errorMessage ? (
-        <TransactionErrorContent onDismiss={() => setShowConfirm(false)} message={errorMessage} />
-      ) : (
-        <div></div>
+      errorStatus && (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
       ),
-    [errorMessage]
+    [errorStatus]
   )
 
   return (
@@ -217,12 +259,11 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
         attemptingTxn={attemptingTxn}
         hash={txHash}
         content={confirmationContent}
-        pendingText={''}
+        pendingText={pendingText}
         currencyToAdd={curToken}
-        isShowSubscribe={false}
       />
       <div className="gom-vote-box">
-        <h3 className="font-bolder text-white font-20">Proposed Gömböc Weight Changes</h3>
+        <h3 className="font-bolder text-white font-20">Gömböc Weight Vote</h3>
         <p className="m-t-20 text-white lh15">
           - Your vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.
         </p>
@@ -283,13 +324,18 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
           </Select>
           <div className="flex jc-between m-t-30 m-b-10">
             <span className="text-normal">Vote weight:</span>
-            <p>
-              unallocated votes : {unUseRateVal}%<span className="text-primary m-l-5">Lock</span>
-            </p>
+            {account && (
+              <p>
+                unallocated votes : {isNoVelt ? '--' : `${unUseRateVal}%`}
+                <NavLink to={'/dao/locker'}>
+                  <span className="text-primary"> Locker </span>
+                </NavLink>
+              </p>
+            )}
           </div>
           <div className="hp-amount-box">
             <NumericalInput
-              className={['hp-amount'].join(' ')}
+              className={['hp-amount', voteInputError && 'error'].join(' ')}
               value={amount}
               decimals={2}
               align={'right'}
@@ -310,8 +356,9 @@ const Vote = ({ votiingData, gombocList }: VoteProps) => {
             ) : (
               <ActionButton
                 error={voteInputError}
-                // pending={approvalState === ApprovalState.PENDING}
-                disableAction={!amount || !curGomAddress}
+                pending={!!pendingText || isTranPending}
+                pendingText={'Waitting'}
+                disableAction={!amount || !curGomAddress || curLastVote || isNoVelt}
                 actionText={getActionText}
                 onAction={toVoteCallback}
               />

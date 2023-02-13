@@ -1,7 +1,7 @@
 import React from 'react'
 import { AutoColumn } from '../../components/Column'
 import styled from 'styled-components'
-import { STAKING_REWARDS_INFO, useStakingInfo } from '../../state/stake/hooks'
+import { fetchStakeList, STAKING_REWARDS_INFO, useStakingInfo } from '../../state/stake/hooks'
 import { TYPE, ExternalLink } from '../../theme'
 import PoolCard from '../../components/earn/PoolCard'
 import { RowBetween } from '../../components/Row'
@@ -40,6 +40,7 @@ flex-direction: column;
 
 export default function Earn() {
   const { chainId } = useActiveWeb3React()
+  fetchStakeList()
 
   // staking info for connected account
   const stakingInfos = useStakingInfo()
@@ -52,7 +53,7 @@ export default function Earn() {
 
   // toggle copy if rewards are inactive
   const stakingRewardsExist = Boolean(typeof chainId === 'number' && (STAKING_REWARDS_INFO[chainId]?.length ?? 0) > 0)
-  console.log('stakingRewardsExist', stakingRewardsExist)
+
   return (
     <PageWrapper gap="lg" justify="center">
       <TopSection gap="md">

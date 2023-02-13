@@ -53,4 +53,20 @@ function responseErrorInterceptor(error: { isAxiosError?: boolean; message?: str
 http.interceptors.request.use(requestInterceptor, requestErrorInterceptor)
 http.interceptors.response.use(responseInterceptor, responseErrorInterceptor)
 
+interface IRespone<T> {
+  code: number,
+  result: T,
+  message: string,
+  success: boolean,
+  fail: boolean
+}
+
+export const get = <T>(url: string, config?: AxiosRequestConfig ): Promise<IRespone<T>> => {
+  return http.get(url, config) as any as Promise<IRespone<T>>
+}
+
+export const post = <T, D>(url: string, data?: D, config?: AxiosRequestConfig): Promise<IRespone<T>> => {
+  return http.post(url, data, config) as any as Promise<IRespone<T>>
+}
+
 export default http
