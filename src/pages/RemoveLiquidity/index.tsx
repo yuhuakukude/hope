@@ -4,14 +4,16 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { Currency, currencyEquals, ETHER, Percent, WETH } from '@uniswap/sdk'
 import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { ArrowDown, Plus } from 'react-feather'
-import ReactGA from 'react-ga'
 import { RouteComponentProps } from 'react-router'
 import { Text } from 'rebass'
 import styled, { ThemeContext } from 'styled-components'
 import { ButtonPrimary, ButtonLight, ButtonError, ButtonConfirmed } from '../../components/Button'
 import { GreyCard, LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
-import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
+import TransactionConfirmationModal, {
+  ConfirmationModalContent,
+  TransactionErrorContent
+} from '../../components/TransactionConfirmationModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs, StyledMenuIcon } from '../../components/NavigationTabs'
@@ -75,10 +77,14 @@ export default function RemoveLiquidity({
   const { onUserInput: _onUserInput } = useBurnActionHandlers()
   const isValid = !error
 
+  const [pendingText, setPendingText] = useState('')
+
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [showDetailed, setShowDetailed] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
+
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
   // txn values
   const [txHash, setTxHash] = useState<string>('')
@@ -101,12 +107,46 @@ export default function RemoveLiquidity({
 
   const atMaxAmount = parsedAmounts[Field.LIQUIDITY_PERCENT]?.equalTo(new Percent('1'))
 
+  //status
+  const onTxError = useCallback(error => {
+    setTxHash('')
+    setAttemptingTxn(false)
+    setErrorStatus({ code: error?.code, message: error.message })
+    setShowConfirm(true)
+  }, [])
+
+  const onTxStart = useCallback(confirmMessage => {
+    setPendingText(confirmMessage)
+    setErrorStatus(undefined)
+    setTxHash('')
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+  }, [])
+
+  const onTxEnd = useCallback((hash?: string) => {
+    setShowConfirm(true)
+    setPendingText(``)
+    setAttemptingTxn(false)
+    hash && setTxHash(hash)
+  }, [])
+
   // pair contract
   const pairContract: Contract | null = usePairContract(pair?.liquidityToken?.address)
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
+  const [approval, approveCallback, token] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
+
+  const handleApprove = useCallback(() => {
+    onTxStart(`Approve ${token?.symbol}`)
+    approveCallback()
+      .then((response: TransactionResponse | undefined) => {
+        onTxEnd(response?.hash)
+      })
+      .catch(error => {
+        onTxError(error)
+      })
+  }, [approveCallback, onTxEnd, onTxError, onTxStart, token])
 
   const isArgentWallet = useIsArgentWallet()
 
@@ -116,9 +156,12 @@ export default function RemoveLiquidity({
     if (!liquidityAmount) throw new Error('missing liquidity amount')
 
     if (isArgentWallet) {
-      return approveCallback()
+      return handleApprove()
     }
 
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+    setPendingText(`Approve ${pair.liquidityToken.symbol}`)
     // try to gather a signature for permission
     const nonce = await pairContract.nonces(account)
 
@@ -162,6 +205,9 @@ export default function RemoveLiquidity({
       .send('eth_signTypedData_v4', [account, data])
       .then(splitSignature)
       .then(signature => {
+        setAttemptingTxn(false)
+        setPendingText('')
+        setShowConfirm(false)
         setSignatureData({
           v: signature.v,
           r: signature.r,
@@ -172,7 +218,9 @@ export default function RemoveLiquidity({
       .catch(error => {
         // for all errors other than 4001 (EIP-1193 user rejected request), fall back to manual approve
         if (error?.code !== 4001) {
-          approveCallback()
+          handleApprove()
+        } else {
+          onTxError(error)
         }
       })
   }
@@ -198,7 +246,8 @@ export default function RemoveLiquidity({
 
   // tx sending
   const addTransaction = useTransactionAdder()
-  async function onRemove() {
+
+  const onRemove = useCallback(async () => {
     if (!chainId || !library || !account || !deadline) throw new Error('missing dependencies')
     const { [Field.CURRENCY_A]: currencyAmountA, [Field.CURRENCY_B]: currencyAmountB } = parsedAmounts
     if (!currencyAmountA || !currencyAmountB) {
@@ -288,11 +337,18 @@ export default function RemoveLiquidity({
       throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
     }
 
+    onTxStart(
+      `Removing ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${currencyA?.symbol} and ${parsedAmounts[
+        Field.CURRENCY_B
+      ]?.toSignificant(6)} ${currencyB?.symbol}`
+    )
+
     const safeGasEstimates: (BigNumber | undefined)[] = await Promise.all(
       methodNames.map(methodName =>
         router.estimateGas[methodName](...args)
           .then(calculateGasMargin)
           .catch(error => {
+            onTxError(error)
             console.error(`estimateGas failed`, methodName, args, error)
             return undefined
           })
@@ -310,13 +366,11 @@ export default function RemoveLiquidity({
       const methodName = methodNames[indexOfSuccessfulEstimation]
       const safeGasEstimate = safeGasEstimates[indexOfSuccessfulEstimation]
 
-      setAttemptingTxn(true)
       await router[methodName](...args, {
         gasLimit: safeGasEstimate
       })
         .then((response: TransactionResponse) => {
-          setAttemptingTxn(false)
-
+          onTxEnd(response?.hash)
           addTransaction(response, {
             summary:
               'Remove ' +
@@ -328,24 +382,31 @@ export default function RemoveLiquidity({
               ' ' +
               currencyB?.symbol
           })
-
-          setTxHash(response.hash)
-
-          ReactGA.event({
-            category: 'Liquidity',
-            action: 'Remove',
-            label: [currencyA?.symbol, currencyB?.symbol].join('/')
-          })
         })
         .catch((error: Error) => {
-          setAttemptingTxn(false)
-          // we only care if the error is something _other_ than the user rejected the tx
-          console.error(error)
+          onTxError(error)
         })
     }
-  }
+  }, [
+    account,
+    addTransaction,
+    allowedSlippage,
+    approval,
+    chainId,
+    currencyA,
+    currencyB,
+    deadline,
+    library,
+    onTxEnd,
+    onTxError,
+    onTxStart,
+    parsedAmounts,
+    signatureData,
+    tokenA,
+    tokenB
+  ])
 
-  function modalHeader() {
+  const modalHeader = useCallback(() => {
     return (
       <AutoColumn gap={'md'} style={{ marginTop: '20px' }}>
         <RowBetween align="flex-end">
@@ -374,15 +435,15 @@ export default function RemoveLiquidity({
           </RowFixed>
         </RowBetween>
 
-        <TYPE.italic fontSize={12} color={theme.text2} textAlign="left" padding={'12px 0 0 0'}>
+        <TYPE.main fontSize={12} color={theme.text2} textAlign="left" padding={'12px 0 0 0'}>
           {`Output is estimated. If the price changes by more than ${allowedSlippage /
             100}% your transaction will revert.`}
-        </TYPE.italic>
+        </TYPE.main>
       </AutoColumn>
     )
-  }
+  }, [allowedSlippage, currencyA, currencyB, parsedAmounts, theme.text2])
 
-  function modalBottom() {
+  const modalBottom = useCallback(() => {
     return (
       <>
         <RowBetween>
@@ -421,11 +482,19 @@ export default function RemoveLiquidity({
         </ButtonPrimary>
       </>
     )
-  }
-
-  const pendingText = `Removing ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${
-    currencyA?.symbol
-  } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)} ${currencyB?.symbol}`
+  }, [
+    approval,
+    currencyA,
+    currencyB,
+    onRemove,
+    pair,
+    parsedAmounts,
+    signatureData,
+    theme.text1,
+    theme.text2,
+    tokenA,
+    tokenB
+  ])
 
   const liquidityPercentChangeCallback = useCallback(
     (value: number) => {
@@ -477,6 +546,25 @@ export default function RemoveLiquidity({
     liquidityPercentChangeCallback
   )
 
+  const confirmationContent = useCallback(
+    () =>
+      errorStatus ? (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
+      ) : (
+        <ConfirmationModalContent
+          title={'You will receive'}
+          onDismiss={handleDismissConfirmation}
+          topContent={modalHeader}
+          bottomContent={modalBottom}
+        />
+      ),
+    [errorStatus, handleDismissConfirmation, modalBottom, modalHeader]
+  )
+
   return (
     <PageWrapper>
       <AddRemoveTabs creating={false} adding={false} />
@@ -491,14 +579,7 @@ export default function RemoveLiquidity({
               onDismiss={handleDismissConfirmation}
               attemptingTxn={attemptingTxn}
               hash={txHash ? txHash : ''}
-              content={() => (
-                <ConfirmationModalContent
-                  title={'You will receive'}
-                  onDismiss={handleDismissConfirmation}
-                  topContent={modalHeader}
-                  bottomContent={modalBottom}
-                />
-              )}
+              content={confirmationContent}
               pendingText={pendingText}
             />
             <AutoColumn gap="md" style={{ marginTop: 20 }}>

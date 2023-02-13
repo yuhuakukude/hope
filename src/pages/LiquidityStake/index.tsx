@@ -263,7 +263,6 @@ export default function LiquidityStake({
 
   const addCallback = useCallback(() => {
     if (!chainId || !library || !account) return
-    console.log('tag-->', errorStatus)
     const router = getRouterContract(chainId, library, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
@@ -347,7 +346,6 @@ export default function LiquidityStake({
     currencyA,
     currencyB,
     deadline,
-    errorStatus,
     library,
     noLiquidity,
     onTxEnd,

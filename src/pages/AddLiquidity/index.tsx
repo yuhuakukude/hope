@@ -3,14 +3,16 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { Currency, currencyEquals, ETHER, TokenAmount, WETH } from '@uniswap/sdk'
 import React, { useCallback, useContext, useState } from 'react'
 import { PlusCircle } from 'react-feather'
-import ReactGA from 'react-ga'
 import { RouteComponentProps } from 'react-router-dom'
 import { Text } from 'rebass'
 import styled, { ThemeContext } from 'styled-components'
 import { ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
 import { GreyCard, LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter, GapColumn } from '../../components/Column'
-import TransactionConfirmationModal, { ConfirmationModalContent } from '../../components/TransactionConfirmationModal'
+import TransactionConfirmationModal, {
+  ConfirmationModalContent,
+  TransactionErrorContent
+} from '../../components/TransactionConfirmationModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs, StyledMenuIcon } from '../../components/NavigationTabs'
@@ -94,6 +96,8 @@ export default function AddLiquidity({
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
+  const [pendingText, setPendingText] = useState('')
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
   // txn values
   const deadline = useTransactionDeadline() // custom from users settings
@@ -127,13 +131,49 @@ export default function AddLiquidity({
     {}
   )
 
+  const onTxError = useCallback(error => {
+    setTxHash('')
+    setAttemptingTxn(false)
+    setErrorStatus({ code: error?.code, message: error.message })
+    setShowConfirm(true)
+  }, [])
+
+  const onTxStart = useCallback(confirmMessage => {
+    setPendingText(confirmMessage)
+    setErrorStatus(undefined)
+    setTxHash('')
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+  }, [])
+
+  const onTxEnd = useCallback((hash?: string) => {
+    setShowConfirm(true)
+    setPendingText(``)
+    setAttemptingTxn(false)
+    hash && setTxHash(hash)
+  }, [])
+
   // check whether the user has approved the router on the tokens
   const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS)
   const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS)
 
+  const approveCallback = useCallback(
+    (symbol: string, approve: () => Promise<TransactionResponse | undefined>) => {
+      onTxStart(`Approve ${symbol}`)
+      approve()
+        .then((response: TransactionResponse | undefined) => {
+          onTxEnd(response?.hash)
+        })
+        .catch(error => {
+          onTxError(error)
+        })
+    },
+    [onTxEnd, onTxError, onTxStart]
+  )
+
   const addTransaction = useTransactionAdder()
 
-  async function onAdd() {
+  const addCallback = useCallback(() => {
     if (!chainId || !library || !account) return
     const router = getRouterContract(chainId, library, account)
 
@@ -180,15 +220,17 @@ export default function AddLiquidity({
       value = null
     }
 
-    setAttemptingTxn(true)
-    await estimate(...args, value ? { value } : {})
+    onTxStart(
+      `Supplying ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${
+        currencies[Field.CURRENCY_A]?.symbol
+      } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)} ${currencies[Field.CURRENCY_B]?.symbol}`
+    )
+    estimate(...args, value ? { value } : {})
       .then(estimatedGasLimit =>
         method(...args, {
           ...(value ? { value } : {}),
           gasLimit: calculateGasMargin(estimatedGasLimit)
         }).then(response => {
-          setAttemptingTxn(false)
-
           addTransaction(response, {
             summary:
               'Add ' +
@@ -201,25 +243,30 @@ export default function AddLiquidity({
               currencies[Field.CURRENCY_B]?.symbol
           })
 
-          setTxHash(response.hash)
-
-          ReactGA.event({
-            category: 'Liquidity',
-            action: 'Add',
-            label: [currencies[Field.CURRENCY_A]?.symbol, currencies[Field.CURRENCY_B]?.symbol].join('/')
-          })
+          onTxEnd(response?.hash)
         })
       )
       .catch(error => {
-        setAttemptingTxn(false)
-        // we only care if the error is something _other_ than the user rejected the tx
-        if (error?.code !== 4001) {
-          console.error(error)
-        }
+        onTxError(error)
       })
-  }
+  }, [
+    account,
+    addTransaction,
+    allowedSlippage,
+    chainId,
+    currencies,
+    currencyA,
+    currencyB,
+    deadline,
+    library,
+    noLiquidity,
+    onTxEnd,
+    onTxError,
+    onTxStart,
+    parsedAmounts
+  ])
 
-  const modalHeader = () => {
+  const modalHeader = useCallback(() => {
     return noLiquidity ? (
       <AutoColumn gap="20px">
         <LightCard mt="20px" borderRadius="20px">
@@ -258,24 +305,20 @@ export default function AddLiquidity({
         </TYPE.main>
       </AutoColumn>
     )
-  }
+  }, [allowedSlippage, currencies, liquidityMinted, noLiquidity])
 
-  const modalBottom = () => {
+  const modalBottom = useCallback(() => {
     return (
       <ConfirmAddModalBottom
         price={price}
         currencies={currencies}
         parsedAmounts={parsedAmounts}
         noLiquidity={noLiquidity}
-        onAdd={onAdd}
+        onAdd={addCallback}
         poolTokenPercentage={poolTokenPercentage}
       />
     )
-  }
-
-  const pendingText = `Supplying ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${
-    currencies[Field.CURRENCY_A]?.symbol
-  } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)} ${currencies[Field.CURRENCY_B]?.symbol}`
+  }, [addCallback, currencies, noLiquidity, parsedAmounts, poolTokenPercentage, price])
 
   const handleCurrencyASelect = useCallback(
     (currencyA: Currency) => {
@@ -313,6 +356,25 @@ export default function AddLiquidity({
     setTxHash('')
   }, [onFieldAInput, txHash])
 
+  const confirmationContent = useCallback(
+    () =>
+      errorStatus ? (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
+      ) : (
+        <ConfirmationModalContent
+          title={noLiquidity ? 'You are creating a pool' : 'You will receive'}
+          onDismiss={handleDismissConfirmation}
+          topContent={modalHeader}
+          bottomContent={modalBottom}
+        />
+      ),
+    [errorStatus, handleDismissConfirmation, modalBottom, modalHeader, noLiquidity]
+  )
+
   const isCreate = history.location.pathname.includes('/create')
 
   const addIsUnsupported = useIsTransactionUnsupported(currencies?.CURRENCY_A, currencies?.CURRENCY_B)
@@ -331,14 +393,7 @@ export default function AddLiquidity({
               onDismiss={handleDismissConfirmation}
               attemptingTxn={attemptingTxn}
               hash={txHash}
-              content={() => (
-                <ConfirmationModalContent
-                  title={noLiquidity ? 'You are creating a pool' : 'You will receive'}
-                  onDismiss={handleDismissConfirmation}
-                  topContent={modalHeader}
-                  bottomContent={modalBottom}
-                />
-              )}
+              content={confirmationContent}
               pendingText={pendingText}
               currencyToAdd={pair?.liquidityToken}
             />
@@ -405,33 +460,35 @@ export default function AddLiquidity({
               {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
                 <>
                   <LightCard margin={'20px 0'} padding="0px" borderRadius={'20px'}>
-                    <RowBetween padding="1rem 0">
-                      <TYPE.subHeader fontWeight={500} fontSize={18}>
-                        {noLiquidity ? 'Initial prices' : 'Prices'} and pool share
-                      </TYPE.subHeader>
-                    </RowBetween>{' '}
-                    <GreyCard padding="1rem" borderRadius={'10px'}>
-                      <PoolPriceBar
-                        currencies={currencies}
-                        poolTokenPercentage={poolTokenPercentage}
-                        noLiquidity={noLiquidity}
-                        price={price}
-                      />
-                    </GreyCard>
-                    <AutoColumn style={{ marginTop: 8 }}>
-                      <TYPE.main>
-                        My Liquidity (Share of pool{' '}
-                        {noLiquidity && price
-                          ? '100'
-                          : (poolTokenPercentage?.lessThan(ONE_BIPS) ? '<0.01' : poolTokenPercentage?.toFixed(2)) ??
-                            '0'}
-                        %)
-                      </TYPE.main>
-                      <Text fontWeight={500} fontSize={14} color={theme.text2} pt={1}>
-                        {`${currency0?.symbol} ${token0Deposited?.toFixed(2)} / ${
-                          currency1?.symbol
-                        } ${token1Deposited?.toFixed(2)}`}
-                      </Text>
+                    <AutoColumn gap={'20px'}>
+                      <RowBetween padding="1rem 0">
+                        <TYPE.subHeader fontWeight={500} fontSize={18}>
+                          {noLiquidity ? 'Initial prices' : 'Prices'} and pool share
+                        </TYPE.subHeader>
+                      </RowBetween>{' '}
+                      <GreyCard padding="1rem" borderRadius={'10px'}>
+                        <PoolPriceBar
+                          currencies={currencies}
+                          poolTokenPercentage={poolTokenPercentage}
+                          noLiquidity={noLiquidity}
+                          price={price}
+                        />
+                      </GreyCard>
+                      <AutoColumn style={{ marginTop: 8 }}>
+                        <TYPE.main>
+                          My Liquidity (Share of pool{' '}
+                          {noLiquidity && price
+                            ? '100'
+                            : (poolTokenPercentage?.lessThan(ONE_BIPS) ? '<0.01' : poolTokenPercentage?.toFixed(2)) ??
+                              '0'}
+                          %)
+                        </TYPE.main>
+                        <Text fontWeight={500} fontSize={14} color={theme.text2} pt={1}>
+                          {`${currency0?.symbol} ${token0Deposited?.toFixed(2)} / ${
+                            currency1?.symbol
+                          } ${token1Deposited?.toFixed(2)}`}
+                        </Text>
+                      </AutoColumn>
                     </AutoColumn>
                   </LightCard>
                 </>
@@ -453,7 +510,7 @@ export default function AddLiquidity({
                       <RowBetween>
                         {approvalA !== ApprovalState.APPROVED && (
                           <ButtonPrimary
-                            onClick={approveACallback}
+                            onClick={() => approveCallback(currencyA?.symbol ?? '', approveACallback)}
                             disabled={approvalA === ApprovalState.PENDING}
                             width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
                           >
@@ -466,7 +523,7 @@ export default function AddLiquidity({
                         )}
                         {approvalB !== ApprovalState.APPROVED && (
                           <ButtonPrimary
-                            onClick={approveBCallback}
+                            onClick={() => approveCallback(currencyB?.symbol ?? '', approveBCallback)}
                             disabled={approvalB === ApprovalState.PENDING}
                             width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
                           >
@@ -481,7 +538,7 @@ export default function AddLiquidity({
                     )}
                   <ButtonError
                     onClick={() => {
-                      expertMode ? onAdd() : setShowConfirm(true)
+                      expertMode ? addCallback() : addCallback()
                     }}
                     disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
                     error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
