@@ -43,21 +43,21 @@ export interface IGomboc {
   id: string
   networkId: number
   gombocType: number
-  poolType: POOL_TYPE 
+  poolType: POOL_TYPE
   gombocTypeName: string
   gombocAddress: string
-  gombocName:string
-  ItTokenAddress:string
-  ItTokenSymbol:string
-  ItTokenName:string
-  IpTokenAddress:string
-  IpTokenSymbol:string
-  IpTokenName:string
-  composition:string
-  IpTokenDecimal:number
-  enable:boolean
-  createAt:string
-  updateAt:string
+  gombocName: string
+  ItTokenAddress: string
+  ItTokenSymbol: string
+  ItTokenName: string
+  IpTokenAddress: string
+  IpTokenSymbol: string
+  IpTokenName: string
+  composition: string
+  IpTokenDecimal: string | number
+  enable: boolean
+  createAt: string
+  updateAt: string
 }
 export interface IItem {
   gomboc: IGomboc

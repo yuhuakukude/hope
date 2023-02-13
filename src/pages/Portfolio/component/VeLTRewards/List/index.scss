@@ -7,11 +7,10 @@
   margin-top: 12px;
   font-size: 14px;
   color: rgba(168, 168, 170, 1);
+  white-space: nowrap;
 }
 
-.veLT-rewards-item-name {
-  margin-right: 9px;
-}
+.veLT-rewards-item-name {}
 
 .veLT-rewards-item-button {
   color: rgba(228, 201, 137, 1);
@@ -21,4 +20,10 @@
 
 .veLT-rewards-item-other {
   margin-right: 8px;
+}
+
+.veLT-rewards-item-copy {
+  display: inline-block;
+  width: 12px;
+  vertical-align: middle;
 }

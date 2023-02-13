@@ -6,15 +6,14 @@ import { endTimestamp, startTimestamp } from '../Detail'
 import Tips from 'components/Tips'
 import CopyHelper from 'components/AccountDetails/Copy'
 
+import './index.scss'
+
 const columns = [
   {
     title: 'Pool / Protocol',
     dataIndex: 'gombocName',
     key: 'gombocName',
-    render: (
-      text: boolean | React.ReactChild | React.ReactFragment | React.ReactPortal | null | undefined,
-      record: IItem
-    ) => {
+    render: (text: string, record: IItem) => {
       if (0) {
         return (
           <div className="veLT-rewards-item-title">
@@ -25,10 +24,12 @@ const columns = [
       }
       return (
         <>
-          <div className="veLT-rewards-item-title">{text}</div>
+          <div className="veLT-rewards-item-title">{record.gomboc.gombocName}</div>
           <div className="veLT-rewards-item-desc">
-            <span className="veLT-rewards-item-name">{record.gomboc.gombocAddress}</span>
-            <CopyHelper toCopy="gombocName" />
+            {record.gomboc.gombocAddress}
+            <span className="veLT-rewards-item-copy">
+              <CopyHelper toCopy={record.gomboc.gombocAddress} />
+            </span>
           </div>
         </>
       )
@@ -49,7 +50,7 @@ const columns = [
       return (
         <>
           <div className="veLT-rewards-item-title">{text}</div>
-          <div className="veLT-rewards-item-desc">{record.gomboc.IpTokenDecimal}</div>
+          <div className="veLT-rewards-item-desc">≈ ${record.gomboc.IpTokenDecimal}</div>
         </>
       )
     }
@@ -62,7 +63,7 @@ const columns = [
       return (
         <>
           <div className="veLT-rewards-item-title">{text}</div>
-          <div className="veLT-rewards-item-desc">{record.gomboc.IpTokenDecimal}</div>
+          <div className="veLT-rewards-item-desc">≈ ${record.gomboc.IpTokenDecimal}</div>
         </>
       )
     }
@@ -72,8 +73,16 @@ const columns = [
     dataIndex: 'Actions',
     key: 'Actions',
     render: (text: string, record: IItem) => {
-      console.log(text, record)
-      return <span className="veLT-rewards-item-button">Withdraw</span>
+      return (
+        <span
+          className="veLT-rewards-item-button"
+          onClick={() => {
+            console.log(text, record)
+          }}
+        >
+          Withdraw
+        </span>
+      )
     }
   }
 ]
@@ -96,5 +105,25 @@ export default function List() {
       }
     })
   }, [account])
-  return <Table title={() => 'My List'} columns={columns} dataSource={overviewData} />
+  console.log(overviewData)
+
+  // TODO remove test data
+  return (
+    <Table
+      title={() => 'My List'}
+      columns={columns}
+      pagination={false}
+      dataSource={[
+        {
+          gomboc: {
+            gombocName: 'Protocol HOPE Staking',
+            gombocAddress: '0xqw23...Y7dc',
+            IpTokenDecimal: '123,456,789.19'
+          },
+          totalFees: '123,456,789.19 HOPE',
+          withdrawable: '≈ 456,000.00 stHOPE'
+        } as any
+      ]}
+    />
+  )
 }
