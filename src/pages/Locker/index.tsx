@@ -33,6 +33,7 @@ import { useActionPending } from '../../state/transactions/hooks'
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
   padding: 30px;
+  min-width: 1300px;
 `
 
 export default function DaoLocker() {
@@ -263,10 +264,6 @@ export default function DaoLocker() {
     setAddTimeModal(false)
   }
 
-  const toLockerDom = () => {
-    lockerRef.current?.scrollIntoView()
-  }
-
   useEffect(() => {
     if (votePowerAmount || votePowerAmount === 0) {
       const total = JSBI.BigInt(10000)
@@ -300,7 +297,7 @@ export default function DaoLocker() {
           currencyToAdd={curToken}
         />
         <div className="dao-locker-page">
-          <LockerBanner toLocker={toLockerDom} lockerEndDate={lockerRes?.end}></LockerBanner>
+          <LockerBanner></LockerBanner>
           <div className="content-box m-t-30" ref={lockerRef as RefObject<HTMLInputElement>}>
             <h3 className="text-medium font-20">My veLT</h3>
             <div className="card-box m-t-30 flex jc-between">

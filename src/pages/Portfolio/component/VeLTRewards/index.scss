@@ -8,6 +8,20 @@
     color: #fff;
   }
 
+  .velt-rewards-warning {
+    margin-top: 20px;
+    color: #fff;
+    font-size: 16px;
+
+    .velt-rewards-warning-desc {
+      margin-left: 9px;
+    }
+
+    .velt-rewards-warning-locker {
+      color: rgba(228, 201, 137, 1);
+    }
+  }
+
   .velt-rewards-desc {
     font-size: 18px;
     color: #fff;
@@ -64,6 +78,8 @@
 
         .velt-rewards-bottom-question {
           margin: 0 8px;
+          display: inline-block;
+          vertical-align: middle;
         }
       }
 
@@ -104,6 +120,32 @@
             text-align: center;
           }
         }
+      }
+    }
+  }
+
+  .velt-rewards-empty {
+    margin-top: 30px;
+
+    .velt-rewards-empty-title {
+      color: #fff;
+      font-size: 16px;
+      text-align: center;
+    }
+
+    .velt-rewards-empty-button {
+      margin: 20px auto;
+      width: 400px;
+    }
+
+    .velt-rewards-empty-more {
+      text-align: center;
+      color: rgba(168, 168, 170, 1);
+      font-size: 16px;
+      cursor: pointer;
+
+      .iconfont {
+        margin-left: 5px;
       }
     }
   }

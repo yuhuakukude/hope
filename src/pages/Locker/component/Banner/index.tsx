@@ -1,21 +1,7 @@
-import React, { useMemo } from 'react'
-import format from '../../../../utils/format'
-import moment from 'moment'
+import React from 'react'
 import './index.scss'
 
-export default function LockerBanner({
-  toLocker,
-  lockerEndDate
-}: {
-  toLocker: () => void
-  lockerEndDate: number | string | undefined
-}) {
-  const isShowTip = useMemo(() => {
-    if (!lockerEndDate) {
-      return false
-    }
-    return moment(format.formatDate(Number(`${lockerEndDate}`))).diff(moment(), 'days') < 14
-  }, [lockerEndDate])
+export default function LockerBanner() {
   return (
     <div className="locker-banner-box">
       <div className="banner p-30">
@@ -37,17 +23,6 @@ export default function LockerBanner({
           <li className="font-nor">- Earn your share of protocol revenue</li>
         </ul>
       </div>
-      {isShowTip && (
-        <div className="tip-box flex ai-center jc-center m-t-30">
-          <i className="iconfont text-primary">&#xe61e;</i>
-          <p className="font-nor text-normal m-l-12">
-            Your lock expires soon. You need to lock at least for two weeks in{' '}
-            <span className="text-primary cursor-select" onClick={() => toLocker()}>
-              Locker
-            </span>
-          </p>
-        </div>
-      )}
     </div>
   )
 }
