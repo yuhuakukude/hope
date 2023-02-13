@@ -1,0 +1,25 @@
+.velt-rewards-empty {
+  margin-top: 30px;
+
+  .velt-rewards-empty-title {
+    color: #fff;
+    font-size: 16px;
+    text-align: center;
+  }
+
+  .velt-rewards-empty-button {
+    margin: 20px auto;
+    width: 400px;
+  }
+
+  .velt-rewards-empty-more {
+    text-align: center;
+    color: rgba(168, 168, 170, 1);
+    font-size: 16px;
+    cursor: pointer;
+
+    .iconfont {
+      margin-left: 5px;
+    }
+  }
+}
