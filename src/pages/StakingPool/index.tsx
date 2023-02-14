@@ -11,6 +11,8 @@ import { useLPStakingInfos } from '../../hooks/useLPStaking'
 import StakingPoolCard from '../../components/stakingPool/StakingPoolCard'
 import { TYPE } from '../../theme'
 import Overview from '../../components/pool/Overview'
+import LineCharts from '../../components/pool/LineCharts'
+import BarCharts from '../../components/pool/BarCharts'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -63,7 +65,7 @@ const TimeText = styled.p`
   font-size: 16px;
 `
 
-function ChartView() {
+function ChartView({ type }: { type: string }) {
   const fakeData = {
     name: 'TVL',
     value: '$78.34 M',
@@ -78,9 +80,20 @@ function ChartView() {
           <NameText>{fakeData.value}</NameText>
           <TimeText>{fakeData.time}</TimeText>
         </AutoRow>
-        <div>
-          <p>temp chart</p>
-        </div>
+        {type === 'line' && (
+          <LineCharts
+            height={240}
+            hideTab={true}
+            xData={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
+            yData={[820, 32, 901, 134, 1290, 900, 620]}
+          ></LineCharts>
+        )}
+        {type === 'bar' && (
+          <BarCharts
+            xData={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
+            yData={[820, 32, 901, 134, 1290, 900, 620, 100, 800]}
+          ></BarCharts>
+        )}
       </div>
     </PoolsWrapper>
   )
@@ -108,8 +121,8 @@ export default function StakingPool() {
         <Overview></Overview>
       </TopSection>
       <RowBetween style={{ width: '100%' }}>
-        <ChartView />
-        <ChartView />
+        <ChartView type={'line'} />
+        <ChartView type={'bar'} />
       </RowBetween>
       <PoolsWrapper>
         <TopSection gap="md">
