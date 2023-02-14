@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import Table from 'components/Table'
-import PortfolioApi, { IItem } from 'api/portfolio.api'
+import PortfolioApi, { Item } from 'api/portfolio.api'
 import { useActiveWeb3React } from 'hooks'
 import { endTimestamp, startTimestamp } from '../Detail'
 import Tips from 'components/Tips'
@@ -13,7 +13,7 @@ const columns = [
     title: 'Pool / Protocol',
     dataIndex: 'gombocName',
     key: 'gombocName',
-    render: (text: string, record: IItem) => {
+    render: (text: string, record: Item) => {
       if (0) {
         return (
           <div className="veLT-rewards-item-title">
@@ -46,7 +46,7 @@ const columns = [
     },
     dataIndex: 'totalFees',
     key: 'totalFees',
-    render: (text: string, record: IItem) => {
+    render: (text: string, record: Item) => {
       return (
         <>
           <div className="veLT-rewards-item-title">{text}</div>
@@ -59,7 +59,7 @@ const columns = [
     title: 'Withdrawable(all  periods)',
     dataIndex: 'withdrawable',
     key: 'withdrawable',
-    render: (text: string, record: IItem) => {
+    render: (text: string, record: Item) => {
       return (
         <>
           <div className="veLT-rewards-item-title">{text}</div>
@@ -72,7 +72,7 @@ const columns = [
     title: 'Actions',
     dataIndex: 'Actions',
     key: 'Actions',
-    render: (text: string, record: IItem) => {
+    render: (text: string, record: Item) => {
       return (
         <span
           className="veLT-rewards-item-button"
@@ -89,7 +89,7 @@ const columns = [
 
 export default function List() {
   const { account } = useActiveWeb3React()
-  const [overviewData, setOverviewData] = useState<IItem[]>([])
+  const [overviewData, setOverviewData] = useState<Item[]>([])
 
   useEffect(() => {
     if (!account) {

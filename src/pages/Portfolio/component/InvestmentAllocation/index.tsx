@@ -6,12 +6,12 @@ import { PieSeriesOption } from 'echarts/charts'
 import './index.scss'
 import Card from '../Card'
 import TitleTips from '../TitleTips'
-import { IPortfolio } from 'api/portfolio.api'
+import { PortfolioInfo } from 'api/portfolio.api'
 import Tips from 'components/Tips'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
 
-export default function InvestmentAllocation({ data }: { data: IPortfolio }) {
+export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) {
   const chartRef = useRef<any>()
   const allocations = useMemo(() => {
     return [

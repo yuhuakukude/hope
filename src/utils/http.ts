@@ -5,7 +5,7 @@ let requestCount = 0
 
 const http = Axios.create({
   baseURL: '/v1',
-  timeout: 15000,
+  timeout: 60000,
   withCredentials: true,
   validateStatus(status) {
     return status >= 200 && status <= 500

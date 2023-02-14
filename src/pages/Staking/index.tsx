@@ -228,7 +228,7 @@ export default function Staking() {
     onTxStart()
     setClaimPendingText(`claim LT`)
     setActionType(ACTION.CLAIM)
-    toClaim()
+    toClaim(STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1])
       .then(hash => {
         setClaimPendingText('')
         onTxSubmitted(hash)
