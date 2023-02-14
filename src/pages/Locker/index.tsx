@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef, RefObject } from 'react'
 import styled from 'styled-components'
-import { NavLink } from 'react-router-dom'
 import { AutoColumn } from '../../components/Column'
 import LockerEcharts from './component/echarts'
 import NumericalInput from '../../components/NumericalInput'
@@ -21,7 +20,7 @@ import { tryParseAmount } from '../../state/swap/hooks'
 import { Token, TokenAmount, JSBI, Percent } from '@uniswap/sdk'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
-import { useLocker, useToLocker, conFnNameEnum } from '../../hooks/ahp/useLocker'
+import { useLocker, useToLocker, conFnNameEnum, useToWithdraw } from '../../hooks/ahp/useLocker'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import AddAmount from './component/AddAmount'
 import AddTime from './component/AddTime'
@@ -63,6 +62,7 @@ export default function DaoLocker() {
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const inputAmount = tryParseAmount(amount, LT[chainId ?? 1]) as TokenAmount | undefined
   const { pending: isLockerPending } = useActionPending(account ? `${account}-${conFnNameEnum.CreateLock}` : '')
+  const { pending: isWithdrawPending } = useActionPending(account ? `${account}-LockerWithdraw` : '')
 
   // token api
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
@@ -75,6 +75,7 @@ export default function DaoLocker() {
   // token
   const { lockerRes, votePowerAmount } = useLocker()
   const { toLocker, getVeLtAmount } = useToLocker()
+  const { toWithdraw } = useToWithdraw()
 
   const getLockerTime = (val: number) => {
     const weekDate = moment().day() === 0 ? 7 : moment().day()
@@ -265,6 +266,19 @@ export default function DaoLocker() {
     setAddTimeModal(false)
   }
 
+  const toWithdrawCallback = useCallback(async () => {
+    if (!account) return
+    setCurToken(LT[chainId ?? 1])
+    onTxStart()
+    toWithdraw()
+      .then(hash => {
+        onTxSubmitted(hash)
+      })
+      .catch((error: any) => {
+        onTxError(error)
+      })
+  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toWithdraw])
+
   useEffect(() => {
     if (votePowerAmount || votePowerAmount === 0) {
       const total = JSBI.BigInt(10000)
@@ -316,10 +330,10 @@ export default function DaoLocker() {
                 </p>
                 <p className="font-nor text-normal m-t-16">≈ $ 0.00</p>
                 {account &&
-                  (lockerRes?.end === '--' && lockerRes?.amount ? (
-                    <NavLink to={'/hope/staking'} className="link-btn text-medium text-primary font-12 m-t-20">
+                  (lockerRes?.end === '--' && lockerRes?.amount && !isWithdrawPending ? (
+                    <div className="link-btn text-medium text-primary font-12 m-t-20" onClick={toWithdrawCallback}>
                       Withdraw
-                    </NavLink>
+                    </div>
                   ) : (
                     <div className="link-btn text-medium disabled font-12 m-t-20">Withdraw</div>
                   ))}

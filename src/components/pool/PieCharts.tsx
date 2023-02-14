@@ -18,7 +18,7 @@ export default function PieCharts({ data, size }: { data?: any; size?: number })
           itemStyle: {
             borderRadius: size ? 1 : 5,
             borderColor: '#26262C',
-            borderWidth: 5
+            borderWidth: size ? 1 : 5
           },
           label: {
             show: false,

@@ -13,6 +13,8 @@
           padding: 5px 13px;
           border: 1px solid #E4C989;
           border-radius: 6px;
+          cursor: pointer;
+          user-select: none;
           &.disabled{
             color: #3D3E46;
             border-color: #3D3E46;

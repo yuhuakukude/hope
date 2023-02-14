@@ -171,3 +171,32 @@ export function useToLocker() {
     getVeLtAmount
   }
 }
+export function useToWithdraw() {
+  const addTransaction = useTransactionAdder()
+  const contract = useLockerContract()
+  const { account } = useActiveWeb3React()
+  const toWithdraw = useCallback(async () => {
+    if (!account) throw new Error('none account')
+    if (!contract) throw new Error('none contract')
+    const args: any = []
+    const method = 'withdraw'
+    return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+      return contract[method](...args, {
+        gasLimit: calculateGasMargin(estimatedGasLimit),
+        // gasLimit: '3500000',
+        from: account
+      }).then((response: TransactionResponse) => {
+        addTransaction(response, {
+          summary: `Locker Withdraw`,
+          actionTag: {
+            recipient: `${account}-LockerWithdraw`
+          }
+        })
+        return response.hash
+      })
+    })
+  }, [account, addTransaction, contract])
+  return {
+    toWithdraw
+  }
+}
