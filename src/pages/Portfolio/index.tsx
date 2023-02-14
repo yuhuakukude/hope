@@ -4,7 +4,7 @@ import PortfolioHead from './component/Head'
 import InvestmentAllocation from './component/InvestmentAllocation'
 import GombocRewards from './component/GombocRewards'
 import VeLTRewards from './component/VeLTRewards'
-import Govern from './component/Govern'
+// import Govern from './component/Govern'
 
 import './index.scss'
 import { useActiveWeb3React } from 'hooks'
@@ -45,7 +45,7 @@ export default function Portfolio() {
             <InvestmentAllocation data={overViewData} />
             <GombocRewards data={overViewData.rewards} />
             <VeLTRewards />
-            <Govern />
+            {/* <Govern /> */}
           </>
         )}
       </div>
