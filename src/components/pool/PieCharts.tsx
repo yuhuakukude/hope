@@ -35,6 +35,6 @@ export default function PieCharts({ data, size }: { data?: any; size?: number })
     return () => {
       myChart.dispose()
     }
-  }, [])
+  }, [data, size])
   return <div style={{ width: `${size ? size : 120}px`, height: `${size ? size : 120}px` }} ref={chartRef} />
 }
