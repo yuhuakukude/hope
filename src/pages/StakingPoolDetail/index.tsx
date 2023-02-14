@@ -11,8 +11,10 @@ import { useActiveWeb3React } from '../../hooks'
 import { ButtonGray, ButtonPrimary } from '../../components/Button'
 import BasePoolInfoCard, { CardHeader } from '../../components/pool/PoolInfoCard'
 import PieCharts from '../../components/pool/PieCharts'
+import LineCharts from '../../components/pool/LineCharts'
 import styled from 'styled-components'
 import { Box } from 'rebass/styled-components'
+import Overview from '../../components/pool/Overview'
 
 const Circular = styled(Box)<{
   color?: string
@@ -51,9 +53,9 @@ export default function StakingPoolDetail({
           </ButtonPrimary>
         </RowFlat>
       </AutoRow>
-      <AutoRow padding={'30px 10px'} gap={'30px'} align={''}>
+      <AutoRow padding={'30px 15px'} gap={'30px 15px'} align={''}>
         <AutoColumn style={{ flex: 4 }}>
-          <LightCard>
+          <LightCard padding={'30px'}>
             <RowBetween>
               <Row>
                 <PieCharts></PieCharts>
@@ -100,15 +102,12 @@ export default function StakingPoolDetail({
               <TYPE.body marginLeft={9}> 1.00 USDC = 1.002 BUSD</TYPE.body>
             </Row>
           </LightCard>
-          {/* <LightCard>
-            <AutoRow>
-              <CurrencyLogo currency={pool?.tokens[0]} />
-              <TYPE.white></TYPE.white>
-            </AutoRow>
-            <AutoRow>
-              <CurrencyLogo currency={pool?.tokens[1]} />
-            </AutoRow>
-          </LightCard> */}
+          <Overview smallSize={true}></Overview>
+          <LightCard style={{ marginTop: '20px' }} padding={'30px 40px'}>
+            <div style={{ height: '435px' }}>
+              <LineCharts></LineCharts>
+            </div>
+          </LightCard>
         </AutoColumn>
         <AutoColumn gap={'30px'} style={{ flex: 3 }}>
           <LightCard padding={'0'}>

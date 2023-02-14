@@ -10,7 +10,7 @@ import { ButtonPrimary } from '../../components/Button'
 import { useLPStakingInfos } from '../../hooks/useLPStaking'
 import StakingPoolCard from '../../components/stakingPool/StakingPoolCard'
 import { TYPE } from '../../theme'
-import useTheme from '../../hooks/useTheme'
+import Overview from '../../components/pool/Overview'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -48,90 +48,6 @@ const PoolSection = styled.div`
   width: 100%;
   justify-self: center;
 `
-
-interface OverviewData {
-  title: string
-  isRise: boolean
-  rate: string
-  amount: string
-}
-
-const Text2 = styled.p`
-  color: ${({ theme }) => theme.text2};
-`
-const RateText = styled.p`
-  font-size: 16px;
-  margin-left: 22px;
-`
-
-function RiseText({ data }: { data: OverviewData }) {
-  const theme = useTheme()
-  return (
-    <>
-      {data.isRise ? (
-        <RateText style={{ color: theme.red1, fontSize: '16px' }}>{data.rate} ↑</RateText>
-      ) : (
-        <RateText style={{ color: theme.green1, fontSize: '16px' }}>{data.rate} ↓</RateText>
-      )}
-    </>
-  )
-}
-
-function OverviewBlock({ data }: { data: OverviewData }) {
-  return (
-    <div>
-      <RowBetween>
-        <Text2>{data.title}</Text2>
-        <RiseText data={data} />
-      </RowBetween>
-      <p style={{ color: 'white', fontSize: '20px', marginTop: '30px' }}>{data.amount}</p>
-    </div>
-  )
-}
-
-function PoolOverview() {
-  const fakeData: OverviewData[] = [
-    {
-      title: 'Pool Overview',
-      isRise: true,
-      rate: '2.53%',
-      amount: '$ 10,123,435.32'
-    },
-    {
-      title: 'Volume(24H)',
-      isRise: false,
-      rate: '2.53%',
-      amount: '$ 13,156,678.34'
-    },
-    {
-      title: 'Fees(24H)',
-      isRise: true,
-      rate: '2.53%',
-      amount: '$ 10,123,435.32'
-    },
-    {
-      title: 'Fess(7d)',
-      isRise: true,
-      rate: '2.53%',
-      amount: '$ 10,123,435.32'
-    }
-  ]
-  return (
-    <TopSection>
-      <RowBetween>
-        <p style={{ fontSize: '28px' }}>Pool Overview</p>
-        <ButtonPrimary style={{ width: 'max-content' }}>New Position</ButtonPrimary>
-      </RowBetween>
-      <PoolsWrapper style={{ marginTop: '30px' }}>
-        <RowBetween style={{ padding: '0px 50px', marginTop: '30px' }}>
-          {fakeData.map((data, index) => {
-            return <OverviewBlock data={data} key={index} />
-          })}
-        </RowBetween>
-      </PoolsWrapper>
-    </TopSection>
-  )
-}
 
 // const DataRow = styled(RowBetween)`
 //   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -184,7 +100,13 @@ export default function StakingPool() {
 
   return (
     <PageWrapper gap="lg" justify="center">
-      <PoolOverview />
+      <TopSection>
+        <RowBetween>
+          <p style={{ fontSize: '28px' }}>Pool Overview</p>
+          <ButtonPrimary style={{ width: 'max-content' }}>New Position</ButtonPrimary>
+        </RowBetween>
+        <Overview></Overview>
+      </TopSection>
       <RowBetween style={{ width: '100%' }}>
         <ChartView />
         <ChartView />
