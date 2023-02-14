@@ -1,10 +1,8 @@
 import React, { useEffect, useRef } from 'react'
-import { PoolInfo } from '../../state/stake/hooks'
 // import Row from '../Row'
 import * as echarts from 'echarts'
 
-export default function PieCharts({ pool }: { pool?: PoolInfo }) {
-  console.log(pool)
+export default function PieCharts({ data, size }: { data?: any; size?: number }) {
   const chartRef: any = useRef()
 
   useEffect(() => {
@@ -12,12 +10,13 @@ export default function PieCharts({ pool }: { pool?: PoolInfo }) {
     const option = {
       series: [
         {
-          name: 'Access From',
+          silent: true,
           type: 'pie',
+          color: ['#E4C989', '#66FFA6'],
           radius: ['50%', '100%'],
           avoidLabelOverlap: false,
           itemStyle: {
-            borderRadius: 5,
+            borderRadius: size ? 1 : 5,
             borderColor: '#26262C',
             borderWidth: 5
           },
@@ -28,7 +27,7 @@ export default function PieCharts({ pool }: { pool?: PoolInfo }) {
           labelLine: {
             show: false
           },
-          data: [200, 100]
+          data: data
         }
       ]
     }
@@ -37,5 +36,5 @@ export default function PieCharts({ pool }: { pool?: PoolInfo }) {
       myChart.dispose()
     }
   }, [])
-  return <div style={{ width: '120px', height: '120px' }} ref={chartRef} />
+  return <div style={{ width: `${size ? size : 120}px`, height: `${size ? size : 120}px` }} ref={chartRef} />
 }

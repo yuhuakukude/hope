@@ -1,7 +1,7 @@
 import { PoolInfo } from '../../state/stake/hooks'
 import styled from 'styled-components'
 import Card from '../Card'
-import { AutoRow, RowFixed } from '../Row'
+import Row, { AutoRow, RowFixed } from '../Row'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { Text } from 'rebass'
 import { shortenAddress } from '../../utils'
@@ -9,6 +9,8 @@ import { TYPE } from '../../theme'
 import Column, { GapColumn } from '../Column'
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { Box } from 'rebass/styled-components'
+import PieCharts from '../../components/pool/PieCharts'
 
 const StyledPoolCard = styled(Card)`
   border-radius: 0;
@@ -18,6 +20,16 @@ const StyledPoolCard = styled(Card)`
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.bg3};
   }
+`
+
+const Circular = styled(Box)<{
+  color?: string
+}>`
+  background: ${({ color }) => color ?? '#E1C991'};
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 6px;
 `
 
 const ContentRow = styled(RowFixed)`
@@ -48,14 +60,35 @@ export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>{`${pool.token0Amount.toFixed(2, { groupSeparator: ',' })} / ${token0.symbol}`}</TYPE.white>
-            <TYPE.white>{`${pool.token1Amount.toFixed(2, { groupSeparator: ',' })} / ${token1.symbol}`}</TYPE.white>
+            <Row>
+              <PieCharts data={[pool.token0Amount.toFixed(2), pool.token1Amount.toFixed(2)]} size={42}></PieCharts>
+              <div className="m-l-12">
+                <Row>
+                  <Circular></Circular>
+                  <TYPE.white>{`${pool.token0Amount.toFixed(2, { groupSeparator: ',' })} / ${
+                    token0.symbol
+                  }`}</TYPE.white>
+                </Row>
+                <Row>
+                  <Circular color={'#8FFBAE'}></Circular>
+                  <TYPE.white>{`${pool.token1Amount.toFixed(2, { groupSeparator: ',' })} / ${
+                    token1.symbol
+                  }`}</TYPE.white>
+                </Row>
+              </div>
+            </Row>
           </Column>
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>{`${pool.volume0Amount.toFixed(2, { groupSeparator: ',' })} / ${token0.symbol}`}</TYPE.white>
-            <TYPE.white>{`${pool.volume1Amount.toFixed(2, { groupSeparator: ',' })} / ${token0.symbol}`}</TYPE.white>
+            <Row>
+              <Circular></Circular>
+              <TYPE.white>{`${pool.volume0Amount.toFixed(2, { groupSeparator: ',' })} / ${token0.symbol}`}</TYPE.white>
+            </Row>
+            <Row>
+              <Circular color={'#8FFBAE'}></Circular>
+              <TYPE.white>{`${pool.volume1Amount.toFixed(2, { groupSeparator: ',' })} / ${token0.symbol}`}</TYPE.white>
+            </Row>
           </Column>
         </ContentRow>
         <ContentRow>

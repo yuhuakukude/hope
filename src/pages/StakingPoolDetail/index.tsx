@@ -58,7 +58,7 @@ export default function StakingPoolDetail({
           <LightCard padding={'30px'}>
             <RowBetween>
               <Row>
-                <PieCharts></PieCharts>
+                <PieCharts data={[100, 50]}></PieCharts>
                 <div className="m-l-20">
                   <Row>
                     <Circular></Circular>

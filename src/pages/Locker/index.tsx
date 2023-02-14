@@ -316,7 +316,7 @@ export default function DaoLocker() {
                 </p>
                 <p className="font-nor text-normal m-t-16">≈ $ 0.00</p>
                 {account &&
-                  (lockerRes?.end === '--' && Number(lockerRes?.amount) > 0 ? (
+                  (lockerRes?.end === '--' && lockerRes?.amount ? (
                     <NavLink to={'/hope/staking'} className="link-btn text-medium text-primary font-12 m-t-20">
                       Withdraw
                     </NavLink>
