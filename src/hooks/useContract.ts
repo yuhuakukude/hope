@@ -38,6 +38,7 @@ import PERMIT2_ABI from '../constants/abis/ahp/PERMIT2.json'
 import VELT_TOKEN_ABI from '../constants/abis/ahp/VELT_TOKEN.json'
 import LT_TOKEN_ABI from '../constants/abis/ahp/LT_TOKEN.json'
 import GOMBOC_CONTROLLER_ABI from '../constants/abis/ahp/GOMBOC_CONTROLLER.json'
+import POOL_GOMBOC_ABI from '../constants/abis/ahp/POOL_GOMBOC.json'
 
 // returns null on errors
 function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
@@ -142,7 +143,7 @@ export function useSocksController(): Contract | null {
   )
 }
 
-// staking buy dao
+// staking dao
 export function useStakingHopeGombocContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
   return useContract(chainId && STAKING_HOPE_GOMBOC_ADDRESS[chainId], STAKING_HOPE_GOMBOC_ABI.abi, true)
@@ -161,6 +162,11 @@ export function usePermit2Contract(): Contract | null {
 export function useGomConContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
   return useContract(chainId && GOMBOC_CONTROLLER_ADDRESS[chainId ?? 1], GOMBOC_CONTROLLER_ABI.abi, true)
+}
+
+// portfolio
+export function usePoolGomContract(address: string): Contract | null {
+  return useContract(address, POOL_GOMBOC_ABI.abi, true)
 }
 
 // buy hope

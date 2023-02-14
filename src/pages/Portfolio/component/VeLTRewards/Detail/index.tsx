@@ -1,4 +1,4 @@
-import PortfolioApi, { IDetail } from 'api/portfolio.api'
+import PortfolioApi, { DetailInfo } from 'api/portfolio.api'
 import Tips from 'components/Tips'
 import { useActiveWeb3React } from 'hooks'
 import React, { useEffect, useState } from 'react'
@@ -10,7 +10,7 @@ export const startTimestamp = ((diffTime.getTime() - 1000 * 60 * 60 * 24 * 7) / 
 
 export default function Detail() {
   const { account } = useActiveWeb3React()
-  const [overviewData, setOverviewData] = useState<IDetail>({} as IDetail)
+  const [overviewData, setOverviewData] = useState<DetailInfo>({} as DetailInfo)
 
   useEffect(() => {
     if (!account) {
@@ -20,7 +20,7 @@ export default function Detail() {
       startTimestamp,
       endTimestamp,
       userAddress: account
-    }).then(res => {
+    }).then((res: any) => {
       if (res && res.result) {
         setOverviewData(res.result)
       }

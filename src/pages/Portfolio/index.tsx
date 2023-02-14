@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useState, useCallback } from 'react'
 import PortfolioConnect from './component/Connect'
 import PortfolioHead from './component/Head'
 import InvestmentAllocation from './component/InvestmentAllocation'
@@ -10,7 +10,7 @@ import './index.scss'
 import { useActiveWeb3React } from 'hooks'
 import styled from 'styled-components'
 import { AutoColumn } from 'components/Column'
-import PortfolioApi, { IPortfolio } from 'api/portfolio.api'
+import PortfolioApi, { PortfolioInfo } from 'api/portfolio.api'
 // import { data } from './mock'
 
 const PageWrapper = styled(AutoColumn)`
@@ -20,19 +20,24 @@ const PageWrapper = styled(AutoColumn)`
 
 export default function Portfolio() {
   const { account } = useActiveWeb3React()
-  const [overViewData, setOverViewData] = useState<IPortfolio>({} as IPortfolio)
-  useEffect(() => {
-    // setOverViewData(data.result)
-    if (!account) {
-      return
-    }
-    PortfolioApi.getOverview(account).then(data => {
-      console.log('data::::', data)
-      if (data.success && data.result) {
-        setOverViewData(data.result)
+  const [overViewData, setOverViewData] = useState<PortfolioInfo>({} as PortfolioInfo)
+
+  const init = useCallback(async () => {
+    try {
+      const res = await PortfolioApi.getOverview(`${account}`)
+      if (res.result && res.result) {
+        setOverViewData(res.result)
       }
-    })
+    } catch (error) {
+      console.log(error)
+    }
   }, [account])
+
+  useEffect(() => {
+    if (account) {
+      init()
+    }
+  }, [account, init])
 
   return (
     <PageWrapper>

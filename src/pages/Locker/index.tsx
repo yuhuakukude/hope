@@ -1,6 +1,5 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef, RefObject } from 'react'
 import styled from 'styled-components'
-import { NavLink } from 'react-router-dom'
 import { AutoColumn } from '../../components/Column'
 import LockerEcharts from './component/echarts'
 import NumericalInput from '../../components/NumericalInput'
@@ -21,7 +20,7 @@ import { tryParseAmount } from '../../state/swap/hooks'
 import { Token, TokenAmount, JSBI, Percent } from '@uniswap/sdk'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
-import { useLocker, useToLocker, conFnNameEnum } from '../../hooks/ahp/useLocker'
+import { useLocker, useToLocker, conFnNameEnum, useToWithdraw } from '../../hooks/ahp/useLocker'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import AddAmount from './component/AddAmount'
 import AddTime from './component/AddTime'
@@ -35,6 +34,10 @@ const PageWrapper = styled(AutoColumn)`
   padding: 30px;
   min-width: 1300px;
 `
+enum ACTION {
+  LOCKER,
+  WITHDRAW
+}
 
 export default function DaoLocker() {
   const [amount, setAmount] = useState('')
@@ -47,6 +50,8 @@ export default function DaoLocker() {
   const [txHash, setTxHash] = useState<string>('')
   const toggleWalletModal = useWalletModalToggle()
   const [pendingText, setPendingText] = useState('')
+  const [actionType, setActionType] = useState(ACTION.LOCKER)
+  const [withdrawPendingText, setWithdrawPendingText] = useState('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const lockerRef = useRef<HTMLInputElement>()
   const dateList = [
@@ -75,6 +80,7 @@ export default function DaoLocker() {
   // token
   const { lockerRes, votePowerAmount } = useLocker()
   const { toLocker, getVeLtAmount } = useToLocker()
+  const { toWithdraw } = useToWithdraw()
 
   const getLockerTime = (val: number) => {
     const weekDate = moment().day() === 0 ? 7 : moment().day()
@@ -128,6 +134,7 @@ export default function DaoLocker() {
   }, [amount, getVeLtAmount, lockTimeArg])
 
   const maxWeek = useMemo(() => {
+    console.log(lockerRes?.end)
     if (!lockerRes?.end) {
       return 0
     }
@@ -193,6 +200,7 @@ export default function DaoLocker() {
   }, [])
 
   const onApprove = useCallback(() => {
+    setActionType(ACTION.LOCKER)
     setCurToken(undefined)
     onTxStart()
     setPendingText(`Approve LT`)
@@ -210,6 +218,7 @@ export default function DaoLocker() {
     setCurToken(VELT[chainId ?? 1])
     setPendingText(`Locker LT`)
     onTxStart()
+    setActionType(ACTION.LOCKER)
 
     const deadline = toDeadline(PERMIT_EXPIRATION)
     const nonce = ethers.utils.randomBytes(32)
@@ -264,6 +273,23 @@ export default function DaoLocker() {
     setAddTimeModal(false)
   }
 
+  const toWithdrawCallback = useCallback(async () => {
+    if (!account) return
+    setCurToken(LT[chainId ?? 1])
+    onTxStart()
+    setActionType(ACTION.WITHDRAW)
+    setWithdrawPendingText('Withdraw LT')
+    toWithdraw()
+      .then(hash => {
+        setWithdrawPendingText('')
+        onTxSubmitted(hash)
+      })
+      .catch((error: any) => {
+        setWithdrawPendingText('')
+        onTxError(error)
+      })
+  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toWithdraw])
+
   useEffect(() => {
     if (votePowerAmount || votePowerAmount === 0) {
       const total = JSBI.BigInt(10000)
@@ -293,7 +319,7 @@ export default function DaoLocker() {
           attemptingTxn={attemptingTxn}
           hash={txHash}
           content={confirmationContent}
-          pendingText={pendingText}
+          pendingText={actionType === ACTION.WITHDRAW ? withdrawPendingText : pendingText}
           currencyToAdd={curToken}
         />
         <div className="dao-locker-page">
@@ -315,10 +341,10 @@ export default function DaoLocker() {
                 </p>
                 <p className="font-nor text-normal m-t-16">≈ $ 0.00</p>
                 {account &&
-                  (lockerRes?.end === '--' && Number(lockerRes?.amount) > 0 ? (
-                    <NavLink to={'/hope/staking'} className="link-btn text-medium text-primary font-12 m-t-20">
+                  (lockerRes?.end === '--' && lockerRes?.amount && !withdrawPendingText ? (
+                    <div className="link-btn text-medium text-primary font-12 m-t-20" onClick={toWithdrawCallback}>
                       Withdraw
-                    </NavLink>
+                    </div>
                   ) : (
                     <div className="link-btn text-medium disabled font-12 m-t-20">Withdraw</div>
                   ))}
