@@ -1,24 +1,38 @@
-import { IPortfolioReward } from 'api/portfolio.api'
+import { PortfolioReward } from 'api/portfolio.api'
 import Table from 'components/Table'
 import Tips from 'components/Tips'
-import React, { useCallback } from 'react'
+import React, { useCallback, useState, useMemo } from 'react'
 import Card from '../Card'
 import SelectTips, { ITitleTips } from '../SelectTips'
 import TitleTips from '../TitleTips'
-import { TokenAmount, JSBI } from '@uniswap/sdk'
+import { TokenAmount, JSBI, Token } from '@uniswap/sdk'
 import { LT, HOPE } from '../../../../constants'
 import { useActiveWeb3React } from '../../../../hooks'
-import './index.scss'
+import ClaimCon from '../../../../components/ahp/ClaimCon'
+import { useStaking, useToClaim } from '../../../../hooks/ahp/useStaking'
+import TransactionConfirmationModal, {
+  TransactionErrorContent
+} from '../../../../components/TransactionConfirmationModal'
 // import { useStaking } from '../../../../hooks/ahp/useStaking'
+import './index.scss'
 
 const isNotNull = (val: string | number | null) => {
   return val && Number(val) !== 0
 }
 
-export default function Rewards({ data }: { data: IPortfolioReward[] }) {
+export default function Rewards({ data }: { data: PortfolioReward[] }) {
   const { account, chainId } = useActiveWeb3React()
-  // const { claRewards, mintedVal } = useStaking()
-  console.log(account)
+  const { claRewards, mintedVal } = useStaking()
+  const { toClaim } = useToClaim()
+  // const [curAddress, setCurAddress] = useState('')
+  const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
+  const [claimPendingText, setClaimPendingText] = useState('')
+  // modal and loading
+  const [showConfirm, setShowConfirm] = useState<boolean>(false)
+  const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
+  // txn values
+  const [txHash, setTxHash] = useState<string>('')
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const formatAmount = (value: string | number, coin: any) => {
     let res = ''
     if (value && value !== '0') {
@@ -29,6 +43,7 @@ export default function Rewards({ data }: { data: IPortfolioReward[] }) {
     }
     return res
   }
+
   const columns = [
     {
       title: 'Rewards Gömböc',
@@ -44,7 +59,7 @@ export default function Rewards({ data }: { data: IPortfolioReward[] }) {
       ),
       dataIndex: 'apr',
       key: 'apr',
-      render: (text: string, record: IPortfolioReward) => {
+      render: (text: string, record: PortfolioReward) => {
         return (
           <div>
             <div>{text}</div>
@@ -68,7 +83,7 @@ export default function Rewards({ data }: { data: IPortfolioReward[] }) {
       ),
       dataIndex: 'staked',
       key: 'staked',
-      render: (text: string, record: IPortfolioReward) => {
+      render: (text: string, record: PortfolioReward) => {
         return (
           <div>
             <div>{formatAmount(text, HOPE) ? `${formatAmount(text, HOPE)} ${record.stakeSymbol}` : `--`}</div>
@@ -81,7 +96,7 @@ export default function Rewards({ data }: { data: IPortfolioReward[] }) {
       title: 'Stakeable',
       dataIndex: 'stakeable',
       key: 'stakeable',
-      render: (text: string, record: IPortfolioReward) => {
+      render: (text: string, record: PortfolioReward) => {
         return (
           <div>
             <div>{formatAmount(text, HOPE) ? `${formatAmount(text, HOPE)} ${record.stakeSymbol}` : `--`}</div>
@@ -92,9 +107,9 @@ export default function Rewards({ data }: { data: IPortfolioReward[] }) {
     },
     {
       title: 'Reward',
-      dataIndex: 'reward',
-      key: 'reward',
-      render: (text: string, record: IPortfolioReward) => {
+      dataIndex: 'ltTotalReward',
+      key: 'ltTotalReward',
+      render: (text: string, record: PortfolioReward) => {
         return (
           <div>
             <div>{formatAmount(text, LT) ? `${formatAmount(text, HOPE)} ${record.rewardSymbol}` : `--`}</div>
@@ -107,9 +122,8 @@ export default function Rewards({ data }: { data: IPortfolioReward[] }) {
       title: 'Actions',
       dataIndex: 'Actions',
       key: 'Actions',
-      render: (text: string, record: IPortfolioReward) => {
+      render: (text: string, record: PortfolioReward) => {
         const options: ITitleTips[] = []
-        console.log(options)
         if (isNotNull(record.stakeable)) {
           options.push({
             label: 'Stake',
@@ -128,7 +142,7 @@ export default function Rewards({ data }: { data: IPortfolioReward[] }) {
             }
           })
         }
-        if (isNotNull(record.reward)) {
+        if (isNotNull(record.ltTotalReward)) {
           options.push({
             label: 'Claim',
             value: 'Claim',
@@ -172,6 +186,68 @@ export default function Rewards({ data }: { data: IPortfolioReward[] }) {
       }
     }
   ]
+
+  const totalRewards = useMemo(() => {
+    let res
+    if (claRewards && mintedVal) {
+      res = claRewards.add(mintedVal)
+    }
+    return res
+  }, [claRewards, mintedVal])
+
+  const onTxStart = useCallback(() => {
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+  }, [])
+
+  const onTxSubmitted = useCallback((hash: string | undefined) => {
+    setShowConfirm(true)
+    setAttemptingTxn(false)
+    hash && setTxHash(hash)
+  }, [])
+
+  const onTxError = useCallback(error => {
+    setShowConfirm(true)
+    setTxHash('')
+    setAttemptingTxn(false)
+    setErrorStatus({ code: error?.code, message: error.message })
+  }, [])
+
+  const claimCallback = useCallback(async () => {
+    if (!account) return
+    setCurToken(LT[chainId ?? 1])
+    onTxStart()
+    setClaimPendingText(`claim LT`)
+    toClaim('')
+      .then(hash => {
+        setClaimPendingText('')
+        onTxSubmitted(hash)
+      })
+      .catch((error: any) => {
+        setClaimPendingText('')
+        onTxError(error)
+      })
+  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaim])
+
+  const confirmationContent = useCallback(
+    () =>
+      errorStatus ? (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
+      ) : (
+        <ClaimCon
+          onSubmit={claimCallback}
+          onDismiss={() => setShowConfirm(false)}
+          totalRewards={totalRewards}
+          claRewards={claRewards}
+        />
+      ),
+    [claRewards, claimCallback, errorStatus, totalRewards]
+  )
+
   const getTitle = useCallback(
     () => (
       <TitleTips
@@ -183,11 +259,23 @@ export default function Rewards({ data }: { data: IPortfolioReward[] }) {
     ),
     []
   )
+
   return (
-    <div className="rewards-wrap">
-      <Card>
-        <Table dataSource={data} columns={columns} title={getTitle} pagination={false} />
-      </Card>
-    </div>
+    <>
+      <TransactionConfirmationModal
+        isOpen={showConfirm}
+        onDismiss={() => setShowConfirm(false)}
+        attemptingTxn={attemptingTxn}
+        hash={txHash}
+        content={confirmationContent}
+        pendingText={claimPendingText}
+        currencyToAdd={curToken}
+      />
+      <div className="rewards-wrap">
+        <Card>
+          <Table dataSource={data} columns={columns} title={getTitle} pagination={false} />
+        </Card>
+      </div>
+    </>
   )
 }

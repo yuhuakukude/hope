@@ -1,6 +1,6 @@
 import { get } from '../utils/http'
 
-export interface IPortfolioReward {
+export interface PortfolioReward {
   name: string
   gomboc: string
   apr: string | number
@@ -11,11 +11,11 @@ export interface IPortfolioReward {
   stakeable: string | number
   usdOfStakeable: string | number
   stakeSymbol: string
-  reward: string | number
+  ltTotalReward: string | number
   usdOfReward: string | number
   rewardSymbol: string
 }
-export interface IPortfolio {
+export interface PortfolioInfo {
   hope: string | number
   usdOfHope: string | number
   stHope: string | number
@@ -26,10 +26,10 @@ export interface IPortfolio {
   hopeOfLt: string | number
   totalHope: string | number
   usdOfTotalHope: string | number
-  rewards: IPortfolioReward[]
+  rewards: PortfolioReward[]
 }
 
-export interface IDetail {
+export interface DetailInfo {
   belongsToMe: string
   belongsToVeLT: string
   withdrawable: string
@@ -39,7 +39,7 @@ export enum POOL_TYPE {
   HOPE,
   SWAP
 }
-export interface IGomboc {
+export interface Gomboc {
   id: string
   networkId: number
   gombocType: number
@@ -59,13 +59,13 @@ export interface IGomboc {
   createAt: string
   updateAt: string
 }
-export interface IItem {
-  gomboc: IGomboc
+export interface Item {
+  gomboc: Gomboc
   totalFees: number
   withdrawable: number
 }
 
-interface IParams {
+interface Params {
   startTimestamp: number
   endTimestamp: number
   userAddress: string
@@ -74,12 +74,12 @@ interface IParams {
 export default class PortfolioApi {
   // 查询LT锁仓记录
   static getOverview(address: string) {
-    return get<IPortfolio>('/light/portfolio/gomboc/overview', { params: { address } })
+    return get<PortfolioInfo>('/light/portfolio/gomboc/overview', { params: { address } })
   }
-  static getRewardsList(params: IParams) {
-    return get<IItem[]>('/light/dao/veLT/rewards/list', { params })
+  static getRewardsList(params: Params) {
+    return get<Item[]>('/light/dao/veLT/rewards/list', { params })
   }
-  static getRewardsOverview(params: IParams) {
-    return get<IDetail>('/light/dao/veLT/rewards/overview', { params })
+  static getRewardsOverview(params: Params) {
+    return get<DetailInfo>('/light/dao/veLT/rewards/overview', { params })
   }
 }

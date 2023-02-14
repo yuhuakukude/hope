@@ -51,7 +51,7 @@ export function useToStaked() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Stake ${amount.toFixed(2, { groupSeparator: ',' }).toString()}  HOPE`,
+            summary: `Stake ${amount.toFixed(2, { groupSeparator: ',' }).toString()}  HOPE`
           })
           return response.hash
         })
@@ -125,25 +125,28 @@ export function useToWithdraw() {
 export function useToClaim() {
   const addTransaction = useTransactionAdder()
   const contract = useLtMinterContract()
-  const { account, chainId } = useActiveWeb3React()
-  const toClaim = useCallback(async () => {
-    if (!account) throw new Error('none account')
-    if (!contract) throw new Error('none contract')
-    const args = [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]]
-    const method = 'mint'
-    return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
-      return contract[method](...args, {
-        gasLimit: calculateGasMargin(estimatedGasLimit),
-        // gasLimit: '3500000',
-        from: account
-      }).then((response: TransactionResponse) => {
-        addTransaction(response, {
-          summary: `Claim`
+  const { account } = useActiveWeb3React()
+  const toClaim = useCallback(
+    async (address: string) => {
+      if (!account) throw new Error('none account')
+      if (!contract) throw new Error('none contract')
+      const args = [address]
+      const method = 'mint'
+      return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+        return contract[method](...args, {
+          gasLimit: calculateGasMargin(estimatedGasLimit),
+          // gasLimit: '3500000',
+          from: account
+        }).then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Claim`
+          })
+          return response.hash
         })
-        return response.hash
       })
-    })
-  }, [account, addTransaction, contract, chainId])
+    },
+    [account, addTransaction, contract]
+  )
   return {
     toClaim
   }

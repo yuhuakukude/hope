@@ -15,7 +15,7 @@ const ClaimCon = ({ onSubmit, onDismiss, totalRewards, claRewards }: ClaimConPro
     <>
       <div className="staking-claim-box w-100">
         <div className="head">
-          $LT Rewards Claim
+          LT Rewards Claim
           <div className="icon-close">
             <CloseIcon onClick={onDismiss} />
           </div>
