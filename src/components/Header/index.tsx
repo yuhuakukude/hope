@@ -26,7 +26,7 @@ const HeaderFrame = styled.div`
   width: 100%;
   top: 0;
   position: relative;
-  padding: 1rem 1rem 0 1rem;
+  padding: 20px 63px 0 100px;
   box-shadow: 0 1px 0 0 rgba(38, 39, 56, 1);
   z-index: 2;
   ${({ theme }) => theme.mediaWidth.upToMedium`
@@ -131,7 +131,17 @@ const StyledNavLink = styled(NavLink).attrs({
   &.${activeClassName} {
     font-weight: 600;
     color: ${({ theme }) => theme.text1};
-    border-bottom: 3px solid ${({ theme }) => theme.primary1};
+    position: relative;
+  }
+  &.${activeClassName}:after {
+    content: ' ';
+    position: absolute;
+    bottom: -13px;
+    left: 50%;
+    margin-left: -12px;
+    width: 24px;
+    height: 3px;
+    background-color: ${({ theme }) => theme.primary1};
   }
 
   :hover,

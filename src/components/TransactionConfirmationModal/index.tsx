@@ -32,7 +32,7 @@ const BottomSection = styled(Section)`
 `
 
 const ConfirmedIcon = styled(ColumnCenter)`
-  padding: 40px 0;
+  padding: 32px 0 20px 0;
 `
 
 const StyledLogo = styled.img`
@@ -100,25 +100,18 @@ function TransactionSubmittedContent({
         <ConfirmedIcon>
           <Commited />
         </ConfirmedIcon>
-        <AutoColumn gap="12px" justify={'center'}>
-          <Text fontWeight={500} fontSize={20}>
+        <AutoColumn justify={'center'}>
+          <Text fontWeight={500} fontSize={18}>
             Transaction Submitted
           </Text>
-          {chainId && hash && (
-            <ExternalLink href={getEtherscanLink(chainId, hash, 'transaction')}>
-              <Text fontWeight={500} fontSize={14} color={theme.primary1}>
-                View on Etherscan
-              </Text>
-            </ExternalLink>
-          )}
           {currencyToAdd && library?.provider?.isMetaMask && (
-            <ButtonLight mt="12px" padding="6px 12px" width="fit-content" onClick={addToken}>
+            <ButtonLight mt="80px" height="56px" width="440px" color="rgba(38, 38, 44, 1)" onClick={addToken}>
               {!success ? (
-                <RowFixed>
+                <RowFixed color="rgba(38, 38, 44, 1)">
                   Add {currencyToAdd.symbol} to Metamask <StyledLogo src={MetaMaskLogo} />
                 </RowFixed>
               ) : (
-                <RowFixed>
+                <RowFixed color="rgba(38, 38, 44, 1)">
                   Added {currencyToAdd.symbol}{' '}
                   <CheckCircle size={'16px'} stroke={theme.green1} style={{ marginLeft: '6px' }} />
                 </RowFixed>
@@ -126,11 +119,18 @@ function TransactionSubmittedContent({
             </ButtonLight>
           )}
           {isShowSubscribe && <SubscribeCon subSuccess={onDismiss} />}
-          <ButtonPrimary onClick={onDismiss} style={{ margin: '20px 0 0 0' }}>
+          {chainId && hash && (
+            <ExternalLink href={getEtherscanLink(chainId, hash, 'transaction')}>
+              <Text mt="30px" mb="30px" fontWeight={500} fontSize={16} color={theme.primary1}>
+                View on Etherscan
+              </Text>
+            </ExternalLink>
+          )}
+          {/* <ButtonPrimary onClick={onDismiss} style={{ margin: '30px 0' }}>
             <Text fontWeight={500} fontSize={20}>
               Close
             </Text>
-          </ButtonPrimary>
+          </ButtonPrimary> */}
         </AutoColumn>
       </Section>
     </Wrapper>
@@ -183,7 +183,7 @@ export function TransactionErrorContent({
           </Text>
           <CloseIcon onClick={onDismiss} />
         </RowBetween>
-        <AutoColumn style={{ marginTop: 20, padding: '2rem 0' }} gap="24px" justify="center">
+        <AutoColumn style={{ marginTop: 20, padding: '30px 0' }} gap="30px" justify="center">
           {errorCode === 4001 ? (
             <>
               <Reject />

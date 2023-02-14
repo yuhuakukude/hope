@@ -1,5 +1,44 @@
-$distance-list: 0, 3, 4, 5, 6, 8, 10, 11, 12, 15, 16, 17, 18, 20, 23, 24, 25, 26, 28, 30, 32, 35, 36, 40, 45, 50, 55, 60, 65, 70, 75, 80, 90, 100;
-$fonts-list: 12, 14, 16, 18, 20, 22, 28;
+$distance-list: 0,
+3,
+4,
+5,
+6,
+8,
+10,
+11,
+12,
+15,
+16,
+17,
+18,
+20,
+23,
+24,
+25,
+26,
+28,
+30,
+32,
+35,
+36,
+40,
+45,
+50,
+55,
+60,
+65,
+70,
+75,
+80,
+90,
+100;
+$fonts-list: 12,
+14,
+16,
+18,
+20,
+22,
+28;
 
 @each $distance in $distance-list {
   .m-#{$distance} {
@@ -75,6 +114,7 @@ $fonts-list: 12, 14, 16, 18, 20, 22, 28;
   cursor: pointer;
   user-select: none;
 }
+
 .w-100 {
   width: 100%;
 }
@@ -206,19 +246,22 @@ $fonts-list: 12, 14, 16, 18, 20, 22, 28;
 .el-col-five {
   width: 20%
 }
+
 .el-col-offset-five {
   margin-left: 20%
 }
+
 .el-col-pull-five {
   position: relative;
   right: 20%
 }
+
 .el-col-push-five {
   position: relative;
   left: 20%
 }
 
-.line-height1{
+.line-height1 {
   line-height: 1;
 }
 
@@ -258,7 +301,8 @@ $fonts-list: 12, 14, 16, 18, 20, 22, 28;
   font-size: 18px;
 }
 
-.font-nor {
+.font-nor,
+.font-16 {
   font-size: 16px;
 }
 
@@ -289,12 +333,15 @@ $fonts-list: 12, 14, 16, 18, 20, 22, 28;
 .text-center {
   text-align: center;
 }
+
 .text-right {
   text-align: right;
 }
+
 .text-left {
   text-align: left;
 }
+
 .text-white {
   color: #fff;
 }
@@ -327,42 +374,48 @@ $fonts-list: 12, 14, 16, 18, 20, 22, 28;
   color: #F6465D;
 }
 
-.lh1{
+.lh1 {
   line-height: 1;
 }
-.lh15{
+
+.lh15 {
   line-height: 1.5;
 }
-.lh18{
+
+.lh18 {
   line-height: 1.8;
 }
 
-.cursor-select{
+.cursor-select {
   cursor: pointer;
   user-select: none;
 }
-.user-select{
+
+.user-select {
   user-select: none;
 }
 
-.usdt-icon{
+.usdt-icon {
   width: 24px;
   height: 24px;
   background: url('../images/usdt-logo.png') no-repeat center;
   background-size: contain;
 }
-.usdc-icon{
+
+.usdc-icon {
   width: 24px;
   height: 24px;
   background: url('../images/usdc-logo.png') no-repeat center;
   background-size: contain;
 }
-.hope-icon{
+
+.hope-icon {
   width: 24px;
   height: 24px;
   background: url('../images/hope-logo.png') no-repeat center;
   background-size: contain;
 }
-a:hover{
+
+a:hover {
   color: #E4C989;
 }
