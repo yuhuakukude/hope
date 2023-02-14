@@ -169,7 +169,7 @@ export default function PieCharts({
     return () => {
       myChart.dispose()
     }
-  }, [])
+  }, [xData, yData])
   return (
     <div>
       {!hideTab && (

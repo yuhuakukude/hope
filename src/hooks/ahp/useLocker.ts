@@ -187,10 +187,7 @@ export function useToWithdraw() {
         from: account
       }).then((response: TransactionResponse) => {
         addTransaction(response, {
-          summary: `Locker Withdraw`,
-          actionTag: {
-            recipient: `${account}-LockerWithdraw`
-          }
+          summary: `Withdraw LT`
         })
         return response.hash
       })

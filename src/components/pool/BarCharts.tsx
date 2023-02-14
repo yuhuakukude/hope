@@ -52,6 +52,6 @@ export default function PieCharts({ xData, yData }: { xData: any; yData: any }) 
     return () => {
       myChart.dispose()
     }
-  }, [])
+  }, [xData, yData])
   return <div className="m-t-20" style={{ width: '100%', height: `260px` }} ref={chartRef} />
 }
