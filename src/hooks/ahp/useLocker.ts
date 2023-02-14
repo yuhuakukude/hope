@@ -11,6 +11,7 @@ import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { tryParseAmount } from '../../state/swap/hooks'
 import format from '../../utils/format'
+import momentTz from 'moment-timezone'
 
 export enum conFnNameEnum {
   CreateLock = 'createLock',
@@ -26,11 +27,20 @@ export function useLocker() {
   const ltTotalAmounnt = useSingleCallResult(lockerContract, 'supply', [])
   const veltTotalAmounnt = useSingleCallResult(lockerContract, 'totalSupply', [])
   const votePowerAmount = useSingleCallResult(gomConContract, 'voteUserPower', [account ?? undefined])
+
   return {
     lockerRes: lockerRes?.result
       ? {
           amount: lockerRes?.result?.amount ? CurrencyAmount.ether(lockerRes?.result?.amount) : undefined,
-          end: `${lockerRes?.result?.end}` === '0' ? '--' : `${lockerRes?.result?.end}`
+          end:
+            `${lockerRes?.result?.end}` === '0' ||
+            (lockerRes?.result?.end &&
+              Number(lockerRes?.result?.end) <=
+                momentTz()
+                  .tz('Africa/Bissau', true)
+                  .unix())
+              ? '--'
+              : `${lockerRes?.result?.end}`
         }
       : undefined,
     ltTotalAmounnt: ltTotalAmounnt?.result ? CurrencyAmount.ether(ltTotalAmounnt?.result?.[0]) : undefined,

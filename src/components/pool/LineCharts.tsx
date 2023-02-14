@@ -146,11 +146,11 @@ export default function PieCharts({ pool }: { pool?: PoolInfo }) {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
               {
                 offset: 0,
-                color: 'rgba(219, 192, 126, 0.8)'
+                color: 'rgba(228,201,137, 0.5)'
               },
               {
                 offset: 1,
-                color: 'rgba(219, 192, 126, 0.3)'
+                color: 'rgba(228,201,137, 0.3)'
               }
             ])
           }
