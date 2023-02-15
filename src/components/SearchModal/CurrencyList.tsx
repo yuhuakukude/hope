@@ -9,7 +9,7 @@ import { useCurrencyBalance } from '../../state/wallet/hooks'
 import { TYPE } from '../../theme'
 import { useIsUserAddedToken, useAllInactiveTokens } from '../../hooks/Tokens'
 import Column from '../Column'
-import { RowFixed, RowBetween } from '../Row'
+import { RowFixed } from '../Row'
 import CurrencyLogo from '../CurrencyLogo'
 import { MouseoverTooltip } from '../Tooltip'
 import { MenuItem } from './styleds'
@@ -17,9 +17,6 @@ import Loader from '../Loader'
 import { isTokenOnList } from '../../utils'
 import ImportRow from './ImportRow'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
-import { LightGreyCard } from 'components/Card'
-import TokenListLogo from '../../assets/svg/tokenlist.svg'
-import QuestionHelper from 'components/QuestionHelper'
 import useTheme from 'hooks/useTheme'
 import { ReactComponent as Check } from '../../assets/svg/check.svg'
 
@@ -48,13 +45,13 @@ const Tag = styled.div`
   margin-right: 4px;
 `
 
-const FixedContentRow = styled.div`
-  padding: 4px 20px;
-  height: 56px;
-  display: grid;
-  grid-gap: 16px;
-  align-items: center;
-`
+// const FixedContentRow = styled.div`
+//   padding: 4px 20px;
+//   height: 56px;
+//   display: grid;
+//   grid-gap: 16px;
+//   align-items: center;
+// `
 
 function Balance({ balance }: { balance: CurrencyAmount }) {
   return <StyledBalanceText title={balance.toExact()}>{balance.toSignificant(4)}</StyledBalanceText>
@@ -64,10 +61,10 @@ const TagContainer = styled.div`
   display: flex;
   justify-content: flex-end;
 `
-
-const TokenListLogoWrapper = styled.img`
-  height: 20px;
-`
+//
+// const TokenListLogoWrapper = styled.img`
+//   height: 20px;
+// `
 
 function TokenTags({ currency }: { currency: Currency }) {
   if (!(currency instanceof WrappedTokenInfo)) {
@@ -195,21 +192,7 @@ export default function CurrencyList({
       const showImport = inactiveTokens && token && Object.keys(inactiveTokens).includes(token.address)
 
       if (index === breakIndex || !data) {
-        return (
-          <FixedContentRow style={style}>
-            <LightGreyCard padding="8px 12px" borderRadius="8px">
-              <RowBetween>
-                <RowFixed>
-                  <TokenListLogoWrapper src={TokenListLogo} />
-                  <TYPE.main ml="6px" fontSize="12px" color={theme.text1}>
-                    Expanded results from inactive Token Lists
-                  </TYPE.main>
-                </RowFixed>
-                <QuestionHelper text="Tokens from inactive lists. Import specific tokens below or click 'Manage' to activate more lists." />
-              </RowBetween>
-            </LightGreyCard>
-          </FixedContentRow>
-        )
+        return <></>
       }
 
       if (showImport && token) {

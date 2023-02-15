@@ -142,7 +142,14 @@ export function useDerivedMintInfo(
       wrappedCurrencyAmount(currencyAAmount, chainId),
       wrappedCurrencyAmount(currencyBAmount, chainId)
     ]
-    if (pair && totalSupply && tokenAmountA && tokenAmountB) {
+    if (
+      pair &&
+      totalSupply &&
+      tokenAmountA &&
+      tokenAmountB &&
+      tokenAmountA.greaterThan(JSBI.BigInt(0)) &&
+      tokenAmountB.greaterThan(JSBI.BigInt(0))
+    ) {
       return pair.getLiquidityMinted(totalSupply, tokenAmountA, tokenAmountB)
     } else {
       return undefined

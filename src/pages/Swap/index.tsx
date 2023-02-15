@@ -269,6 +269,7 @@ export default function Swap({ history }: RouteComponentProps) {
     })
     swapCallback()
       .then(hash => {
+        onUserInput(Field.INPUT, '')
         setPending(true)
         setSwapState({
           pendingMessage: undefined,
@@ -479,7 +480,7 @@ export default function Swap({ history }: RouteComponentProps) {
                     </Row>
                   ) : (
                     <Text textAlign={'center'} fontWeight={500} fontSize={14} color={theme.text2}>
-                      {swapInputError ? (
+                      {swapInputError || (noRoute && userHasSpecifiedInputOutput) ? (
                         '--'
                       ) : (
                         <>
@@ -624,8 +625,10 @@ export default function Swap({ history }: RouteComponentProps) {
             error={
               !currencies[Field.INPUT] || !currencies[Field.OUTPUT]
                 ? 'Select a token to see more trading details'
-                : !formattedAmounts[Field.INPUT] || !formattedAmounts[Field.INPUT]
+                : !typedValue
                 ? 'Enter an amount to see more trading details'
+                : noRoute
+                ? ' '
                 : undefined
             }
             trade={trade}

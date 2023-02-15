@@ -42,7 +42,7 @@ import { currencyId } from '../../utils/currencyId'
 import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
-import { usePosition } from '../../hooks/usePosition'
+import UserLiquidityCard from '../../components/pool/userLiquidityCard'
 
 const PageWrapper = styled(GapColumn)`
   width: 100%;
@@ -86,8 +86,6 @@ export default function AddLiquidity({
     poolTokenPercentage,
     error
   } = useDerivedMintInfo(currencyA ?? undefined, currencyB ?? undefined)
-
-  const { currency0, currency1, token0Deposited, token1Deposited } = usePosition(pair ?? undefined)
 
   const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
 
@@ -231,6 +229,7 @@ export default function AddLiquidity({
           ...(value ? { value } : {}),
           gasLimit: calculateGasMargin(estimatedGasLimit)
         }).then(response => {
+          onFieldAInput('')
           addTransaction(response, {
             summary:
               'Add ' +
@@ -260,6 +259,7 @@ export default function AddLiquidity({
     deadline,
     library,
     noLiquidity,
+    onFieldAInput,
     onTxEnd,
     onTxError,
     onTxStart,
@@ -350,11 +350,8 @@ export default function AddLiquidity({
   const handleDismissConfirmation = useCallback(() => {
     setShowConfirm(false)
     // if there was a tx hash, we want to clear the input
-    if (txHash) {
-      onFieldAInput('')
-    }
     setTxHash('')
-  }, [onFieldAInput, txHash])
+  }, [])
 
   const confirmationContent = useCallback(
     () =>
@@ -483,11 +480,7 @@ export default function AddLiquidity({
                               '0'}
                           %)
                         </TYPE.main>
-                        <Text fontWeight={500} fontSize={14} color={theme.text2} pt={1}>
-                          {`${currency0?.symbol} ${token0Deposited?.toFixed(2)} / ${
-                            currency1?.symbol
-                          } ${token1Deposited?.toFixed(2)}`}
-                        </Text>
+                        <UserLiquidityCard pair={pair ?? undefined} />
                       </AutoColumn>
                     </AutoColumn>
                   </LightCard>

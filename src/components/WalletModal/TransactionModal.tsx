@@ -78,7 +78,7 @@ export default function TransactionModal({
         <ClearText onClick={clearAllTransactionsCallback}>Clear All</ClearText>
       </RowBetween>
       <DivideLine />
-      <GapColumn gap={'20px'} style={{ padding: '0 30px 30px' }}>
+      <GapColumn gap={'20px'} style={{ padding: '0 30px 30px', maxHeight: '80vh', overflow: 'auto' }}>
         {renderTransactions(pending)}
         {renderTransactions(confirmed)}
       </GapColumn>

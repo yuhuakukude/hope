@@ -21,10 +21,12 @@ import { CardSection } from '../../components/earn/styled'
 import { useStakingInfo } from '../../state/stake/hooks'
 import { BIG_INT_ZERO } from '../../constants'
 import empty from '../../assets/images/empty.png'
+import {useWalletModalToggle} from "../../state/application/hooks";
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
   width: 100%;
+  min-width: 1390px;
 `
 
 const VoteCard = styled(GapColumn)`
@@ -98,6 +100,8 @@ export default function Pool() {
   const theme = useContext(ThemeContext)
   const { account } = useActiveWeb3React()
 
+  const toggleWalletModal = useWalletModalToggle()
+
   // fetch the user's balances of all tracked V2 LP tokens
   const trackedTokenPairs = useTrackedTokenPairs()
   const tokenPairsWithLiquidityTokens = useMemo(
@@ -150,14 +154,16 @@ export default function Pool() {
               My liquidity
             </TYPE.mediumHeader>
           </HideSmall>
-          <ButtonRow>
-            <ButtonPrimary as={Link} padding="12px 16px" to="/swap/find">
-              Import
-            </ButtonPrimary>
-            <ButtonPrimary id="join-pool-button" as={Link} padding="12px 16px" borderRadius="12px" to="/add/ETH">
-              New Position
-            </ButtonPrimary>
-          </ButtonRow>
+          {account && (
+            <ButtonRow>
+              <ButtonPrimary as={Link} padding="12px 16px" to="/swap/find">
+                Import
+              </ButtonPrimary>
+              <ButtonPrimary id="join-pool-button" as={Link} padding="12px 16px" borderRadius="12px" to="/add/ETH">
+                New Position
+              </ButtonPrimary>
+            </ButtonRow>
+          )}
         </TitleRow>
         <SwapPoolTabs active={'pool'} />
         <VoteCard gap={'lg'}>
@@ -187,7 +193,7 @@ export default function Pool() {
               {!account ? (
                 <Card padding="40px">
                   <TYPE.white textAlign="center">Connect to a wallet to view your liquidity.</TYPE.white>
-                  <ButtonOutlined margin={'auto'} width={'400px'} mt={'40px'} primary>
+                  <ButtonOutlined onClick={toggleWalletModal} margin={'auto'} width={'400px'} mt={'40px'} primary>
                     Connect Wallet
                   </ButtonOutlined>
                 </Card>
