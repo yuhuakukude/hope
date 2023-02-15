@@ -26,7 +26,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
   const { toClaim } = useToClaim()
   const [curTableItem, setCurTableItem]: any = useState({})
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
-  const [claimPendingText, setClaimPendingText] = useState('')
+  const [claimPendingText, setPendingText] = useState('')
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
@@ -218,14 +218,14 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
     if (!account) return
     setCurToken(LT[chainId ?? 1])
     onTxStart()
-    setClaimPendingText(`claim LT`)
+    setPendingText(`Fees Withdraw`)
     toClaim(STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1])
       .then(hash => {
-        setClaimPendingText('')
+        setPendingText('')
         onTxSubmitted(hash)
       })
       .catch((error: any) => {
-        setClaimPendingText('')
+        setPendingText('')
         onTxError(error)
       })
   }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaim])
@@ -234,14 +234,14 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
     if (!account) return
     setCurToken(LT[chainId ?? 1])
     onTxStart()
-    setClaimPendingText(`claim Rewards`)
+    setPendingText(`claim Rewards`)
     toClaimRewards()
       .then(hash => {
-        setClaimPendingText('')
+        setPendingText('')
         onTxSubmitted(hash)
       })
       .catch((error: any) => {
-        setClaimPendingText('')
+        setPendingText('')
         onTxError(error)
       })
   }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaimRewards])

@@ -110,6 +110,18 @@ export const LT_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.HOPE]: '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E'
 }
 
+export const FEE_DIS_ADDRESS: { [chainId in ChainId]?: string } = {
+  [ChainId.MAINNET]: '0xC1637381935dE5639Ce8696D60dBb51B1D8f32d0',
+  [ChainId.SEPOLIA]: '0xC1637381935dE5639Ce8696D60dBb51B1D8f32d0',
+  [ChainId.HOPE]: '0xC1637381935dE5639Ce8696D60dBb51B1D8f32d0'
+}
+
+export const GOM_FEE_DIS_ADDRESS: { [chainId in ChainId]?: string } = {
+  [ChainId.MAINNET]: '0x7C5d7eDFa84499E6A5bE4A7E46DC38E3bA34F051',
+  [ChainId.SEPOLIA]: '0x7C5d7eDFa84499E6A5bE4A7E46DC38E3bA34F051',
+  [ChainId.HOPE]: '0x7C5d7eDFa84499E6A5bE4A7E46DC38E3bA34F051'
+}
+
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
 export const AVERAGE_BLOCK_TIME_IN_SECS = 13
 export const PROPOSAL_LENGTH_IN_BLOCKS = 40_320
