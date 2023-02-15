@@ -279,7 +279,7 @@ export default function DaoLocker() {
     onTxStart()
     setActionType(ACTION.WITHDRAW)
     setWithdrawPendingText('Withdraw LT')
-    toWithdraw()
+    toWithdraw(lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00')
       .then(hash => {
         setWithdrawPendingText('')
         onTxSubmitted(hash)
@@ -288,7 +288,7 @@ export default function DaoLocker() {
         setWithdrawPendingText('')
         onTxError(error)
       })
-  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toWithdraw])
+  }, [account, chainId, lockerRes?.amount, onTxError, onTxStart, onTxSubmitted, toWithdraw])
 
   useEffect(() => {
     if (votePowerAmount || votePowerAmount === 0) {
@@ -488,6 +488,7 @@ export default function DaoLocker() {
                         !lockerDate ||
                         !ltBalance ||
                         lockerRes?.end !== '--' ||
+                        !lockerRes?.amount ||
                         approvalState === ApprovalState.UNKNOWN
                       }
                       actionText={actionText}
