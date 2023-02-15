@@ -7,12 +7,14 @@ import Loader from '../../components/Loader'
 import { OutlineCard } from '../../components/Card'
 import { SearchInput } from '../../components/SearchModal/styleds'
 import { ButtonPrimary } from '../../components/Button'
-import { useLPStakingInfos } from '../../hooks/useLPStaking'
+import { useLPStakingPairsInfos } from '../../hooks/useLPStaking'
 import StakingPoolCard from '../../components/stakingPool/StakingPoolCard'
 import { TYPE } from '../../theme'
 import Overview from '../../components/pool/Overview'
 import LineCharts from '../../components/pool/LineCharts'
 import BarCharts from '../../components/pool/BarCharts'
+import { Pagination } from 'antd'
+import Row from '../../components/Row'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -32,8 +34,8 @@ const PositionTitleWrapper = styled(AutoRow)`
   padding: 20px;
 `
 
-const PositionTitle = styled(TYPE.subHeader)`
-  flex: 1;
+const PositionTitle = styled(TYPE.subHeader)<{ flex?: number }>`
+  flex: ${({ flex }) => flex ?? '1'};
 `
 
 const TopSection = styled(AutoColumn)`
@@ -105,11 +107,17 @@ export default function StakingPool() {
   const [curType, setCurType] = useState(1)
 
   const [searchContent, setSearchContent] = useState('')
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [pageSize, setPageSize] = useState<number>(5)
   const [sort, setSort] = useState<Sort>('desc')
   console.log(curType, setCurType, setSearchContent, setSort)
-  const { result: stakingInfos, loading, page } = useLPStakingInfos(searchContent, sort)
-  console.log('poolStakingInfos', page)
+  const { result: stakingInfos, loading, total } = useLPStakingPairsInfos(searchContent, sort, currentPage, pageSize)
   // staking info for connected account
+
+  const onPagesChange = (page: any, pageSize: any) => {
+    setCurrentPage(page)
+    setPageSize(pageSize)
+  }
 
   return (
     <PageWrapper gap="lg" justify="center">
@@ -128,7 +136,7 @@ export default function StakingPool() {
         <TopSection gap="md">
           <DataCard>
             <CardSection>
-              <AutoColumn style={{ padding: 30 }} gap="lg">
+              <AutoColumn justify="end">
                 <RowFixed gap={'md'}>
                   <SearchInput
                     width={440}
@@ -140,20 +148,20 @@ export default function StakingPool() {
                     onChange={() => {}}
                     onKeyDown={() => {}}
                   />
-                  <ButtonPrimary>Search</ButtonPrimary>
+                  <ButtonPrimary marginLeft={20}>Search</ButtonPrimary>
                 </RowFixed>
               </AutoColumn>
             </CardSection>
           </DataCard>
         </TopSection>
-        <AutoColumn gap="lg" style={{ width: '100%' }}>
+        <AutoColumn gap="lg" style={{ width: '100%', marginTop: '20px' }}>
           <PositionTitleWrapper>
-            <PositionTitle>Pool</PositionTitle>
+            <PositionTitle flex={2}>Pool</PositionTitle>
             <PositionTitle>Fee Rate</PositionTitle>
-            <PositionTitle>Liquidity（TVL）</PositionTitle>
-            <PositionTitle>Fees(24H)</PositionTitle>
-            <PositionTitle>Combined APR</PositionTitle>
+            <PositionTitle flex={2.5}>Liquidity（TVL）</PositionTitle>
+            <PositionTitle flex={2}>Fees(24H)</PositionTitle>
             <PositionTitle>Volume(24H)</PositionTitle>
+            <PositionTitle>Combined APR</PositionTitle>
             <PositionTitle>Actions</PositionTitle>
           </PositionTitleWrapper>
           <PoolSection>
@@ -168,6 +176,19 @@ export default function StakingPool() {
               })
             )}
           </PoolSection>
+          <Row justify="center">
+            <Pagination
+              showQuickJumper
+              total={total}
+              current={currentPage}
+              pageSize={pageSize}
+              showSizeChanger
+              onChange={onPagesChange}
+            />{' '}
+            <span className="m-l-15" style={{ color: '#868790' }}>
+              共{total}条
+            </span>
+          </Row>
         </AutoColumn>
       </PoolsWrapper>
     </PageWrapper>

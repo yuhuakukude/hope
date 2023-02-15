@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchStakeList, fetchStakingPool, PoolInfo } from '../state/stake/hooks'
+import { fetchStakeList, fetchStakingPool, PoolInfo, fetchPairsList, fetchPairsListLength } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
 
 export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
@@ -48,6 +48,37 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
       hasNext: result?.length === pageSize,
       pageSize
     },
+    result
+  }
+}
+
+export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc', page: number, pageSize: number) {
+  const { account } = useActiveWeb3React()
+  const [result, setResult] = useState<PoolInfo[]>([])
+
+  const [loading, setLoading] = useState<boolean>(false)
+  const [resultLength, setResultLength] = useState<number>(0)
+
+  useEffect(() => {
+    ;(async () => {
+      setLoading(true)
+      try {
+        const listLength = await fetchPairsListLength()
+        setResultLength(listLength)
+        const list = await fetchPairsList(account ?? '', searchName, sort, 'trackedReserveETH', page, pageSize)
+        setLoading(false)
+        setResult(list)
+      } catch (error) {
+        setResult([])
+        setLoading(false)
+        console.error('useRankingList', error)
+      }
+    })()
+  }, [searchName, sort, page, account, pageSize])
+
+  return {
+    total: resultLength,
+    loading: loading,
     result
   }
 }

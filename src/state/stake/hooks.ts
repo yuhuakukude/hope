@@ -307,6 +307,26 @@ export interface StakeInfo {
   }
 }
 
+export interface PairInfo {
+  id: string
+  reserveUSD: string
+  volumeUSD: string
+  reserve0: string
+  reserve1: string
+  volumeToken0: string
+  volumeToken1: string
+  token0: {
+    decimals: string
+    id: string
+    symbol: string
+  }
+  token1: {
+    decimals: string
+    id: string
+    symbol: string
+  }
+}
+
 export interface PoolInfo {
   // the address of the reward contract
   stakingRewardAddress: string
@@ -439,6 +459,92 @@ export async function fetchStakeList(
     }, [])
     return poolInfos
   } catch (error) {
+    return []
+  }
+}
+
+export async function fetchPairsListLength(): Promise<number> {
+  const query = `{ pairs(first: 200,  skip: 0) { id } }`
+  try {
+    const response = await postQuery(SUBGRAPH, query)
+    return response.data.pairs.length || 0
+  } catch (error) {
+    return 0
+  }
+}
+
+export async function fetchPairsList(
+  account: string,
+  searchContent: string | undefined,
+  sort: 'asc' | 'desc',
+  orderBy: string,
+  page: number,
+  size: number
+): Promise<PoolInfo[]> {
+  // pairs(first: ${size},  skip: ${skip}, orderBy: ${orderBy || 'trackedReserveETH'}, orderDirection: ${sort ||
+  const query = `{
+    pairs(first: ${size}, skip: ${(page - 1) * size}, orderBy: ${orderBy}, orderDirection: ${sort}) {
+      id
+      reserve0
+      reserve1
+      reserveUSD
+      volumeToken0
+      volumeToken1
+      volumeUSD
+      token0 {
+        id
+        symbol
+        name
+        decimals
+        __typename
+      }
+      token1 {
+        id
+        symbol
+        name
+        decimals
+        __typename
+      }
+      __typename
+    }
+  }`
+  try {
+    const response = await postQuery(SUBGRAPH, query)
+    const pools = response.data.pairs
+    console.warn(pools)
+    const poolInfos = pools.map((pool: PairInfo) => {
+      const stakingRewardAddress = pool.id
+      const token0 = new Token(ChainId.SEPOLIA, pool.token0.id, Number(pool.token0.decimals), pool.token0.symbol)
+      const token1 = new Token(ChainId.SEPOLIA, pool.token1.id, Number(pool.token1.decimals), pool.token1.symbol)
+      const tokens = [token0, token1]
+      const token0Amount = tryParseAmount(pool.reserve0, tokens[0])
+      const token1Amount = tryParseAmount(pool.reserve1, tokens[1])
+      const volume0Amount = tryParseAmount(pool.volumeToken0, tokens[0])
+      const volume1Amount = tryParseAmount(pool.volumeToken1, tokens[1])
+      const dummyPair = new Pair(
+        token0Amount ? (token0Amount as TokenAmount) : new TokenAmount(tokens[0], '0'),
+        token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
+      )
+      // const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken)
+      // const stakingToken = new Token(11155111, pool.id, 18, '')
+      return {
+        stakingRewardAddress,
+        tokens,
+        pair: dummyPair,
+        lpToken: dummyPair.liquidityToken,
+        token0Amount,
+        token1Amount,
+        volume0Amount,
+        volume1Amount,
+        // totalStakedAmount,
+        // stakingToken,
+        tvl: tryParseAmount(pool.reserveUSD, dummyPair.liquidityToken),
+        volumeAmount: tryParseAmount(pool.volumeUSD, dummyPair.liquidityToken)
+      }
+    }, [])
+    return poolInfos
+  } catch (error) {
+    console.warn(`error${error}`)
     return []
   }
 }

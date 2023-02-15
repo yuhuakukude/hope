@@ -277,3 +277,46 @@
 .ant-radio-inner::after {
   background-color: #E4C989;
 }
+
+// ant-pagination
+.ant-pagination{
+  color: #868790;
+  font-family: Arboria-Book;
+  .ant-pagination-item{
+    background-color: #26262C;
+    border-color: #434343;
+    a{
+      color: #868790;
+    }
+  }
+  .ant-pagination-prev, .ant-pagination-next{
+    a{
+      color: #868790;
+      background-color: #434343;
+      border-color: #434343;
+    }
+  }
+  .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-ellipsis, .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-ellipsis{
+    color: #404040;
+    border: 1px solid #434343;
+    border-radius: 4px;
+  }
+  .ant-pagination-options-quick-jumper input, .ant-select-selection{
+    color: #868790;
+    background-color: #26262C;
+    border-color: #434343;
+  }
+  .ant-pagination-item-active a{
+    color: #E4C989 !important;
+  }
+  .ant-pagination-item-active:focus a, .ant-pagination-item-active:hover a, .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-link-icon, .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-link-icon{
+    color: #E4C989;
+  }
+  .ant-pagination-prev:focus .ant-pagination-item-link, .ant-pagination-next:focus .ant-pagination-item-link, .ant-pagination-prev:hover .ant-pagination-item-link, .ant-pagination-next:hover .ant-pagination-item-link {
+    color: #E4C989;
+    border-color: #434343;
+  }
+  .ant-select-arrow .ant-select-arrow-icon{
+    color: #868790;
+  }
+}

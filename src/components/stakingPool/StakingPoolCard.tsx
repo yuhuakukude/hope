@@ -32,8 +32,8 @@ const Circular = styled(Box)<{
   margin-right: 6px;
 `
 
-const ContentRow = styled(RowFixed)`
-  flex: 1;
+const ContentRow = styled(RowFixed)<{ flex?: number }>`
+  flex: ${({ flex }) => flex ?? '1'};
 `
 
 export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
@@ -42,7 +42,7 @@ export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
   return (
     <StyledPoolCard>
       <AutoRow>
-        <ContentRow>
+        <ContentRow flex={2}>
           <GapColumn gap={'10px'}>
             <RowFixed gap={'10px'}>
               <DoubleCurrencyLogo margin currency0={token0} currency1={token1} size={24} />
@@ -58,7 +58,7 @@ export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
             1%
           </Text>
         </ContentRow>
-        <ContentRow>
+        <ContentRow flex={2.5}>
           <Column>
             <Row>
               <PieCharts data={[pool.token0Amount.toFixed(2), pool.token1Amount.toFixed(2)]} size={42}></PieCharts>
@@ -79,7 +79,7 @@ export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
             </Row>
           </Column>
         </ContentRow>
-        <ContentRow>
+        <ContentRow flex={2}>
           <Column>
             <Row>
               <Circular></Circular>
@@ -98,7 +98,7 @@ export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>--</TYPE.white>
+            <TYPE.white>{`$${pool.volumeAmount.toFixed(2, { groupSeparator: ',' })}`}</TYPE.white>
           </Column>
         </ContentRow>
         <ContentRow>
