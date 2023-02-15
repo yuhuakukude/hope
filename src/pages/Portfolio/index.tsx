@@ -21,18 +21,6 @@ const PageWrapper = styled(AutoColumn)`
 export default function Portfolio() {
   const { account } = useActiveWeb3React()
   const [overViewData, setOverViewData] = useState<PortfolioInfo>({} as PortfolioInfo)
-  // useEffect(() => {
-  //   // setOverViewData(data.result)
-  //   if (!account) {
-  //     return
-  //   }
-  //   PortfolioApi.getOverview(account).then(data => {
-  //     console.log('data::::', data)
-  //     if (data.success && data.result) {
-  //       setOverViewData(data.result)
-  //     }
-  //   })
-  // }, [account])
 
   const init = useCallback(async () => {
     try {

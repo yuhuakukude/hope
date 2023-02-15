@@ -31,7 +31,7 @@ export function useLocker() {
   return {
     lockerRes: lockerRes?.result
       ? {
-          amount: lockerRes?.result?.amount ? CurrencyAmount.ether(lockerRes?.result?.amount) : undefined,
+          amount: lockerRes?.result?.amount > 0 ? CurrencyAmount.ether(lockerRes?.result?.amount) : undefined,
           end:
             `${lockerRes?.result?.end}` === '0' ||
             (lockerRes?.result?.end &&
@@ -175,27 +175,27 @@ export function useToWithdraw() {
   const addTransaction = useTransactionAdder()
   const contract = useLockerContract()
   const { account } = useActiveWeb3React()
-  const toWithdraw = useCallback(async () => {
-    if (!account) throw new Error('none account')
-    if (!contract) throw new Error('none contract')
-    const args: any = []
-    const method = 'withdraw'
-    return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
-      return contract[method](...args, {
-        gasLimit: calculateGasMargin(estimatedGasLimit),
-        // gasLimit: '3500000',
-        from: account
-      }).then((response: TransactionResponse) => {
-        addTransaction(response, {
-          summary: `Locker Withdraw`,
-          actionTag: {
-            recipient: `${account}-LockerWithdraw`
-          }
+  const toWithdraw = useCallback(
+    async (amount: any) => {
+      if (!account) throw new Error('none account')
+      if (!contract) throw new Error('none contract')
+      const args: any = []
+      const method = 'withdraw'
+      return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+        return contract[method](...args, {
+          gasLimit: calculateGasMargin(estimatedGasLimit),
+          // gasLimit: '3500000',
+          from: account
+        }).then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Withdraw ${amount} LT `
+          })
+          return response.hash
         })
-        return response.hash
       })
-    })
-  }, [account, addTransaction, contract])
+    },
+    [account, addTransaction, contract]
+  )
   return {
     toWithdraw
   }

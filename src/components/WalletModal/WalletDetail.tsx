@@ -11,8 +11,6 @@ import Arrow from 'assets/images/arrow-right-white.png'
 import useTheme from '../../hooks/useTheme'
 import { Text } from 'rebass'
 import { PrimaryText, SecondaryText } from '../Text'
-import { ReactComponent as Share } from 'assets/svg/share.svg'
-import { ReactComponent as Disconnect } from 'assets/svg/disconnect.svg'
 import Test1 from 'assets/images/test1.jpg'
 import Test2 from 'assets/images/test2.jpg'
 import Test3 from 'assets/images/test3.jpg'
@@ -145,42 +143,47 @@ export default function WalletDetail({
         overflowY: 'scroll'
       }}
     >
-      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', padding: '20px' }}>
+      <div style={{ display: 'flex', justifyContent: 'space-between', width: '100%', padding: '30px' }}>
         <div style={{ display: 'flex', alignItems: 'center' }}>
           {fakeIcon}
           <PrimaryText style={{ marginLeft: '8px' }}>{account && shortenAddress(account)}</PrimaryText>
         </div>
         {account && chainId && (
           <div>
-            <AutoRowBetween gap={'10px'} style={{ alignItems: 'center', color: theme.text1 }}>
+            <AutoRowBetween style={{ alignItems: 'center', color: theme.text1 }}>
               {account && <Copy toCopy={account} />}
               <ExternalLink href={`${getEtherscanLink(chainId, account, 'address')}`}>
-                <Share style={{ width: '24px', height: '24px', padding: '3px' }} />
+                <i className="iconfont" style={{ fontSize: '18px', margin: '0 21px', color: '#fff' }}>
+                  &#xe60e;
+                </i>
               </ExternalLink>
-              <Disconnect
-                style={{ cursor: 'pointer' }}
+              <i
                 onClick={() => {
                   toggleWalletModal()
                   deactivate()
                 }}
-              />
+                className="iconfont"
+                style={{ fontSize: '18px', color: '#fff', cursor: 'pointer' }}
+              >
+                &#xe605;
+              </i>
             </AutoRowBetween>
           </div>
         )}
       </div>
       {userEthBalance ? (
-        <ThemeText style={{ fontSize: '30px' }}>
+        <ThemeText style={{ fontSize: '30px', marginTop: '14px' }}>
           {userEthBalance ? userEthBalance.toFixed(6, { groupSeparator: ',' }) : '--'}
         </ThemeText>
       ) : (
         <CustomLightSpinner src={Circle} alt="loader" size={'20px'} />
       )}
       <ThemeText style={{ color: theme.text2, marginTop: '16px' }}>ETH Balance</ThemeText>
-      <NavLink style={{ width: '80%', margin: 'auto' }} to={'/hope/buy-hope'}>
-        <ButtonPrimary margin={'20px 0'}>Buy HOPE</ButtonPrimary>
+      <NavLink style={{ padding: '40px 30px', width: '100%' }} to={'/hope/buy-hope'}>
+        <ButtonPrimary>Buy HOPE</ButtonPrimary>
       </NavLink>
       <DivideLine />
-      <GapColumn gap={'30px'} style={{ width: '100%', padding: '20px' }}>
+      <GapColumn gap={'30px'} style={{ width: '100%', padding: '30px' }}>
         <BalanceDetail
           data={{
             name: 'HOPE',
@@ -210,8 +213,8 @@ export default function WalletDetail({
           display: 'flex',
           width: '100%',
           justifyContent: 'space-between',
-          padding: '0px 20px',
-          marginBottom: '20px'
+          padding: '0px 30px 30px 30px',
+          textAlign: 'center'
         }}
       >
         {gasType.map((type, index) => {

@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from 'react'
-import { PoolInfo } from '../../state/stake/hooks'
 // import Row from '../Row'
 import * as echarts from 'echarts'
 import Row from 'components/Row'
@@ -52,11 +51,20 @@ const TimeItem = styled.div<{ isActive?: boolean }>`
   }
 `
 
-export default function PieCharts({ pool }: { pool?: PoolInfo }) {
+export default function PieCharts({
+  hideTab = false,
+  height = 320,
+  xData,
+  yData
+}: {
+  hideTab?: boolean
+  height?: number
+  xData: any
+  yData: any
+}) {
   const [tabIndex, setTabIndex] = useState(1)
   const [timeIndex, setTimeIndex] = useState(1)
   const chartRef: any = useRef()
-  console.log(pool)
   const tabChange = (e: number) => {
     setTabIndex(e)
   }
@@ -102,16 +110,19 @@ export default function PieCharts({ pool }: { pool?: PoolInfo }) {
       </Row>
     )
   }
+  const handleResizeChart = (myChart: any) => {
+    myChart && myChart.resize()
+  }
 
   useEffect(() => {
     const myChart = echarts.init(chartRef.current)
     const option = {
-      grid: { top: '6%', bottom: '10%', left: '0%', right: '0%' },
+      grid: { top: '6%', bottom: '15%', left: '3%', right: '3%' },
       xAxis: {
         type: 'category',
         boundaryGap: false,
         offset: 10,
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+        data: xData,
         axisLine: {
           show: false
         },
@@ -136,7 +147,7 @@ export default function PieCharts({ pool }: { pool?: PoolInfo }) {
       },
       series: [
         {
-          data: [820, 32, 901, 134, 1290, 900, 620],
+          data: yData,
           type: 'line',
           showSymbol: false,
           lineStyle: {
@@ -158,22 +169,26 @@ export default function PieCharts({ pool }: { pool?: PoolInfo }) {
       ]
     }
     myChart.setOption(option)
+    window.addEventListener('resize', () => handleResizeChart(myChart))
     return () => {
+      window.removeEventListener('resize', () => handleResizeChart(myChart))
       myChart.dispose()
     }
-  }, [])
+  }, [xData, yData])
   return (
     <div>
-      <div className="charts-tab">
-        <TabList></TabList>
-        <Row marginTop={28} justify={'space-between'} align={'center'}>
-          <p className="font-nor" style={{ width: '100%' }}>
-            <span className="text-success">+227.543364 USDC</span> Past 24 Hours
-          </p>
-          <TimeList></TimeList>
-        </Row>
-      </div>
-      <div className="m-t-20" style={{ width: '100%', height: '320px' }} ref={chartRef} />
+      {!hideTab && (
+        <div className="charts-tab">
+          <TabList></TabList>
+          <Row marginTop={28} justify={'space-between'} align={'center'}>
+            <p className="font-nor" style={{ width: '100%' }}>
+              <span className="text-success">+227.543364 USDC</span> Past 24 Hours
+            </p>
+            <TimeList></TimeList>
+          </Row>
+        </div>
+      )}
+      <div className="m-t-20" style={{ width: '100%', height: `${height}px` }} ref={chartRef} />
     </div>
   )
 }

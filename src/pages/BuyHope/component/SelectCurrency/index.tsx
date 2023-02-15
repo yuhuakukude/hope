@@ -18,7 +18,7 @@ const SearchInput = styled.input`
   background: none;
   border: none;
   outline: none;
-  border-radius: 20px;
+  border-radius: 10px;
   color: #fff;
   border-style: solid;
   border: 1px solid #3d3e46;

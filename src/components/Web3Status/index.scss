@@ -1,0 +1,23 @@
+.web3-status-connect-button {
+  width: 234px;
+  height: 63px;
+  display: inline-block;
+  line-height: 63px;
+  font-size: 18px;
+  color: #fff;
+
+  .web3-status-connect-button-1 {
+    width: 92px;
+    text-align: center;
+  }
+
+  .web3-status-connect-button-1::before {
+    content: ' ';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 3px;
+    background-color: rgba(26, 255, 177, 1);
+    margin-right: 5px;
+  }
+}

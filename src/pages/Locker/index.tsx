@@ -34,6 +34,10 @@ const PageWrapper = styled(AutoColumn)`
   padding: 30px;
   min-width: 1300px;
 `
+enum ACTION {
+  LOCKER,
+  WITHDRAW
+}
 
 export default function DaoLocker() {
   const [amount, setAmount] = useState('')
@@ -46,6 +50,8 @@ export default function DaoLocker() {
   const [txHash, setTxHash] = useState<string>('')
   const toggleWalletModal = useWalletModalToggle()
   const [pendingText, setPendingText] = useState('')
+  const [actionType, setActionType] = useState(ACTION.LOCKER)
+  const [withdrawPendingText, setWithdrawPendingText] = useState('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const lockerRef = useRef<HTMLInputElement>()
   const dateList = [
@@ -62,7 +68,6 @@ export default function DaoLocker() {
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const inputAmount = tryParseAmount(amount, LT[chainId ?? 1]) as TokenAmount | undefined
   const { pending: isLockerPending } = useActionPending(account ? `${account}-${conFnNameEnum.CreateLock}` : '')
-  const { pending: isWithdrawPending } = useActionPending(account ? `${account}-LockerWithdraw` : '')
 
   // token api
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
@@ -195,6 +200,7 @@ export default function DaoLocker() {
   }, [])
 
   const onApprove = useCallback(() => {
+    setActionType(ACTION.LOCKER)
     setCurToken(undefined)
     onTxStart()
     setPendingText(`Approve LT`)
@@ -212,6 +218,7 @@ export default function DaoLocker() {
     setCurToken(VELT[chainId ?? 1])
     setPendingText(`Locker LT`)
     onTxStart()
+    setActionType(ACTION.LOCKER)
 
     const deadline = toDeadline(PERMIT_EXPIRATION)
     const nonce = ethers.utils.randomBytes(32)
@@ -270,14 +277,18 @@ export default function DaoLocker() {
     if (!account) return
     setCurToken(LT[chainId ?? 1])
     onTxStart()
-    toWithdraw()
+    setActionType(ACTION.WITHDRAW)
+    setWithdrawPendingText('Withdraw LT')
+    toWithdraw(lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00')
       .then(hash => {
+        setWithdrawPendingText('')
         onTxSubmitted(hash)
       })
       .catch((error: any) => {
+        setWithdrawPendingText('')
         onTxError(error)
       })
-  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toWithdraw])
+  }, [account, chainId, lockerRes, onTxError, onTxStart, onTxSubmitted, toWithdraw])
 
   useEffect(() => {
     if (votePowerAmount || votePowerAmount === 0) {
@@ -308,7 +319,7 @@ export default function DaoLocker() {
           attemptingTxn={attemptingTxn}
           hash={txHash}
           content={confirmationContent}
-          pendingText={pendingText}
+          pendingText={actionType === ACTION.WITHDRAW ? withdrawPendingText : pendingText}
           currencyToAdd={curToken}
         />
         <div className="dao-locker-page">
@@ -330,7 +341,7 @@ export default function DaoLocker() {
                 </p>
                 <p className="font-nor text-normal m-t-16">≈ $ 0.00</p>
                 {account &&
-                  (lockerRes?.end === '--' && lockerRes?.amount && !isWithdrawPending ? (
+                  (lockerRes?.end === '--' && lockerRes?.amount && !withdrawPendingText ? (
                     <div className="link-btn text-medium text-primary font-12 m-t-20" onClick={toWithdrawCallback}>
                       Withdraw
                     </div>
@@ -477,6 +488,7 @@ export default function DaoLocker() {
                         !lockerDate ||
                         !ltBalance ||
                         lockerRes?.end !== '--' ||
+                        !lockerRes?.amount ||
                         approvalState === ApprovalState.UNKNOWN
                       }
                       actionText={actionText}

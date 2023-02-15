@@ -3,12 +3,17 @@ import Tips from 'components/Tips'
 import { useActiveWeb3React } from 'hooks'
 import React, { useEffect, useState } from 'react'
 import { formatDate, getDateForLastOccurence } from 'utils/format'
+import { ButtonPrimary } from 'components/Button'
 
 const diffTime = getDateForLastOccurence('Thurs')
 export const endTimestamp = (diffTime.getTime() / 1000) | 0
 export const startTimestamp = ((diffTime.getTime() - 1000 * 60 * 60 * 24 * 7) / 1000) | 0
 
-export default function Detail() {
+interface DetailProps {
+  withdrawAll: () => void
+}
+
+export default function Detail({ withdrawAll }: DetailProps) {
   const { account } = useActiveWeb3React()
   const [overviewData, setOverviewData] = useState<DetailInfo>({} as DetailInfo)
 
@@ -64,13 +69,11 @@ export default function Detail() {
             </span>
             <span className="velt-rewards-bottom-amount">: 10,123,456,789.00 stHOPE</span>
           </div>
-          <div className="velt-rewards-bottom-right">
-            <div className="velt-rewards-bottom-button">Collect All Fees</div>
-            <div className="velt-rewards-bottom-hover">
-              <span className="velt-rewards-bottom-hover-line"></span>
-              <span className="velt-rewards-bottom-hover-text">hover</span>
-            </div>
-            <div className="velt-rewards-bottom-button2">Withdraw Collected</div>
+          <div className="velt-rewards-bottom-right flex jc-end">
+            <ButtonPrimary className="hp-button-primary m-t-30" onClick={withdrawAll}>
+              Withdraw Collected
+            </ButtonPrimary>
+            {/* <div className="velt-rewards-bottom-button2">Withdraw Collected</div> */}
           </div>
         </div>
       </div>

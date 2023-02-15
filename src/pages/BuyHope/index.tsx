@@ -270,7 +270,7 @@ export default function BuyHope() {
           <div className="title text-medium font-18">Buy HOPE to your wallet</div>
           <div className="box m-t-40">
             <div className="flex jc-between">
-              <div className="input-title text-medium font-18 text-normal">You Pay</div>
+              <div className="input-title text-medium font-16 text-normal">You Pay</div>
               {account && (
                 <div className="balance text-normal font-nor">
                   Available: {balanceAmount?.toFixed(2)}
@@ -321,11 +321,11 @@ export default function BuyHope() {
               />
             </div>
           </div>
-          <div className="i-box flex jc-center m-t-50 m-b-30">
+          <div className="i-box flex jc-center m-t-30 m-b-30">
             <i className="iconfont font-28 text-normal user-select">&#xe617;</i>
           </div>
           <div className="box">
-            <div className="input-title text-medium font-18 text-normal">You Receive</div>
+            <div className="input-title text-medium font-16 text-normal">You Receive</div>
             <div
               className={[
                 'input-box',
@@ -380,7 +380,7 @@ export default function BuyHope() {
             </div>
           </div>
           {account && (
-            <div className="gas flex jc-between p-y-30 m-t-30">
+            <div className="gas flex jc-between p-t-30 m-t-30">
               <div className="label font-nor text-normal">Gas Fee</div>
               <div className="value font-nor text-medium">≈0.001 ETH</div>
             </div>

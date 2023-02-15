@@ -29,6 +29,8 @@ import { TYPE } from '../../theme'
 import { ButtonPrimary } from '../Button'
 import { ChainId } from '@uniswap/sdk'
 
+import './index.scss'
+
 const CloseIcon = styled.div`
   position: absolute;
   right: 1rem;
@@ -60,25 +62,16 @@ const Wrapper = styled.div`
 
 const HeaderRow = styled.div`
   ${({ theme }) => theme.flexRowNoWrap};
-  padding: 1rem 1rem;
   font-weight: 500;
+  font-size: 18px;
   color: ${props => (props.color === 'blue' ? ({ theme }) => theme.primary1 : 'inherit')};
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    padding: 1rem;
-  `};
 `
 
-const ContentWrapper = styled.div`
-  padding: 2rem;
-  border-bottom-left-radius: 20px;
-  border-bottom-right-radius: 20px;
-
-  ${({ theme }) => theme.mediaWidth.upToMedium`padding: 1rem`};
-`
+const ContentWrapper = styled.div``
 
 const UpperSection = styled.div`
   position: relative;
-  padding-top: 50px;
+  padding: 30px;
 
   h5 {
     margin: 0;
@@ -99,12 +92,8 @@ const UpperSection = styled.div`
 
 const OptionGrid = styled.div`
   display: grid;
-  grid-gap: 10px;
-  margin-top: 15px;
-  ${({ theme }) => theme.mediaWidth.upToMedium`
-    grid-template-columns: 1fr;
-    grid-gap: 10px;
-  `};
+  grid-gap: 20px;
+  margin-top: 30px;
 `
 
 const HoverText = styled.div`
@@ -299,49 +288,51 @@ export default function WalletModal() {
   function getModalContent() {
     if (error) {
       return (
-        <UpperSection>
-          <CloseIcon
-            onClick={() => {
-              setIsAgreeTerms(false)
-              setIsAgreeTermsError(false)
-              toggleWalletModal()
-            }}
-          >
-            <CloseColor />
-          </CloseIcon>
-          <ContentWrapper>
-            <AutoColumn justify={'center'} gap={'16px'}>
-              <Warning />
+        <div className="wallet-modal-wrap">
+          <UpperSection>
+            <CloseIcon
+              onClick={() => {
+                setIsAgreeTerms(false)
+                setIsAgreeTermsError(false)
+                toggleWalletModal()
+              }}
+            >
+              <CloseColor />
+            </CloseIcon>
+            <ContentWrapper>
+              <AutoColumn justify={'center'} gap={'16px'}>
+                <Warning />
 
-              <TYPE.body mt={'8px'}>Error connecting</TYPE.body>
-              {error instanceof UnsupportedChainIdError ? (
-                <>
-                  <TYPE.main textAlign={'center'}>Please switch to Ethereum Mainnet</TYPE.main>
-                  <ButtonPrimary
-                    mt={'34px'}
-                    onClick={() => {
-                      const id = Object.values(ChainId).find(val => val === NETWORK_CHAIN_ID)
-                      if (!id) {
-                        return
-                      }
-                      const params = SUPPORTED_NETWORKS[id as ChainId]
-                      return params?.nativeCurrency.symbol === 'ETH'
-                        ? window.ethereum?.request?.({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: params.chainId }, account]
-                          })
-                        : window.ethereum?.request?.({ method: 'wallet_addEthereumChain', params: [params, account] })
-                    }}
-                  >
-                    Switch Network
-                  </ButtonPrimary>
-                </>
-              ) : (
-                'Error connecting. Try refreshing the page.'
-              )}
-            </AutoColumn>
-          </ContentWrapper>
-        </UpperSection>
+                <TYPE.body mt={'8px'}>Error connecting</TYPE.body>
+                {error instanceof UnsupportedChainIdError ? (
+                  <>
+                    <TYPE.main textAlign={'center'}>Please switch to Ethereum Mainnet</TYPE.main>
+                    <ButtonPrimary
+                      mt={'34px'}
+                      onClick={() => {
+                        const id = Object.values(ChainId).find(val => val === NETWORK_CHAIN_ID)
+                        if (!id) {
+                          return
+                        }
+                        const params = SUPPORTED_NETWORKS[id as ChainId]
+                        return params?.nativeCurrency.symbol === 'ETH'
+                          ? window.ethereum?.request?.({
+                              method: 'wallet_switchEthereumChain',
+                              params: [{ chainId: params.chainId }, account]
+                            })
+                          : window.ethereum?.request?.({ method: 'wallet_addEthereumChain', params: [params, account] })
+                      }}
+                    >
+                      Switch Network
+                    </ButtonPrimary>
+                  </>
+                ) : (
+                  'Error connecting. Try refreshing the page.'
+                )}
+              </AutoColumn>
+            </ContentWrapper>
+          </UpperSection>
+        </div>
       )
     }
     if (showTransaction) {
@@ -360,66 +351,68 @@ export default function WalletModal() {
       )
     }
     return (
-      <UpperSection>
-        <CloseIcon
-          onClick={() => {
-            setIsAgreeTerms(false)
-            setIsAgreeTermsError(false)
-            toggleWalletModal()
-          }}
-        >
-          <CloseColor />
-        </CloseIcon>
-        {walletView !== WALLET_VIEWS.ACCOUNT ? (
-          <HeaderRow color="blue">
-            <HoverText
-              onClick={() => {
-                setPendingError(false)
-                setWalletView(WALLET_VIEWS.ACCOUNT)
-              }}
-            >
-              {''}
+      <div className="wallet-modal-wrap">
+        <UpperSection>
+          <HeaderRow>
+            <HoverText>
+              <i
+                onClick={() => {
+                  setIsAgreeTerms(false)
+                  setIsAgreeTermsError(false)
+                  toggleWalletModal()
+                }}
+                className="iconfont"
+                style={{
+                  cursor: 'pointer',
+                  marginRight: '13px',
+                  fontSize: '22px',
+                  fontWeight: 'bold',
+                  verticalAlign: 'middle'
+                }}
+              >
+                &#xe61a;
+              </i>
+              {walletView === WALLET_VIEWS.ACCOUNT && (
+                <span style={{ display: 'inline-block', verticalAlign: 'middle' }}>Connect to a wallet</span>
+              )}
             </HoverText>
           </HeaderRow>
-        ) : (
-          <HeaderRow>
-            <HoverText>Connect to a wallet</HoverText>
-          </HeaderRow>
-        )}
-        <ContentWrapper>
-          {walletView !== WALLET_VIEWS.PENDING && (
-            <div>
-              <div style={{ color: 'white', marginBottom: '10px', display: 'flex' }}>
-                <Checkbox
-                  checked={isAgreeTerms}
-                  onChange={e => {
-                    setIsAgreeTerms(e.target.checked)
-                  }}
-                />
-                <PrimaryText style={{ marginLeft: '10px', lineHeight: '1.2' }}>
-                  I have read, understand, and agree to the{' '}
-                  <span style={{ color: theme.primary1 }}>Terms of Service</span>
-                  and <span style={{ color: theme.primary1 }}>Privacy Policy</span>
-                </PrimaryText>
+
+          <ContentWrapper>
+            {walletView !== WALLET_VIEWS.PENDING && (
+              <div>
+                <div style={{ color: 'white', marginBottom: '10px', display: 'flex', marginTop: '40px' }}>
+                  <Checkbox
+                    checked={isAgreeTerms}
+                    onChange={e => {
+                      setIsAgreeTerms(e.target.checked)
+                    }}
+                  />
+                  <PrimaryText style={{ marginLeft: '8px', lineHeight: '24px' }}>
+                    I have read, understand, and agree to the{' '}
+                    <span style={{ color: theme.primary1 }}>Terms of Service </span>
+                    and <span style={{ color: theme.primary1 }}>Privacy Policy</span>
+                  </PrimaryText>
+                </div>
+                {isAgreeTermsError && !isAgreeTerms && (
+                  <p style={{ color: theme.red1, marginLeft: '25px' }}>Agreement is required to login</p>
+                )}
               </div>
-              {isAgreeTermsError && !isAgreeTerms && (
-                <p style={{ color: theme.red1, marginLeft: '25px' }}>Agreement is required to login</p>
-              )}
-            </div>
-          )}
-          {walletView === WALLET_VIEWS.PENDING ? (
-            <PendingView
-              onBack={() => setWalletView(WALLET_VIEWS.OPTIONS)}
-              connector={pendingWallet}
-              error={pendingError}
-              setPendingError={setPendingError}
-              tryActivation={tryActivation}
-            />
-          ) : (
-            <OptionGrid>{getOptions()}</OptionGrid>
-          )}
-        </ContentWrapper>
-      </UpperSection>
+            )}
+            {walletView === WALLET_VIEWS.PENDING ? (
+              <PendingView
+                onBack={() => setWalletView(WALLET_VIEWS.OPTIONS)}
+                connector={pendingWallet}
+                error={pendingError}
+                setPendingError={setPendingError}
+                tryActivation={tryActivation}
+              />
+            ) : (
+              <OptionGrid>{getOptions()}</OptionGrid>
+            )}
+          </ContentWrapper>
+        </UpperSection>
+      </div>
     )
   }
 

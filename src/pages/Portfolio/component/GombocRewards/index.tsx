@@ -5,15 +5,16 @@ import React, { useCallback, useState, useMemo } from 'react'
 import Card from '../Card'
 import SelectTips, { ITitleTips } from '../SelectTips'
 import TitleTips from '../TitleTips'
-import { TokenAmount, JSBI, Token } from '@uniswap/sdk'
-import { LT, HOPE } from '../../../../constants'
+// import { TokenAmount, JSBI, Token } from '@uniswap/sdk'
+import { Token } from '@uniswap/sdk'
+import { LT, HOPE, STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
 import { useActiveWeb3React } from '../../../../hooks'
-import ClaimCon from '../../../../components/ahp/ClaimCon'
-import { useStaking, useToClaim } from '../../../../hooks/ahp/useStaking'
+import GombocClaim from '../../../../components/ahp/GombocClaim'
+import { useToClaim, useClaimRewards } from '../../../../hooks/ahp/usePortfolio'
+import format from '../../../../utils/format'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
-// import { useStaking } from '../../../../hooks/ahp/useStaking'
 import './index.scss'
 
 const isNotNull = (val: string | number | null) => {
@@ -22,26 +23,33 @@ const isNotNull = (val: string | number | null) => {
 
 export default function Rewards({ data }: { data: PortfolioReward[] }) {
   const { account, chainId } = useActiveWeb3React()
-  const { claRewards, mintedVal } = useStaking()
   const { toClaim } = useToClaim()
-  // const [curAddress, setCurAddress] = useState('')
+  const [curTableItem, setCurTableItem]: any = useState({})
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
-  const [claimPendingText, setClaimPendingText] = useState('')
+  const [claimPendingText, setPendingText] = useState('')
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
   // txn values
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
-  const formatAmount = (value: string | number, coin: any) => {
+
+  const curAddress = useMemo(() => {
     let res = ''
-    if (value && value !== '0') {
-      const num = new TokenAmount(coin[chainId ?? 1], JSBI.BigInt(value))
-      if (num.toFixed(2)) {
-        res = `${num.toFixed(2, { groupSeparator: ',' })}`
-      }
+    if (curTableItem && curTableItem?.gomboc) {
+      res = curTableItem?.gomboc
     }
     return res
+  }, [curTableItem])
+
+  const { toClaimRewards } = useClaimRewards(curAddress)
+
+  function ClaimFn(item: any) {
+    setCurTableItem(item)
+    setTxHash('')
+    setErrorStatus(undefined)
+    setAttemptingTxn(false)
+    setShowConfirm(true)
   }
 
   const columns = [
@@ -86,7 +94,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
       render: (text: string, record: PortfolioReward) => {
         return (
           <div>
-            <div>{formatAmount(text, HOPE) ? `${formatAmount(text, HOPE)} ${record.stakeSymbol}` : `--`}</div>
+            <div>{format.amountFormat(text, 2) ? `${format.amountFormat(text, 2)} ${record.stakeSymbol}` : `--`}</div>
             <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${record.ustOfStaked}</div>
           </div>
         )
@@ -99,7 +107,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
       render: (text: string, record: PortfolioReward) => {
         return (
           <div>
-            <div>{formatAmount(text, HOPE) ? `${formatAmount(text, HOPE)} ${record.stakeSymbol}` : `--`}</div>
+            <div>{format.amountFormat(text, 2) ? `${format.amountFormat(text, 2)} ${record.stakeSymbol}` : `--`}</div>
             <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${record.usdOfStakeable}</div>
           </div>
         )
@@ -112,7 +120,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
       render: (text: string, record: PortfolioReward) => {
         return (
           <div>
-            <div>{formatAmount(text, LT) ? `${formatAmount(text, HOPE)} ${record.rewardSymbol}` : `--`}</div>
+            <div>{format.amountFormat(text, 2) ? `${format.amountFormat(text, 2)} ${record.rewardSymbol}` : `--`}</div>
             <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${record.usdOfReward}</div>
           </div>
         )
@@ -146,8 +154,9 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
           options.push({
             label: 'Claim',
             value: 'Claim',
-            onClick: item => {
-              console.log(item)
+            onClick: () => {
+              ClaimFn(record)
+              console.log(record)
             }
           })
         }
@@ -187,14 +196,6 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
     }
   ]
 
-  const totalRewards = useMemo(() => {
-    let res
-    if (claRewards && mintedVal) {
-      res = claRewards.add(mintedVal)
-    }
-    return res
-  }, [claRewards, mintedVal])
-
   const onTxStart = useCallback(() => {
     setShowConfirm(true)
     setAttemptingTxn(true)
@@ -217,17 +218,44 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
     if (!account) return
     setCurToken(LT[chainId ?? 1])
     onTxStart()
-    setClaimPendingText(`claim LT`)
-    toClaim('')
+    setPendingText(`Fees Withdraw`)
+    toClaim(STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1])
       .then(hash => {
-        setClaimPendingText('')
+        setPendingText('')
         onTxSubmitted(hash)
       })
       .catch((error: any) => {
-        setClaimPendingText('')
+        setPendingText('')
         onTxError(error)
       })
   }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaim])
+
+  const claimRewardsCallback = useCallback(async () => {
+    if (!account) return
+    setCurToken(LT[chainId ?? 1])
+    onTxStart()
+    setPendingText(`claim Rewards`)
+    toClaimRewards()
+      .then(hash => {
+        setPendingText('')
+        onTxSubmitted(hash)
+      })
+      .catch((error: any) => {
+        setPendingText('')
+        onTxError(error)
+      })
+  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaimRewards])
+
+  const claimSubmit = useCallback(
+    (type: string) => {
+      if (type === 'normal') {
+        claimCallback()
+      } else {
+        claimRewardsCallback()
+      }
+    },
+    [claimCallback, claimRewardsCallback]
+  )
 
   const confirmationContent = useCallback(
     () =>
@@ -238,14 +266,15 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
           message={errorStatus.message}
         />
       ) : (
-        <ClaimCon
-          onSubmit={claimCallback}
+        <GombocClaim
+          onSubmit={(type: string) => {
+            claimSubmit(type)
+          }}
           onDismiss={() => setShowConfirm(false)}
-          totalRewards={totalRewards}
-          claRewards={claRewards}
+          tableItem={curTableItem}
         />
       ),
-    [claRewards, claimCallback, errorStatus, totalRewards]
+    [claimSubmit, errorStatus, curTableItem]
   )
 
   const getTitle = useCallback(
