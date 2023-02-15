@@ -82,7 +82,16 @@ export const separate = (value: number | string, formatString?: number) => {
 
 // amountFormat
 export const amountFormat = (value: number | string, formatString?: number) =>
-  separate(numeral(value, formatString), formatString)
+  {
+    const result = separate(numeral(value, formatString), formatString)
+    if(result.indexOf('.') === -1) {
+      return result + '.00'
+    }
+    if(result.split(".")[1].length === 1) {
+      return result + '0'
+    }
+    return result
+  }
 
 // date
 export const formatDate = (value: any, formatString = 'YYYY-MM-DD HH:mm:ss') => {
