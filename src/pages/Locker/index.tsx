@@ -488,7 +488,7 @@ export default function DaoLocker() {
                         !lockerDate ||
                         !ltBalance ||
                         lockerRes?.end !== '--' ||
-                        !lockerRes?.amount ||
+                        lockerRes?.amount ||
                         approvalState === ApprovalState.UNKNOWN
                       }
                       actionText={actionText}
