@@ -328,6 +328,8 @@ export interface PairInfo {
 }
 
 export interface PoolInfo {
+  token0Price?: string
+  token1Price?: string
   // the address of the reward contract
   stakingRewardAddress: string
   // the tokens involved in this pair
@@ -511,7 +513,6 @@ export async function fetchPairsList(
   try {
     const response = await postQuery(SUBGRAPH, query)
     const pools = response.data.pairs
-    console.warn(pools)
     const poolInfos = pools.map((pool: PairInfo) => {
       const stakingRewardAddress = pool.id
       const token0 = new Token(ChainId.SEPOLIA, pool.token0.id, Number(pool.token0.decimals), pool.token0.symbol)
@@ -544,7 +545,6 @@ export async function fetchPairsList(
     }, [])
     return poolInfos
   } catch (error) {
-    console.warn(`error${error}`)
     return []
   }
 }
@@ -559,6 +559,8 @@ export async function fetchPairPool(stakingAddress: string): Promise<PoolInfo | 
       volumeToken0
       volumeToken1
       volumeUSD
+      token0Price
+    	token1Price
       token0 {
         id
         symbol
@@ -593,7 +595,11 @@ export async function fetchPairPool(stakingAddress: string): Promise<PoolInfo | 
     )
     const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
     const stakingToken = new Token(11155111, pool.id, 18, '')
+    const token0Price = pool.token0Price
+    const token1Price = pool.token1Price
     return {
+      token0Price: Number(token0Price)?.toFixed(4) || '0.00',
+      token1Price: Number(token1Price)?.toFixed(4) || '0.00',
       stakingRewardAddress: stakingAddress,
       pair: dummyPair,
       tokens,

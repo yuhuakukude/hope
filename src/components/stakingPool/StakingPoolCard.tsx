@@ -37,8 +37,8 @@ const ContentRow = styled(RowFixed)<{ flex?: number }>`
 `
 
 export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
-  const token0 = pool.tokens[0]
-  const token1 = pool.tokens[1]
+  const token0 = pool?.tokens[0]
+  const token1 = pool?.tokens[1]
   return (
     <StyledPoolCard>
       <AutoRow>
@@ -98,7 +98,7 @@ export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>{`$${pool.volumeAmount.toFixed(2, { groupSeparator: ',' })}`}</TYPE.white>
+            <TYPE.white>-</TYPE.white>
           </Column>
         </ContentRow>
         <ContentRow>
