@@ -109,7 +109,7 @@ export function AddRemoveTabs({ adding, creating }: { adding: boolean; creating:
     <Tabs>
       <RowFixed gap={'20px'} style={{ padding: '1rem 1rem 0 1rem' }}>
         <HistoryLink
-          to="/swap/pools"
+          to="/swap/liquidity"
           onClick={() => {
             adding && dispatch(resetMintState())
           }}

@@ -104,7 +104,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
   const slippageInputIsValid =
     slippageInput === '' || (rawSlippage / 100).toFixed(2) === Number.parseFloat(slippageInput).toFixed(2)
   const deadlineInputIsValid = deadlineInput === '' || (deadline / 60).toString() === deadlineInput
-
+  console.log('tag--->', slippageInputIsValid, rawSlippage)
   let slippageError: SlippageError | undefined
   if (slippageInput !== '' && !slippageInputIsValid) {
     slippageError = SlippageError.InvalidInput

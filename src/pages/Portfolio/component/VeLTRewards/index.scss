@@ -89,9 +89,7 @@
 
       .velt-rewards-bottom-right {
         display: flex;
-        justify-content: space-between;
         align-items: center;
-
         .velt-rewards-bottom-button,
         .velt-rewards-bottom-button2 {
           border-radius: 10px;
@@ -99,7 +97,9 @@
           padding: 13px 44px;
           cursor: pointer;
         }
-
+        button {
+          width: 200px;
+        }
         .velt-rewards-bottom-button2 {
           border-color: #fff;
         }

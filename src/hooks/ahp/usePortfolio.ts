@@ -1,5 +1,5 @@
 import { useCallback } from 'react'
-import { useLtMinterContract, usePoolGomContract } from '../useContract'
+import { useLtMinterContract, usePoolGomContract, useFeeDisContract, useGomFeeDisContract } from '../useContract'
 import { useActiveWeb3React } from '../index'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
@@ -59,5 +59,92 @@ export function useClaimRewards(address: string) {
   }, [account, addTransaction, contract])
   return {
     toClaimRewards
+  }
+}
+
+export function useFeeClaim() {
+  const addTransaction = useTransactionAdder()
+  const contract = useFeeDisContract()
+  const { account } = useActiveWeb3React()
+  const toFeeClaim = useCallback(async () => {
+    if (!account) throw new Error('none account')
+    if (!contract) throw new Error('none contract')
+    const args = [account]
+    const method = 'claim'
+    return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+      return contract[method](...args, {
+        gasLimit: calculateGasMargin(estimatedGasLimit),
+        // gasLimit: '3500000',
+        from: account
+      }).then((response: TransactionResponse) => {
+        addTransaction(response, {
+          summary: `Fees Withdraw`
+        })
+        return response.hash
+      })
+    })
+  }, [account, addTransaction, contract])
+  return {
+    toFeeClaim
+  }
+}
+
+export function useGomFeeClaim() {
+  const addTransaction = useTransactionAdder()
+  const contract = useGomFeeDisContract()
+  const { account } = useActiveWeb3React()
+  const toGomFeeClaim = useCallback(
+    async (address: string) => {
+      if (!account) throw new Error('none account')
+      if (!contract) throw new Error('none contract')
+      const args = [address, account]
+      const method = 'claim'
+      return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+        return contract[method](...args, {
+          gasLimit: calculateGasMargin(estimatedGasLimit),
+          // gasLimit: '3500000',
+          from: account
+        }).then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Fees Withdraw`
+          })
+          return response.hash
+        })
+      })
+    },
+    [account, addTransaction, contract]
+  )
+  return {
+    toGomFeeClaim
+  }
+}
+
+export function useGomFeeManyClaim() {
+  const addTransaction = useTransactionAdder()
+  const contract = useGomFeeDisContract()
+  const { account } = useActiveWeb3React()
+  const toGomFeeManyClaim = useCallback(
+    async (addressArr: any) => {
+      if (!account) throw new Error('none account')
+      if (!contract) throw new Error('none contract')
+      const args = [addressArr, account]
+      const method = 'claimManyGomboc'
+      return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+        return contract[method](...args, {
+          gasLimit: calculateGasMargin(estimatedGasLimit),
+          // gasLimit: '3500000',
+          from: account
+        }).then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Fees Withdraw`
+          })
+          return response.hash
+        })
+      })
+    },
+    [account, addTransaction, contract]
+  )
+  return {
+    toGomFeeManyClaim
   }
 }

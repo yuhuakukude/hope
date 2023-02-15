@@ -85,9 +85,8 @@ export default function SideBar() {
   const location = useLocation()
 
   const ROUTERS = [
-    { title: 'Dashboard', icon: '&#xe607;', router: '' },
+    { title: 'Dashboard', icon: '&#xe607;', router: 'dashboard' },
     { title: 'Portfolio', icon: '&#xe609;', router: '/portfolio' },
-    { title: 'Dashboard', icon: '&#xe607;', router: '/dashboard' },
     { title: 'Staking', icon: '&#xe606;', baseRouter: '/hope', router: '/hope/staking' },
     { title: 'LightSwap', icon: '&#xe605;', baseRouter: '/swap', router: '/swap/exchange' },
     { title: 'LT&DAO', icon: '&#xe608;', baseRouter: '/dao', router: '/dao/gomboc' }

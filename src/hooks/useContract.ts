@@ -29,7 +29,9 @@ import {
   TOKEN_SALE_ADDRESS,
   VELT_TOKEN_ADDRESS,
   GOMBOC_CONTROLLER_ADDRESS,
-  LT_TOKEN_ADDRESS
+  LT_TOKEN_ADDRESS,
+  FEE_DIS_ADDRESS,
+  GOM_FEE_DIS_ADDRESS
 } from '../constants'
 import STAKING_HOPE_GOMBOC_ABI from '../constants/abis/ahp/STAKING_HOPE_GOMBOC.json'
 import TOKEN_SALE_ABI from '../constants/abis/ahp/TOKEN_SALE.json'
@@ -39,6 +41,8 @@ import VELT_TOKEN_ABI from '../constants/abis/ahp/VELT_TOKEN.json'
 import LT_TOKEN_ABI from '../constants/abis/ahp/LT_TOKEN.json'
 import GOMBOC_CONTROLLER_ABI from '../constants/abis/ahp/GOMBOC_CONTROLLER.json'
 import POOL_GOMBOC_ABI from '../constants/abis/ahp/POOL_GOMBOC.json'
+import FEE_DIS_ABI from '../constants/abis/ahp/Fee_Distributor.json'
+import GOM_FEE_DIS_ABI from '../constants/abis/ahp/Gomboc_Fee_Distributor.json'
 
 // returns null on errors
 function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
@@ -167,6 +171,16 @@ export function useGomConContract(): Contract | null {
 // portfolio
 export function usePoolGomContract(address: string): Contract | null {
   return useContract(address, POOL_GOMBOC_ABI.abi, true)
+}
+
+export function useFeeDisContract(): Contract | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(chainId && FEE_DIS_ADDRESS[chainId ?? 1], FEE_DIS_ABI.abi, true)
+}
+
+export function useGomFeeDisContract(): Contract | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(chainId && GOM_FEE_DIS_ADDRESS[chainId ?? 1], GOM_FEE_DIS_ABI.abi, true)
 }
 
 // buy hope
