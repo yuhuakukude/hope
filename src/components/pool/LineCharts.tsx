@@ -110,6 +110,9 @@ export default function PieCharts({
       </Row>
     )
   }
+  const handleResizeChart = (myChart: any) => {
+    myChart && myChart.resize()
+  }
 
   useEffect(() => {
     const myChart = echarts.init(chartRef.current)
@@ -166,7 +169,9 @@ export default function PieCharts({
       ]
     }
     myChart.setOption(option)
+    window.addEventListener('resize', () => handleResizeChart(myChart))
     return () => {
+      window.removeEventListener('resize', () => handleResizeChart(myChart))
       myChart.dispose()
     }
   }, [xData, yData])
