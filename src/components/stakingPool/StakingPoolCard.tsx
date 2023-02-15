@@ -55,7 +55,7 @@ export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
         </ContentRow>
         <ContentRow>
           <Text fontSize={16} fontWeight={500}>
-            1%
+            0.3%
           </Text>
         </ContentRow>
         <ContentRow flex={2.5}>

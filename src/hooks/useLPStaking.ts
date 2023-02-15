@@ -1,5 +1,12 @@
 import { useEffect, useState } from 'react'
-import { fetchStakeList, fetchStakingPool, PoolInfo, fetchPairsList, fetchPairsListLength } from '../state/stake/hooks'
+import {
+  fetchStakeList,
+  fetchStakingPool,
+  PoolInfo,
+  fetchPairsList,
+  fetchPairsListLength,
+  fetchPairPool
+} from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
 
 export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
@@ -78,6 +85,35 @@ export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc',
 
   return {
     total: resultLength,
+    loading: loading,
+    result
+  }
+}
+
+export function useStakingPairPool(address: string) {
+  const { account } = useActiveWeb3React()
+  const [result, setResult] = useState<PoolInfo | undefined>(undefined)
+
+  const [loading, setLoading] = useState<boolean>(false)
+  // const [total, setTotal] = useState<number>(0)
+
+  useEffect(() => {
+    ;(async () => {
+      setLoading(true)
+      try {
+        const pool = await fetchPairPool(address ?? '')
+        setLoading(false)
+        console.log('list', pool)
+        setResult(pool)
+      } catch (error) {
+        setResult(undefined)
+        setLoading(false)
+        console.error('useRankingList', error)
+      }
+    })()
+  }, [account, address])
+
+  return {
     loading: loading,
     result
   }

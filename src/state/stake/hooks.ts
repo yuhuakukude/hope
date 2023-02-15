@@ -481,9 +481,9 @@ export async function fetchPairsList(
   page: number,
   size: number
 ): Promise<PoolInfo[]> {
-  // pairs(first: ${size},  skip: ${skip}, orderBy: ${orderBy || 'trackedReserveETH'}, orderDirection: ${sort ||
   const query = `{
-    pairs(first: ${size}, skip: ${(page - 1) * size}, orderBy: ${orderBy}, orderDirection: ${sort}) {
+    pairs(first: ${size}, skip: ${(page - 1) * size}, orderBy: ${orderBy}, orderDirection: ${sort}, ${searchContent &&
+    `where: {id:"${searchContent}"}`}) {
       id
       reserve0
       reserve1
@@ -546,6 +546,69 @@ export async function fetchPairsList(
   } catch (error) {
     console.warn(`error${error}`)
     return []
+  }
+}
+
+export async function fetchPairPool(stakingAddress: string): Promise<PoolInfo | undefined> {
+  const query = `{
+    pairs(where: {id:"${stakingAddress}"}) {
+      id
+      reserve0
+      reserve1
+      reserveUSD
+      volumeToken0
+      volumeToken1
+      volumeUSD
+      token0 {
+        id
+        symbol
+        name
+        decimals
+        __typename
+      }
+      token1 {
+        id
+        symbol
+        name
+        decimals
+        __typename
+      }
+      __typename
+    }
+  }`
+
+  try {
+    const response = await postQuery(SUBGRAPH, query)
+    const pool = response.data.pairs[0]
+    const token0 = new Token(ChainId.SEPOLIA, pool.token0.id, Number(pool.token0.decimals), pool.token0.symbol)
+    const token1 = new Token(ChainId.SEPOLIA, pool.token1.id, Number(pool.token1.decimals), pool.token1.symbol)
+    const tokens = [token0, token1]
+    const token0Amount = tryParseAmount(pool.reserve0, tokens[0]) as TokenAmount
+    const token1Amount = tryParseAmount(pool.reserve1, tokens[1]) as TokenAmount
+    const volume0Amount = tryParseAmount(pool.volumeToken0, tokens[0]) as TokenAmount
+    const volume1Amount = tryParseAmount(pool.volumeToken1, tokens[1]) as TokenAmount
+    const dummyPair = new Pair(
+      token0Amount ? (token0Amount as TokenAmount) : new TokenAmount(tokens[0], '0'),
+      token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
+    )
+    const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
+    const stakingToken = new Token(11155111, pool.id, 18, '')
+    return {
+      stakingRewardAddress: stakingAddress,
+      pair: dummyPair,
+      tokens,
+      lpToken: dummyPair.liquidityToken,
+      token0Amount,
+      token1Amount,
+      volume0Amount,
+      volume1Amount,
+      totalStakedAmount,
+      stakingToken,
+      tvl: tryParseAmount(pool.reserveUSD, dummyPair.liquidityToken) as TokenAmount,
+      volumeAmount: tryParseAmount(pool.volumeUSD, dummyPair.liquidityToken) as TokenAmount
+    }
+  } catch (error) {
+    return undefined
   }
 }
 

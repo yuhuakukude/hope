@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState, useRef, RefObject } from 'react'
 import { AutoColumn } from '../../components/Column'
 import styled from 'styled-components'
 import { AutoRow, RowBetween, RowFixed } from '../../components/Row'
@@ -104,19 +104,24 @@ function ChartView({ type }: { type: string }) {
 type Sort = 'asc' | 'desc'
 
 export default function StakingPool() {
-  const [curType, setCurType] = useState(1)
-
+  const inputRef = useRef<HTMLInputElement>()
+  const [inputValue, setInputValue] = useState('')
   const [searchContent, setSearchContent] = useState('')
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(5)
   const [sort, setSort] = useState<Sort>('desc')
-  console.log(curType, setCurType, setSearchContent, setSort)
+  console.log(setSort)
   const { result: stakingInfos, loading, total } = useLPStakingPairsInfos(searchContent, sort, currentPage, pageSize)
   // staking info for connected account
 
   const onPagesChange = (page: any, pageSize: any) => {
     setCurrentPage(page)
     setPageSize(pageSize)
+  }
+
+  const handleInput = (event: any) => {
+    const input = event.target.value
+    setInputValue(input)
   }
 
   return (
@@ -144,11 +149,13 @@ export default function StakingPool() {
                     id="token-search-input"
                     placeholder={'Search Token Symbol / Address'}
                     autoComplete="off"
-                    value={''}
-                    onChange={() => {}}
-                    onKeyDown={() => {}}
+                    ref={inputRef as RefObject<HTMLInputElement>}
+                    value={inputValue}
+                    onChange={handleInput}
                   />
-                  <ButtonPrimary marginLeft={20}>Search</ButtonPrimary>
+                  <ButtonPrimary marginLeft={20} onClick={() => setSearchContent(inputValue)}>
+                    Search
+                  </ButtonPrimary>
                 </RowFixed>
               </AutoColumn>
             </CardSection>
