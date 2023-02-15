@@ -2832,8 +2832,8 @@
   resolved "https://registry.yarnpkg.com/@uniswap/merkle-distributor/-/merkle-distributor-1.0.1.tgz#dc3d911f65a860fc3f0cae074bdcd08ed6a27a4d"
 
 "@uniswap/sdk@Light-Ecosystem/hope-dapp-sdk.git":
-  version "1.0.5"
-  resolved "https://codeload.github.com/Light-Ecosystem/hope-dapp-sdk/tar.gz/1daa6b0c2567a047b5b4ef6b298fcb213623c662"
+  version "1.0.6"
+  resolved "https://codeload.github.com/Light-Ecosystem/hope-dapp-sdk/tar.gz/2d2c155634b836be78e979c9eeed20d246f6d014"
   dependencies:
     "@uniswap/v2-core" "^1.0.0"
     big.js "^5.2.2"
