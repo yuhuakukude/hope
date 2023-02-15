@@ -288,7 +288,7 @@ export default function DaoLocker() {
         setWithdrawPendingText('')
         onTxError(error)
       })
-  }, [account, chainId, lockerRes?.amount, onTxError, onTxStart, onTxSubmitted, toWithdraw])
+  }, [account, chainId, lockerRes, onTxError, onTxStart, onTxSubmitted, toWithdraw])
 
   useEffect(() => {
     if (votePowerAmount || votePowerAmount === 0) {
