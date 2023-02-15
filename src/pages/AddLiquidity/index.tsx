@@ -42,7 +42,6 @@ import { currencyId } from '../../utils/currencyId'
 import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
-import UserLiquidityCard from '../../components/pool/userLiquidityCard'
 
 const PageWrapper = styled(GapColumn)`
   width: 100%;
@@ -473,14 +472,13 @@ export default function AddLiquidity({
                       </GreyCard>
                       <AutoColumn style={{ marginTop: 8 }}>
                         <TYPE.main>
-                          My Liquidity (Share of pool{' '}
+                          Share of pool:{' '}
                           {noLiquidity && price
                             ? '100'
                             : (poolTokenPercentage?.lessThan(ONE_BIPS) ? '<0.01' : poolTokenPercentage?.toFixed(2)) ??
                               '0'}
-                          %)
+                          %
                         </TYPE.main>
-                        <UserLiquidityCard pair={pair ?? undefined} />
                       </AutoColumn>
                     </AutoColumn>
                   </LightCard>

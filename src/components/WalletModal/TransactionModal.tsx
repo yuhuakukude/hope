@@ -49,13 +49,18 @@ export default function TransactionModal({
   // confirmedTransactions: string[]
 }) {
   const dispatch = useDispatch<AppDispatch>()
-  const { chainId } = useActiveWeb3React()
+  const { chainId, account } = useActiveWeb3React()
 
   const allTransactions = useAllTransactions()
   const sortedRecentTransactions = useMemo(() => {
     const txs = Object.values(allTransactions)
-    return txs.filter(isTransactionRecent).sort(newTransactionsFirst)
-  }, [allTransactions])
+    return txs
+      .filter(tx => {
+        return tx.from === account
+      })
+      .filter(isTransactionRecent)
+      .sort(newTransactionsFirst)
+  }, [account, allTransactions])
   const pending = sortedRecentTransactions.filter(tx => !tx.receipt).map(tx => tx.hash)
   const confirmed = sortedRecentTransactions.filter(tx => tx.receipt).map(tx => tx.hash)
 
