@@ -1,6 +1,6 @@
 import React from 'react'
 import { Link, RouteComponentProps } from 'react-router-dom'
-import { useStakingPool } from '../../hooks/useLPStaking'
+import { useStakingPairPool } from '../../hooks/useLPStaking'
 import Row, { AutoRow, AutoRowBetween, RowBetween, RowFlat } from '../../components/Row'
 import { AutoColumn } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
@@ -32,7 +32,7 @@ export default function StakingPoolDetail({
   }
 }: RouteComponentProps<{ address: string }>) {
   const { account, chainId } = useActiveWeb3React()
-  const { result: pool } = useStakingPool(address)
+  const { result: pool } = useStakingPairPool(address)
   console.log('result', pool)
   return (
     <>
