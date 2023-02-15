@@ -5,6 +5,10 @@ import * as echarts from 'echarts'
 export default function PieCharts({ xData, yData }: { xData: any; yData: any }) {
   const chartRef: any = useRef()
 
+  const handleResizeChart = (myChart: any) => {
+    myChart && myChart.resize()
+  }
+
   useEffect(() => {
     const myChart = echarts.init(chartRef.current)
     const option = {
@@ -49,7 +53,9 @@ export default function PieCharts({ xData, yData }: { xData: any; yData: any }) 
       ]
     }
     myChart.setOption(option)
+    window.addEventListener('resize', () => handleResizeChart(myChart))
     return () => {
+      window.removeEventListener('resize', () => handleResizeChart(myChart))
       myChart.dispose()
     }
   }, [xData, yData])
