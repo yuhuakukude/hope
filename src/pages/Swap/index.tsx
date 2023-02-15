@@ -316,12 +316,13 @@ export default function Swap({ history }: RouteComponentProps) {
   }, [
     priceImpactWithoutFee,
     swapCallback,
+    trade,
     tradeToConfirm,
     showConfirm,
+    onUserInput,
     recipient,
     recipientAddress,
     account,
-    trade,
     singleHopOnly
   ])
 

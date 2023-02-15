@@ -17,7 +17,6 @@ import Loader from '../Loader'
 import { isTokenOnList } from '../../utils'
 import ImportRow from './ImportRow'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
-import useTheme from 'hooks/useTheme'
 import { ReactComponent as Check } from '../../assets/svg/check.svg'
 
 function currencyKey(currency: Currency): string {
@@ -174,7 +173,6 @@ export default function CurrencyList({
   }, [breakIndex, currencies, showETH])
 
   const { chainId } = useActiveWeb3React()
-  const theme = useTheme()
 
   const inactiveTokens: {
     [address: string]: Token
@@ -225,8 +223,7 @@ export default function CurrencyList({
       selectedCurrency,
       setImportToken,
       showImportView,
-      breakIndex,
-      theme.text1
+      breakIndex
     ]
   )
 
