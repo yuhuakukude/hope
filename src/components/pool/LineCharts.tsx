@@ -69,6 +69,13 @@ export default function PieCharts({
   const getTimeframe = (timeWindow: string) => {
     const utcEndTime = dayjs.utc()
     let utcStartTime = undefined
+    if (timeWindow === '7Day') {
+      utcStartTime =
+        utcEndTime
+          .subtract(7, 'day')
+          .endOf('day')
+          .unix() - 1
+    }
     if (timeWindow === '1W') {
       utcStartTime =
         utcEndTime
@@ -244,7 +251,7 @@ export default function PieCharts({
       window.removeEventListener('resize', () => handleResizeChart(myChart))
       myChart.dispose()
     }
-  }, [xData, yData, address])
+  }, [xData, yData, address, hideTab])
   return (
     <div>
       {!hideTab && (

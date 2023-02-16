@@ -648,7 +648,6 @@ function PAIR_LIST_QUERY(
   size: number,
   block?: number[]
 ) {
-  console.log(`page ====== ${size}=${(page - 1) * size}`)
   return `{
     pairs(${block ? `block: { number: ${block}}` : ``},first: ${size}, skip: ${(page - 1) *
     size}, orderBy: ${orderBy}, orderDirection: ${sort}, ${searchContent && `where: {id:"${searchContent}"}`}) {
@@ -749,8 +748,6 @@ export async function fetchPairsList(
       const w1Pair = w1Pairs[index]
       const w2Pair = w2Pairs[index]
 
-      console.warn(pair, d1Pair, d2Pair)
-
       const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(
         pair.totalLiquidityUSD,
         d1Pair.totalLiquidityUSD,
@@ -796,7 +793,6 @@ export async function fetchPairPool(stakingAddress: string): Promise<PoolInfo | 
     const response = await postQuery(SUBGRAPH, PAIR_QUERY({ stakingAddress }))
     const pool = response.data.pairs[0]
     const gombocAddress = await GombocApi.getGombocsAddress({ pairAddress: pool.id })
-    console.log('gombocAddress', gombocAddress)
     const token0 = new Token(ChainId.SEPOLIA, pool.token0.id, Number(pool.token0.decimals), pool.token0.symbol)
     const token1 = new Token(ChainId.SEPOLIA, pool.token1.id, Number(pool.token1.decimals), pool.token1.symbol)
     const tokens = [token0, token1]

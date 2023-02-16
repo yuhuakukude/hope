@@ -69,28 +69,28 @@ const TimeText = styled.p`
 `
 
 function ChartView({ type }: { type: string }) {
-  const fakeData = {
-    name: 'TVL',
-    value: '$78.34 M',
-    time: 'last 7Days'
-  }
-
   return (
     <PoolsWrapper style={{ width: '49%', height: '340px' }}>
-      <div>
-        <AutoRow gap={'10px'}>
-          <NameText>{fakeData.name}</NameText>
-          <NameText>{fakeData.value}</NameText>
-          <TimeText>{fakeData.time}</TimeText>
-        </AutoRow>
-        {type === 'line' && <LineCharts height={240} hideTab={true}></LineCharts>}
-        {type === 'bar' && (
-          <BarCharts
-            xData={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
-            yData={[820, 32, 901, 134, 1290, 900, 620, 100, 800]}
-          ></BarCharts>
-        )}
-      </div>
+      {type === 'line' && (
+        <div>
+          <AutoRow gap={'10px'}>
+            <NameText>TVL</NameText>
+            <NameText>$78.34 M</NameText>
+            <TimeText>last 7Days</TimeText>
+          </AutoRow>
+          <LineCharts height={240} hideTab={true}></LineCharts>
+        </div>
+      )}
+      {type === 'bar' && (
+        <div>
+          <AutoRow gap={'10px'}>
+            <NameText>Volume</NameText>
+            <NameText>$78.34 M</NameText>
+            <TimeText>last 7Days</TimeText>
+          </AutoRow>
+          <BarCharts xData={[]} yData={[]}></BarCharts>
+        </div>
+      )}
     </PoolsWrapper>
   )
 }
