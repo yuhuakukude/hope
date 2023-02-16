@@ -4,14 +4,15 @@ import {
   fetchStakingPool,
   PoolInfo,
   fetchPairsList,
-  fetchPairsListLength,
   fetchPairPool,
   fetchGlobalData,
   GraphPairInfo,
-  PairDetail
+  PairDetail,
+  fetchPairTxs,
+  TX
 } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
-// import AprApi from '../api/apr.api'
+import AprApi from '../api/apr.api'
 
 export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
   const { account } = useActiveWeb3React()
@@ -72,15 +73,23 @@ export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc',
     ;(async () => {
       setLoading(true)
       try {
-        const listLength = await fetchPairsListLength()
-        setResultLength(listLength)
-        const list = await fetchPairsList(account ?? '', searchName, sort, 'trackedReserveETH', page, pageSize)
-        // const addressList = list.map((e: GraphPairInfo) => e.address)
+        const { list, total } = await fetchPairsList(
+          account ?? '',
+          searchName,
+          sort,
+          'trackedReserveETH',
+          page,
+          pageSize
+        )
+        setResultLength(total)
+        const addressList = list.map((e: GraphPairInfo) => e.address)
+        const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
         setLoading(false)
-        setResult(list)
+        setResult(list.map((e: GraphPairInfo) => ({ ...e, ...res.result[e.address] })))
       } catch (error) {
         setResult([])
         setLoading(false)
+        console.warn(error)
       }
     })()
   }, [searchName, sort, page, account, pageSize])
@@ -173,7 +182,6 @@ export function useOverviewData() {
       setLoading(true)
       try {
         const data = await fetchGlobalData()
-        console.log('useOverviewData--', data)
         setLoading(false)
         setResult(data)
       } catch (error) {
@@ -183,6 +191,33 @@ export function useOverviewData() {
       }
     })()
   }, [])
+
+  return {
+    loading: loading,
+    result
+  }
+}
+
+export function usePairTxs(pairAddress: string) {
+  const [result, setResult] = useState<TX[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
+  // const [total, setTotal] = useState<number>(0)
+
+  useEffect(() => {
+    ;(async () => {
+      setLoading(true)
+      try {
+        const data = await fetchPairTxs(pairAddress)
+        console.log('useOverviewData--', data)
+        setLoading(false)
+        setResult(data)
+      } catch (error) {
+        setResult([])
+        setLoading(false)
+        console.error('useOverviewData', error)
+      }
+    })()
+  }, [pairAddress])
 
   return {
     loading: loading,

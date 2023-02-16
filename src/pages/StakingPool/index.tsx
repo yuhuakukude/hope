@@ -1,9 +1,10 @@
-import React, { useState, useRef, RefObject } from 'react'
+import React, { useState, useRef, RefObject, useEffect } from 'react'
 import { AutoColumn } from '../../components/Column'
 import styled from 'styled-components'
 import { AutoRow, RowBetween, RowFixed } from '../../components/Row'
 import { CardSection, DataCard } from '../../components/earn/styled'
 import Loader from '../../components/Loader'
+import { Decimal } from 'decimal.js'
 import { OutlineCard } from '../../components/Card'
 import { SearchInput } from '../../components/SearchModal/styleds'
 import { ButtonPrimary } from '../../components/Button'
@@ -16,9 +17,12 @@ import BarCharts from '../../components/pool/BarCharts'
 import { Pagination } from 'antd'
 import Row from '../../components/Row'
 import { Link } from 'react-router-dom'
+import format from '../../utils/format'
+import { useOverviewChartsData } from '../../hooks/useCharts'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
+  min-width: 1260px;
   padding: 0 30px;
 `
 
@@ -68,44 +72,21 @@ const TimeText = styled.p`
   font-size: 16px;
 `
 
-function ChartView({ type }: { type: string }) {
-  return (
-    <PoolsWrapper style={{ width: '49%', height: '340px' }}>
-      {type === 'line' && (
-        <div>
-          <AutoRow gap={'10px'}>
-            <NameText>TVL</NameText>
-            <NameText>$78.34 M</NameText>
-            <TimeText>last 7Days</TimeText>
-          </AutoRow>
-          <LineCharts height={240} hideTab={true}></LineCharts>
-        </div>
-      )}
-      {type === 'bar' && (
-        <div>
-          <AutoRow gap={'10px'}>
-            <NameText>Volume</NameText>
-            <NameText>$78.34 M</NameText>
-            <TimeText>last 7Days</TimeText>
-          </AutoRow>
-          <BarCharts xData={[]} yData={[]}></BarCharts>
-        </div>
-      )}
-    </PoolsWrapper>
-  )
-}
-
 type Sort = 'asc' | 'desc'
 
 export default function StakingPool() {
   const inputRef = useRef<HTMLInputElement>()
   const [inputValue, setInputValue] = useState('')
+  const [tvlTotal, setTvlTotal] = useState('')
   const [searchContent, setSearchContent] = useState('')
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(5)
   const [sort, setSort] = useState<Sort>('desc')
+  const [xLineData, setXLineData] = useState<string[]>()
+  const [yLineData, setYLineData] = useState<string[]>()
+  const [xBarData, setXBarData] = useState<string[]>()
+  const [yBarData, setYBarData] = useState<string[]>()
   const { result: overviewData } = useOverviewData()
-  console.log('overviewData', overviewData)
   const viewData: OverviewData[] = [
     {
       title: 'Pool Overview',
@@ -135,6 +116,31 @@ export default function StakingPool() {
 
   console.log(setSort)
   const { result: pairs, loading, total } = useLPStakingPairsInfos(searchContent, sort, currentPage, pageSize)
+  const { result: overviewChartsResult } = useOverviewChartsData()
+
+  useEffect(() => {
+    const xlineArr: string[] = []
+    const ylineArr: string[] = []
+
+    const xbarArr: string[] = []
+    const ybarArr: string[] = []
+    let tvlTotalVal = 0
+    overviewChartsResult?.forEach((item: any) => {
+      tvlTotalVal = new Decimal(item.totalLiquidityUSD || 0).add(new Decimal(tvlTotalVal)).toNumber()
+      xlineArr.unshift(format.formatUTCDate(item.date, 'MM-DD'))
+      ylineArr.unshift(item.totalLiquidityUSD?.toFixed(2))
+
+      xbarArr.unshift(format.formatUTCDate(item.date, 'MM-DD'))
+      ybarArr.unshift(item.dailyVolumeUSD?.toFixed(2))
+    })
+    setTvlTotal(tvlTotalVal.toFixed(2))
+    setXLineData(xlineArr)
+    setYLineData(ylineArr)
+    setXBarData(xbarArr)
+    setYBarData(ybarArr)
+    console.log(xbarArr, ybarArr)
+  }, [overviewChartsResult])
+
   // staking info for connected account
 
   const onPagesChange = (page: any, pageSize: any) => {
@@ -159,8 +165,26 @@ export default function StakingPool() {
         <Overview viewData={viewData}></Overview>
       </TopSection>
       <RowBetween style={{ width: '100%' }}>
-        <ChartView type={'line'} />
-        <ChartView type={'bar'} />
+        <PoolsWrapper style={{ width: '49%', height: '340px' }}>
+          <div>
+            <AutoRow gap={'10px'}>
+              <NameText>TVL</NameText>
+              <NameText>{tvlTotal ? tvlTotal : '--'}</NameText>
+              <TimeText>last 7Days</TimeText>
+            </AutoRow>
+            <LineCharts xData={xLineData} yData={yLineData} height={240}></LineCharts>
+          </div>
+        </PoolsWrapper>
+        <PoolsWrapper style={{ width: '49%', height: '340px' }}>
+          <div>
+            <AutoRow gap={'10px'}>
+              <NameText>Volume</NameText>
+              <NameText>{overviewData ? `$${overviewData.oneDayVolumeUSD.toFixed(2)}` : `0.00`}</NameText>
+              <TimeText>last 7Days</TimeText>
+            </AutoRow>
+            <BarCharts xData={xBarData} yData={yBarData}></BarCharts>
+          </div>
+        </PoolsWrapper>
       </RowBetween>
       <PoolsWrapper>
         <TopSection gap="md">

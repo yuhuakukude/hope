@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { getPairChartDaysData, getPairChart24HourData } from '../state/stake/charts'
+import { getPairChartDaysData, getPairChart24HourData, getPairChartOverviewData } from '../state/stake/charts'
 
 export function useLineDaysChartsData(address: string) {
   const [result, setResult] = useState<any[]>([])
@@ -39,6 +39,24 @@ export function useLine24HourChartsData(address: string) {
       }
     })()
   }, [address])
+
+  return {
+    result
+  }
+}
+
+export function useOverviewChartsData() {
+  const [result, setResult] = useState<any[]>([])
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const list = await getPairChartOverviewData()
+        setResult(list)
+      } catch (error) {
+        setResult([])
+      }
+    })()
+  }, [])
 
   return {
     result
