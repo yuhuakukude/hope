@@ -437,7 +437,7 @@ export default function DaoLocker() {
                   <DatePicker
                     value={lockerDate}
                     className="date-picker-tem m-t-12"
-                    disabled={!account || Number(lockerRes?.amount) > 0}
+                    disabled={!account || lockerRes?.amount}
                     disabledDate={disabledDate}
                     onChange={onDateChange}
                     allowClear={false}
@@ -485,7 +485,7 @@ export default function DaoLocker() {
                         !lockerDate ||
                         !ltBalance ||
                         lockerRes?.end !== '--' ||
-                        Number(lockerRes?.amount) > 0 ||
+                        lockerRes?.amount ||
                         approvalState === ApprovalState.UNKNOWN
                       }
                       actionText={actionText}
