@@ -16,8 +16,8 @@ import { useLocker } from '../../hooks/ahp/useLocker'
 import { NavLink } from 'react-router-dom'
 
 const PageWrapper = styled(AutoColumn)`
-  max-width: 1280px;
   width: 100%;
+  padding: 0 30px;
 `
 
 export default function DaoGomboc() {
