@@ -6,7 +6,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
-import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, PERMIT2_ADDRESS, UNI } from '../constants'
+import {GAS_ADDRESS, GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, PERMIT2_ADDRESS, UNI} from '../constants'
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS
@@ -45,7 +45,7 @@ import FEE_DIS_ABI from '../constants/abis/ahp/Fee_Distributor.json'
 import GOM_FEE_DIS_ABI from '../constants/abis/ahp/Gomboc_Fee_Distributor.json'
 
 // returns null on errors
-function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
+export function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
   const { library, account } = useActiveWeb3React()
 
   return useMemo(() => {
@@ -198,4 +198,19 @@ export function useLockerContract(): Contract | null {
 export function useLTContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
   return useContract(chainId && LT_TOKEN_ADDRESS[chainId], LT_TOKEN_ABI.abi, true)
+}
+
+const CHAIN_DATA_ABI = [
+  {
+    inputs: [],
+    name: 'latestAnswer',
+    outputs: [{ internalType: 'int256', name: '', type: 'int256' }],
+    stateMutability: 'view',
+    type: 'function'
+  }
+]
+
+export function useGasPriceContract(): Contract | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(chainId && GAS_ADDRESS[chainId], CHAIN_DATA_ABI, true)
 }

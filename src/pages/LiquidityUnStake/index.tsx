@@ -1,5 +1,5 @@
 import { TransactionResponse } from '@ethersproject/providers'
-import { JSBI } from '@uniswap/sdk'
+import { JSBI, TokenAmount } from '@uniswap/sdk'
 import React, { useCallback, useState } from 'react'
 import { RouteComponentProps } from 'react-router-dom'
 import styled from 'styled-components'
@@ -169,18 +169,53 @@ export default function LiquidityUnStake({
             />
             <RowBetween>
               <PercentButton
-                onClick={() => stakedAmount && setStakeType(stakedAmount?.divide(JSBI.BigInt(4)).toFixed(2))}
+                onClick={() =>
+                  stakedAmount &&
+                  setStakeType(
+                    new TokenAmount(
+                      stakedAmount.token,
+                      JSBI.divide(JSBI.BigInt(stakedAmount.raw), JSBI.BigInt(4))
+                    ).toExact()
+                  )
+                }
                 width="20%"
               >
                 25%
               </PercentButton>
-              <PercentButton onClick={() => {}} width="20%">
+              <PercentButton
+                onClick={() => {
+                  stakedAmount &&
+                    setStakeType(
+                      new TokenAmount(
+                        stakedAmount.token,
+                        JSBI.divide(JSBI.BigInt(stakedAmount.raw), JSBI.BigInt(2))
+                      ).toExact()
+                    )
+                }}
+                width="20%"
+              >
                 50%
               </PercentButton>
-              <PercentButton onClick={() => {}} width="20%">
+              <PercentButton
+                onClick={() => {
+                  stakedAmount &&
+                    setStakeType(
+                      new TokenAmount(
+                        stakedAmount.token,
+                        JSBI.divide(JSBI.multiply(JSBI.BigInt(stakedAmount.raw), JSBI.BigInt(75)), JSBI.BigInt(100))
+                      ).toExact()
+                    )
+                }}
+                width="20%"
+              >
                 75%
               </PercentButton>
-              <PercentButton onClick={() => {}} width="20%">
+              <PercentButton
+                onClick={() => {
+                  stakedAmount && setStakeType(stakedAmount?.toExact())
+                }}
+                width="20%"
+              >
                 Max
               </PercentButton>
             </RowBetween>

@@ -5,6 +5,17 @@ import { injected, walletconnect } from '../connectors'
 
 export const SUBGRAPH = 'https://hope-dapp-dev1.hivefin.net/subgraphs/name/light/light-subgraph'
 
+export const BLOCK_SUBGRAPH = 'https://hope-dapp-dev1.hivefin.net/subgraphs/name/light-dev/ethereum-blocks'
+
+export const timeframeOptions = {
+  WEEK: '1 week',
+  MONTH: '1 month',
+  // THREE_MONTHS: '3 months',
+  // YEAR: '1 year',
+  HALF_YEAR: '6 months',
+  ALL_TIME: 'All time'
+}
+
 export const ROUTER_ADDRESS = '0x812Cd1878203Ff2Bdf46b38FFc1e62A93f3cE9dD'
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
@@ -120,6 +131,12 @@ export const GOM_FEE_DIS_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0x7C5d7eDFa84499E6A5bE4A7E46DC38E3bA34F051',
   [ChainId.SEPOLIA]: '0x7C5d7eDFa84499E6A5bE4A7E46DC38E3bA34F051',
   [ChainId.HOPE]: '0x7C5d7eDFa84499E6A5bE4A7E46DC38E3bA34F051'
+}
+
+export const GAS_ADDRESS: { [chainId in ChainId]?: string } = {
+  [ChainId.MAINNET]: '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E',
+  [ChainId.SEPOLIA]: '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E',
+  [ChainId.HOPE]: '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E'
 }
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
@@ -364,3 +381,5 @@ export enum ACTION_TYPE {
   APPROVE,
   SWAP
 }
+
+export const BUY_HOPE_GAS = 193646

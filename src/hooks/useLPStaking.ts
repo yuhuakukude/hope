@@ -5,7 +5,8 @@ import {
   PoolInfo,
   fetchPairsList,
   fetchPairsListLength,
-  fetchPairPool
+  fetchPairPool,
+  fetchGlobalData, GraphPairInfo
 } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
 
@@ -61,7 +62,7 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
 
 export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc', page: number, pageSize: number) {
   const { account } = useActiveWeb3React()
-  const [result, setResult] = useState<PoolInfo[]>([])
+  const [result, setResult] = useState<GraphPairInfo[]>([])
 
   const [loading, setLoading] = useState<boolean>(false)
   const [resultLength, setResultLength] = useState<number>(0)
@@ -103,12 +104,10 @@ export function useStakingPairPool(address: string) {
       try {
         const pool = await fetchPairPool(address ?? '')
         setLoading(false)
-        console.log('list', pool)
         setResult(pool)
       } catch (error) {
         setResult(undefined)
         setLoading(false)
-        console.error('useRankingList', error)
       }
     })()
   }, [account, address])
@@ -147,6 +146,44 @@ export function useStakingPool(address: string) {
       }
     })()
   }, [currentPage, account, address])
+
+  return {
+    loading: loading,
+    result
+  }
+}
+
+export interface Overview {
+  tvl: string
+  tvlChangeUSD: number
+  totalVolume: number
+  oneDayVolumeUSD: number
+  volumeChangeUSD: number
+  dayFees: number
+  weekFees: number
+  weeklyVolumeChange: number
+}
+
+export function useOverviewData() {
+  const [result, setResult] = useState<Overview | undefined>(undefined)
+  const [loading, setLoading] = useState<boolean>(false)
+  // const [total, setTotal] = useState<number>(0)
+
+  useEffect(() => {
+    ;(async () => {
+      setLoading(true)
+      try {
+        const data = await fetchGlobalData()
+        console.log('useOverviewData--', data)
+        setLoading(false)
+        setResult(data)
+      } catch (error) {
+        setResult(undefined)
+        setLoading(false)
+        console.error('useOverviewData', error)
+      }
+    })()
+  }, [])
 
   return {
     loading: loading,

@@ -606,7 +606,15 @@ export default function LiquidityStake({
             </AutoColumn>
             <RowBetween>
               <ButtonError
-                disabled={approvalLP === ApprovalState.PENDING || approvalLP === ApprovalState.UNKNOWN}
+                disabled={
+                  approvalLP === ApprovalState.PENDING ||
+                  approvalLP === ApprovalState.UNKNOWN ||
+                  !lpBalance ||
+                  !stakeTypeAmount ||
+                  (lpBalance &&
+                    stakeTypeAmount &&
+                    JSBI.lessThan(JSBI.BigInt(lpBalance?.raw.toString()), JSBI.BigInt(stakeTypeAmount.raw.toString())))
+                }
                 error={
                   lpBalance &&
                   stakeTypeAmount &&
@@ -622,6 +630,10 @@ export default function LiquidityStake({
                   <Dots>Approving {currencies[Field.CURRENCY_B]?.symbol}</Dots>
                 ) : approvalLP === ApprovalState.NOT_APPROVED ? (
                   `Approve ${pool?.lpToken.symbol}`
+                ) : lpBalance &&
+                  stakeTypeAmount &&
+                  JSBI.lessThan(JSBI.BigInt(lpBalance?.raw.toString()), JSBI.BigInt(stakeTypeAmount.raw.toString())) ? (
+                  'Insufficient LP'
                 ) : (
                   'Deposit'
                 )}

@@ -1,4 +1,4 @@
-import { PoolInfo } from '../../state/stake/hooks'
+import { GraphPairInfo } from '../../state/stake/hooks'
 import styled from 'styled-components'
 import Card from '../Card'
 import Row, { AutoRow, RowFixed } from '../Row'
@@ -36,9 +36,9 @@ const ContentRow = styled(RowFixed)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
 `
 
-export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
-  const token0 = pool.tokens[0]
-  const token1 = pool.tokens[1]
+export default function StakingPoolCard({ pair }: { pair: GraphPairInfo }) {
+  const token0 = pair.token0
+  const token1 = pair.token1
   return (
     <StyledPoolCard>
       <AutoRow>
@@ -49,7 +49,7 @@ export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
               <TYPE.white>{`${token0.symbol}/${token1.symbol}`}</TYPE.white>
             </RowFixed>
             <Text ml={'-10px'} fontWeight={500}>
-              {shortenAddress(pool.lpToken.address)}
+              {shortenAddress(pair.address)}
             </Text>
           </GapColumn>
         </ContentRow>
@@ -61,19 +61,18 @@ export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
         <ContentRow flex={2.5}>
           <Column>
             <Row>
-              <PieCharts data={[pool.token0Amount.toFixed(2), pool.token1Amount.toFixed(2)]} size={42}></PieCharts>
+              <PieCharts
+                data={pair ? [pair.reserve0.toFixed(2), pair.reserve1.toFixed(2)] : [100, 0]}
+                size={42}
+              ></PieCharts>
               <div className="m-l-12">
                 <Row>
                   <Circular></Circular>
-                  <TYPE.white>{`${pool.token0Amount.toFixed(2, { groupSeparator: ',' })} / ${
-                    token0.symbol
-                  }`}</TYPE.white>
+                  <TYPE.white>{pair ? `${pair.reserve0.toFixed(2)} / ${token0.symbol}` : '-- / --'}</TYPE.white>
                 </Row>
                 <Row>
                   <Circular color={'#8FFBAE'}></Circular>
-                  <TYPE.white>{`${pool.token1Amount.toFixed(2, { groupSeparator: ',' })} / ${
-                    token1.symbol
-                  }`}</TYPE.white>
+                  <TYPE.white>{pair ? `${pair.reserve1.toFixed(2)} / ${token1.symbol}` : '-- / --'}</TYPE.white>
                 </Row>
               </div>
             </Row>
@@ -83,27 +82,27 @@ export default function StakingPoolCard({ pool }: { pool: PoolInfo }) {
           <Column>
             <Row>
               <Circular></Circular>
-              <TYPE.white>{`${pool.volume0Amount.toFixed(2, { groupSeparator: ',' })} / ${token0.symbol}`}</TYPE.white>
+              <TYPE.white>{pair ? `${pair.volume0.toFixed(2)} / ${token0.symbol}` : '-- / --'}</TYPE.white>
             </Row>
             <Row>
               <Circular color={'#8FFBAE'}></Circular>
-              <TYPE.white>{`${pool.volume1Amount.toFixed(2, { groupSeparator: ',' })} / ${token0.symbol}`}</TYPE.white>
+              <TYPE.white>{pair ? `${pair.volume1.toFixed(2)} / ${token1.symbol}` : '-- / --'}</TYPE.white>
             </Row>
           </Column>
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>{`$${pool.volumeAmount.toFixed(2, { groupSeparator: ',' })}`}</TYPE.white>
+            <TYPE.white>{pair ? `$${pair.oneDayVolumeUSD.toFixed(2)}` : '--'}</TYPE.white>
           </Column>
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>{`$${pool.volumeAmount.toFixed(2, { groupSeparator: ',' })}`}</TYPE.white>
+            <TYPE.white>{`--%`}</TYPE.white>
           </Column>
         </ContentRow>
         <ContentRow>
           <Column>
-            <Link to={`/swap/pool-detail/${pool.stakingRewardAddress}`}>
+            <Link to={`/swap/pool-detail/${pair.address}`}>
               <TYPE.link>details</TYPE.link>
             </Link>
           </Column>

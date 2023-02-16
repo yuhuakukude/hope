@@ -1,4 +1,4 @@
-import { ChainId, CurrencyAmount, JSBI, Pair, Token, TokenAmount, WETH } from '@uniswap/sdk'
+import { ChainId, JSBI, Pair, Token, TokenAmount, WETH } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import { DAI, HOPE, SUBGRAPH, UNI, USDC, USDT, WBTC } from '../../constants'
 import { STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
@@ -6,10 +6,6 @@ import { useActiveWeb3React } from '../../hooks'
 import { useMultipleContractSingleData } from '../multicall/hooks'
 import { tryParseAmount } from '../swap/hooks'
 import { postQuery } from '../../utils/graph'
-
-export const STAKING_GENESIS = 1600387200
-
-export const REWARDS_DURATION_DAYS = 60
 
 // TODO add staking rewards addresses here
 export const STAKING_REWARDS_INFO: {
@@ -206,82 +202,6 @@ export function useStakingInfo(pairToFilterBy?: Pair | null): StakingInfo[] {
   }, [balances, chainId, earnedAmounts, info, rewardsAddresses, totalSupplies, uni])
 }
 
-export function useTotalUniEarned(): TokenAmount | undefined {
-  const { chainId } = useActiveWeb3React()
-  const uni = chainId ? UNI[chainId] : undefined
-  const stakingInfos = useStakingInfo()
-
-  return useMemo(() => {
-    if (!uni) return undefined
-    return (
-      stakingInfos?.reduce(
-        (accumulator, stakingInfo) => accumulator.add(stakingInfo.earnedAmount),
-        new TokenAmount(uni, '0')
-      ) ?? new TokenAmount(uni, '0')
-    )
-  }, [stakingInfos, uni])
-}
-
-// based on typed value
-export function useDerivedStakeInfo(
-  typedValue: string,
-  stakingToken: Token,
-  userLiquidityUnstaked: TokenAmount | undefined
-): {
-  parsedAmount?: CurrencyAmount
-  error?: string
-} {
-  const { account } = useActiveWeb3React()
-
-  const parsedInput: CurrencyAmount | undefined = tryParseAmount(typedValue, stakingToken)
-
-  const parsedAmount =
-    parsedInput && userLiquidityUnstaked && JSBI.lessThanOrEqual(parsedInput.raw, userLiquidityUnstaked.raw)
-      ? parsedInput
-      : undefined
-
-  let error: string | undefined
-  if (!account) {
-    error = 'Connect Wallet'
-  }
-  if (!parsedAmount) {
-    error = error ?? 'Enter an amount'
-  }
-
-  return {
-    parsedAmount,
-    error
-  }
-}
-
-// based on typed value
-export function useDerivedUnstakeInfo(
-  typedValue: string,
-  stakingAmount: TokenAmount
-): {
-  parsedAmount?: CurrencyAmount
-  error?: string
-} {
-  const { account } = useActiveWeb3React()
-
-  const parsedInput: CurrencyAmount | undefined = tryParseAmount(typedValue, stakingAmount.token)
-
-  const parsedAmount = parsedInput && JSBI.lessThanOrEqual(parsedInput.raw, stakingAmount.raw) ? parsedInput : undefined
-
-  let error: string | undefined
-  if (!account) {
-    error = 'Connect Wallet'
-  }
-  if (!parsedAmount) {
-    error = error ?? 'Enter an amount'
-  }
-
-  return {
-    parsedAmount,
-    error
-  }
-}
-
 export interface StakeInfo {
   id: string
   totalStakedBalance: string
@@ -331,22 +251,7 @@ export interface PoolInfo {
 
   volume1Amount: TokenAmount
 
-  // the amount of token currently staked, or undefined if no account
-  //stakedAmount: TokenAmount
-  // the amount of reward token earned by the active account, or undefined if no account
-  //earnedAmount: TokenAmount
-  // the total amount of token staked in the contract
   totalStakedAmount: TokenAmount
-  // the amount of token distributed per second to all LPs, constant
-  //totalRewardRate: TokenAmount
-  // the current amount of token distributed to the active account per second.
-  // equivalent to percent of total supply * reward rate
-  //rewardRate: TokenAmount
-  // when the period ends
-  //periodFinish: Date | undefined
-  // if pool is active
-  //active: boolean
-  // calculates a hypothetical amount of token distributed to the active account per second.
 }
 
 export async function fetchStakeList(

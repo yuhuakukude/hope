@@ -4,7 +4,6 @@ import * as echarts from 'echarts'
 
 export default function PieCharts({ data, size }: { data?: any; size?: number }) {
   const chartRef: any = useRef()
-
   const handleResizeChart = (myChart: any) => {
     myChart && myChart.resize()
   }

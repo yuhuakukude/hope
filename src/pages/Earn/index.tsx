@@ -21,7 +21,7 @@ import { useActiveWeb3React } from '../../hooks'
 import { CurrencyAmount } from '@uniswap/sdk'
 import JSBI from 'jsbi'
 import { calculateGasMargin } from '../../utils'
-import { useStakingContract } from '../../hooks/useContract'
+import { useLtMinterContract, useStakingContract } from '../../hooks/useContract'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import { ethers } from 'ethers'
@@ -82,6 +82,8 @@ export default function Earn() {
   const [approvalState, approveCallback] = useApproveCallback(typedAmount, PERMIT2_ADDRESS[chainId ?? 1])
 
   const stakingContract = useStakingContract(poolInfo?.stakingRewardAddress, true)
+
+  const ltMinterContract = useLtMinterContract()
 
   const confirmationContent = useCallback(() => {
     return (
@@ -175,10 +177,12 @@ export default function Earn() {
 
   const onClaim = useCallback(async () => {
     if (!account) throw new Error('none account')
-    if (!stakingContract) throw new Error('none contract')
-    const method = 'claim'
-    return stakingContract.estimateGas[method]({ from: account }).then(estimatedGasLimit => {
-      return stakingContract[method]({
+    if (!ltMinterContract) throw new Error('none contract')
+    const method = 'mint'
+    console.log('mint', poolInfo?.stakingRewardAddress)
+    const args = [poolInfo?.stakingRewardAddress]
+    return ltMinterContract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+      return ltMinterContract[method](...args, {
         gasLimit: calculateGasMargin(estimatedGasLimit),
         // gasLimit: '3500000',
         from: account
@@ -189,7 +193,7 @@ export default function Earn() {
         return response.hash
       })
     })
-  }, [account, addTransaction, stakingContract])
+  }, [account, addTransaction, ltMinterContract, poolInfo])
 
   const onStakeCallback = useCallback(async () => {
     if (!account || !typedAmount || !library || !chainId || !poolInfo) return
@@ -317,9 +321,8 @@ export default function Earn() {
                   id="token-search-input"
                   placeholder={'Search Token Symbol / Address'}
                   autoComplete="off"
-                  value={''}
-                  onChange={() => {}}
-                  onKeyDown={() => {}}
+                  value={searchContent}
+                  onChange={value => setSearchContent(value.target.value)}
                 />
                 <ButtonGray ml={'20px'}>Search</ButtonGray>
               </RowFixed>
