@@ -37,12 +37,10 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
           pageSize
         )
         setLoading(false)
-        console.log('list', list)
         setResult(list)
       } catch (error) {
         setResult([])
         setLoading(false)
-        console.error('useRankingList', error)
       }
     })()
   }, [searchName, sort, currentPage, account])
@@ -79,7 +77,6 @@ export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc',
       } catch (error) {
         setResult([])
         setLoading(false)
-        console.error('useRankingList', error)
       }
     })()
   }, [searchName, sort, page, account, pageSize])
@@ -137,12 +134,10 @@ export function useStakingPool(address: string) {
       try {
         const pool = await fetchStakingPool(address ?? '')
         setLoading(false)
-        console.log('list', pool)
         setResult(pool)
       } catch (error) {
         setResult(undefined)
         setLoading(false)
-        console.error('useRankingList', error)
       }
     })()
   }, [currentPage, account, address])

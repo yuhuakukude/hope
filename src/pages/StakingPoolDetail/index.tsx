@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Link, RouteComponentProps } from 'react-router-dom'
 import { useStakingPairPool } from '../../hooks/useLPStaking'
 import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
@@ -24,6 +24,10 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { useWalletModalToggle } from '../../state/application/hooks'
+import { Decimal } from 'decimal.js'
+import AprApi from '../../api/apr.api'
+import format from '../../utils/format'
+import { tryParseAmount } from '../../state/swap/hooks'
 
 const Circular = styled(Box)<{
   color?: string
@@ -122,6 +126,33 @@ export default function StakingPoolDetail({
       )
     )
   }, [errorStatus])
+  const [aprInfo, setAprInfo] = useState<any>({})
+
+  const getScale = (amount: string | undefined) => {
+    if (!amount) return '--'
+    const total = new Decimal(pool?.token0Amount.toFixed(2) || 0)
+      .add(new Decimal(pool?.token1Amount.toFixed(2) || 0))
+      .toNumber()
+    return (
+      new Decimal(amount)
+        .div(new Decimal(total))
+        .mul(100)
+        .toNumber()
+        .toFixed(2) + '%'
+    )
+  }
+
+  const initFn = useCallback(async () => {
+    if (!address) return
+    const res = await AprApi.getHopeFeeApr(address)
+    if (res && res.result) {
+      setAprInfo(res.result)
+    }
+  }, [address])
+
+  useEffect(() => {
+    initFn()
+  }, [initFn])
 
   return (
     <>
@@ -167,17 +198,23 @@ export default function StakingPoolDetail({
           <LightCard padding={'30px'}>
             <RowBetween>
               <Row>
-                <PieCharts data={[100, 50]}></PieCharts>
+                <PieCharts data={[pool?.token0Amount.toFixed(2), pool?.token1Amount.toFixed(2)]}></PieCharts>
                 <div className="m-l-20">
                   <Row>
                     <Circular></Circular>
                     <CurrencyLogo currency={pool?.tokens[0]} />
-                    <TYPE.body marginLeft={9}>123,456.10 USDC (50.21%)</TYPE.body>
+                    <TYPE.body marginLeft={9}>
+                      {pool?.token0Amount.toFixed(2, { groupSeparator: ',' })} {pool?.tokens[0].symbol} (
+                      {getScale(pool?.token0Amount.toFixed(2))})
+                    </TYPE.body>
                   </Row>
                   <Row margin={'35px 0 0 0'}>
                     <Circular color={'#8FFBAE'}></Circular>
                     <CurrencyLogo currency={pool?.tokens[1]} />
-                    <TYPE.body marginLeft={9}>1,456.1000 BUSD (49.79%)</TYPE.body>
+                    <TYPE.body marginLeft={9}>
+                      {pool?.token1Amount.toFixed(2, { groupSeparator: ',' })} {pool?.tokens[1].symbol} (
+                      {getScale(pool?.token1Amount.toFixed(2))})
+                    </TYPE.body>
                   </Row>
                 </div>
               </Row>
@@ -186,7 +223,7 @@ export default function StakingPoolDetail({
                   <div>
                     <TYPE.body>Base APR</TYPE.body>
                     <TYPE.white fontSize={30} marginTop={12} fontFamily={'Arboria-Medium'}>
-                      26.98%
+                      {format.rate(aprInfo.ltApr)}
                     </TYPE.white>
                   </div>
                   <div className="m-l-30">
@@ -194,30 +231,38 @@ export default function StakingPoolDetail({
                       After <span className="text-primary">Boost</span>
                     </TYPE.body>
                     <TYPE.green fontSize={30} marginTop={12} fontFamily={'Arboria-Medium'}>
-                      38.00%{' '}
+                      {format.rate(aprInfo.baseApr)}{' '}
                     </TYPE.green>
                   </div>
                 </Row>
-                <p className="m-t-15 text-normal">Fees: 4.13% </p>
-                <p className="m-t-10 text-normal">Rewards: 22.86% (100,447.37 LT per day) </p>
+                <p className="m-t-15 text-normal">Fees: {format.rate(aprInfo.feeApr)} </p>
+                {aprInfo.rewardRate && (
+                  <p className="m-t-10 text-normal">
+                    Rewards: {format.rate(aprInfo.rewardRate)} (
+                    {tryParseAmount(aprInfo?.ltAmountPerDay, LT[chainId ?? 1])?.toFixed(2, { groupSeparator: ',' })} LT
+                    per day){' '}
+                  </p>
+                )}
               </div>
             </RowBetween>
-            <Row marginTop={30}>
-              <CurrencyLogo currency={pool?.tokens[1]} />
-              <TYPE.body marginLeft={9} marginRight={40}>
-                1.00 BUSD = 0.998 USDC
-              </TYPE.body>
-              <CurrencyLogo currency={pool?.tokens[0]} />
-              <TYPE.body marginLeft={9}> 1.00 USDC = 1.002 BUSD</TYPE.body>
-            </Row>
+            {pool && (
+              <Row marginTop={30}>
+                <CurrencyLogo currency={pool?.tokens[1]} />
+                <TYPE.body marginLeft={9} marginRight={40}>
+                  1.00 {pool?.tokens[0].symbol} = {pool?.token1Price} {pool?.tokens[1].symbol}
+                </TYPE.body>
+                <CurrencyLogo currency={pool?.tokens[0]} />
+                <TYPE.body marginLeft={9}>
+                  {' '}
+                  1.00 {pool?.tokens[1].symbol} = {pool?.token0Price} {pool?.tokens[0].symbol}
+                </TYPE.body>
+              </Row>
+            )}
           </LightCard>
           <Overview viewData={[]} smallSize={true}></Overview>
           <LightCard style={{ marginTop: '20px' }} padding={'30px 40px'}>
             <div style={{ height: '435px' }}>
-              <LineCharts
-                xData={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
-                yData={[820, 32, 901, 134, 1290, 900, 620]}
-              ></LineCharts>
+              <LineCharts address={address}></LineCharts>
             </div>
           </LightCard>
         </AutoColumn>

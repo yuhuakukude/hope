@@ -39,6 +39,7 @@ const ContentRow = styled(RowFixed)<{ flex?: number }>`
 export default function StakingPoolCard({ pair }: { pair: GraphPairInfo }) {
   const token0 = pair.token0
   const token1 = pair.token1
+
   return (
     <StyledPoolCard>
       <AutoRow>

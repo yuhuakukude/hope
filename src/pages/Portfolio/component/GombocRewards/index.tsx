@@ -95,7 +95,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
         return (
           <div>
             <div>{format.amountFormat(text, 2) ? `${format.amountFormat(text, 2)} ${record.stakeSymbol}` : `--`}</div>
-            <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${record.ustOfStaked}</div>
+            <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${format.amountFormat(record.ustOfStaked, 2)}</div>
           </div>
         )
       }
@@ -108,7 +108,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
         return (
           <div>
             <div>{format.amountFormat(text, 2) ? `${format.amountFormat(text, 2)} ${record.stakeSymbol}` : `--`}</div>
-            <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${record.usdOfStakeable}</div>
+            <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${format.amountFormat(record.usdOfStakeable, 2)}</div>
           </div>
         )
       }
@@ -121,7 +121,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
         return (
           <div>
             <div>{format.amountFormat(text, 2) ? `${format.amountFormat(text, 2)} ${record.rewardSymbol}` : `--`}</div>
-            <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${record.usdOfReward}</div>
+            <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${format.amountFormat(record.usdOfReward, 2)}</div>
           </div>
         )
       }
@@ -156,7 +156,6 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
             value: 'Claim',
             onClick: () => {
               ClaimFn(record)
-              console.log(record)
             }
           })
         }
@@ -218,7 +217,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
     if (!account) return
     setCurToken(LT[chainId ?? 1])
     onTxStart()
-    setPendingText(`Fees Withdraw`)
+    setPendingText(`claim Rewards`)
     toClaim(STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1])
       .then(hash => {
         setPendingText('')

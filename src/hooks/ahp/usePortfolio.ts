@@ -4,6 +4,7 @@ import { useActiveWeb3React } from '../index'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
+import { Decimal } from 'decimal.js'
 
 export function useToClaim() {
   const addTransaction = useTransactionAdder()
@@ -147,4 +148,13 @@ export function useGomFeeManyClaim() {
   return {
     toGomFeeManyClaim
   }
+}
+
+export function toUsdPrice(val: any, price: string) {
+  let res = ''
+  if (val && price) {
+    const pr = new Decimal(val).mul(new Decimal(price)).toNumber()
+    res = pr.toFixed(2)
+  }
+  return res
 }

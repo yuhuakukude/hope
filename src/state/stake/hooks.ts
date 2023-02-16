@@ -330,6 +330,8 @@ export interface PairInfo {
 }
 
 export interface PoolInfo {
+  token0Price?: string
+  token1Price?: string
   // the address of the reward contract
   stakingRewardAddress: string
   // the tokens involved in this pair
@@ -658,6 +660,8 @@ function PAIR_LIST_QUERY(
       volumeUSD
       volumeToken0
       volumeToken1
+      token0Price
+      token1Price
       token0 {
         id
         symbol
@@ -723,14 +727,11 @@ export async function fetchPairsList(
       SUBGRAPH,
       PAIR_LIST_QUERY(account, searchContent, sort, orderBy, page, size, twoDayBlock.number)
     )
-    console.log('1--->', d1Res, d2Res)
 
     const w1Res = await postQuery(
       SUBGRAPH,
       PAIR_LIST_QUERY(account, searchContent, sort, orderBy, page, size, oneWeekBlock.number)
     )
-    console.log('1.5--->', w1Res)
-    console.log('1.6--->', twoWeekBlock?.number)
 
     const w2Res = await postQuery(
       SUBGRAPH,
@@ -741,7 +742,6 @@ export async function fetchPairsList(
     const d2Pairs = d2Res.data.pairs
     const w1Pairs = w1Res.data.pairs
     const w2Pairs = w2Res.data.pairs
-    console.log('pair--->', curPairs, d1Pairs, d2Pairs, w1Pairs, w2Pairs)
     return curPairs.map((pair: any, index: number) => {
       const d1Pair = d1Pairs[index]
       const d2Pair = d2Pairs[index]
@@ -764,7 +764,6 @@ export async function fetchPairsList(
         w1Pair.volumeUSD,
         w2Pair?.volumeUSD
       )
-      console.log('pair res--->', curPairs, d1Pairs, d2Pairs, w1Pairs, w2Pairs)
 
       return {
         address: pair.id,
@@ -808,8 +807,12 @@ export async function fetchPairPool(stakingAddress: string): Promise<PoolInfo | 
     )
     const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
     const stakingToken = new Token(11155111, pool.id, 18, '')
+    const token0Price = pool.token0Price
+    const token1Price = pool.token1Price
     return {
       stakingRewardAddress: gombocAddress.result,
+      token0Price: Number(token0Price)?.toFixed(4) || '0.00',
+      token1Price: Number(token1Price)?.toFixed(4) || '0.00',
       pair: dummyPair,
       tokens,
       lpToken: dummyPair.liquidityToken,
