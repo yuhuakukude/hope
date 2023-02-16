@@ -79,6 +79,7 @@ export default function DaoLocker() {
 
   // token
   const { lockerRes, votePowerAmount } = useLocker()
+  console.log('lockerRes?.amount' + lockerRes?.amount)
   const { toLocker, getVeLtAmount } = useToLocker()
   const { toWithdraw } = useToWithdraw()
 
@@ -437,7 +438,7 @@ export default function DaoLocker() {
                   <DatePicker
                     value={lockerDate}
                     className="date-picker-tem m-t-12"
-                    disabled={!account || lockerRes?.amount}
+                    disabled={!account || !!lockerRes?.amount}
                     disabledDate={disabledDate}
                     onChange={onDateChange}
                     allowClear={false}
@@ -485,7 +486,7 @@ export default function DaoLocker() {
                         !lockerDate ||
                         !ltBalance ||
                         lockerRes?.end !== '--' ||
-                        lockerRes?.amount ||
+                        !!lockerRes?.amount ||
                         approvalState === ApprovalState.UNKNOWN
                       }
                       actionText={actionText}
