@@ -1,10 +1,14 @@
 // import PortfolioApi, { DetailInfo } from 'api/portfolio.api'
 import Tips from 'components/Tips'
 // import { useActiveWeb3React } from 'hooks'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { formatDate, getDateForLastOccurence, amountFormat } from 'utils/format'
-import { ButtonPrimary } from 'components/Button'
+import { ButtonOutlined } from 'components/Button'
 import { toUsdPrice } from '../../../../../hooks/ahp/usePortfolio'
+import { NavLink } from 'react-router-dom'
+import { useLocker } from 'hooks/ahp/useLocker'
+import format from 'utils/format'
+import moment from 'moment'
 
 const diffTime = getDateForLastOccurence('Thurs')
 export const endTimestamp = (diffTime.getTime() / 1000) | 0
@@ -14,24 +18,37 @@ interface DetailProps {
   withdrawAll: () => void
   overviewData: any
   hopePrice: string
+  platformFees: string
 }
 
-export default function Detail({ withdrawAll, overviewData, hopePrice }: DetailProps) {
+export default function Detail({ withdrawAll, overviewData, hopePrice, platformFees }: DetailProps) {
+  const { lockerRes } = useLocker()
+  const isShowTip = useMemo(() => {
+    const lockerEndDate = lockerRes?.end
+    if (!lockerEndDate || lockerEndDate === '--') {
+      return false
+    }
+    return moment(format.formatDate(Number(`${lockerEndDate}`))).diff(moment(), 'days') < 14
+  }, [lockerRes])
   return (
     <>
-      <div className="velt-rewards-warning">
-        <i className="iconfont">&#xe61e;</i>
-        <span className="velt-rewards-warning-desc">
-          Your lock expires soon. You need to lock at least for two weeks in
-        </span>
-        <span className="velt-rewards-warning-locker"> Locker</span>
-      </div>
+      {isShowTip && (
+        <div className="flex m-t-30 ai-center">
+          <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
+          <p className="text-white lh15">
+            Your lock expires soon. You need to lock at least for two weeks in
+            <NavLink to={'/dao/locker'}>
+              <span className="text-primary">Locker</span>
+            </NavLink>
+          </p>
+        </div>
+      )}
       <div className="velt-rewards-desc">Last Period Overview</div>
       <div className="velt-rewards-card">
         <div className="velt-rewards-list">
           <div className="velt-rewards-item">
             <div className="velt-rewards-item-title">Platform Fees Gain</div>
-            <div className="velt-rewards-item-amount">≈ ${overviewData.withdrawable} </div>
+            <div className="velt-rewards-item-amount">≈ ${amountFormat(platformFees, 2)} </div>
             <div className="velt-rewards-item-date">
               Period : {formatDate(startTimestamp, 'MM-DD')} ~ {formatDate(endTimestamp, 'MM-DD')}
             </div>
@@ -55,9 +72,15 @@ export default function Detail({ withdrawAll, overviewData, hopePrice }: DetailP
             <span className="velt-rewards-bottom-amount">: {amountFormat(overviewData.withdrawable, 2)} stHOPE</span>
           </div>
           <div className="velt-rewards-bottom-right flex jc-end">
-            <ButtonPrimary className="hp-button-primary" onClick={withdrawAll}>
+            <ButtonOutlined
+              disabled={
+                !overviewData.withdrawable || (overviewData.withdrawable && Number(overviewData.withdrawable) <= 0)
+              }
+              className="velt-rewards-bottom-button2"
+              onClick={withdrawAll}
+            >
               Withdraw Collected
-            </ButtonPrimary>
+            </ButtonOutlined>
             {/* <div className="velt-rewards-bottom-button2">Withdraw Collected</div> */}
           </div>
         </div>

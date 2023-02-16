@@ -82,18 +82,17 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
       render: (text: string, record: Item, index: number) => {
         return (
           <>
-            {record.withdrawable ? (
+            {record.withdrawable && Number(record.withdrawable) > 0 ? (
               <span
                 className="veLT-rewards-item-button"
                 onClick={() => {
-                  console.log(text, record)
                   withdrawItem(index)
                 }}
               >
                 Withdraw
               </span>
             ) : (
-              <span> --</span>
+              <span> -- </span>
             )}
           </>
         )

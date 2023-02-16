@@ -23,43 +23,24 @@ const RateText = styled.p`
 const Text2 = styled.p`
   color: ${({ theme }) => theme.text2};
 `
-interface OverviewData {
+export interface OverviewData {
   title: string
   isRise: boolean
   rate: string
   amount: string
 }
 
-export default function PieCharts({ pool, smallSize }: { pool?: PoolInfo; smallSize?: boolean }) {
+export default function PieCharts({
+  pool,
+  smallSize,
+  viewData
+}: {
+  pool?: PoolInfo
+  smallSize?: boolean
+  viewData: OverviewData[]
+}) {
   console.log(pool)
   const PoolOverview = () => {
-    const fakeData: OverviewData[] = [
-      {
-        title: 'Pool Overview',
-        isRise: true,
-        rate: '2.53%',
-        amount: '$ 10,123,435.32'
-      },
-      {
-        title: 'Volume(24H)',
-        isRise: false,
-        rate: '2.53%',
-        amount: '$ 13,156,678.34'
-      },
-      {
-        title: 'Fees(24H)',
-        isRise: true,
-        rate: '2.53%',
-        amount: '$ 10,123,435.32'
-      },
-      {
-        title: 'Fess(7d)',
-        isRise: true,
-        rate: '2.53%',
-        amount: '$ 10,123,435.32'
-      }
-    ]
-
     const OverviewBlock = ({ data }: { data: OverviewData }) => {
       return (
         <div>
@@ -99,7 +80,7 @@ export default function PieCharts({ pool, smallSize }: { pool?: PoolInfo; smallS
       <TopSection>
         <PoolsWrapper style={{ marginTop: '30px' }}>
           <RowBetween style={{ padding: `0px ${smallSize ? 0 : 50}px` }}>
-            {fakeData.map((data, index) => {
+            {viewData.map((data, index) => {
               return <OverviewBlock data={data} key={index} />
             })}
           </RowBetween>

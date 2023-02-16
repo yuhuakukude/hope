@@ -70,7 +70,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
       render: (text: string, record: PortfolioReward) => {
         return (
           <div>
-            <div>{text}</div>
+            <div>{format.rate(text)}</div>
             <div style={{ color: 'rgba(168, 168, 170, 1)', fontSize: '14px' }}>
               <span>
                 <span>{record.boost}</span>

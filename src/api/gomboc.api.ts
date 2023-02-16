@@ -17,4 +17,7 @@ export default class GombocApi {
   static getGombocsPoolsList(params: any): any {
     return http.get('/light/gombocs/pools', { params })
   }
+  static getGombocsAddress(params: any): any {
+    return http.get('/light/dao/hope/queryGombocAddress', { params })
+  }
 }

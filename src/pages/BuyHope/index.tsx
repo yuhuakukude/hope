@@ -23,6 +23,7 @@ import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import { useEstimate } from '../../hooks/ahp'
 import './index.scss'
+import useGasPrice from '../../hooks/useGasPrice'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -40,6 +41,8 @@ export default function BuyHope() {
   const buyHopeContract = useBuyHopeContract()
   const addTransaction = useTransactionAdder()
   const isEthBalanceInsufficient = useEstimate()
+  const gasPrice = useGasPrice()
+  console.log('gasPrice', gasPrice)
   // state
   const [currencyModalFlag, setCurrencyModalFlag] = useState(false)
   const [inputBorder, setInputBorder] = useState('')

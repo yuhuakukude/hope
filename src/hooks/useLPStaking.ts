@@ -5,9 +5,13 @@ import {
   PoolInfo,
   fetchPairsList,
   fetchPairsListLength,
-  fetchPairPool
+  fetchPairPool,
+  fetchGlobalData,
+  GraphPairInfo,
+  PairDetail
 } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
+// import AprApi from '../api/apr.api'
 
 export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
   const { account } = useActiveWeb3React()
@@ -59,7 +63,7 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
 
 export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc', page: number, pageSize: number) {
   const { account } = useActiveWeb3React()
-  const [result, setResult] = useState<PoolInfo[]>([])
+  const [result, setResult] = useState<GraphPairInfo[]>([])
 
   const [loading, setLoading] = useState<boolean>(false)
   const [resultLength, setResultLength] = useState<number>(0)
@@ -71,6 +75,7 @@ export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc',
         const listLength = await fetchPairsListLength()
         setResultLength(listLength)
         const list = await fetchPairsList(account ?? '', searchName, sort, 'trackedReserveETH', page, pageSize)
+        // const addressList = list.map((e: GraphPairInfo) => e.address)
         setLoading(false)
         setResult(list)
       } catch (error) {
@@ -89,7 +94,7 @@ export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc',
 
 export function useStakingPairPool(address: string) {
   const { account } = useActiveWeb3React()
-  const [result, setResult] = useState<PoolInfo | undefined>(undefined)
+  const [result, setResult] = useState<PairDetail | undefined>(undefined)
 
   const [loading, setLoading] = useState<boolean>(false)
   // const [total, setTotal] = useState<number>(0)
@@ -140,6 +145,44 @@ export function useStakingPool(address: string) {
       }
     })()
   }, [currentPage, account, address])
+
+  return {
+    loading: loading,
+    result
+  }
+}
+
+export interface Overview {
+  tvl: string
+  tvlChangeUSD: number
+  totalVolume: number
+  oneDayVolumeUSD: number
+  volumeChangeUSD: number
+  dayFees: number
+  weekFees: number
+  weeklyVolumeChange: number
+}
+
+export function useOverviewData() {
+  const [result, setResult] = useState<Overview | undefined>(undefined)
+  const [loading, setLoading] = useState<boolean>(false)
+  // const [total, setTotal] = useState<number>(0)
+
+  useEffect(() => {
+    ;(async () => {
+      setLoading(true)
+      try {
+        const data = await fetchGlobalData()
+        console.log('useOverviewData--', data)
+        setLoading(false)
+        setResult(data)
+      } catch (error) {
+        setResult(undefined)
+        setLoading(false)
+        console.error('useOverviewData', error)
+      }
+    })()
+  }, [])
 
   return {
     loading: loading,

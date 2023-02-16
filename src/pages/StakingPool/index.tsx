@@ -7,14 +7,15 @@ import Loader from '../../components/Loader'
 import { OutlineCard } from '../../components/Card'
 import { SearchInput } from '../../components/SearchModal/styleds'
 import { ButtonPrimary } from '../../components/Button'
-import { useLPStakingPairsInfos } from '../../hooks/useLPStaking'
+import { useLPStakingPairsInfos, useOverviewData } from '../../hooks/useLPStaking'
 import StakingPoolCard from '../../components/stakingPool/StakingPoolCard'
 import { TYPE } from '../../theme'
-import Overview from '../../components/pool/Overview'
+import Overview, { OverviewData } from '../../components/pool/Overview'
 import LineCharts from '../../components/pool/LineCharts'
 import BarCharts from '../../components/pool/BarCharts'
 import { Pagination } from 'antd'
 import Row from '../../components/Row'
+import { Link } from 'react-router-dom'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -68,28 +69,28 @@ const TimeText = styled.p`
 `
 
 function ChartView({ type }: { type: string }) {
-  const fakeData = {
-    name: 'TVL',
-    value: '$78.34 M',
-    time: 'last 7Days'
-  }
-
   return (
     <PoolsWrapper style={{ width: '49%', height: '340px' }}>
-      <div>
-        <AutoRow gap={'10px'}>
-          <NameText>{fakeData.name}</NameText>
-          <NameText>{fakeData.value}</NameText>
-          <TimeText>{fakeData.time}</TimeText>
-        </AutoRow>
-        {type === 'line' && <LineCharts height={240} hideTab={true}></LineCharts>}
-        {type === 'bar' && (
-          <BarCharts
-            xData={[1, 2, 3, 4, 5, 6, 7, 8, 9]}
-            yData={[820, 32, 901, 134, 1290, 900, 620, 100, 800]}
-          ></BarCharts>
-        )}
-      </div>
+      {type === 'line' && (
+        <div>
+          <AutoRow gap={'10px'}>
+            <NameText>TVL</NameText>
+            <NameText>$78.34 M</NameText>
+            <TimeText>last 7Days</TimeText>
+          </AutoRow>
+          <LineCharts height={240} hideTab={true}></LineCharts>
+        </div>
+      )}
+      {type === 'bar' && (
+        <div>
+          <AutoRow gap={'10px'}>
+            <NameText>Volume</NameText>
+            <NameText>$78.34 M</NameText>
+            <TimeText>last 7Days</TimeText>
+          </AutoRow>
+          <BarCharts xData={[]} yData={[]}></BarCharts>
+        </div>
+      )}
     </PoolsWrapper>
   )
 }
@@ -103,8 +104,37 @@ export default function StakingPool() {
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(5)
   const [sort, setSort] = useState<Sort>('desc')
+  const { result: overviewData } = useOverviewData()
+  console.log('overviewData', overviewData)
+  const viewData: OverviewData[] = [
+    {
+      title: 'Pool Overview',
+      isRise: !!overviewData && overviewData.tvlChangeUSD > 0,
+      rate: overviewData ? `${overviewData.tvlChangeUSD.toFixed(2)} %` : `--`,
+      amount: overviewData ? `$${Number(overviewData.tvl).toFixed(2)}` : `--`
+    },
+    {
+      title: 'Volume(24H)',
+      isRise: !!overviewData && overviewData.volumeChangeUSD > 0,
+      rate: overviewData ? `${overviewData.volumeChangeUSD.toFixed(2)}` : `--`,
+      amount: overviewData ? `$${overviewData.oneDayVolumeUSD.toFixed(2)}` : `--`
+    },
+    {
+      title: 'Fees(24H)',
+      isRise: !!overviewData && overviewData.volumeChangeUSD > 0,
+      rate: overviewData ? `${overviewData.volumeChangeUSD.toFixed(2)}` : `--`,
+      amount: overviewData ? `$${overviewData.dayFees.toFixed(2)}` : `--`
+    },
+    {
+      title: 'Fess(7d)',
+      isRise: !!overviewData && overviewData.weeklyVolumeChange > 0,
+      rate: overviewData ? `${overviewData.weeklyVolumeChange.toFixed(2)}` : `--`,
+      amount: overviewData ? `$${overviewData.weekFees.toFixed(2)}` : `--`
+    }
+  ]
+
   console.log(setSort)
-  const { result: stakingInfos, loading, total } = useLPStakingPairsInfos(searchContent, sort, currentPage, pageSize)
+  const { result: pairs, loading, total } = useLPStakingPairsInfos(searchContent, sort, currentPage, pageSize)
   // staking info for connected account
 
   const onPagesChange = (page: any, pageSize: any) => {
@@ -122,9 +152,11 @@ export default function StakingPool() {
       <TopSection>
         <RowBetween>
           <p style={{ fontSize: '28px' }}>Pool Overview</p>
-          <ButtonPrimary style={{ width: 'max-content' }}>New Position</ButtonPrimary>
+          <ButtonPrimary as={Link} to={'/add/ETH'} style={{ width: 'max-content' }}>
+            New Position
+          </ButtonPrimary>
         </RowBetween>
-        <Overview></Overview>
+        <Overview viewData={viewData}></Overview>
       </TopSection>
       <RowBetween style={{ width: '100%' }}>
         <ChartView type={'line'} />
@@ -167,12 +199,12 @@ export default function StakingPool() {
           <PoolSection>
             {loading ? (
               <Loader style={{ margin: 'auto' }} />
-            ) : stakingInfos && stakingInfos?.length === 0 ? (
+            ) : pairs && pairs?.length === 0 ? (
               <OutlineCard>No active pools</OutlineCard>
             ) : (
-              stakingInfos.map((pool, index) => {
+              pairs.map((pair, index) => {
                 // need to sort by added liquidity here
-                return <StakingPoolCard key={index} pool={pool} />
+                return <StakingPoolCard key={index} pair={pair} />
               })
             )}
           </PoolSection>
@@ -186,7 +218,7 @@ export default function StakingPool() {
               onChange={onPagesChange}
             />{' '}
             <span className="m-l-15" style={{ color: '#868790' }}>
-              共{total}条
+              Total {total}
             </span>
           </Row>
         </AutoColumn>
