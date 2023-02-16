@@ -31,7 +31,7 @@ import { useActionPending } from '../../state/transactions/hooks'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
-  padding: 30px;
+  padding: 0 30px;
   min-width: 1300px;
 `
 enum ACTION {
