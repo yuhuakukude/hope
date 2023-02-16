@@ -153,10 +153,7 @@ export default function StakingPoolDetail({
           <Overview smallSize={true}></Overview>
           <LightCard style={{ marginTop: '20px' }} padding={'30px 40px'}>
             <div style={{ height: '435px' }}>
-              <LineCharts
-                xData={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
-                yData={[820, 32, 901, 134, 1290, 900, 620]}
-              ></LineCharts>
+              <LineCharts address={address}></LineCharts>
             </div>
           </LightCard>
         </AutoColumn>

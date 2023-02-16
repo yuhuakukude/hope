@@ -1,13 +1,13 @@
 import React, { useEffect, useRef, useState } from 'react'
-// import Row from '../Row'
+import { Decimal } from 'decimal.js'
 import * as echarts from 'echarts'
 import Row from 'components/Row'
 import styled from 'styled-components'
-
-interface TabListInterface {
-  label: string
-  value: number
-}
+import { useLineDaysChartsData, useLine24HourChartsData } from '../../hooks/useCharts'
+import dayjs from 'dayjs'
+import utc from 'dayjs/plugin/utc'
+import format from '../../utils/format'
+dayjs.extend(utc)
 
 const TabItem = styled.div<{ isActive?: boolean }>`
   color: ${({ isActive }) => (isActive ? '#E4C989' : '#a8a8aa')};
@@ -50,41 +50,55 @@ const TimeItem = styled.div<{ isActive?: boolean }>`
     background-color: #434343;
   }
 `
-
 export default function PieCharts({
   hideTab = false,
   height = 320,
-  xData,
-  yData
+  address
 }: {
   hideTab?: boolean
   height?: number
-  xData: any
-  yData: any
+  address?: string
 }) {
-  const [tabIndex, setTabIndex] = useState(1)
-  const [timeIndex, setTimeIndex] = useState(1)
+  const [tabIndex, setTabIndex] = useState('Volume')
+  const [timeIndex, setTimeIndex] = useState('24H')
+  const [xData, setXData] = useState<string[]>()
+  const [yData, setYData] = useState<string[]>()
   const chartRef: any = useRef()
-  const tabChange = (e: number) => {
+  const { result: dayChartResult } = useLineDaysChartsData(address ?? '')
+  const { result: hourChartResult } = useLine24HourChartsData(address ?? '')
+  const getTimeframe = (timeWindow: string) => {
+    const utcEndTime = dayjs.utc()
+    let utcStartTime = undefined
+    if (timeWindow === '1W') {
+      utcStartTime =
+        utcEndTime
+          .subtract(1, 'week')
+          .endOf('day')
+          .unix() - 1
+    }
+    if (timeWindow === '1M') {
+      utcStartTime =
+        utcEndTime
+          .subtract(1, 'month')
+          .endOf('day')
+          .unix() - 1
+    }
+    return utcStartTime
+  }
+  const tabChange = (e: string) => {
     setTabIndex(e)
   }
-
-  const timeChange = (e: number) => {
+  const timeChange = (e: string) => {
     setTimeIndex(e)
   }
 
   const TabList = () => {
-    const tabList: TabListInterface[] = [
-      { label: 'Volume', value: 1 },
-      { label: 'TVL', value: 2 },
-      { label: 'Fees', value: 3 }
-    ]
     return (
       <Row>
-        {tabList.map((item, index) => {
+        {['Volume', 'TVL', 'Fees'].map((item, index) => {
           return (
-            <TabItem key={index} isActive={item.value === tabIndex} onClick={() => tabChange(item.value)}>
-              {item.label}
+            <TabItem key={index} isActive={item === tabIndex} onClick={() => tabChange(item)}>
+              {item}
             </TabItem>
           )
         })}
@@ -93,17 +107,12 @@ export default function PieCharts({
   }
 
   const TimeList = () => {
-    const timeList: TabListInterface[] = [
-      { label: '24H', value: 1 },
-      { label: '1W', value: 2 },
-      { label: '1M', value: 3 }
-    ]
     return (
       <Row justify={'flex-end'}>
-        {timeList.map((item, index) => {
+        {['24H', '1W', '1M'].map((item, index) => {
           return (
-            <TimeItem key={index} isActive={item.value === timeIndex} onClick={() => timeChange(item.value)}>
-              {item.label}
+            <TimeItem key={index} isActive={item === timeIndex} onClick={() => timeChange(item)}>
+              {item}
             </TimeItem>
           )
         })}
@@ -113,11 +122,72 @@ export default function PieCharts({
   const handleResizeChart = (myChart: any) => {
     myChart && myChart.resize()
   }
+  useEffect(() => {
+    const utcStartTime = getTimeframe(timeIndex)
+    const xArr: string[] = []
+    const yArr: string[] = []
+    const result = timeIndex === '24H' ? hourChartResult : dayChartResult
+    result?.forEach((item: any) => {
+      if (timeIndex === '24H') {
+        if (tabIndex === 'Volume') {
+          yArr.push(item.hourlyVolumeUSD?.toFixed(2))
+        }
+        if (tabIndex === 'TVL') {
+          yArr.push(item.reserveUSD?.toFixed(2))
+        }
+        if (tabIndex === 'Fees') {
+          yArr.push(
+            new Decimal(item.hourlyVolumeUSD || 0)
+              .mul(new Decimal(0.003))
+              .toNumber()
+              .toFixed(2)
+          )
+        }
+        xArr.push(format.formatUTCDate(item.hourStartUnix, 'HH:mm'))
+      } else if (utcStartTime && item.date >= utcStartTime) {
+        if (tabIndex === 'Volume') {
+          yArr.push(item.dailyVolumeUSD?.toFixed(2))
+        }
+        if (tabIndex === 'TVL') {
+          yArr.push(item.reserveUSD?.toFixed(2))
+        }
+        if (tabIndex === 'Fees') {
+          yArr.push(
+            new Decimal(item.dailyVolumeUSD || 0)
+              .mul(new Decimal(0.003))
+              .toNumber()
+              .toFixed(2)
+          )
+        }
+        xArr.push(format.formatUTCDate(item.date, 'YYYY-MM-DD'))
+      }
+    })
+    setXData(xArr)
+    setYData(yArr)
+  }, [timeIndex, tabIndex, hourChartResult, dayChartResult])
 
   useEffect(() => {
     const myChart = echarts.init(chartRef.current)
     const option = {
-      grid: { top: '6%', bottom: '15%', left: '3%', right: '3%' },
+      grid: { top: '6%', bottom: '15%', left: '5%', right: '5%' },
+      tooltip: {
+        trigger: 'axis',
+        backgroundColor: 'rgba(51, 51, 60, 1)',
+        borderColor: 'rgba(51, 51, 60, 1)',
+        padding: 20,
+        textStyle: {
+          color: '#FFFFFF'
+        },
+        formatter: (params: any) => {
+          return `
+          <p style="font-family: 'Arboria-Book'; font-size: 16px;">${params[0].name}</p>
+          <p style="font-family: 'Arboria-Medium'; font-size: 20px; margin-top: 12px;">
+            <span style="display: inline-block; margin-right: 8px;background-color: #33333C;width:10px;height:10px;border-radius: 50%;border:3px solid #E4C989;"></span>
+            ${format.amountFormat(params[0].value, 2)}
+          </p>
+          `
+        }
+      },
       xAxis: {
         type: 'category',
         boundaryGap: false,
@@ -174,7 +244,7 @@ export default function PieCharts({
       window.removeEventListener('resize', () => handleResizeChart(myChart))
       myChart.dispose()
     }
-  }, [xData, yData])
+  }, [xData, yData, address])
   return (
     <div>
       {!hideTab && (

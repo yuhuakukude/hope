@@ -82,14 +82,7 @@ function ChartView({ type }: { type: string }) {
           <NameText>{fakeData.value}</NameText>
           <TimeText>{fakeData.time}</TimeText>
         </AutoRow>
-        {type === 'line' && (
-          <LineCharts
-            height={240}
-            hideTab={true}
-            xData={['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']}
-            yData={[820, 32, 901, 134, 1290, 900, 620]}
-          ></LineCharts>
-        )}
+        {type === 'line' && <LineCharts height={240} hideTab={true}></LineCharts>}
         {type === 'bar' && (
           <BarCharts
             xData={[1, 2, 3, 4, 5, 6, 7, 8, 9]}

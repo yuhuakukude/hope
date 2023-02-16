@@ -134,7 +134,6 @@ export default function DaoLocker() {
   }, [amount, getVeLtAmount, lockTimeArg])
 
   const maxWeek = useMemo(() => {
-    console.log(lockerRes?.end)
     if (!lockerRes?.end) {
       return 0
     }
