@@ -1,21 +1,29 @@
-import React, { useState, useCallback } from 'react'
+import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import Card from '../Card'
 import Detail from './Detail'
 import Empty from './Empty'
 import List from './List'
 import TitleTips from '../TitleTips'
+import moment from 'moment'
+import { Decimal } from 'decimal.js'
+import PortfolioApi, { DetailInfo } from 'api/portfolio.api'
 import FeesWithdraw from '../../../../components/ahp/FeesWithdraw'
 import { Token } from '@uniswap/sdk'
-import { ST_HOPE } from '../../../../constants'
+import { ST_HOPE, SUBGRAPH, STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
+import { postQuery } from '../../../../utils/graph'
 import { useActiveWeb3React } from '../../../../hooks'
+// import { endTimestamp, startTimestamp } from './Detail'
+import { getDateForLastOccurence } from 'utils/format'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
-import { useFeeClaim } from '../../../../hooks/ahp/usePortfolio'
+import { useFeeClaim, useGomFeeClaim, useGomFeeManyClaim } from '../../../../hooks/ahp/usePortfolio'
 import './index.scss'
 
 export default function VeLTRewards() {
   const { account, chainId } = useActiveWeb3React()
+  const [curWithType, setCurWithType] = useState<string>('item') // item others all
+  const [hopePrice, setHopePrice] = useState('')
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
@@ -25,9 +33,57 @@ export default function VeLTRewards() {
   const [claimPendingText, setClaimPendingText] = useState('')
   const [curToken, setCurToken] = useState<Token | undefined>(ST_HOPE[chainId ?? 1])
 
+  // argtime
+  const diffTime = getDateForLastOccurence('Thurs')
+  const endTimestamp = moment.utc(moment(diffTime).format('YYYY-MM-DD 00:00:00')).unix()
+  const startTimestamp = moment
+    .utc(
+      moment(diffTime)
+        .subtract(7, 'days')
+        .format('YYYY-MM-DD 00:00:00')
+    )
+    .unix()
+
   const { toFeeClaim } = useFeeClaim()
+  const { toGomFeeClaim } = useGomFeeClaim()
+  const { toGomFeeManyClaim } = useGomFeeManyClaim()
+
+  const [tableData, setTableData] = useState<any>([])
+  const [curTableItem, setCurTableItem] = useState<any>({})
+  const [overviewData, setOverviewData] = useState<DetailInfo>({} as DetailInfo)
+
+  const argList = useMemo(() => {
+    let res = []
+    if (tableData && tableData.length > 0) {
+      const arr: any = []
+      tableData.forEach((e: any) => {
+        if (e && e.gomboc && e.gomboc.gombocAddress) {
+          arr.push(e.gomboc.gombocAddress)
+        }
+      })
+      res = arr
+    }
+    return res
+  }, [tableData])
 
   const withdrawAllFn = () => {
+    setCurWithType('all')
+    setTxHash('')
+    setErrorStatus(undefined)
+    setAttemptingTxn(false)
+    setShowConfirm(true)
+  }
+
+  const withdrawItemFn = (index: number) => {
+    let type = 'others'
+    if (tableData && tableData.length > 0) {
+      const item = tableData[index]
+      setCurTableItem(item)
+      if (item.gomboc) {
+        type = 'item'
+      }
+    }
+    setCurWithType(type)
     setTxHash('')
     setErrorStatus(undefined)
     setAttemptingTxn(false)
@@ -68,16 +124,135 @@ export default function VeLTRewards() {
       })
   }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toFeeClaim])
 
+  const gomFeeClaimCallback = useCallback(async () => {
+    if (!account) return
+    setCurToken(ST_HOPE[chainId ?? 1])
+    onTxStart()
+    setClaimPendingText(`Fees Withdraw`)
+    const arg = (curTableItem.gomboc && curTableItem.gomboc.gombocAddress) || ''
+    toGomFeeClaim(arg)
+      .then(hash => {
+        setClaimPendingText('')
+        onTxSubmitted(hash)
+      })
+      .catch((error: any) => {
+        setClaimPendingText('')
+        onTxError(error)
+      })
+  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toGomFeeClaim, curTableItem])
+
+  const gomFeeManyClaimCallback = useCallback(async () => {
+    if (!account) return
+    setCurToken(ST_HOPE[chainId ?? 1])
+    onTxStart()
+    setClaimPendingText(`Fees Withdraw`)
+    toGomFeeManyClaim(argList)
+      .then(hash => {
+        setClaimPendingText('')
+        onTxSubmitted(hash)
+      })
+      .catch((error: any) => {
+        setClaimPendingText('')
+        onTxError(error)
+      })
+  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toGomFeeManyClaim, argList])
+
+  const initTable = useCallback(async () => {
+    try {
+      const res = await PortfolioApi.getRewardsList({
+        startTimestamp,
+        endTimestamp,
+        userAddress: account
+      })
+      if (res.result && res.result) {
+        setTableData(res.result)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [account, startTimestamp, endTimestamp])
+
+  const initOverview = useCallback(async () => {
+    try {
+      const res = await PortfolioApi.getRewardsOverview({
+        startTimestamp,
+        endTimestamp,
+        userAddress: account
+      })
+      if (res.result && res.result) {
+        console.log(res.result)
+        setOverviewData(res.result)
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [account, startTimestamp, endTimestamp])
+
+  const initPrice = useCallback(async () => {
+    try {
+      // const address = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLowerCase()
+      const addQuery = `{  
+        tokens(where: {symbol: "stHOPE"}) {    
+          symbol   
+          id 
+        } 
+      }`
+      const address = await postQuery(SUBGRAPH, addQuery)
+      if (address && address.data.tokens[0] && address.data.tokens[0].id) {
+        const add = address.data.tokens[0].id
+        const query = `{  
+          token(id: "${add}") {    
+            symbol   
+            derivedETH  
+          }  
+          bundle(id: 1) {    
+            ethPrice  
+          }
+        }`
+
+        const res = await postQuery(SUBGRAPH, query)
+        if (res && res.data) {
+          const item = res.data
+          const de = item.token?.derivedETH || 0
+          const bu = item.bundle?.ethPrice || 0
+          const pr = new Decimal(de).mul(new Decimal(bu)).toNumber()
+          const num = pr.toFixed(6)
+          if (num && Number(num) > 0) {
+            setHopePrice(num)
+          }
+          console.log(res)
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
+
+  useEffect(() => {
+    if (account) {
+      initTable()
+      initOverview()
+      if (STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]) {
+        initPrice()
+      }
+    }
+  }, [account, chainId, initTable, initOverview, initPrice])
+
   const withdrawSubmit = useCallback(
     (type: string) => {
-      if (type === 'normal') {
-        console.log(type)
+      if (curWithType === 'item') {
+        gomFeeClaimCallback()
+      } else if (curWithType === 'others') {
         feeClaimCallback()
       } else {
-        // claimRewardsCallback()
+        if (type === 'all') {
+          gomFeeManyClaimCallback()
+        } else {
+          feeClaimCallback()
+        }
       }
     },
-    [feeClaimCallback]
+    [feeClaimCallback, gomFeeClaimCallback, gomFeeManyClaimCallback, curWithType]
   )
 
   const confirmationContent = useCallback(
@@ -94,12 +269,14 @@ export default function VeLTRewards() {
             withdrawSubmit(type)
           }}
           onDismiss={() => setShowConfirm(false)}
-          feeInfo={{}}
-          feeType={''}
-          withdrawType={''}
+          curWithType={curWithType}
+          totalFee={overviewData?.withdrawable}
+          tableData={tableData}
+          tableItem={curTableItem}
+          hopePrice={hopePrice}
         />
       ),
-    [withdrawSubmit, errorStatus]
+    [withdrawSubmit, errorStatus, curWithType, overviewData, tableData, curTableItem, hopePrice]
   )
   return (
     <>
@@ -126,8 +303,8 @@ export default function VeLTRewards() {
             <Empty />
           ) : (
             <>
-              <Detail withdrawAll={withdrawAllFn} />
-              <List />
+              <Detail hopePrice={hopePrice} overviewData={overviewData} withdrawAll={withdrawAllFn} />
+              <List hopePrice={hopePrice} tableData={tableData} withdrawItem={withdrawItemFn} />
             </>
           )}
         </Card>

@@ -134,7 +134,6 @@ export default function DaoLocker() {
   }, [amount, getVeLtAmount, lockTimeArg])
 
   const maxWeek = useMemo(() => {
-    console.log(lockerRes?.end)
     if (!lockerRes?.end) {
       return 0
     }
@@ -429,10 +428,6 @@ export default function DaoLocker() {
                         setAmount(val)
                       }}
                     />
-                    <div className="coin-box flex ai-center cursor-select">
-                      <div className="hope-icon"></div>
-                      <div className="currency font-nor text-medium m-l-12">LT</div>
-                    </div>
                   </div>
                 </div>
                 <div className="date-box">
@@ -440,7 +435,7 @@ export default function DaoLocker() {
                   <DatePicker
                     value={lockerDate}
                     className="date-picker-tem m-t-12"
-                    disabled={!account || Number(lockerRes?.amount) > 0}
+                    disabled={!account || !!lockerRes?.amount}
                     disabledDate={disabledDate}
                     onChange={onDateChange}
                     allowClear={false}
@@ -488,7 +483,7 @@ export default function DaoLocker() {
                         !lockerDate ||
                         !ltBalance ||
                         lockerRes?.end !== '--' ||
-                        Number(lockerRes?.amount) > 0 ||
+                        !!lockerRes?.amount ||
                         approvalState === ApprovalState.UNKNOWN
                       }
                       actionText={actionText}
