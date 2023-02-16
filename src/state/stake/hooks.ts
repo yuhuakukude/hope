@@ -927,6 +927,7 @@ export async function fetchGlobalData() {
       weeklyVolumeChange
     }
   } catch (error) {
+    console.warn(error)
     return undefined
   }
 }
