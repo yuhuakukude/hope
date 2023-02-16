@@ -79,7 +79,6 @@ export default function DaoLocker() {
 
   // token
   const { lockerRes, votePowerAmount } = useLocker()
-  console.log('lockerRes?.amount' + lockerRes?.amount)
   const { toLocker, getVeLtAmount } = useToLocker()
   const { toWithdraw } = useToWithdraw()
 
@@ -430,7 +429,6 @@ export default function DaoLocker() {
                         setAmount(val)
                       }}
                     />
-                    c
                   </div>
                 </div>
                 <div className="date-box">
