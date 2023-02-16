@@ -101,5 +101,13 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
   ]
 
   // TODO remove test data
-  return <Table title={() => 'My List'} columns={columns} pagination={false} dataSource={tableData} />
+  return (
+    <Table
+      title={() => 'My List'}
+      locale={{ emptyText: 'You have no veLT rewards' }}
+      columns={columns}
+      pagination={false}
+      dataSource={tableData}
+    />
+  )
 }
