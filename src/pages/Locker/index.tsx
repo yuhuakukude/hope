@@ -429,10 +429,7 @@ export default function DaoLocker() {
                         setAmount(val)
                       }}
                     />
-                    <div className="coin-box flex ai-center cursor-select">
-                      <div className="hope-icon"></div>
-                      <div className="currency font-nor text-medium m-l-12">LT</div>
-                    </div>
+                    c
                   </div>
                 </div>
                 <div className="date-box">

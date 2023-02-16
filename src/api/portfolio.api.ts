@@ -68,7 +68,7 @@ export interface Item {
 interface Params {
   startTimestamp: number
   endTimestamp: number
-  userAddress: string
+  userAddress: any
 }
 
 export default class PortfolioApi {

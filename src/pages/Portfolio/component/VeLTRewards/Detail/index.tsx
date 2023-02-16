@@ -1,7 +1,7 @@
-import PortfolioApi, { DetailInfo } from 'api/portfolio.api'
+// import PortfolioApi, { DetailInfo } from 'api/portfolio.api'
 import Tips from 'components/Tips'
-import { useActiveWeb3React } from 'hooks'
-import React, { useEffect, useState } from 'react'
+// import { useActiveWeb3React } from 'hooks'
+import React from 'react'
 import { formatDate, getDateForLastOccurence } from 'utils/format'
 import { ButtonPrimary } from 'components/Button'
 
@@ -11,27 +11,10 @@ export const startTimestamp = ((diffTime.getTime() - 1000 * 60 * 60 * 24 * 7) / 
 
 interface DetailProps {
   withdrawAll: () => void
+  overviewData: any
 }
 
-export default function Detail({ withdrawAll }: DetailProps) {
-  const { account } = useActiveWeb3React()
-  const [overviewData, setOverviewData] = useState<DetailInfo>({} as DetailInfo)
-
-  useEffect(() => {
-    if (!account) {
-      return
-    }
-    PortfolioApi.getRewardsOverview({
-      startTimestamp,
-      endTimestamp,
-      userAddress: account
-    }).then((res: any) => {
-      if (res && res.result) {
-        setOverviewData(res.result)
-      }
-    })
-  }, [account])
-
+export default function Detail({ withdrawAll, overviewData }: DetailProps) {
   return (
     <>
       <div className="velt-rewards-warning">
@@ -61,7 +44,7 @@ export default function Detail({ withdrawAll }: DetailProps) {
             <div className="velt-rewards-item-date">≈ ~ $10,123,456,789.00</div>
           </div>
         </div>
-        <div className="velt-rewards-bottom">
+        <div className="velt-rewards-bottom flex ai-center">
           <div className="velt-rewards-bottom-left">
             <span className="velt-rewards-bottom-title">My Collected & Withdrawable</span>
             <span className="velt-rewards-bottom-question">
@@ -70,7 +53,7 @@ export default function Detail({ withdrawAll }: DetailProps) {
             <span className="velt-rewards-bottom-amount">: 10,123,456,789.00 stHOPE</span>
           </div>
           <div className="velt-rewards-bottom-right flex jc-end">
-            <ButtonPrimary className="hp-button-primary m-t-30" onClick={withdrawAll}>
+            <ButtonPrimary className="hp-button-primary" onClick={withdrawAll}>
               Withdraw Collected
             </ButtonPrimary>
             {/* <div className="velt-rewards-bottom-button2">Withdraw Collected</div> */}

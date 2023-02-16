@@ -156,7 +156,6 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
             value: 'Claim',
             onClick: () => {
               ClaimFn(record)
-              console.log(record)
             }
           })
         }
@@ -218,7 +217,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
     if (!account) return
     setCurToken(LT[chainId ?? 1])
     onTxStart()
-    setPendingText(`Fees Withdraw`)
+    setPendingText(`claim Rewards`)
     toClaim(STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1])
       .then(hash => {
         setPendingText('')
