@@ -4,15 +4,17 @@ import { Item } from 'api/portfolio.api'
 // import { useActiveWeb3React } from 'hooks'
 import Tips from 'components/Tips'
 import CopyHelper from 'components/AccountDetails/Copy'
+import { toUsdPrice } from '../../../../../hooks/ahp/usePortfolio'
 
 import './index.scss'
 
 interface ListProps {
   withdrawItem: (index: number) => void
   tableData: any
+  hopePrice: string
 }
 
-export default function List({ withdrawItem, tableData }: ListProps) {
+export default function List({ withdrawItem, tableData, hopePrice }: ListProps) {
   const columns = [
     {
       title: 'Pool / Protocol',
@@ -51,11 +53,11 @@ export default function List({ withdrawItem, tableData }: ListProps) {
       },
       dataIndex: 'totalFees',
       key: 'totalFees',
-      render: (text: string, record: Item) => {
+      render: (text: string) => {
         return (
           <>
             <div className="veLT-rewards-item-title">{text}</div>
-            <div className="veLT-rewards-item-desc">≈ ${record.gomboc?.IpTokenDecimal}</div>
+            <div className="veLT-rewards-item-desc">≈ ${toUsdPrice(text, hopePrice) || '--'}</div>
           </>
         )
       }
@@ -64,11 +66,11 @@ export default function List({ withdrawItem, tableData }: ListProps) {
       title: 'Withdrawable(all  periods)',
       dataIndex: 'withdrawable',
       key: 'withdrawable',
-      render: (text: string, record: Item) => {
+      render: (text: string) => {
         return (
           <>
             <div className="veLT-rewards-item-title">{text}</div>
-            <div className="veLT-rewards-item-desc">≈ ${record.gomboc?.IpTokenDecimal}</div>
+            <div className="veLT-rewards-item-desc">≈ ${toUsdPrice(text, hopePrice) || '--'}</div>
           </>
         )
       }

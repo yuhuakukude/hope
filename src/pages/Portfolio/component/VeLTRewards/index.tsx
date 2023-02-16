@@ -24,7 +24,6 @@ export default function VeLTRewards() {
   const { account, chainId } = useActiveWeb3React()
   const [curWithType, setCurWithType] = useState<string>('item') // item others all
   const [hopePrice, setHopePrice] = useState('')
-  console.log(hopePrice)
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
@@ -216,10 +215,9 @@ export default function VeLTRewards() {
           const item = res.data
           const de = item.token?.derivedETH || 0
           const bu = item.bundle?.ethPrice || 0
-          const pr = new Decimal(de).sub(new Decimal(bu)).toNumber()
+          const pr = new Decimal(de).mul(new Decimal(bu)).toNumber()
           const num = pr.toFixed(6)
           if (num && Number(num) > 0) {
-            console.log(num)
             setHopePrice(num)
           }
           console.log(res)
@@ -275,9 +273,10 @@ export default function VeLTRewards() {
           totalFee={overviewData?.withdrawable}
           tableData={tableData}
           tableItem={curTableItem}
+          hopePrice={hopePrice}
         />
       ),
-    [withdrawSubmit, errorStatus, curWithType, overviewData, tableData, curTableItem]
+    [withdrawSubmit, errorStatus, curWithType, overviewData, tableData, curTableItem, hopePrice]
   )
   return (
     <>
@@ -304,8 +303,8 @@ export default function VeLTRewards() {
             <Empty />
           ) : (
             <>
-              <Detail overviewData={overviewData} withdrawAll={withdrawAllFn} />
-              <List tableData={tableData} withdrawItem={withdrawItemFn} />
+              <Detail hopePrice={hopePrice} overviewData={overviewData} withdrawAll={withdrawAllFn} />
+              <List hopePrice={hopePrice} tableData={tableData} withdrawItem={withdrawItemFn} />
             </>
           )}
         </Card>

@@ -4,6 +4,7 @@ import Tips from 'components/Tips'
 import React from 'react'
 import { formatDate, getDateForLastOccurence } from 'utils/format'
 import { ButtonPrimary } from 'components/Button'
+import { toUsdPrice } from '../../../../../hooks/ahp/usePortfolio'
 
 const diffTime = getDateForLastOccurence('Thurs')
 export const endTimestamp = (diffTime.getTime() / 1000) | 0
@@ -12,9 +13,10 @@ export const startTimestamp = ((diffTime.getTime() - 1000 * 60 * 60 * 24 * 7) / 
 interface DetailProps {
   withdrawAll: () => void
   overviewData: any
+  hopePrice: string
 }
 
-export default function Detail({ withdrawAll, overviewData }: DetailProps) {
+export default function Detail({ withdrawAll, overviewData, hopePrice }: DetailProps) {
   return (
     <>
       <div className="velt-rewards-warning">
@@ -40,8 +42,8 @@ export default function Detail({ withdrawAll, overviewData }: DetailProps) {
           </div>
           <div className="velt-rewards-item">
             <div className="velt-rewards-item-title">Belongs to me</div>
-            <div className="velt-rewards-item-amount">≈ ${overviewData.belongsToMe} stHOPE</div>
-            <div className="velt-rewards-item-date">≈ ~ $10,123,456,789.00</div>
+            <div className="velt-rewards-item-amount">≈ {overviewData.belongsToMe} stHOPE</div>
+            <div className="velt-rewards-item-date">≈ ~ ${toUsdPrice(overviewData.belongsToMe, hopePrice) || '--'}</div>
           </div>
         </div>
         <div className="velt-rewards-bottom flex ai-center">
