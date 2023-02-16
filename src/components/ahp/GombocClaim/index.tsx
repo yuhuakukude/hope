@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import './index.scss'
 import { CloseIcon } from '../../../theme/components'
 import { ButtonPrimary } from '../../../components/Button'
-
+import format from 'utils/format'
 import { Radio } from 'antd'
 import Tips from 'components/Tips'
 
@@ -30,7 +30,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
           <div className="flex jc-between">
             <span className="text-white">Total Claimable Rewards</span>
             <span className="text-white">
-              ~ {tableItem?.ltTotalReward} {tableItem?.rewardSymbol}
+              ~ {format.amountFormat(tableItem?.ltTotalReward, 2)} {tableItem?.rewardSymbol}
             </span>
           </div>
           <Radio.Group
@@ -52,9 +52,9 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
               </div>
               <div>
                 <p className="text-white text-right">
-                  {tableItem?.ltOfReward} {tableItem?.rewardSymbol}
+                  {format.amountFormat(tableItem?.ltOfReward, 2)} {tableItem?.rewardSymbol}
                 </p>
-                <p className="text-normal text-right">~ {tableItem?.usdOfReward}</p>
+                <p className="text-normal text-right">~ {format.amountFormat(tableItem?.usdOfReward, 2)}</p>
               </div>
             </div>
             <div className="m-t-30 radio-item">
@@ -69,7 +69,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
                   <Tips title={`Claimable Rewards`} />
                 </div>
                 <div>
-                  <p className="text-normal text-right">~ {tableItem?.usdOfReward}</p>
+                  <p className="text-normal text-right">~ {format.amountFormat(tableItem?.usdOfReward, 2)}</p>
                 </div>
               </div>
               {tableItem && tableItem.extRewardList && tableItem.extRewardList.length > 0 && (
@@ -82,8 +82,8 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
                           <div className="currency text-white text-medium m-l-12">{data.symbol}</div>
                         </div>
                         <div>
-                          <p className="text-white text-right">{data.amount} LT</p>
-                          <p className="text-white text-right">~$ --</p>
+                          <p className="text-white text-right">{format.amountFormat(data.amount, 2)} LT</p>
+                          {/* <p className="text-white text-right">~$ --</p> */}
                         </div>
                       </div>
                     )

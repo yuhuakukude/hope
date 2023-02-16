@@ -5,10 +5,12 @@ import Empty from './Empty'
 import List from './List'
 import TitleTips from '../TitleTips'
 import moment from 'moment'
+import { Decimal } from 'decimal.js'
 import PortfolioApi, { DetailInfo } from 'api/portfolio.api'
 import FeesWithdraw from '../../../../components/ahp/FeesWithdraw'
 import { Token } from '@uniswap/sdk'
-import { ST_HOPE } from '../../../../constants'
+import { ST_HOPE, SUBGRAPH, STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
+import { postQuery } from '../../../../utils/graph'
 import { useActiveWeb3React } from '../../../../hooks'
 // import { endTimestamp, startTimestamp } from './Detail'
 import { getDateForLastOccurence } from 'utils/format'
@@ -21,6 +23,7 @@ import './index.scss'
 export default function VeLTRewards() {
   const { account, chainId } = useActiveWeb3React()
   const [curWithType, setCurWithType] = useState<string>('item') // item others all
+  const [hopePrice, setHopePrice] = useState('')
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
@@ -185,12 +188,55 @@ export default function VeLTRewards() {
     }
   }, [account, startTimestamp, endTimestamp])
 
+  const initPrice = useCallback(async () => {
+    try {
+      // const address = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLowerCase()
+      const addQuery = `{  
+        tokens(where: {symbol: "stHOPE"}) {    
+          symbol   
+          id 
+        } 
+      }`
+      const address = await postQuery(SUBGRAPH, addQuery)
+      if (address && address.data.tokens[0] && address.data.tokens[0].id) {
+        const add = address.data.tokens[0].id
+        const query = `{  
+          token(id: "${add}") {    
+            symbol   
+            derivedETH  
+          }  
+          bundle(id: 1) {    
+            ethPrice  
+          }
+        }`
+
+        const res = await postQuery(SUBGRAPH, query)
+        if (res && res.data) {
+          const item = res.data
+          const de = item.token?.derivedETH || 0
+          const bu = item.bundle?.ethPrice || 0
+          const pr = new Decimal(de).mul(new Decimal(bu)).toNumber()
+          const num = pr.toFixed(6)
+          if (num && Number(num) > 0) {
+            setHopePrice(num)
+          }
+          console.log(res)
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [])
+
   useEffect(() => {
     if (account) {
       initTable()
       initOverview()
+      if (STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]) {
+        initPrice()
+      }
     }
-  }, [account, initTable, initOverview])
+  }, [account, chainId, initTable, initOverview, initPrice])
 
   const withdrawSubmit = useCallback(
     (type: string) => {
@@ -227,9 +273,10 @@ export default function VeLTRewards() {
           totalFee={overviewData?.withdrawable}
           tableData={tableData}
           tableItem={curTableItem}
+          hopePrice={hopePrice}
         />
       ),
-    [withdrawSubmit, errorStatus, curWithType, overviewData, tableData, curTableItem]
+    [withdrawSubmit, errorStatus, curWithType, overviewData, tableData, curTableItem, hopePrice]
   )
   return (
     <>
@@ -256,8 +303,8 @@ export default function VeLTRewards() {
             <Empty />
           ) : (
             <>
-              <Detail overviewData={overviewData} withdrawAll={withdrawAllFn} />
-              <List tableData={tableData} withdrawItem={withdrawItemFn} />
+              <Detail hopePrice={hopePrice} overviewData={overviewData} withdrawAll={withdrawAllFn} />
+              <List hopePrice={hopePrice} tableData={tableData} withdrawItem={withdrawItemFn} />
             </>
           )}
         </Card>

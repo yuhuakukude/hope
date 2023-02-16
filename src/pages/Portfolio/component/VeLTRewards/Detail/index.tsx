@@ -2,8 +2,9 @@
 import Tips from 'components/Tips'
 // import { useActiveWeb3React } from 'hooks'
 import React from 'react'
-import { formatDate, getDateForLastOccurence } from 'utils/format'
+import { formatDate, getDateForLastOccurence, amountFormat } from 'utils/format'
 import { ButtonPrimary } from 'components/Button'
+import { toUsdPrice } from '../../../../../hooks/ahp/usePortfolio'
 
 const diffTime = getDateForLastOccurence('Thurs')
 export const endTimestamp = (diffTime.getTime() / 1000) | 0
@@ -12,9 +13,10 @@ export const startTimestamp = ((diffTime.getTime() - 1000 * 60 * 60 * 24 * 7) / 
 interface DetailProps {
   withdrawAll: () => void
   overviewData: any
+  hopePrice: string
 }
 
-export default function Detail({ withdrawAll, overviewData }: DetailProps) {
+export default function Detail({ withdrawAll, overviewData, hopePrice }: DetailProps) {
   return (
     <>
       <div className="velt-rewards-warning">
@@ -36,12 +38,12 @@ export default function Detail({ withdrawAll, overviewData }: DetailProps) {
           </div>
           <div className="velt-rewards-item">
             <div className="velt-rewards-item-title">Belongs to veLT</div>
-            <div className="velt-rewards-item-amount">≈ {overviewData.belongsToVeLT} stHOPE</div>
+            <div className="velt-rewards-item-amount">≈ {amountFormat(overviewData.belongsToVeLT, 2)} stHOPE</div>
           </div>
           <div className="velt-rewards-item">
             <div className="velt-rewards-item-title">Belongs to me</div>
-            <div className="velt-rewards-item-amount">≈ ${overviewData.belongsToMe} stHOPE</div>
-            <div className="velt-rewards-item-date">≈ ~ $10,123,456,789.00</div>
+            <div className="velt-rewards-item-amount">≈ {amountFormat(overviewData.belongsToMe, 2)} stHOPE</div>
+            <div className="velt-rewards-item-date">≈ ~ ${toUsdPrice(overviewData.belongsToMe, hopePrice) || '--'}</div>
           </div>
         </div>
         <div className="velt-rewards-bottom flex ai-center">
@@ -50,7 +52,7 @@ export default function Detail({ withdrawAll, overviewData }: DetailProps) {
             <span className="velt-rewards-bottom-question">
               <Tips title="test" />
             </span>
-            <span className="velt-rewards-bottom-amount">: 10,123,456,789.00 stHOPE</span>
+            <span className="velt-rewards-bottom-amount">: {amountFormat(overviewData.withdrawable, 2)} stHOPE</span>
           </div>
           <div className="velt-rewards-bottom-right flex jc-end">
             <ButtonPrimary className="hp-button-primary" onClick={withdrawAll}>
