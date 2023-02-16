@@ -14,7 +14,7 @@ import PieCharts from '../../components/pool/PieCharts'
 import LineCharts from '../../components/pool/LineCharts'
 import styled from 'styled-components'
 import { Box } from 'rebass/styled-components'
-import Overview from '../../components/pool/Overview'
+import Overview, { OverviewData } from '../../components/pool/Overview'
 import { useLtMinterContract, useStakingContract } from '../../hooks/useContract'
 import { useSingleCallResult } from '../../state/multicall/hooks'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
@@ -60,6 +60,33 @@ export default function StakingPoolDetail({
 
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
+
+  const viewData: OverviewData[] = [
+    {
+      title: 'Pool Overview',
+      isRise: !!pool && pool.tvlChangeUSD > 0,
+      rate: pool ? `${pool.tvlChangeUSD.toFixed(2)} %` : `--`,
+      amount: pool ? `$${Number(pool.tvl).toFixed(2)}` : `--`
+    },
+    {
+      title: 'Volume(24H)',
+      isRise: !!pool && pool.volumeChangeUSD > 0,
+      rate: pool ? `${pool.volumeChangeUSD.toFixed(2)}` : `--`,
+      amount: pool ? `$${pool.oneDayVolumeUSD.toFixed(2)}` : `--`
+    },
+    {
+      title: 'Fees(24H)',
+      isRise: !!pool && pool.volumeChangeUSD > 0,
+      rate: pool ? `${pool.volumeChangeUSD.toFixed(2)}` : `--`,
+      amount: pool ? `$${pool.dayFees.toFixed(2)}` : `--`
+    },
+    {
+      title: 'Fess(7d)',
+      isRise: !!pool && pool.weeklyVolumeChange > 0,
+      rate: pool ? `${pool.weeklyVolumeChange.toFixed(2)}` : `--`,
+      amount: pool ? `$${pool.weekFees.toFixed(2)}` : `--`
+    }
+  ]
 
   const onTxStart = useCallback(() => {
     setShowConfirm(true)
@@ -259,7 +286,7 @@ export default function StakingPoolDetail({
               </Row>
             )}
           </LightCard>
-          <Overview viewData={[]} smallSize={true}></Overview>
+          <Overview viewData={viewData} smallSize={true}></Overview>
           <LightCard style={{ marginTop: '20px' }} padding={'30px 40px'}>
             <div style={{ height: '435px' }}>
               <LineCharts address={address}></LineCharts>
