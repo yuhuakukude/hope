@@ -9,6 +9,7 @@ import { NavLink } from 'react-router-dom'
 import { useLocker } from 'hooks/ahp/useLocker'
 import format from 'utils/format'
 import moment from 'moment'
+import { DetailInfo } from 'api/portfolio.api'
 
 const diffTime = getDateForLastOccurence('Thurs')
 export const endTimestamp = (diffTime.getTime() / 1000) | 0
@@ -16,7 +17,7 @@ export const startTimestamp = ((diffTime.getTime() - 1000 * 60 * 60 * 24 * 7) / 
 
 interface DetailProps {
   withdrawAll: () => void
-  overviewData: any
+  overviewData: DetailInfo
   hopePrice: string
   platformFees: string
 }
@@ -74,7 +75,7 @@ export default function Detail({ withdrawAll, overviewData, hopePrice, platformF
           <div className="velt-rewards-bottom-right flex jc-end">
             <ButtonOutlined
               disabled={
-                !overviewData.withdrawable || (overviewData.withdrawable && Number(overviewData.withdrawable) <= 0)
+                !overviewData.withdrawable || (!!overviewData.withdrawable && Number(overviewData.withdrawable) <= 0)
               }
               className="velt-rewards-bottom-button2"
               onClick={withdrawAll}

@@ -59,4 +59,18 @@
     background: rgb(61, 62, 70);
 
   }
+
+  .ant-table-placeholder {
+    background-color: rgba(38, 38, 44, 1);
+    color: rgba(168, 168, 170, 1);
+    font-size: 14px;
+    height: 64px;
+    padding: 0;
+    border: none;
+    line-height: 64px;
+
+    .ant-empty {
+      display: none;
+    }
+  }
 }
