@@ -12,7 +12,7 @@ import { useDispatch } from 'react-redux'
 import { AppDispatch } from 'state'
 import { resetMintState } from 'state/mint/actions'
 
-const Tabs = styled.div`
+export const Tabs = styled.div`
   width: 100%;
   ${({ theme }) => theme.flexRowNoWrap}
   align-items: center;

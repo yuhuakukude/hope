@@ -854,7 +854,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       volumeChangeUSD: Number(volumeChangeUSD),
       oneWeekVolume: Number(oneWeekVolume),
       weeklyVolumeChange: Number(weeklyVolumeChange),
-      totalVolume: Number(pair.totalVolumeUSD),
+      totalVolume: Number(pair.volumeUSD),
       dayFees: oneDayVolumeUSD * 0.003,
       weekFees: oneWeekVolume * 0.003,
       stakingRewardAddress: gombocAddress.result,

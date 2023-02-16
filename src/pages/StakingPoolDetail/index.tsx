@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link, RouteComponentProps } from 'react-router-dom'
-import { usePairTxs, useStakingPairPool } from '../../hooks/useLPStaking'
+import { useStakingPairPool } from '../../hooks/useLPStaking'
 import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
 import { AutoColumn } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import { TYPE } from '../../theme'
-import { LightCard } from '../../components/Card'
+import { GreyCard, LightCard } from '../../components/Card'
 import { LT } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { ButtonGray, ButtonPrimary } from '../../components/Button'
@@ -19,7 +19,7 @@ import { useLtMinterContract, useStakingContract } from '../../hooks/useContract
 import { useSingleCallResult } from '../../state/multicall/hooks'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
-import { calculateGasMargin } from '../../utils'
+import { calculateGasMargin, shortenAddress } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
@@ -28,6 +28,30 @@ import { Decimal } from 'decimal.js'
 import AprApi from '../../api/apr.api'
 import format from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
+import { darken } from 'polished'
+
+const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
+  flex: ${({ flex }) => flex ?? '1'};
+  align-items: flex-start;
+`
+
+const StyledTabTitle = styled(TYPE.link)<{ active?: boolean }>`
+  ${({ theme }) => theme.flexRowNoWrap}
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  border-radius: 3rem;
+  outline: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: ${({ theme, active }) => (active ? theme.primary1 : theme.text3)};
+  font-size: 20px;
+
+  :hover,
+  :focus {
+    color: ${({ theme }) => darken(0.1, theme.text1)};
+  }
+`
 
 const Circular = styled(Box)<{
   color?: string
@@ -58,7 +82,7 @@ export default function StakingPoolDetail({
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
-  usePairTxs(address)
+  //const txs = usePairTxs(address)
 
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
@@ -351,6 +375,54 @@ export default function StakingPoolDetail({
             )}
           </LightCard>
         </AutoColumn>
+      </AutoRow>
+      <AutoRow>
+        <LightCard>
+          <AutoColumn>
+            <AutoRow gap={'20px'}>
+              <StyledTabTitle active>Infomation</StyledTabTitle>
+              <StyledTabTitle>Transaction</StyledTabTitle>
+            </AutoRow>
+            <>
+            <GreyCard>
+              <AutoRow>
+                <TableTitle>Contract Address</TableTitle>
+                <TableTitle>Creation Time(UTC)</TableTitle>
+                <TableTitle flex={0.8}>Creator</TableTitle>
+                <TableTitle flex={0.8}>Fee Rate</TableTitle>
+                <TableTitle flex={1.5}>Total Swap Volume</TableTitle>
+                <TableTitle>Total Swap Fee</TableTitle>
+                <TableTitle>Total Number of Trad</TableTitle>
+              </AutoRow>
+            </GreyCard>
+            </>
+            <LightCard>
+              <AutoRow>
+                <TableTitle>{shortenAddress(address)}</TableTitle>
+                <TableTitle>2022/01/21 15:02:39</TableTitle>
+                <TableTitle flex={0.8}>{shortenAddress(address)}</TableTitle>
+                <TableTitle flex={0.8}>0.30%</TableTitle>
+                <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
+                  <TableTitle>{pool ? `$${pool.totalVolume.toFixed(2)}` : '--'}</TableTitle>
+                  <AutoRow gap={'5px'}>
+                    <CurrencyLogo currency={pool?.tokens[0]} />
+                    <TYPE.main>
+                      {pool?.volume0Amount ? `${pool.volume0Amount.toFixed(2)} ${pool?.tokens[0].symbol}` : '--'}
+                    </TYPE.main>
+                  </AutoRow>
+                  <AutoRow gap={'5px'}>
+                    <CurrencyLogo currency={pool?.tokens[0]} />
+                    <TYPE.main>
+                      {pool?.volume0Amount ? `${pool.volume0Amount.toFixed(2)} ${pool?.tokens[0].symbol}` : '--'}
+                    </TYPE.main>
+                  </AutoRow>
+                </AutoColumn>
+                <TableTitle>{pool ? (pool.totalVolume * 0.003).toFixed() : '--'}</TableTitle>
+                <TableTitle>0</TableTitle>
+              </AutoRow>
+            </LightCard>
+          </AutoColumn>
+        </LightCard>
       </AutoRow>
     </AutoColumn>
   )
