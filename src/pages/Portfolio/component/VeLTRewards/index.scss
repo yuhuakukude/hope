@@ -90,18 +90,23 @@
       .velt-rewards-bottom-right {
         display: flex;
         align-items: center;
-        .velt-rewards-bottom-button,
         .velt-rewards-bottom-button2 {
           border-radius: 10px;
-          border: 1px solid rgba(228, 201, 137, 1);
-          padding: 13px 44px;
+          border: 1px solid #fff;
+          padding: 13px 20px;
           cursor: pointer;
-        }
-        button {
           width: 200px;
-        }
-        .velt-rewards-bottom-button2 {
-          border-color: #fff;
+          &:disabled {
+            cursor:not-allowed;
+            &:hover {
+              border: 1px solid #fff;
+              color: #fff;
+            }
+          }
+          &:hover {
+            color: rgba(228, 201, 137, 1);
+            border-color: rgba(228, 201, 137, 1);
+          }
         }
 
         .velt-rewards-bottom-hover {

@@ -9,7 +9,7 @@ import { Decimal } from 'decimal.js'
 import PortfolioApi, { DetailInfo } from 'api/portfolio.api'
 import FeesWithdraw from '../../../../components/ahp/FeesWithdraw'
 import { Token } from '@uniswap/sdk'
-import { ST_HOPE, SUBGRAPH, STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
+import { ST_HOPE, SUBGRAPH } from '../../../../constants'
 import { postQuery } from '../../../../utils/graph'
 import { useActiveWeb3React } from '../../../../hooks'
 // import { endTimestamp, startTimestamp } from './Detail'
@@ -24,6 +24,7 @@ export default function VeLTRewards() {
   const { account, chainId } = useActiveWeb3React()
   const [curWithType, setCurWithType] = useState<string>('item') // item others all
   const [hopePrice, setHopePrice] = useState('')
+  const [platformFees, setPlatformFees] = useState('')
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
@@ -220,7 +221,6 @@ export default function VeLTRewards() {
           if (num && Number(num) > 0) {
             setHopePrice(num)
           }
-          console.log(res)
         }
       }
     } catch (error) {
@@ -228,15 +228,47 @@ export default function VeLTRewards() {
     }
   }, [])
 
+  const initPlatform = useCallback(async () => {
+    try {
+      if (endTimestamp && startTimestamp) {
+        const query = `{
+          lightswapDayDatas(where:{date_gte: ${startTimestamp}, date_lte: ${endTimestamp}}) {
+            id
+            date
+            dailyVolumeUSD
+            dailyVolumeETH
+          }
+        }`
+        const res = await postQuery(SUBGRAPH, query)
+        if (res && res.data && res.data.lightswapDayDatas) {
+          const arr = res.data.lightswapDayDatas
+          if (arr && arr.length > 0) {
+            let sub = 0
+            arr.forEach((e: any) => {
+              if (e.dailyVolumeUSD) {
+                sub = new Decimal(sub).add(new Decimal(e.dailyVolumeUSD)).toNumber()
+              }
+            })
+            const num = sub.toFixed(2)
+            if (num) {
+              setPlatformFees(num)
+            }
+          }
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [startTimestamp, endTimestamp])
+
   useEffect(() => {
     if (account) {
       initTable()
       initOverview()
-      if (STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]) {
-        initPrice()
-      }
+      initPrice()
+      initPlatform()
     }
-  }, [account, chainId, initTable, initOverview, initPrice])
+  }, [account, chainId, initTable, initOverview, initPrice, initPlatform])
 
   const withdrawSubmit = useCallback(
     (type: string) => {
@@ -303,7 +335,12 @@ export default function VeLTRewards() {
             <Empty />
           ) : (
             <>
-              <Detail hopePrice={hopePrice} overviewData={overviewData} withdrawAll={withdrawAllFn} />
+              <Detail
+                platformFees={platformFees}
+                hopePrice={hopePrice}
+                overviewData={overviewData}
+                withdrawAll={withdrawAllFn}
+              />
               <List hopePrice={hopePrice} tableData={tableData} withdrawItem={withdrawItemFn} />
             </>
           )}

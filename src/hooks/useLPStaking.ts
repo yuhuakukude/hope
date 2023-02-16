@@ -7,7 +7,8 @@ import {
   fetchPairsListLength,
   fetchPairPool,
   fetchGlobalData,
-  GraphPairInfo
+  GraphPairInfo,
+  PairDetail
 } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
 // import AprApi from '../api/apr.api'
@@ -93,7 +94,7 @@ export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc',
 
 export function useStakingPairPool(address: string) {
   const { account } = useActiveWeb3React()
-  const [result, setResult] = useState<PoolInfo | undefined>(undefined)
+  const [result, setResult] = useState<PairDetail | undefined>(undefined)
 
   const [loading, setLoading] = useState<boolean>(false)
   // const [total, setTotal] = useState<number>(0)

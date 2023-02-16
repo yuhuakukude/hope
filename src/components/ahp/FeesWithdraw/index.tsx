@@ -29,7 +29,6 @@ const GombocClaim = ({
 }: GombocClaimProps) => {
   const [curClaimType, setCurClaimType] = useState('')
   const [otherAmount, setOtherAmount] = useState('')
-  console.log(curWithType, totalFee, tableData, tableItem)
   function changeRadio(item: any) {
     setCurClaimType(item)
   }

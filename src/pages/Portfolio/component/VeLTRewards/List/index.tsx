@@ -86,7 +86,6 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
               <span
                 className="veLT-rewards-item-button"
                 onClick={() => {
-                  console.log(text, record)
                   withdrawItem(index)
                 }}
               >
