@@ -73,7 +73,9 @@ export default function Detail({ withdrawAll, overviewData, hopePrice, platformF
           </div>
           <div className="velt-rewards-bottom-right flex jc-end">
             <ButtonOutlined
-              // disabled={!overviewData.withdrawable}
+              disabled={
+                !overviewData.withdrawable || (overviewData.withdrawable && Number(overviewData.withdrawable) <= 0)
+              }
               className="velt-rewards-bottom-button2"
               onClick={withdrawAll}
             >

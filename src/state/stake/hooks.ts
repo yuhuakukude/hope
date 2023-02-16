@@ -930,3 +930,138 @@ export async function fetchGlobalData() {
     return undefined
   }
 }
+
+function QUERY_TXS_QUERY() {
+  return `
+  query ($allPairs: [Bytes]!) {
+    mints(first: 20, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
+      transaction {
+        id
+        timestamp
+      }
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      to
+      liquidity
+      amount0
+      amount1
+      amountUSD
+    }
+    burns(first: 20, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
+      transaction {
+        id
+        timestamp
+      }
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      sender
+      liquidity
+      amount0
+      amount1
+      amountUSD
+    }
+    swaps(first: 30, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
+      transaction {
+        id
+        timestamp
+      }
+      id
+      pair {
+        token0 {
+          id
+          symbol
+        }
+        token1 {
+          id
+          symbol
+        }
+      }
+      amount0In
+      amount0Out
+      amount1In
+      amount1Out
+      amountUSD
+      to
+    }
+  }
+`
+}
+
+export interface TX {
+  mints: {
+    transaction: { id: string; timestamp: string }
+    pair: {
+      token0: {
+        id: string
+        symbol: string
+      }
+      token1: {
+        id: string
+        symbol: string
+      }
+    }
+    sender: string
+    amount0: string
+    amount1: string
+  }[]
+  burns: {
+    transaction: { id: string; timestamp: string }
+    pair: {
+      token0: {
+        id: string
+        symbol: string
+      }
+      token1: {
+        id: string
+        symbol: string
+      }
+    }
+    sender: string
+    amount0: string
+    amount1: string
+  }[]
+  swaps: {
+    transaction: { id: string; timestamp: string }
+    pair: {
+      token0: {
+        id: string
+        symbol: string
+      }
+      token1: {
+        id: string
+        symbol: string
+      }
+    }
+    sender: string
+    amount0In: string
+    amount0Out: string
+    amount1In: string
+    amount1Out: string
+  }[]
+}
+
+export async function fetchPairTxs(pairAddress: string): Promise<TX[]> {
+  try {
+    const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(), { allPairs: [pairAddress] })
+    console.log('response', response)
+    return []
+  } catch (error) {
+    return []
+  }
+}

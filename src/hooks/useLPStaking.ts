@@ -7,7 +7,9 @@ import {
   fetchPairPool,
   fetchGlobalData,
   GraphPairInfo,
-  PairDetail
+  PairDetail,
+  fetchPairTxs,
+  TX
 } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
 import AprApi from '../api/apr.api'
@@ -189,6 +191,33 @@ export function useOverviewData() {
       }
     })()
   }, [])
+
+  return {
+    loading: loading,
+    result
+  }
+}
+
+export function usePairTxs(pairAddress: string) {
+  const [result, setResult] = useState<TX[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
+  // const [total, setTotal] = useState<number>(0)
+
+  useEffect(() => {
+    ;(async () => {
+      setLoading(true)
+      try {
+        const data = await fetchPairTxs(pairAddress)
+        console.log('useOverviewData--', data)
+        setLoading(false)
+        setResult(data)
+      } catch (error) {
+        setResult([])
+        setLoading(false)
+        console.error('useOverviewData', error)
+      }
+    })()
+  }, [pairAddress])
 
   return {
     loading: loading,

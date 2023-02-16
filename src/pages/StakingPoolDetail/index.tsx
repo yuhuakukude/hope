@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { Link, RouteComponentProps } from 'react-router-dom'
-import { useStakingPairPool } from '../../hooks/useLPStaking'
+import { usePairTxs, useStakingPairPool } from '../../hooks/useLPStaking'
 import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
 import { AutoColumn } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
@@ -103,6 +103,8 @@ export default function StakingPoolDetail({
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
+
+  usePairTxs(address)
 
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
@@ -339,7 +341,7 @@ export default function StakingPoolDetail({
   }, [initFn])
 
   return (
-    <>
+    <AutoColumn>
       {pool && (
         <ClaimRewardModal
           isOpen={showClaimModal}
@@ -478,7 +480,7 @@ export default function StakingPoolDetail({
                 <RowFixed gap={'10px'}>
                   <TYPE.main>{earnedAmount ? earnedAmount.toFixed(2) : '--'}</TYPE.main>
                   {earnedAmount && earnedAmount.greaterThan(JSBI.BigInt(0)) && (
-                    <TYPE.link ml={'10px'} style={{ cursor: 'pointer' }} onClick={onClaimCallback}>
+                    <TYPE.link ml={'10px'} style={{ cursor: 'pointer' }} onClick={() => setShowClaimModal(true)}>
                       claim
                     </TYPE.link>
                   )}
@@ -516,6 +518,6 @@ export default function StakingPoolDetail({
           </LightCard>
         </AutoColumn>
       </AutoRow>
-    </>
+    </AutoColumn>
   )
 }
