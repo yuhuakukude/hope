@@ -622,6 +622,8 @@ function PAIR_QUERY({ block, stakingAddress }: { block?: number[]; stakingAddres
       volumeToken0
       volumeToken1
       volumeUSD
+      token0Price
+      token1Price
       token0 {
         id
         symbol

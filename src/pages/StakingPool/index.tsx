@@ -22,7 +22,6 @@ import { useOverviewChartsData } from '../../hooks/useCharts'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
-  min-width: 1260px;
   padding: 0 30px;
 `
 

@@ -208,7 +208,6 @@ export function usePairTxs(pairAddress: string) {
       setLoading(true)
       try {
         const data = await fetchPairTxs(pairAddress)
-        console.log('useOverviewData--', data)
         setLoading(false)
         setResult(data)
       } catch (error) {
