@@ -648,6 +648,7 @@ function PAIR_LIST_QUERY(
   size: number,
   block?: number[]
 ) {
+  console.log(`page ====== ${size}=${(page - 1) * size}`)
   return `{
     pairs(${block ? `block: { number: ${block}}` : ``},first: ${size}, skip: ${(page - 1) *
     size}, orderBy: ${orderBy}, orderDirection: ${sort}, ${searchContent && `where: {id:"${searchContent}"}`}) {
@@ -747,6 +748,8 @@ export async function fetchPairsList(
       const d2Pair = d2Pairs[index]
       const w1Pair = w1Pairs[index]
       const w2Pair = w2Pairs[index]
+
+      console.warn(pair, d1Pair, d2Pair)
 
       const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(
         pair.totalLiquidityUSD,
@@ -880,6 +883,7 @@ export async function fetchGlobalData() {
       weeklyVolumeChange
     }
   } catch (error) {
+    console.warn(error)
     return undefined
   }
 }

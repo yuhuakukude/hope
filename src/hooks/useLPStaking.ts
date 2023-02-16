@@ -6,9 +6,11 @@ import {
   fetchPairsList,
   fetchPairsListLength,
   fetchPairPool,
-  fetchGlobalData, GraphPairInfo
+  fetchGlobalData,
+  GraphPairInfo
 } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
+// import AprApi from '../api/apr.api'
 
 export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
   const { account } = useActiveWeb3React()
@@ -72,6 +74,7 @@ export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc',
         const listLength = await fetchPairsListLength()
         setResultLength(listLength)
         const list = await fetchPairsList(account ?? '', searchName, sort, 'trackedReserveETH', page, pageSize)
+        // const addressList = list.map((e: GraphPairInfo) => e.address)
         setLoading(false)
         setResult(list)
       } catch (error) {
