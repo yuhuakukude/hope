@@ -6,6 +6,7 @@ import { Decimal } from 'decimal.js'
 import { Radio } from 'antd'
 import Tips from 'components/Tips'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
+import format from 'utils/format'
 
 interface GombocClaimProps {
   onSubmit: any
@@ -42,7 +43,7 @@ const GombocClaim = ({
 
   function isDis(val: any) {
     let res = false
-    if (val && Number(val) <= 0) {
+    if (!val) {
       res = true
     }
     return res
@@ -71,7 +72,7 @@ const GombocClaim = ({
           {curWithType === 'all' && totalFee && (
             <div className="flex jc-between">
               <span className="text-white">Total Claimable Fees</span>
-              <span className="text-white">~ {totalFee}</span>
+              <span className="text-white">~ {format.amountFormat(totalFee, 2)}</span>
             </div>
           )}
           <Radio.Group
@@ -93,7 +94,7 @@ const GombocClaim = ({
                   <Tips title={`Claimable Rewards`} />
                 </div>
                 <div>
-                  <p className="text-white text-right">{tableItem.withdrawable} stHOPE</p>
+                  <p className="text-white text-right">{format.amountFormat(tableItem.withdrawable, 2)} stHOPE</p>
                   <p className="text-normal text-right">~ ${toUsdPrice(tableItem.withdrawable, hopePrice) || '--'}</p>
                 </div>
               </div>
@@ -110,7 +111,7 @@ const GombocClaim = ({
                   <Tips title={`Claimable Rewards`} />
                 </div>
                 <div>
-                  <p className="text-white text-right">{tableItem.withdrawable} stHOPE</p>
+                  <p className="text-white text-right">{format.amountFormat(tableItem.withdrawable, 2)} stHOPE</p>
                   <p className="text-normal text-right">~ ${toUsdPrice(tableItem.withdrawable, hopePrice) || '--'}</p>
                 </div>
               </div>
@@ -125,7 +126,7 @@ const GombocClaim = ({
                     <Tips title={`Claimable Rewards`} />
                   </div>
                   <div>
-                    <p className="text-white text-right">{otherAmount}</p>
+                    <p className="text-white text-right">{format.amountFormat(otherAmount, 2)}</p>
                     <p className="text-normal text-right">~ ${toUsdPrice(otherAmount, hopePrice) || '--'}</p>
                   </div>
                 </div>
@@ -138,7 +139,7 @@ const GombocClaim = ({
                       <Tips title={`Claimable Rewards`} />
                     </div>
                     <div>
-                      <p className="text-normal text-right">~ {allAmount} stHOPE</p>
+                      <p className="text-normal text-right">~ {format.amountFormat(allAmount, 2)} stHOPE</p>
                     </div>
                   </div>
                   <div className="radio-box-con">
@@ -153,7 +154,9 @@ const GombocClaim = ({
                                   <div className="currency text-white text-medium">{data.gomboc.gombocName}</div>
                                 </div>
                                 <div>
-                                  <p className="text-white text-right">{data.withdrawable} stHope</p>
+                                  <p className="text-white text-right">
+                                    {format.amountFormat(data.withdrawable, 2)} stHope
+                                  </p>
                                   <p className="text-white text-right">
                                     ~$ {toUsdPrice(data.withdrawable, hopePrice) || '--'}
                                   </p>

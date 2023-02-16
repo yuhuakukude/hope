@@ -2,7 +2,7 @@ import React, { useEffect, useMemo, useRef } from 'react'
 import * as echarts from 'echarts'
 import { TitleComponentOption } from 'echarts/components'
 import { PieSeriesOption } from 'echarts/charts'
-
+import format from 'utils/format'
 import './index.scss'
 import Card from '../Card'
 import TitleTips from '../TitleTips'
@@ -18,31 +18,37 @@ export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) 
       {
         name: 'HOPE',
         value: data.hope,
+        formatValue: format.amountFormat(data.hope, 2),
         tips: 'Total amount of HOPE held'
       },
       {
         name: 'stHOPE',
         value: data.stHope,
+        formatValue: format.amountFormat(data.stHope, 2),
         tips: 'Total amount of stHOPE held'
       },
       {
         name: 'Pool',
         value: data.hopeOfPool,
+        formatValue: format.amountFormat(data.hopeOfPool, 2),
         tips: 'Total value of assets withdrawable from liquidity pools'
       },
       {
         name: 'Farming',
         value: data.hopeOfFarming,
+        formatValue: format.amountFormat(data.hopeOfFarming, 2),
         tips: 'Total value of LP Tokens staked and pending rewards'
       },
       {
         name: 'Govern',
         value: data.hopeOfGovern,
+        formatValue: format.amountFormat(data.hopeOfGovern, 2),
         tips: 'Total value of locked LT'
       },
       {
         name: 'LT',
         value: data.hopeOfLt,
+        formatValue: format.amountFormat(data.hopeOfLt, 2),
         tips: 'Total value of LT held'
       }
     ]
@@ -115,8 +121,8 @@ export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) 
                 desc="Total value of holdings, withdrawable liquidity, rewards, staked HOPE, and HOPE held"
               />
             </div>
-            <div className="investment-allocation-total2">{data.totalHope} HOPE </div>
-            <div className="investment-allocation-total3">~ ${data.usdOfTotalHope}</div>
+            <div className="investment-allocation-total2">{format.amountFormat(data.totalHope, 2)} HOPE </div>
+            <div className="investment-allocation-total3">~ ${format.amountFormat(data.usdOfTotalHope, 2)}</div>
           </div>
         </div>
         <div className="investment-allocation-bottom">
@@ -130,7 +136,7 @@ export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) 
                       <Tips title={item.tips} />
                     </span>
                   </div>
-                  <div className="investment-allocation-box-amount">~ {item.value} HOPE</div>
+                  <div className="investment-allocation-box-amount">~ {item.formatValue} HOPE</div>
                 </div>
               )
             })}

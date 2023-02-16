@@ -4,8 +4,8 @@ import { Item } from 'api/portfolio.api'
 // import { useActiveWeb3React } from 'hooks'
 import Tips from 'components/Tips'
 import CopyHelper from 'components/AccountDetails/Copy'
-import { toUsdPrice } from '../../../../../hooks/ahp/usePortfolio'
-
+import { toUsdPrice } from 'hooks/ahp/usePortfolio'
+import format from 'utils/format'
 import './index.scss'
 
 interface ListProps {
@@ -21,7 +21,7 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
       dataIndex: 'gombocName',
       key: 'gombocName',
       render: (text: string, record: Item) => {
-        if (0) {
+        if (!record.gomboc) {
           return (
             <div className="veLT-rewards-item-title">
               <span className="veLT-rewards-item-other">others</span>
@@ -56,7 +56,7 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
       render: (text: string) => {
         return (
           <>
-            <div className="veLT-rewards-item-title">{text}</div>
+            <div className="veLT-rewards-item-title">{format.amountFormat(text, 2)}</div>
             <div className="veLT-rewards-item-desc">≈ ${toUsdPrice(text, hopePrice) || '--'}</div>
           </>
         )
@@ -69,7 +69,7 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
       render: (text: string) => {
         return (
           <>
-            <div className="veLT-rewards-item-title">{text}</div>
+            <div className="veLT-rewards-item-title">{format.amountFormat(text, 2)}</div>
             <div className="veLT-rewards-item-desc">≈ ${toUsdPrice(text, hopePrice) || '--'}</div>
           </>
         )
@@ -81,15 +81,21 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
       key: 'Actions',
       render: (text: string, record: Item, index: number) => {
         return (
-          <span
-            className="veLT-rewards-item-button"
-            onClick={() => {
-              console.log(text, record)
-              withdrawItem(index)
-            }}
-          >
-            Withdraw
-          </span>
+          <>
+            {record.withdrawable ? (
+              <span
+                className="veLT-rewards-item-button"
+                onClick={() => {
+                  console.log(text, record)
+                  withdrawItem(index)
+                }}
+              >
+                Withdraw
+              </span>
+            ) : (
+              <span> --</span>
+            )}
+          </>
         )
       }
     }
