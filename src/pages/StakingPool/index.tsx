@@ -156,7 +156,7 @@ export default function StakingPool() {
       <TopSection>
         <RowBetween>
           <p style={{ fontSize: '28px' }}>Pool Overview</p>
-          <ButtonPrimary as={Link} to={'/add/ETH'} style={{ width: 'max-content' }}>
+          <ButtonPrimary as={Link} to={'/swap/add/ETH'} style={{ width: 'max-content' }}>
             New Position
           </ButtonPrimary>
         </RowBetween>
