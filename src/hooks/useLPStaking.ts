@@ -9,7 +9,7 @@ import {
   GraphPairInfo,
   PairDetail,
   fetchPairTxs,
-  TX
+  TxResponse
 } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
 import AprApi from '../api/apr.api'
@@ -40,8 +40,17 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
           (currentPage - 1) * pageSize,
           pageSize
         )
+        const addressList = list.map((e: PoolInfo) => e.stakingRewardAddress)
+        const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
+        if (res) {
+          setResult(
+            list.map((e: PoolInfo) => {
+              return { ...e, ...res.result[e.stakingRewardAddress] }
+            })
+          )
+        }
         setLoading(false)
-        setResult(list)
+        // setResult([])
       } catch (error) {
         setResult([])
         setLoading(false)
@@ -199,7 +208,7 @@ export function useOverviewData() {
 }
 
 export function usePairTxs(pairAddress: string) {
-  const [result, setResult] = useState<TX[]>([])
+  const [result, setResult] = useState<TxResponse[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   // const [total, setTotal] = useState<number>(0)
 
@@ -208,7 +217,6 @@ export function usePairTxs(pairAddress: string) {
       setLoading(true)
       try {
         const data = await fetchPairTxs(pairAddress)
-        console.log('useOverviewData--', data)
         setLoading(false)
         setResult(data)
       } catch (error) {

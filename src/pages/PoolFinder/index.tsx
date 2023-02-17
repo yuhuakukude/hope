@@ -150,7 +150,7 @@ export default function PoolFinder() {
                 <LightCard padding="45px 10px">
                   <AutoColumn gap="lg" justify="center">
                     <Text textAlign="center">You don’t have liquidity in this pool yet.</Text>
-                    <ButtonPrimary as={Link} to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
+                    <ButtonPrimary as={Link} to={`/swap/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
                       <Text textAlign="center">Add liquidity.</Text>
                     </ButtonPrimary>
                   </AutoColumn>
@@ -160,7 +160,7 @@ export default function PoolFinder() {
               <LightCard padding="45px 10px">
                 <AutoColumn gap="lg" justify="center">
                   <Text textAlign="center">No pool found.</Text>
-                  <ButtonPrimary as={Link} to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
+                  <ButtonPrimary as={Link} to={`/swap/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
                     Create pool.
                   </ButtonPrimary>
                 </AutoColumn>

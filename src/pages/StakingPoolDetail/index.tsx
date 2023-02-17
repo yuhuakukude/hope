@@ -5,13 +5,14 @@ import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../
 import { AutoColumn } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import { TYPE } from '../../theme'
-import { LightCard } from '../../components/Card'
+import { GreyCard, LightCard } from '../../components/Card'
 import { LT } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { ButtonGray, ButtonPrimary } from '../../components/Button'
 import BasePoolInfoCard, { CardHeader } from '../../components/pool/PoolInfoCard'
 import PieCharts from '../../components/pool/PieCharts'
 import LineCharts from '../../components/pool/LineCharts'
+import BarCharts from '../../components/pool/BarCharts'
 import styled from 'styled-components'
 import { Decimal } from 'decimal.js'
 import { Box } from 'rebass/styled-components'
@@ -20,7 +21,7 @@ import { useLtMinterContract, useStakingContract } from '../../hooks/useContract
 import { useSingleCallResult } from '../../state/multicall/hooks'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
-import { calculateGasMargin } from '../../utils'
+import { calculateGasMargin, shortenAddress } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
@@ -28,9 +29,46 @@ import { useWalletModalToggle } from '../../state/application/hooks'
 import AprApi from '../../api/apr.api'
 import format from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
+import { darken } from 'polished'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useLineDaysChartsData, useLine24HourChartsData } from '../../hooks/useCharts'
+
+const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
+  flex: ${({ flex }) => flex ?? '1'};
+  align-items: flex-start;
+`
+
+const TxItem = styled(TYPE.subHeader)<{ flex?: number }>`
+  flex: ${({ flex }) => flex ?? '1'};
+  align-items: flex-start;
+  padding: 20px 0;
+`
+
+const TxItemWrapper = styled(AutoRow)`
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.bg3};
+  }
+`
+
+const StyledTabTitle = styled(TYPE.link)<{ active?: boolean }>`
+  ${({ theme }) => theme.flexRowNoWrap}
+  align-items: center;
+  justify-content: center;
+  height: 3rem;
+  border-radius: 3rem;
+  outline: none;
+  cursor: pointer;
+  text-decoration: none;
+  color: ${({ theme, active }) => (active ? theme.primary1 : theme.text3)};
+  font-size: 20px;
+
+  :hover,
+  :focus {
+    color: ${({ theme }) => darken(0.1, theme.text1)};
+  }
+`
+
 dayjs.extend(utc)
 
 const Circular = styled(Box)<{
@@ -78,13 +116,22 @@ const TimeItem = styled.div<{ isActive?: boolean }>`
   border-radius: 16px;
   cursor: pointer;
   user-select: none;
-  margin-left: 16px;
+  margin-right: 16px;
   background-color: ${({ isActive }) => (isActive ? '#434343' : 'none')};
   &:hover {
     background-color: #434343;
   }
 `
 
+const GoBackIcon = styled(Link)`
+  text-decoration: none;
+  cursor: pointer;
+  color: #fff
+  font-weight: 500;
+  &:hover {
+    color: #fff;
+  }
+`
 export default function StakingPoolDetail({
   match: {
     params: { address }
@@ -103,8 +150,9 @@ export default function StakingPoolDetail({
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
+  const [showTx, setShowTx] = useState<boolean>(false)
 
-  usePairTxs(address)
+  const txs = usePairTxs(address)
 
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
@@ -112,10 +160,21 @@ export default function StakingPoolDetail({
   // charts
   const [tabIndex, setTabIndex] = useState('Volume')
   const [timeIndex, setTimeIndex] = useState('24H')
+  const [chartTotal, setChartTotal] = useState<string>('0')
   const [xData, setXData] = useState<string[]>()
   const [yData, setYData] = useState<string[]>()
+  const [xCurrentData, setXCurrentData] = useState<string>()
+  const [yCurrentData, setYCurrentData] = useState<string>()
   const { result: dayChartResult } = useLineDaysChartsData(address ?? '')
   const { result: hourChartResult } = useLine24HourChartsData(address ?? '')
+
+  const tabChange = (e: string) => {
+    setTabIndex(e)
+  }
+  const timeChange = (e: string) => {
+    setTimeIndex(e)
+  }
+
   const getTimeframe = (timeWindow: string) => {
     const utcEndTime = dayjs.utc()
     let utcStartTime = undefined
@@ -158,7 +217,7 @@ export default function StakingPoolDetail({
 
   const TimeList = () => {
     return (
-      <Row justify={'flex-end'}>
+      <Row justify={'flex-start'} marginTop={20}>
         {['24H', '1W', '1M'].map((item, index) => {
           return (
             <TimeItem key={index} isActive={item === timeIndex} onClick={() => timeChange(item)}>
@@ -168,12 +227,6 @@ export default function StakingPoolDetail({
         })}
       </Row>
     )
-  }
-  const tabChange = (e: string) => {
-    setTabIndex(e)
-  }
-  const timeChange = (e: string) => {
-    setTimeIndex(e)
   }
 
   useEffect(() => {
@@ -197,7 +250,7 @@ export default function StakingPoolDetail({
               .toFixed(2)
           )
         }
-        xArr.push(format.formatUTCDate(item.hourStartUnix, 'HH:mm'))
+        xArr.push(format.formatDate(item.hourStartUnix, 'HH:mm'))
       } else if (utcStartTime && item.date >= utcStartTime) {
         if (tabIndex === 'Volume') {
           yArr.push(item.dailyVolumeUSD?.toFixed(2))
@@ -213,11 +266,13 @@ export default function StakingPoolDetail({
               .toFixed(2)
           )
         }
-        xArr.push(format.formatUTCDate(item.date, 'YYYY-MM-DD'))
+        xArr.push(format.formatDate(item.date, 'YYYY-MM-DD'))
       }
     })
     setXData(xArr)
     setYData(yArr)
+    const totalVal = yArr.reduce((prev, curr) => new Decimal(prev).add(new Decimal(curr)).toNumber(), 0)
+    setChartTotal(totalVal.toFixed(2))
   }, [timeIndex, tabIndex, hourChartResult, dayChartResult])
 
   const viewData: OverviewData[] = [
@@ -328,6 +383,11 @@ export default function StakingPoolDetail({
     )
   }
 
+  const getCurrentData = (xCurrent: string, yCurrent: string) => {
+    setXCurrentData(xCurrent)
+    setYCurrentData(yCurrent)
+  }
+
   const initFn = useCallback(async () => {
     if (!address) return
     const res = await AprApi.getHopeFeeApr(address)
@@ -341,7 +401,7 @@ export default function StakingPoolDetail({
   }, [initFn])
 
   return (
-    <AutoColumn>
+    <AutoColumn style={{ width: '100%', padding: '0 30px' }}>
       {pool && (
         <ClaimRewardModal
           isOpen={showClaimModal}
@@ -359,8 +419,12 @@ export default function StakingPoolDetail({
         pendingText={pendingText}
       />
       <AutoRow justify={'space-between'} padding={'0 30px'}>
-        <TYPE.white fontSize={28} fontWeight={700}>{`${pool?.tokens[0].symbol || '-'}/${pool?.tokens[1].symbol ||
-          '-'}`}</TYPE.white>
+        <TYPE.white fontSize={28} fontWeight={700}>
+          <GoBackIcon to={'/swap/pools'}>
+            <i className="iconfont font-28 m-r-20 cursor-select">&#xe61a;</i>
+          </GoBackIcon>
+          {`${pool?.tokens[0].symbol || '-'}/${pool?.tokens[1].symbol || '-'}`}
+        </TYPE.white>
         <RowFlat>
           <ButtonPrimary
             as={Link}
@@ -379,7 +443,7 @@ export default function StakingPoolDetail({
           </ButtonPrimary>
         </RowFlat>
       </AutoRow>
-      <AutoRow padding={'30px 15px'} gap={'30px 15px'} align={''}>
+      <AutoRow style={{ margin: 0 }} padding={'30px 0px'} gap={'15px'} align={''}>
         <AutoColumn style={{ flex: 4 }}>
           <LightCard padding={'30px'}>
             <RowBetween>
@@ -449,15 +513,39 @@ export default function StakingPoolDetail({
           <LightCard style={{ marginTop: '20px' }} padding={'30px 40px'}>
             <div style={{ height: '435px' }}>
               <div className="charts-tab">
-                <TabList></TabList>
-                <Row marginTop={28} justify={'space-between'} align={'center'}>
-                  <p className="font-nor" style={{ width: '100%' }}>
-                    <span className="text-success">+227.543364 USDC</span> Past 24 Hours
-                  </p>
-                  <TimeList></TimeList>
+                <Row justify={'space-between'} align={'flex-start'}>
+                  <div>
+                    <TabList></TabList>
+                    <TimeList></TimeList>
+                  </div>
+                  {!!yCurrentData && (
+                    <div>
+                      <p className="text-success font-20 text-medium text-right">$ {yCurrentData}</p>
+                      <p className="font-nor text-right m-t-12">
+                        {xCurrentData === 'total' ? `Last ${timeIndex}` : xCurrentData}
+                      </p>
+                    </div>
+                  )}
                 </Row>
               </div>
-              <LineCharts xData={xData} yData={yData}></LineCharts>
+              {tabIndex === 'TVL' ? (
+                <LineCharts
+                  xData={xData}
+                  yData={yData}
+                  height={330}
+                  total={chartTotal}
+                  getCurrentData={getCurrentData}
+                ></LineCharts>
+              ) : (
+                <BarCharts
+                  xData={xData}
+                  yData={yData}
+                  total={chartTotal}
+                  bottom={10}
+                  height={330}
+                  getCurrentData={getCurrentData}
+                ></BarCharts>
+              )}
             </div>
           </LightCard>
         </AutoColumn>
@@ -517,6 +605,112 @@ export default function StakingPoolDetail({
             )}
           </LightCard>
         </AutoColumn>
+      </AutoRow>
+      <AutoRow padding={'0 15px'}>
+        <LightCard>
+          <AutoColumn>
+            <AutoRow gap={'20px'}>
+              <StyledTabTitle onClick={() => setShowTx(false)} active={!showTx}>
+                Infomation
+              </StyledTabTitle>
+              <StyledTabTitle
+                onClick={() => {
+                  setShowTx(true)
+                }}
+                active={showTx}
+              >
+                Transaction
+              </StyledTabTitle>
+            </AutoRow>
+            {showTx ? (
+              <>
+                <GreyCard marginTop={30}>
+                  <AutoRow>
+                    <TableTitle>All</TableTitle>
+                    <TableTitle>Total Value</TableTitle>
+                    <TableTitle>Token Amount</TableTitle>
+                    <TableTitle>Token Amount</TableTitle>
+                    <TableTitle>Account</TableTitle>
+                    <TableTitle>Time (UTC)</TableTitle>
+                  </AutoRow>
+                </GreyCard>
+
+                <LightCard padding={'0 10px 10px'}>
+                  <TxItemWrapper>
+                    {txs.result.map(tx => {
+                      return (
+                        <AutoRow key={tx.transaction.id} style={{ borderBottom: '1px solid #3D3E46' }}>
+                          <TxItem>
+                            <TYPE.link>{`${tx.pair.token0.symbol}-${tx.pair.token1.symbol}`}</TYPE.link>
+                          </TxItem>
+                          <TxItem>
+                            <TYPE.subHeader>{`$${Number(tx.amountUSD).toFixed(2)}`}</TYPE.subHeader>
+                          </TxItem>
+                          <TxItem>
+                            <TYPE.subHeader>{`${Number(tx.amount0).toFixed(2)} ${
+                              tx.pair.token0.symbol
+                            }`}</TYPE.subHeader>
+                          </TxItem>
+                          <TxItem>
+                            <TYPE.subHeader>{`${Number(tx.amount1).toFixed(2)} ${
+                              tx.pair.token1.symbol
+                            }`}</TYPE.subHeader>
+                          </TxItem>
+                          <TxItem>
+                            <TYPE.subHeader>{`${shortenAddress(tx.sender)}`}</TYPE.subHeader>
+                          </TxItem>
+                          <TxItem>
+                            <TYPE.subHeader>{`${Date.parse(tx.transaction.timestamp)}`}</TYPE.subHeader>
+                          </TxItem>
+                        </AutoRow>
+                      )
+                    })}
+                  </TxItemWrapper>
+                </LightCard>
+              </>
+            ) : (
+              <>
+                <GreyCard marginTop={30}>
+                  <AutoRow>
+                    <TableTitle>Contract Address</TableTitle>
+                    <TableTitle>Creation Time(UTC)</TableTitle>
+                    <TableTitle flex={0.8}>Creator</TableTitle>
+                    <TableTitle flex={0.8}>Fee Rate</TableTitle>
+                    <TableTitle flex={1.5}>Total Swap Volume</TableTitle>
+                    <TableTitle>Total Swap Fee</TableTitle>
+                    <TableTitle>Total Number of Trad</TableTitle>
+                  </AutoRow>
+                </GreyCard>
+
+                <LightCard>
+                  <AutoRow align={'flex-start'}>
+                    <TableTitle>{shortenAddress(address)}</TableTitle>
+                    <TableTitle>2022/01/21 15:02:39</TableTitle>
+                    <TableTitle flex={0.8}>{shortenAddress(address)}</TableTitle>
+                    <TableTitle flex={0.8}>0.30%</TableTitle>
+                    <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
+                      <TableTitle>{pool ? `$${pool.totalVolume.toFixed(2)}` : '--'}</TableTitle>
+                      <AutoRow gap={'5px'}>
+                        <CurrencyLogo currency={pool?.tokens[0]} />
+                        <TYPE.main>
+                          {pool?.volume0Amount ? `${pool.volume0Amount.toFixed(2)} ${pool?.tokens[0].symbol}` : '--'}
+                        </TYPE.main>
+                      </AutoRow>
+                      <AutoRow gap={'5px'}>
+                        <CurrencyLogo currency={pool?.tokens[0]} />
+                        <TYPE.main>
+                          {pool?.volume0Amount ? `${pool.volume0Amount.toFixed(2)} ${pool?.tokens[0].symbol}` : '--'}
+                        </TYPE.main>
+                      </AutoRow>
+                    </AutoColumn>
+                    <TableTitle>{pool ? (pool.totalVolume * 0.003).toFixed() : '--'}</TableTitle>
+                    <TableTitle>0</TableTitle>
+                  </AutoRow>
+                </LightCard>
+              </>
+            )}
+          </AutoColumn>
+        </LightCard>
       </AutoRow>
     </AutoColumn>
   )

@@ -159,7 +159,7 @@ export default function Pool() {
               <ButtonPrimary as={Link} padding="12px 16px" to="/swap/find">
                 Import
               </ButtonPrimary>
-              <ButtonPrimary id="join-pool-button" as={Link} padding="12px 16px" borderRadius="12px" to="/add/ETH">
+              <ButtonPrimary id="join-pool-button" as={Link} padding="12px 16px" borderRadius="12px" to="/swap/add/ETH">
                 New Position
               </ButtonPrimary>
             </ButtonRow>
@@ -223,16 +223,6 @@ export default function Pool() {
                   {v2PairsWithoutStakedAmount.map(v2Pair => (
                     <FullPositionCard key={v2Pair.liquidityToken.address} pair={v2Pair} />
                   ))}
-                  {stakingPairs.map(
-                    (stakingPair, i) =>
-                      stakingPair[1] && ( // skip pairs that arent loaded
-                        <FullPositionCard
-                          key={stakingInfosWithBalance[i].stakingRewardAddress}
-                          pair={stakingPair[1]}
-                          stakedBalance={stakingInfosWithBalance[i].stakedAmount}
-                        />
-                      )
-                  )}
                 </>
               ) : (
                 <EmptyProposals>

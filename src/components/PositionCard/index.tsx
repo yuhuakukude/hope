@@ -11,7 +11,6 @@ import { useTokenBalance } from '../../state/wallet/hooks'
 import { TYPE } from '../../theme'
 import { currencyId } from '../../utils/currencyId'
 import { unwrappedToken } from '../../utils/wrappedCurrency'
-import { ButtonPrimary } from '../Button'
 
 import { useColor } from '../../hooks/useColor'
 
@@ -227,7 +226,7 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
 
         {userDefaultPoolBalance && JSBI.greaterThan(userDefaultPoolBalance.raw, BIG_INT_ZERO) && (
           <ContentRow marginTop="10px">
-            <Link to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
+            <Link to={`/swap/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
               <TYPE.link>Increase</TYPE.link>
             </Link>
             <Link to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}>
@@ -238,33 +237,11 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
           </ContentRow>
         )}
         <AutoColumn gap="8px">
-          {stakedBalance && (
-            <FixedHeightRow>
-              <Text fontSize={16} fontWeight={500}>
-                Pool tokens in rewards pool:
-              </Text>
-              <Text fontSize={16} fontWeight={500}>
-                {stakedBalance.toSignificant(4)}
-              </Text>
-            </FixedHeightRow>
-          )}
-
           {/*<ButtonSecondary padding="8px" borderRadius="8px">*/}
           {/*  <ExternalLink style={{ textAlign: 'center' }} href={`https://uniswap.info/account/${account}`}>*/}
           {/*    View accrued fees and analytics<span style={{ fontSize: '11px' }}>↗</span>*/}
           {/*  </ExternalLink>*/}
           {/*</ButtonSecondary>*/}
-
-          {stakedBalance && JSBI.greaterThan(stakedBalance.raw, BIG_INT_ZERO) && (
-            <ButtonPrimary
-              padding="8px"
-              borderRadius="8px"
-              as={Link}
-              to={`/uni/${currencyId(currency0)}/${currencyId(currency1)}`}
-            >
-              Manage Liquidity in Rewards Pool
-            </ButtonPrimary>
-          )}
         </AutoColumn>
       </AutoRow>
       {/*<RowFixed gap="8px">*/}

@@ -9,6 +9,7 @@ import { NetworkConnector } from './NetworkConnector'
 import UNISWAP_LOGO_URL from '../assets/svg/logo.svg'
 
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL
+const TEST_NETWORK_URL = process.env.REACT_APP_TEST_NETWORK_URL
 const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY
 const PORTIS_ID = process.env.REACT_APP_PORTIS_ID
 const WALLETCONNECT_BRIDGE_URL = process.env.REACT_APP_WALLETCONNECT_BRIDGE_URL
@@ -34,7 +35,9 @@ export const injected = new InjectedConnector({
 
 // mainnet only
 export const walletconnect = new WalletConnectConnector({
-  rpc: { 1: NETWORK_URL },
+  rpc: {
+    11155111: TEST_NETWORK_URL ?? 'https://sepolia.infura.io/v3/092b404ef4534f8e9f3acb4e047049c9'
+  },
   bridge: WALLETCONNECT_BRIDGE_URL,
   qrcode: true,
   pollingInterval: 15000

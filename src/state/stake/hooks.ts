@@ -355,6 +355,13 @@ export interface PoolInfo {
 
   volume1Amount: TokenAmount
 
+  baseApr?: string | undefined
+  feeApr?: string | undefined
+  ltAmountPerDay?: string | undefined
+  ltApr?: string | undefined
+  maxApr?: string | undefined
+  rewardRate?: string | undefined
+
   // the amount of token currently staked, or undefined if no account
   //stakedAmount: TokenAmount
   // the amount of reward token earned by the active account, or undefined if no account
@@ -622,6 +629,8 @@ function PAIR_QUERY({ block, stakingAddress }: { block?: number[]; stakingAddres
       volumeToken0
       volumeToken1
       volumeUSD
+      token0Price
+      token1Price
       token0 {
         id
         symbol
@@ -757,17 +766,20 @@ export async function fetchPairsList(
       const d2Pair = d2Pairs[index]
       const w1Pair = w1Pairs[index]
       const w2Pair = w2Pairs[index]
-
-      const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(pair.reserveUSD, d1Pair.reserveUSD, d2Pair.reserveUSD)
+      const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(
+        pair?.reserveUSD,
+        d1Pair?.reserveUSD,
+        d2Pair?.reserveUSD
+      )
       const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-        pair.volumeUSD,
-        d1Pair.volumeUSD,
-        d2Pair.volumeUSD
+        pair?.volumeUSD,
+        d1Pair?.volumeUSD,
+        d2Pair?.volumeUSD
       )
 
       const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
         pair.totalVolumeUSD,
-        w1Pair.volumeUSD,
+        w1Pair?.volumeUSD,
         w2Pair?.volumeUSD
       )
 
@@ -790,7 +802,7 @@ export async function fetchPairsList(
     })
     return { list: curPairs, total }
   } catch (error) {
-    console.warn(`error${error}`)
+    console.error(`error${error}`)
     return { list: [], total: 0 }
   }
 }
@@ -853,7 +865,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       volumeChangeUSD: Number(volumeChangeUSD),
       oneWeekVolume: Number(oneWeekVolume),
       weeklyVolumeChange: Number(weeklyVolumeChange),
-      totalVolume: Number(pair.totalVolumeUSD),
+      totalVolume: Number(pair.volumeUSD),
       dayFees: oneDayVolumeUSD * 0.003,
       weekFees: oneWeekVolume * 0.003,
       stakingRewardAddress: gombocAddress.result,
@@ -926,7 +938,7 @@ export async function fetchGlobalData() {
       weeklyVolumeChange
     }
   } catch (error) {
-    console.warn(error)
+    console.error(error)
     return undefined
   }
 }
@@ -949,7 +961,7 @@ function QUERY_TXS_QUERY() {
           symbol
         }
       }
-      to
+      sender
       liquidity
       amount0
       amount1
@@ -992,6 +1004,7 @@ function QUERY_TXS_QUERY() {
           symbol
         }
       }
+      sender
       amount0In
       amount0Out
       amount1In
@@ -1056,11 +1069,35 @@ export interface TX {
   }[]
 }
 
-export async function fetchPairTxs(pairAddress: string): Promise<TX[]> {
+export interface TxResponse {
+  transaction: { id: string; timestamp: string }
+  pair: {
+    token0: {
+      id: string
+      symbol: string
+    }
+    token1: {
+      id: string
+      symbol: string
+    }
+  }
+  sender: string
+  amount0: number
+  amount1: number
+  amountUSD: number
+}
+
+export async function fetchPairTxs(pairAddress: string): Promise<TxResponse[]> {
   try {
     const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(), { allPairs: [pairAddress] })
-    console.log('response', response)
-    return []
+    return response.data.mints.concat(response.data.burns).concat(
+      response.data.swaps.map((swap: any) => {
+        const swapItem = swap
+        swap.amount0 = swap.amount0In === '0' ? swap.amount0Out : swap.amount0In
+        swap.amount1 = swap.amount1In === '0' ? swap.amount1Out : swap.amount1In
+        return swapItem
+      })
+    )
   } catch (error) {
     return []
   }

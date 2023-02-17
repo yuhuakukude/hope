@@ -38,7 +38,6 @@ export function useStakePosition(pool?: PoolInfo) {
     pool?.pair.liquidityToken && stakedAmount?.raw
       ? new TokenAmount(pool?.pair.liquidityToken, JSBI.BigInt(stakedAmount?.raw.toString()))
       : undefined
-  console.log('token0', pool?.pair.liquidityToken, totalPoolTokens, stakedAmount)
   const [token0Staked, token1Staked] =
     !!pool?.pair &&
     !!totalPoolTokens &&

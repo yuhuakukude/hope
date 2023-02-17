@@ -26,6 +26,7 @@ import { ethers } from 'ethers'
 import { NavLink } from 'react-router-dom'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useEstimate } from '../../hooks/ahp'
+import { useLocation } from 'react-router-dom'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -44,6 +45,7 @@ export default function Staking() {
   const { account, chainId, library } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const [curType, setStakingType] = useState('stake')
+  const { search } = useLocation()
   const [curBuzType, setCurBuzType] = useState('')
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
   const [actionType, setActionType] = useState(ACTION.STAKE)
@@ -280,7 +282,6 @@ export default function Staking() {
   }
 
   function changeAmount(val: any) {
-    console.log(val)
     setAmount(val)
   }
 
@@ -294,6 +295,12 @@ export default function Staking() {
   useEffect(() => {
     init()
   }, [init])
+
+  useEffect(() => {
+    if (search) {
+      setStakingType('unstake')
+    }
+  }, [search])
 
   const confirmationContent = useCallback(
     () =>
