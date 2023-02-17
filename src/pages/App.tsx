@@ -124,14 +124,14 @@ export default function App() {
                   <Route exact strict path="/swap/stake/:stakingRewardAddress" component={LiquidityStake} />
                   <Route exact strict path="/swap/withdraw/:stakingRewardAddress" component={LiquidityUnStake} />
                   <Route exact strict path="/swap/settings" component={SettingPage} />
+                  <Route exact path="/swap/add" component={AddLiquidity} />
+                  <Route exact path="/swap/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
+                  <Route exact path="/swap/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
                   <Route exact strict path="/claim" component={OpenClaimAddressModalAndRedirectToSwap} />
                   <Route exact strict path="/swap/exchange/:outputCurrency" component={RedirectToSwap} />
                   <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
                   <Route exact strict path="/vote" component={Vote} />
                   <Route exact strict path="/create" component={RedirectToAddLiquidity} />
-                  <Route exact path="/add" component={AddLiquidity} />
-                  <Route exact path="/swap/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
-                  <Route exact path="/swap/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
                   <Route exact path="/create" component={AddLiquidity} />
                   <Route exact path="/create/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
                   <Route exact path="/create/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />

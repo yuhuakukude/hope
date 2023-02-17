@@ -226,7 +226,7 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
 
         {userDefaultPoolBalance && JSBI.greaterThan(userDefaultPoolBalance.raw, BIG_INT_ZERO) && (
           <ContentRow marginTop="10px">
-            <Link to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
+            <Link to={`/swap/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
               <TYPE.link>Increase</TYPE.link>
             </Link>
             <Link to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}>

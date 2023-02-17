@@ -159,7 +159,7 @@ export default function Pool() {
               <ButtonPrimary as={Link} padding="12px 16px" to="/swap/find">
                 Import
               </ButtonPrimary>
-              <ButtonPrimary id="join-pool-button" as={Link} padding="12px 16px" borderRadius="12px" to="/add/ETH">
+              <ButtonPrimary id="join-pool-button" as={Link} padding="12px 16px" borderRadius="12px" to="/swap/add/ETH">
                 New Position
               </ButtonPrimary>
             </ButtonRow>
