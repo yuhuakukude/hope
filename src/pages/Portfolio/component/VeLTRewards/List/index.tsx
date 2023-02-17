@@ -100,7 +100,6 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
     }
   ]
 
-  // TODO remove test data
   return (
     <Table
       title={() => 'My List'}

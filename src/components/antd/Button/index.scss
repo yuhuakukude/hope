@@ -1,0 +1,53 @@
+.hope-button-wrap {
+  display: inline-block;
+
+  .ant-btn {
+    height: 56px;
+    border-radius: 10px;
+    font-size: 16px;
+    width: 100%;
+    border: 0;
+    padding: 0 20px;
+    color: rgba(38, 38, 44, 1);
+  }
+
+  .ant-btn-primary {
+    color: rgba(38, 38, 44, 1);
+    background-color: rgba(228, 201, 137, 1);
+  }
+
+  .ant-btn:hover,
+  .ant-btn:focus {
+    color: rgba(38, 38, 44, 1);
+  }
+
+  .ant-btn-primary:hover,
+  .ant-btn-primary:focus {
+    background-color: rgba(228, 201, 137, 1);
+    color: rgba(38, 38, 44, 1);
+  }
+
+  .ant-btn-dashed {
+    background-color: rgba(61, 62, 70, 1);
+    color: rgba(99, 99, 106, 1);
+  }
+
+  .ant-btn-dashed:hover,
+  .ant-btn-dashed:hover,
+  .ant-btn-dashed:focus {
+    background-color: rgba(61, 62, 70, 1);
+    color: rgba(99, 99, 106, 1);
+    border-color: rgba(99, 99, 106, 1);
+  }
+
+  .ant-btn:focus {
+    border-color: rgba(99, 99, 106, 1);
+  }
+
+  .ant-btn-link,
+  .ant-btn-link:hover,
+  .ant-btn-link:focus {
+    border: 1px solid rgba(228, 201, 137, 1);
+    color: rgba(228, 201, 137, 1);
+  }
+}

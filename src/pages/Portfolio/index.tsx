@@ -11,7 +11,7 @@ import { useActiveWeb3React } from 'hooks'
 import styled from 'styled-components'
 import { AutoColumn } from 'components/Column'
 import PortfolioApi, { PortfolioInfo } from 'api/portfolio.api'
-// import { data } from './mock'
+import Button from 'components/antd/Button'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
