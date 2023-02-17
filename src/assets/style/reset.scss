@@ -52,8 +52,7 @@
 
 // select
 .ant-select-dropdown {
-  background: #3D3E46;
-
+  background: #33333C;
   .ant-select-dropdown-menu {
     .ant-select-dropdown-menu-item {
       height: 40px;
@@ -62,13 +61,13 @@
     }
 
     .ant-select-dropdown-menu-item-selected {
-      background: #E4C989;
-      color: #26262C;
+      background: #3D3E46;
+      color: #fff;
     }
 
     .ant-select-dropdown-menu-item-active {
-      background: #E4C989;
-      color: #26262C;
+      background: #3D3E46;
+      color: #fff;
     }
   }
 }

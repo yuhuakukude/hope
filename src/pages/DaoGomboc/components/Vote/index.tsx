@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useMemo, useCallback } from 'react'
+import React, { useEffect, useRef, useState, useMemo, useCallback, forwardRef, useImperativeHandle } from 'react'
 import './index.scss'
 import dayjs from 'dayjs'
 import QuestionHelper from '../../../../components/QuestionHelper'
@@ -29,7 +29,7 @@ interface VoteProps {
   updateTable: () => void
 }
 
-const Vote = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps) => {
+const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, ref: any) => {
   const { account, chainId } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const gomConContract = useGomConContract()
@@ -115,6 +115,14 @@ const Vote = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps) => 
     }
     return res
   }, [account, curGomAddress])
+
+  useImperativeHandle(ref, () => ({
+    setSel: (selGom: string) => {
+      if (selList && selList.length > 0) {
+        setCurGomAddress(selGom)
+      }
+    }
+  }))
 
   const votePowerAmount = useSingleCallResult(gomConContract, 'voteUserPower', [account ?? undefined])
   const lastVoteData = useSingleCallResult(gomConContract, 'lastUserVote', lastArg)
@@ -369,5 +377,5 @@ const Vote = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps) => 
     </>
   )
 }
-
+const Vote = forwardRef(VoteF)
 export default Vote

@@ -1090,7 +1090,6 @@ export interface TxResponse {
 export async function fetchPairTxs(pairAddress: string): Promise<TxResponse[]> {
   try {
     const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(), { allPairs: [pairAddress] })
-    console.log('tx response', response)
     return response.data.mints.concat(response.data.burns).concat(
       response.data.swaps.map((swap: any) => {
         const swapItem = swap

@@ -12,6 +12,7 @@ import { ButtonGray, ButtonPrimary } from '../../components/Button'
 import BasePoolInfoCard, { CardHeader } from '../../components/pool/PoolInfoCard'
 import PieCharts from '../../components/pool/PieCharts'
 import LineCharts from '../../components/pool/LineCharts'
+import BarCharts from '../../components/pool/BarCharts'
 import styled from 'styled-components'
 import { Decimal } from 'decimal.js'
 import { Box } from 'rebass/styled-components'
@@ -41,7 +42,7 @@ const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
 const TxItem = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
   align-items: flex-start;
-  padding: 10px 0;
+  padding: 20px 0;
 `
 
 const TxItemWrapper = styled(AutoRow)`
@@ -115,13 +116,22 @@ const TimeItem = styled.div<{ isActive?: boolean }>`
   border-radius: 16px;
   cursor: pointer;
   user-select: none;
-  margin-left: 16px;
+  margin-right: 16px;
   background-color: ${({ isActive }) => (isActive ? '#434343' : 'none')};
   &:hover {
     background-color: #434343;
   }
 `
 
+const GoBackIcon = styled(Link)`
+  text-decoration: none;
+  cursor: pointer;
+  color: #fff
+  font-weight: 500;
+  &:hover {
+    color: #fff;
+  }
+`
 export default function StakingPoolDetail({
   match: {
     params: { address }
@@ -150,8 +160,11 @@ export default function StakingPoolDetail({
   // charts
   const [tabIndex, setTabIndex] = useState('Volume')
   const [timeIndex, setTimeIndex] = useState('24H')
+  const [chartTotal, setChartTotal] = useState<string>('0')
   const [xData, setXData] = useState<string[]>()
   const [yData, setYData] = useState<string[]>()
+  const [xCurrentData, setXCurrentData] = useState<string>()
+  const [yCurrentData, setYCurrentData] = useState<string>()
   const { result: dayChartResult } = useLineDaysChartsData(address ?? '')
   const { result: hourChartResult } = useLine24HourChartsData(address ?? '')
 
@@ -204,7 +217,7 @@ export default function StakingPoolDetail({
 
   const TimeList = () => {
     return (
-      <Row justify={'flex-end'}>
+      <Row justify={'flex-start'} marginTop={20}>
         {['24H', '1W', '1M'].map((item, index) => {
           return (
             <TimeItem key={index} isActive={item === timeIndex} onClick={() => timeChange(item)}>
@@ -237,7 +250,7 @@ export default function StakingPoolDetail({
               .toFixed(2)
           )
         }
-        xArr.push(format.formatUTCDate(item.hourStartUnix, 'HH:mm'))
+        xArr.push(format.formatDate(item.hourStartUnix, 'HH:mm'))
       } else if (utcStartTime && item.date >= utcStartTime) {
         if (tabIndex === 'Volume') {
           yArr.push(item.dailyVolumeUSD?.toFixed(2))
@@ -253,11 +266,13 @@ export default function StakingPoolDetail({
               .toFixed(2)
           )
         }
-        xArr.push(format.formatUTCDate(item.date, 'YYYY-MM-DD'))
+        xArr.push(format.formatDate(item.date, 'YYYY-MM-DD'))
       }
     })
     setXData(xArr)
     setYData(yArr)
+    const totalVal = yArr.reduce((prev, curr) => new Decimal(prev).add(new Decimal(curr)).toNumber(), 0)
+    setChartTotal(totalVal.toFixed(2))
   }, [timeIndex, tabIndex, hourChartResult, dayChartResult])
 
   const viewData: OverviewData[] = [
@@ -368,6 +383,11 @@ export default function StakingPoolDetail({
     )
   }
 
+  const getCurrentData = (xCurrent: string, yCurrent: string) => {
+    setXCurrentData(xCurrent)
+    setYCurrentData(yCurrent)
+  }
+
   const initFn = useCallback(async () => {
     if (!address) return
     const res = await AprApi.getHopeFeeApr(address)
@@ -400,7 +420,9 @@ export default function StakingPoolDetail({
       />
       <AutoRow justify={'space-between'} padding={'0 30px'}>
         <TYPE.white fontSize={28} fontWeight={700}>
-          <i className="iconfont font-28 m-r-20 cursor-select">&#xe61a;</i>
+          <GoBackIcon to={'/swap/pools'}>
+            <i className="iconfont font-28 m-r-20 cursor-select">&#xe61a;</i>
+          </GoBackIcon>
           {`${pool?.tokens[0].symbol || '-'}/${pool?.tokens[1].symbol || '-'}`}
         </TYPE.white>
         <RowFlat>
@@ -491,15 +513,39 @@ export default function StakingPoolDetail({
           <LightCard style={{ marginTop: '20px' }} padding={'30px 40px'}>
             <div style={{ height: '435px' }}>
               <div className="charts-tab">
-                <TabList></TabList>
-                <Row marginTop={28} justify={'space-between'} align={'center'}>
-                  <p className="font-nor" style={{ width: '100%' }}>
-                    <span className="text-success">+227.543364 USDC</span> Past 24 Hours
-                  </p>
-                  <TimeList></TimeList>
+                <Row justify={'space-between'} align={'flex-start'}>
+                  <div>
+                    <TabList></TabList>
+                    <TimeList></TimeList>
+                  </div>
+                  {!!yCurrentData && (
+                    <div>
+                      <p className="text-success font-20 text-medium text-right">$ {yCurrentData}</p>
+                      <p className="font-nor text-right m-t-12">
+                        {xCurrentData === 'total' ? `Last ${timeIndex}` : xCurrentData}
+                      </p>
+                    </div>
+                  )}
                 </Row>
               </div>
-              <LineCharts xData={xData} yData={yData}></LineCharts>
+              {tabIndex === 'TVL' ? (
+                <LineCharts
+                  xData={xData}
+                  yData={yData}
+                  height={330}
+                  total={chartTotal}
+                  getCurrentData={getCurrentData}
+                ></LineCharts>
+              ) : (
+                <BarCharts
+                  xData={xData}
+                  yData={yData}
+                  total={chartTotal}
+                  bottom={10}
+                  height={330}
+                  getCurrentData={getCurrentData}
+                ></BarCharts>
+              )}
             </div>
           </LightCard>
         </AutoColumn>
@@ -569,7 +615,6 @@ export default function StakingPoolDetail({
               </StyledTabTitle>
               <StyledTabTitle
                 onClick={() => {
-                  console.log('tttttt')
                   setShowTx(true)
                 }}
                 active={showTx}
@@ -579,7 +624,7 @@ export default function StakingPoolDetail({
             </AutoRow>
             {showTx ? (
               <>
-                <GreyCard>
+                <GreyCard marginTop={30}>
                   <AutoRow>
                     <TableTitle>All</TableTitle>
                     <TableTitle>Total Value</TableTitle>
@@ -590,11 +635,11 @@ export default function StakingPoolDetail({
                   </AutoRow>
                 </GreyCard>
 
-                <LightCard>
+                <LightCard padding={'0 10px 10px'}>
                   <TxItemWrapper>
                     {txs.result.map(tx => {
                       return (
-                        <AutoRow key={tx.transaction.id}>
+                        <AutoRow key={tx.transaction.id} style={{ borderBottom: '1px solid #3D3E46' }}>
                           <TxItem>
                             <TYPE.link>{`${tx.pair.token0.symbol}-${tx.pair.token1.symbol}`}</TYPE.link>
                           </TxItem>
@@ -625,7 +670,7 @@ export default function StakingPoolDetail({
               </>
             ) : (
               <>
-                <GreyCard>
+                <GreyCard marginTop={30}>
                   <AutoRow>
                     <TableTitle>Contract Address</TableTitle>
                     <TableTitle>Creation Time(UTC)</TableTitle>

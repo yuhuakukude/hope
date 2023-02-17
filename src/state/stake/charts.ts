@@ -83,9 +83,16 @@ export async function getPairChartDaysData(pairAddress: string): Promise<any[]> 
 
 export async function getPairChart24HourData(pairAddress: string): Promise<any[]> {
   let data: any = []
+  const endTime = dayjs.utc().unix()
+  const startTime = dayjs
+    .utc()
+    .subtract(24, 'hour')
+    .endOf('hour')
+    .unix()
+
   const getQuery = () => {
     return `{
-      pairHourDatas(orderBy: hourStartUnix, orderDirection: desc, where: {pair: "${pairAddress}"}, first: 24) {
+      pairHourDatas(orderBy: hourStartUnix, orderDirection: desc, where: {pair: "${pairAddress}", hourStartUnix_gte: ${startTime} hourStartUnix_lte: ${endTime}}) {
         hourStartUnix
         hourlyVolumeUSD
         reserveUSD
@@ -128,6 +135,35 @@ export async function getPairChartOverviewData(): Promise<any[]> {
     data.forEach((dayData: any) => {
       dayData.totalLiquidityUSD = parseFloat(dayData.totalLiquidityUSD)
       dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD)
+    })
+  } catch (e) {
+    console.log(e)
+  }
+
+  return data
+}
+
+export async function getPairChartOverviewVolData(startTime: number, endTime: number): Promise<any[]> {
+  let data: any = []
+  const getQuery = () => {
+    return `{
+      lightswapHourDatas(
+        orderBy: hourStartUnix
+       orderDirection: desc
+       where: {hourStartUnix_gte: ${startTime} hourStartUnix_lte: ${endTime}}
+      ){
+        hourStartUnix
+        hourlyVolumeUSD
+      }
+    }`
+  }
+
+  try {
+    const query = getQuery()
+    const result = await postQuery(SUBGRAPH, query)
+    data = result.data.lightswapHourDatas
+    data.forEach((dayData: any) => {
+      dayData.hourlyVolumeUSD = parseFloat(dayData.hourlyVolumeUSD)
     })
   } catch (e) {
     console.log(e)

@@ -36,7 +36,6 @@ export default function PieCharts({ data, size }: { data?: any; size?: number })
     myChart.setOption(option)
     window.addEventListener('resize', () => handleResizeChart(myChart))
     return () => {
-      window.removeEventListener('resize', () => handleResizeChart(myChart))
       myChart.dispose()
     }
   }, [data, size])

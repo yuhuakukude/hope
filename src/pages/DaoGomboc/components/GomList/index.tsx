@@ -19,7 +19,11 @@ import TransactionConfirmationModal, {
 } from '../../../../components/TransactionConfirmationModal'
 import { useActionPending } from '../../../../state/transactions/hooks'
 
-const GomListF = (props: any, ref: any) => {
+interface ListProps {
+  toSetSelGom: (gomboc: string) => void
+}
+
+const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const endDate = dayjs()
     .add(10, 'day')
     .format('YYYY-MM-DD')
@@ -140,10 +144,13 @@ const GomListF = (props: any, ref: any) => {
     setShowConfirm(true)
   }
 
-  function toVoteFn() {
+  function toVoteFn(item: any) {
     const dom = document.getElementById('votepoint')
     if (dom) {
       dom.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }
+    if (item && item.gomboc) {
+      toSetSelGom(item.gomboc)
     }
   }
 
@@ -234,7 +241,7 @@ const GomListF = (props: any, ref: any) => {
               className="text-primary font-bold"
               disabled={isTimeDis[index]}
               onClick={() => {
-                toVoteFn()
+                toVoteFn(record)
               }}
               type="link"
             >

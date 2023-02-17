@@ -39,7 +39,6 @@ export default function PieCharts({
   smallSize?: boolean
   viewData: OverviewData[]
 }) {
-  console.log(pool)
   const PoolOverview = () => {
     const OverviewBlock = ({ data }: { data: OverviewData }) => {
       return (
