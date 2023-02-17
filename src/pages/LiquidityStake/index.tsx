@@ -16,7 +16,7 @@ import TransactionConfirmationModal, {
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs, StyledMenuIcon } from '../../components/NavigationTabs'
-import Row, { AutoRow, AutoRowBetween, RowBetween, RowFlat } from '../../components/Row'
+import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
 
 import { LT, PERMIT2_ADDRESS, ROUTER_ADDRESS } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
@@ -114,6 +114,7 @@ export default function LiquidityStake({
   console.log('txType', txType)
   // stake values
   const [stakeType, setStakeType] = useState('')
+  const [showStaking, setShowStaking] = useState(true)
   const lpBalance = useTokenBalance(account ?? undefined, pool?.lpToken)
   const stakeTypeAmount = tryParseAmount(stakeType, pool?.lpToken)
   const maxStakeAmountInput = maxAmountSpend(lpBalance)
@@ -584,61 +585,83 @@ export default function LiquidityStake({
             <AutoColumn gap={'30px'}>
               <RowBetween>
                 <TYPE.white fontSize={20}>2. Stake Liquidity</TYPE.white>
-                <StyledDropDown
-                  selected={!!lpBalance?.raw && JSBI.lessThan(JSBI.BigInt(lpBalance?.raw.toString()), JSBI.BigInt('0'))}
-                />
+                <RowFixed onClick={() => setShowStaking(!showStaking)}>
+                  <StyledDropDown
+                    selected={
+                      showStaking &&
+                      !!lpBalance?.raw &&
+                      JSBI.lessThan(JSBI.BigInt(lpBalance?.raw.toString()), JSBI.BigInt('0'))
+                    }
+                  />
+                </RowFixed>
               </RowBetween>
               <GreyCard padding={'20px'} borderRadius={'10px'}>
                 Stake your liquidity tokens to receive incentive rewards on top of your pool fee rewards
               </GreyCard>
-              <CurrencyInputPanel
-                value={stakeType}
-                onUserInput={typed => setStakeType(typed)}
-                onMax={handleStakeMax}
-                showMaxButton={!atStakeMaxAmount}
-                currency={pool?.pair.liquidityToken}
-                pair={pool?.pair}
-                label={`${currencyA?.symbol}-${currencyB?.symbol} Pool Token`}
-                disableCurrencySelect={true}
-                customBalanceText={'Available to deposit: '}
-                id="stake-liquidity-token"
-              />
+              <>
+                {!!lpBalance?.raw &&
+                  JSBI.greaterThan(JSBI.BigInt(lpBalance?.raw.toString()), JSBI.BigInt('0')) &&
+                  showStaking && (
+                    <CurrencyInputPanel
+                      value={stakeType}
+                      onUserInput={typed => setStakeType(typed)}
+                      onMax={handleStakeMax}
+                      showMaxButton={!atStakeMaxAmount}
+                      currency={pool?.pair.liquidityToken}
+                      pair={pool?.pair}
+                      label={`${currencyA?.symbol}-${currencyB?.symbol} Pool Token`}
+                      disableCurrencySelect={true}
+                      customBalanceText={'Available to deposit: '}
+                      id="stake-liquidity-token"
+                    />
+                  )}
+              </>
             </AutoColumn>
-            <RowBetween>
-              <ButtonError
-                disabled={
-                  approvalLP === ApprovalState.PENDING ||
-                  approvalLP === ApprovalState.UNKNOWN ||
-                  !lpBalance ||
-                  !stakeTypeAmount ||
-                  (lpBalance &&
-                    stakeTypeAmount &&
-                    JSBI.lessThan(JSBI.BigInt(lpBalance?.raw.toString()), JSBI.BigInt(stakeTypeAmount.raw.toString())))
-                }
-                error={
-                  lpBalance &&
-                  stakeTypeAmount &&
-                  JSBI.lessThan(JSBI.BigInt(lpBalance?.raw.toString()), JSBI.BigInt(stakeTypeAmount.raw.toString()))
-                }
-                onClick={() =>
-                  approvalLP === ApprovalState.NOT_APPROVED
-                    ? approveCallback(pool?.lpToken.symbol ?? '', approveLPCallback)
-                    : stakeCallback()
-                }
-              >
-                {approvalLP === ApprovalState.PENDING ? (
-                  <Dots>Approving {currencies[Field.CURRENCY_B]?.symbol}</Dots>
-                ) : approvalLP === ApprovalState.NOT_APPROVED ? (
-                  `Approve ${pool?.lpToken.symbol}`
-                ) : lpBalance &&
-                  stakeTypeAmount &&
-                  JSBI.lessThan(JSBI.BigInt(lpBalance?.raw.toString()), JSBI.BigInt(stakeTypeAmount.raw.toString())) ? (
-                  'Insufficient LP'
-                ) : (
-                  'Deposit'
-                )}
-              </ButtonError>
-            </RowBetween>
+            {!!lpBalance?.raw &&
+              JSBI.greaterThan(JSBI.BigInt(lpBalance?.raw.toString()), JSBI.BigInt('0')) &&
+              showStaking && (
+                <RowBetween>
+                  <ButtonError
+                    disabled={
+                      approvalLP === ApprovalState.PENDING ||
+                      approvalLP === ApprovalState.UNKNOWN ||
+                      !lpBalance ||
+                      !stakeTypeAmount ||
+                      (lpBalance &&
+                        stakeTypeAmount &&
+                        JSBI.lessThan(
+                          JSBI.BigInt(lpBalance?.raw.toString()),
+                          JSBI.BigInt(stakeTypeAmount.raw.toString())
+                        ))
+                    }
+                    error={
+                      lpBalance &&
+                      stakeTypeAmount &&
+                      JSBI.lessThan(JSBI.BigInt(lpBalance?.raw.toString()), JSBI.BigInt(stakeTypeAmount.raw.toString()))
+                    }
+                    onClick={() =>
+                      approvalLP === ApprovalState.NOT_APPROVED
+                        ? approveCallback(pool?.lpToken.symbol ?? '', approveLPCallback)
+                        : stakeCallback()
+                    }
+                  >
+                    {approvalLP === ApprovalState.PENDING ? (
+                      <Dots>Approving {currencies[Field.CURRENCY_B]?.symbol}</Dots>
+                    ) : approvalLP === ApprovalState.NOT_APPROVED ? (
+                      `Approve ${pool?.lpToken.symbol}`
+                    ) : lpBalance &&
+                      stakeTypeAmount &&
+                      JSBI.lessThan(
+                        JSBI.BigInt(lpBalance?.raw.toString()),
+                        JSBI.BigInt(stakeTypeAmount.raw.toString())
+                      ) ? (
+                      'Insufficient LP'
+                    ) : (
+                      'Deposit'
+                    )}
+                  </ButtonError>
+                </RowBetween>
+              )}
           </AutoColumn>
         </LightCard>
         <LightCard flex={3}>

@@ -858,7 +858,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       volumeChangeUSD: Number(volumeChangeUSD),
       oneWeekVolume: Number(oneWeekVolume),
       weeklyVolumeChange: Number(weeklyVolumeChange),
-      totalVolume: Number(pair.totalVolumeUSD),
+      totalVolume: Number(pair.volumeUSD),
       dayFees: oneDayVolumeUSD * 0.003,
       weekFees: oneWeekVolume * 0.003,
       stakingRewardAddress: gombocAddress.result,
@@ -954,7 +954,7 @@ function QUERY_TXS_QUERY() {
           symbol
         }
       }
-      to
+      sender
       liquidity
       amount0
       amount1
@@ -997,6 +997,7 @@ function QUERY_TXS_QUERY() {
           symbol
         }
       }
+      sender
       amount0In
       amount0Out
       amount1In
@@ -1061,11 +1062,36 @@ export interface TX {
   }[]
 }
 
-export async function fetchPairTxs(pairAddress: string): Promise<TX[]> {
+export interface TxResponse {
+  transaction: { id: string; timestamp: string }
+  pair: {
+    token0: {
+      id: string
+      symbol: string
+    }
+    token1: {
+      id: string
+      symbol: string
+    }
+  }
+  sender: string
+  amount0: number
+  amount1: number
+  amountUSD: number
+}
+
+export async function fetchPairTxs(pairAddress: string): Promise<TxResponse[]> {
   try {
     const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(), { allPairs: [pairAddress] })
-    console.log('response', response)
-    return []
+    console.log('tx response', response)
+    return response.data.mints.concat(response.data.burns).concat(
+      response.data.swaps.map((swap: any) => {
+        const swapItem = swap
+        swap.amount0 = swap.amount0In === '0' ? swap.amount0Out : swap.amount0In
+        swap.amount1 = swap.amount1In === '0' ? swap.amount1Out : swap.amount1In
+        return swapItem
+      })
+    )
   } catch (error) {
     return []
   }

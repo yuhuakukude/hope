@@ -9,7 +9,7 @@ import {
   GraphPairInfo,
   PairDetail,
   fetchPairTxs,
-  TX
+  TxResponse
 } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
 import AprApi from '../api/apr.api'
@@ -199,7 +199,7 @@ export function useOverviewData() {
 }
 
 export function usePairTxs(pairAddress: string) {
-  const [result, setResult] = useState<TX[]>([])
+  const [result, setResult] = useState<TxResponse[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   // const [total, setTotal] = useState<number>(0)
 
