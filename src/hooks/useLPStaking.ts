@@ -40,8 +40,17 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
           (currentPage - 1) * pageSize,
           pageSize
         )
+        const addressList = list.map((e: PoolInfo) => e.stakingRewardAddress)
+        const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
+        if (res) {
+          setResult(
+            list.map((e: PoolInfo) => {
+              return { ...e, ...res.result[e.stakingRewardAddress] }
+            })
+          )
+        }
         setLoading(false)
-        setResult(list)
+        // setResult([])
       } catch (error) {
         setResult([])
         setLoading(false)

@@ -14,6 +14,7 @@ import { useSingleCallResult } from '../../state/multicall/hooks'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 import { LT } from '../../constants'
 import { useStakingContract } from '../../hooks/useContract'
+import format from 'utils/format'
 
 const Wrapper = styled(RowFixed)`
   background-color: ${({ theme }) => theme.bg1};
@@ -54,7 +55,7 @@ export default function LTPoolCard({
           <RowBetween>
             <AutoColumn gap={'md'}>
               <TYPE.green fontWeight={700} fontSize={28}>
-                6.25%
+                {format.rate(`${pool.baseApr}`)}
               </TYPE.green>
               <TYPE.main>BASE APR</TYPE.main>
             </AutoColumn>
@@ -63,7 +64,7 @@ export default function LTPoolCard({
             </AutoColumn>
             <AutoColumn gap={'md'}>
               <TYPE.green fontWeight={700} fontSize={28}>
-                6.25%
+                {format.rate(`${pool.maxApr}`)}
               </TYPE.green>
               <TYPE.main>Max Possible</TYPE.main>
             </AutoColumn>
