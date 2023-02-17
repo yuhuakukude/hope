@@ -355,6 +355,13 @@ export interface PoolInfo {
 
   volume1Amount: TokenAmount
 
+  baseApr?: string | undefined
+  feeApr?: string | undefined
+  ltAmountPerDay?: string | undefined
+  ltApr?: string | undefined
+  maxApr?: string | undefined
+  rewardRate?: string | undefined
+
   // the amount of token currently staked, or undefined if no account
   //stakedAmount: TokenAmount
   // the amount of reward token earned by the active account, or undefined if no account
