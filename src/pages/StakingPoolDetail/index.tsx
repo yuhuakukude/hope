@@ -41,7 +41,7 @@ const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
 const TxItem = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
   align-items: flex-start;
-  padding: 10px 0;
+  padding: 20px 0;
 `
 
 const TxItemWrapper = styled(AutoRow)`
@@ -590,7 +590,7 @@ export default function StakingPoolDetail({
             </AutoRow>
             {showTx ? (
               <>
-                <GreyCard>
+                <GreyCard marginTop={30}>
                   <AutoRow>
                     <TableTitle>All</TableTitle>
                     <TableTitle>Total Value</TableTitle>
@@ -601,11 +601,11 @@ export default function StakingPoolDetail({
                   </AutoRow>
                 </GreyCard>
 
-                <LightCard>
+                <LightCard padding={'0 10px 10px'}>
                   <TxItemWrapper>
                     {txs.result.map(tx => {
                       return (
-                        <AutoRow key={tx.transaction.id}>
+                        <AutoRow key={tx.transaction.id} style={{ borderBottom: '1px solid #3D3E46' }}>
                           <TxItem>
                             <TYPE.link>{`${tx.pair.token0.symbol}-${tx.pair.token1.symbol}`}</TYPE.link>
                           </TxItem>
@@ -636,7 +636,7 @@ export default function StakingPoolDetail({
               </>
             ) : (
               <>
-                <GreyCard>
+                <GreyCard marginTop={30}>
                   <AutoRow>
                     <TableTitle>Contract Address</TableTitle>
                     <TableTitle>Creation Time(UTC)</TableTitle>
