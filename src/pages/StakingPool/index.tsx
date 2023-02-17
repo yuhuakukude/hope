@@ -137,7 +137,6 @@ export default function StakingPool() {
     setYLineData(ylineArr)
     setXBarData(xbarArr)
     setYBarData(ybarArr)
-    console.log(xbarArr, ybarArr)
   }, [overviewChartsResult])
 
   // staking info for connected account

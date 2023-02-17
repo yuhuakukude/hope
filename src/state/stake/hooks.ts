@@ -759,17 +759,20 @@ export async function fetchPairsList(
       const d2Pair = d2Pairs[index]
       const w1Pair = w1Pairs[index]
       const w2Pair = w2Pairs[index]
-
-      const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(pair.reserveUSD, d1Pair.reserveUSD, d2Pair.reserveUSD)
+      const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(
+        pair?.reserveUSD,
+        d1Pair?.reserveUSD,
+        d2Pair?.reserveUSD
+      )
       const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-        pair.volumeUSD,
-        d1Pair.volumeUSD,
-        d2Pair.volumeUSD
+        pair?.volumeUSD,
+        d1Pair?.volumeUSD,
+        d2Pair?.volumeUSD
       )
 
       const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
         pair.totalVolumeUSD,
-        w1Pair.volumeUSD,
+        w1Pair?.volumeUSD,
         w2Pair?.volumeUSD
       )
 
@@ -792,7 +795,7 @@ export async function fetchPairsList(
     })
     return { list: curPairs, total }
   } catch (error) {
-    console.warn(`error${error}`)
+    console.error(`error${error}`)
     return { list: [], total: 0 }
   }
 }
@@ -928,7 +931,7 @@ export async function fetchGlobalData() {
       weeklyVolumeChange
     }
   } catch (error) {
-    console.warn(error)
+    console.error(error)
     return undefined
   }
 }
