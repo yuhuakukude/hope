@@ -16,9 +16,9 @@ import TransactionConfirmationModal, {
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs, StyledMenuIcon } from '../../components/NavigationTabs'
-import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
+import Row, { AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
 
-import { LT, PERMIT2_ADDRESS, ROUTER_ADDRESS } from '../../constants'
+import { PERMIT2_ADDRESS, ROUTER_ADDRESS } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
@@ -43,8 +43,8 @@ import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../perm
 import { ethers } from 'ethers'
 import { useStakingContract } from '../../hooks/useContract'
 import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
-import BasePoolInfoCard, { CardHeader } from '../../components/pool/PoolInfoCard'
-import CurrencyLogo from '../../components/CurrencyLogo'
+import BasePoolInfoCard from '../../components/pool/PoolInfoCard'
+import TotalApr from '../../components/pool/TotalApr'
 
 const PageWrapper = styled(GapColumn)`
   width: 100%;
@@ -665,33 +665,7 @@ export default function LiquidityStake({
           </AutoColumn>
         </LightCard>
         <LightCard flex={3}>
-          <CardHeader>
-            <AutoColumn>
-              <ColumnCenter>
-                <TYPE.green fontSize={48}>0.00%</TYPE.green>
-                <TYPE.white mt={20} fontSize={20}>
-                  Total APR
-                </TYPE.white>
-              </ColumnCenter>
-              <AutoColumn gap={'lg'} style={{ marginTop: 20 }}>
-                <RowBetween>
-                  <TYPE.mediumHeader>Fee APR :</TYPE.mediumHeader>
-                  <TYPE.mediumHeader>0.00%</TYPE.mediumHeader>
-                </RowBetween>
-                <RowBetween>
-                  <TYPE.mediumHeader>Reward APR :</TYPE.mediumHeader>
-                  <TYPE.mediumHeader>0.00%</TYPE.mediumHeader>
-                </RowBetween>
-                <RowBetween>
-                  <TYPE.mediumHeader>Mint Rewards :</TYPE.mediumHeader>
-                  <AutoRow width={'auto'} gap={'10px'}>
-                    <TYPE.mediumHeader>LT</TYPE.mediumHeader>
-                    <CurrencyLogo currency={LT[chainId ?? 1]} />
-                  </AutoRow>
-                </RowBetween>
-              </AutoColumn>
-            </AutoColumn>
-          </CardHeader>
+          <TotalApr address={stakingRewardAddress}></TotalApr>
           <BasePoolInfoCard pool={pool} />
         </LightCard>
       </AutoRowBetween>

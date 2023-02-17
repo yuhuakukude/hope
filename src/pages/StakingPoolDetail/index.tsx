@@ -381,7 +381,7 @@ export default function StakingPoolDetail({
   }, [initFn])
 
   return (
-    <AutoColumn style={{ width: '100%', padding: 30 }}>
+    <AutoColumn style={{ width: '100%', padding: '0 30px' }}>
       {pool && (
         <ClaimRewardModal
           isOpen={showClaimModal}
@@ -399,8 +399,10 @@ export default function StakingPoolDetail({
         pendingText={pendingText}
       />
       <AutoRow justify={'space-between'} padding={'0 30px'}>
-        <TYPE.white fontSize={28} fontWeight={700}>{`${pool?.tokens[0].symbol || '-'}/${pool?.tokens[1].symbol ||
-          '-'}`}</TYPE.white>
+        <TYPE.white fontSize={28} fontWeight={700}>
+          <i className="iconfont font-28 m-r-20 cursor-select">&#xe61a;</i>
+          {`${pool?.tokens[0].symbol || '-'}/${pool?.tokens[1].symbol || '-'}`}
+        </TYPE.white>
         <RowFlat>
           <ButtonPrimary
             as={Link}
