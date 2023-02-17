@@ -301,7 +301,13 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
       />
       <div className="rewards-wrap">
         <Card>
-          <Table dataSource={data} columns={columns} title={getTitle} pagination={false} />
+          <Table
+            locale={{ emptyText: 'You have no liquidity on Mainnet' }}
+            dataSource={data}
+            columns={columns}
+            title={getTitle}
+            pagination={false}
+          />
         </Card>
       </div>
     </>

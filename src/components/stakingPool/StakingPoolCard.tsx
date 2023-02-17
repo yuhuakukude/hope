@@ -10,6 +10,7 @@ import Column, { GapColumn } from '../Column'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Box } from 'rebass/styled-components'
+import format from '../../utils/format'
 import PieCharts from '../../components/pool/PieCharts'
 
 const StyledPoolCard = styled(Card)`
@@ -98,7 +99,10 @@ export default function StakingPoolCard({ pair }: { pair: GraphPairInfo }) {
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>{`--%`}</TYPE.white>
+            <TYPE.white>
+              {`${format.rate(pair.baseApr || 0)}`} {Number(pair.maxApr) > 0 && <span> ~ </span>}
+              <span className="text-error">{Number(pair.maxApr) > 0 ? `${format.rate(pair.maxApr || 0)}` : ''}</span>
+            </TYPE.white>
           </Column>
         </ContentRow>
         <ContentRow>

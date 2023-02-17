@@ -481,16 +481,6 @@ export async function fetchStakeList(
   }
 }
 
-export async function fetchPairsListLength(): Promise<number> {
-  const query = `{ pairs(first: 200,  skip: 0) { id } }`
-  try {
-    const response = await postQuery(SUBGRAPH, query)
-    return response.data.pairs.length || 0
-  } catch (error) {
-    return 0
-  }
-}
-
 export async function fetchStakingPool(stakingAddress: string): Promise<PoolInfo | undefined> {
   const query = `{
   poolGombocs(where: {id:"${stakingAddress}"}) {
@@ -632,6 +622,8 @@ function PAIR_QUERY({ block, stakingAddress }: { block?: number[]; stakingAddres
       volumeToken0
       volumeToken1
       volumeUSD
+      token0Price
+      token1Price
       token0 {
         id
         symbol
@@ -708,6 +700,12 @@ export interface GraphPairInfo {
   volume1: number
   reserve0: number
   reserve1: number
+  baseApr?: string | undefined
+  feeApr?: string | undefined
+  ltAmountPerDay?: string | undefined
+  ltApr?: string | undefined
+  maxApr?: string | undefined
+  rewardRate?: string | undefined
 }
 
 export async function fetchPairsList(
@@ -717,7 +715,7 @@ export async function fetchPairsList(
   orderBy: string,
   page: number,
   size: number
-): Promise<GraphPairInfo[]> {
+): Promise<{ list: GraphPairInfo[]; total: number }> {
   try {
     const utcCurrentTime = dayjs()
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
@@ -731,6 +729,8 @@ export async function fetchPairsList(
       utcTwoWeeksBack
     ])
     const curRes = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, searchContent, sort, orderBy, page, size))
+    const totalRes = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, searchContent, sort, orderBy, 1, 200))
+    const total = totalRes.data.pairs?.length || 0
     const d1Res = await postQuery(
       SUBGRAPH,
       PAIR_LIST_QUERY(account, searchContent, sort, orderBy, page, size, oneDayBlock.number)
@@ -749,12 +749,12 @@ export async function fetchPairsList(
       SUBGRAPH,
       PAIR_LIST_QUERY(account, searchContent, sort, orderBy, page, size, twoWeekBlock?.number)
     )
-    const curPairs = curRes.data.pairs
+    let curPairs = curRes.data.pairs
     const d1Pairs = d1Res.data.pairs
     const d2Pairs = d2Res.data.pairs
     const w1Pairs = w1Res.data.pairs
     const w2Pairs = w2Res.data.pairs
-    return curPairs.map((pair: any, index: number) => {
+    curPairs = curPairs.map((pair: any, index: number) => {
       const d1Pair = d1Pairs[index]
       const d2Pair = d2Pairs[index]
       const w1Pair = w1Pairs[index]
@@ -790,9 +790,10 @@ export async function fetchPairsList(
         reserve1: Number(pair.reserve1)
       }
     })
+    return { list: curPairs, total }
   } catch (error) {
     console.warn(`error${error}`)
-    return []
+    return { list: [], total: 0 }
   }
 }
 
@@ -950,7 +951,7 @@ function QUERY_TXS_QUERY() {
           symbol
         }
       }
-      to
+      sender
       liquidity
       amount0
       amount1
@@ -993,6 +994,7 @@ function QUERY_TXS_QUERY() {
           symbol
         }
       }
+      sender
       amount0In
       amount0Out
       amount1In
@@ -1057,11 +1059,36 @@ export interface TX {
   }[]
 }
 
-export async function fetchPairTxs(pairAddress: string): Promise<TX[]> {
+export interface TxResponse {
+  transaction: { id: string; timestamp: string }
+  pair: {
+    token0: {
+      id: string
+      symbol: string
+    }
+    token1: {
+      id: string
+      symbol: string
+    }
+  }
+  sender: string
+  amount0: number
+  amount1: number
+  amountUSD: number
+}
+
+export async function fetchPairTxs(pairAddress: string): Promise<TxResponse[]> {
   try {
     const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(), { allPairs: [pairAddress] })
-    console.log('response', response)
-    return []
+    console.log('tx response', response)
+    return response.data.mints.concat(response.data.burns).concat(
+      response.data.swaps.map((swap: any) => {
+        const swapItem = swap
+        swap.amount0 = swap.amount0In === '0' ? swap.amount0Out : swap.amount0In
+        swap.amount1 = swap.amount1In === '0' ? swap.amount1Out : swap.amount1In
+        return swapItem
+      })
+    )
   } catch (error) {
     return []
   }

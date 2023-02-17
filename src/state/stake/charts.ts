@@ -107,3 +107,31 @@ export async function getPairChart24HourData(pairAddress: string): Promise<any[]
 
   return data
 }
+
+export async function getPairChartOverviewData(): Promise<any[]> {
+  let data: any = []
+  const getQuery = () => {
+    return `{
+      lightswapDayDatas(orderBy: date, orderDirection: desc, first: 7){
+        id
+        date
+        totalLiquidityUSD
+        dailyVolumeUSD
+      }
+    }`
+  }
+
+  try {
+    const query = getQuery()
+    const result = await postQuery(SUBGRAPH, query)
+    data = result.data.lightswapDayDatas
+    data.forEach((dayData: any) => {
+      dayData.totalLiquidityUSD = parseFloat(dayData.totalLiquidityUSD)
+      dayData.dailyVolumeUSD = parseFloat(dayData.dailyVolumeUSD)
+    })
+  } catch (e) {
+    console.log(e)
+  }
+
+  return data
+}
