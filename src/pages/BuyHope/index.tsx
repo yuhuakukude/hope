@@ -245,6 +245,17 @@ export default function BuyHope() {
     setInputBorder(type)
   }
 
+  const inputBlurFn = (type: string) => {
+    if (type === 'pay') {
+      setType(Number(formattedAmounts.topValue).toFixed(2))
+      setTypedType(TYPE.TOP_INPUT)
+    } else {
+      setType(Number(formattedAmounts.bottomValue).toFixed(2))
+      setTypedType(TYPE.BOTTOM_INPUT)
+    }
+    setInputBorder('')
+  }
+
   const confirmationContent = useCallback(() => {
     return (
       errorStatus && (
@@ -312,7 +323,7 @@ export default function BuyHope() {
               <NumericalInput
                 error={payAmount && balanceAmount?.lessThan(payAmount)}
                 onFocus={() => inputOnFocus('pay')}
-                onBlur={() => setInputBorder('')}
+                onBlur={() => inputBlurFn('pay')}
                 className="input m-l-10"
                 decimals={2}
                 value={formattedAmounts.topValue}
@@ -345,7 +356,7 @@ export default function BuyHope() {
               </div>
               <NumericalInput
                 onFocus={() => inputOnFocus('receive')}
-                onBlur={() => setInputBorder('')}
+                onBlur={() => inputBlurFn('receive')}
                 className="input m-l-10"
                 decimals={2}
                 value={formattedAmounts.bottomValue}
