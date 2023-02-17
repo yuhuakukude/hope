@@ -230,19 +230,21 @@ export default function StakingPool() {
               })
             )}
           </PoolSection>
-          <Row justify="center">
-            <Pagination
-              showQuickJumper
-              total={total}
-              current={currentPage}
-              pageSize={pageSize}
-              showSizeChanger
-              onChange={onPagesChange}
-            />{' '}
-            <span className="m-l-15" style={{ color: '#868790' }}>
-              Total {total}
-            </span>
-          </Row>
+          {total > 0 && (
+            <Row justify="center">
+              <Pagination
+                showQuickJumper
+                total={total}
+                current={currentPage}
+                pageSize={pageSize}
+                showSizeChanger
+                onChange={onPagesChange}
+              />{' '}
+              <span className="m-l-15" style={{ color: '#868790' }}>
+                Total {total}
+              </span>
+            </Row>
+          )}
         </AutoColumn>
       </PoolsWrapper>
     </PageWrapper>

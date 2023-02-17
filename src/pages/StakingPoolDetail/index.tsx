@@ -122,6 +122,15 @@ const TimeItem = styled.div<{ isActive?: boolean }>`
   }
 `
 
+const GoBackIcon = styled(Link)`
+  text-decoration: none;
+  cursor: pointer;
+  color: #fff
+  font-weight: 500;
+  &:hover {
+    color: #fff;
+  }
+`
 export default function StakingPoolDetail({
   match: {
     params: { address }
@@ -400,7 +409,9 @@ export default function StakingPoolDetail({
       />
       <AutoRow justify={'space-between'} padding={'0 30px'}>
         <TYPE.white fontSize={28} fontWeight={700}>
-          <i className="iconfont font-28 m-r-20 cursor-select">&#xe61a;</i>
+          <GoBackIcon to={'/swap/pools'}>
+            <i className="iconfont font-28 m-r-20 cursor-select">&#xe61a;</i>
+          </GoBackIcon>
           {`${pool?.tokens[0].symbol || '-'}/${pool?.tokens[1].symbol || '-'}`}
         </TYPE.white>
         <RowFlat>
