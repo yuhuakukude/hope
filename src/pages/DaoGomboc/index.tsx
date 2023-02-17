@@ -22,6 +22,7 @@ const PageWrapper = styled(AutoColumn)`
 
 export default function DaoGomboc() {
   const childRef = useRef<any>()
+  const voteRef = useRef<any>()
   const { account, chainId } = useActiveWeb3React()
   const [votiingData, setVotiingData] = useState({})
   const [gombocList, setGombocList] = useState([])
@@ -69,6 +70,12 @@ export default function DaoGomboc() {
     }
   }
 
+  function toSetSelGom(gomboc: string) {
+    if (voteRef && voteRef.current) {
+      voteRef.current?.setSel(gomboc)
+    }
+  }
+
   const init = useCallback(async () => {
     await initVotiingData()
     await initGombocsList()
@@ -103,7 +110,7 @@ export default function DaoGomboc() {
                 <p className="text-white lh15">
                   Your lock expires soon. You need to lock at least for two weeks in
                   <NavLink to={'/dao/locker'}>
-                    <span className="text-primary">Locker</span>
+                    <span className="text-primary"> Locker </span>
                   </NavLink>
                 </p>
               </div>
@@ -115,11 +122,22 @@ export default function DaoGomboc() {
               <GomChart votiingData={votiingData} />
             </div>
             <div className="flex-2 normal-card">
-              <Vote updateTable={updateTable} isNoVelt={isNoVelt} votiingData={votiingData} gombocList={gombocList} />
+              <Vote
+                ref={voteRef}
+                updateTable={updateTable}
+                isNoVelt={isNoVelt}
+                votiingData={votiingData}
+                gombocList={gombocList}
+              />
             </div>
           </div>
           <div className="normal-card m-t-30">
-            <GomList ref={childRef} />
+            <GomList
+              toSetSelGom={gomboc => {
+                toSetSelGom(gomboc)
+              }}
+              ref={childRef}
+            />
           </div>
         </div>
       </PageWrapper>

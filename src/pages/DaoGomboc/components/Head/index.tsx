@@ -46,7 +46,7 @@ const Head = () => {
             <div className="flex jc-center">
               <img className="head-img" src={headImg3} alt="" />
             </div>
-            <p className="text-center text-white m-t-30">Stake LP Token</p>
+            <p className="text-center text-white m-t-30">Get a boost</p>
           </div>
           <div className="flex-1">
             <div className="flex jc-center">
