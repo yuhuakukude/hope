@@ -4,7 +4,6 @@ import styled from 'styled-components'
 import { AutoRow, RowBetween, RowFixed } from '../../components/Row'
 import { CardSection, DataCard } from '../../components/earn/styled'
 import Loader from '../../components/Loader'
-import { Decimal } from 'decimal.js'
 import { OutlineCard } from '../../components/Card'
 import { SearchInput } from '../../components/SearchModal/styleds'
 import { ButtonPrimary } from '../../components/Button'
@@ -18,7 +17,8 @@ import { Pagination } from 'antd'
 import Row from '../../components/Row'
 import { Link } from 'react-router-dom'
 import format from '../../utils/format'
-import { useOverviewChartsData } from '../../hooks/useCharts'
+import { Decimal } from 'decimal.js'
+import { useOverviewTvlChartsData, useOverviewVolChartsData } from '../../hooks/useCharts'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -56,15 +56,15 @@ const PoolSection = styled.div`
   width: 100%;
   justify-self: center;
 `
-
-// const DataRow = styled(RowBetween)`
-//   ${({ theme }) => theme.mediaWidth.upToSmall`
-// flex-direction: column;
-// `};
-// `
 const NameText = styled.p`
   color: ${({ theme }) => theme.text1};
   font-size: 18px;
+  font-family: Arboria-Medium;
+`
+const AmountText = styled.p`
+  color: #0ecb81;
+  font-size: 18px;
+  font-family: Arboria-Medium;
 `
 const TimeText = styled.p`
   color: ${({ theme }) => theme.text2};
@@ -76,11 +76,14 @@ type Sort = 'asc' | 'desc'
 export default function StakingPool() {
   const inputRef = useRef<HTMLInputElement>()
   const [inputValue, setInputValue] = useState('')
-  const [tvlTotal, setTvlTotal] = useState('')
+  const [chartLineTotal, setChartLineTotal] = useState<string>('0')
+  const [chartBarTotal, setChartBarTotal] = useState<string>('0')
+  const [tvlCurrentInfo, setTvlCurrentInfo] = useState<any>({ x: '', y: '' })
+  const [volCurrentInfo, setVolCurrentInfo] = useState<any>({ x: '', y: '' })
   const [searchContent, setSearchContent] = useState('')
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(5)
-  const [sort, setSort] = useState<Sort>('desc')
+  const [sort] = useState<Sort>('desc')
   const [xLineData, setXLineData] = useState<string[]>()
   const [yLineData, setYLineData] = useState<string[]>()
   const [xBarData, setXBarData] = useState<string[]>()
@@ -113,9 +116,9 @@ export default function StakingPool() {
     }
   ]
 
-  console.log(setSort)
   const { result: pairs, loading, total } = useLPStakingPairsInfos(searchContent, sort, currentPage, pageSize)
-  const { result: overviewChartsResult } = useOverviewChartsData()
+  const { result: overviewTvlChartsResult } = useOverviewTvlChartsData()
+  const { result: overviewVolChartsResult } = useOverviewVolChartsData()
 
   useEffect(() => {
     const xlineArr: string[] = []
@@ -123,21 +126,24 @@ export default function StakingPool() {
 
     const xbarArr: string[] = []
     const ybarArr: string[] = []
-    let tvlTotalVal = 0
-    overviewChartsResult?.forEach((item: any) => {
-      tvlTotalVal = new Decimal(item.totalLiquidityUSD || 0).add(new Decimal(tvlTotalVal)).toNumber()
-      xlineArr.unshift(format.formatUTCDate(item.date, 'MM-DD'))
+    overviewTvlChartsResult?.forEach((item: any) => {
+      xlineArr.unshift(format.formatDate(item.date, 'MM-DD'))
       ylineArr.unshift(item.totalLiquidityUSD?.toFixed(2))
-
-      xbarArr.unshift(format.formatUTCDate(item.date, 'MM-DD'))
-      ybarArr.unshift(item.dailyVolumeUSD?.toFixed(2))
     })
-    setTvlTotal(tvlTotalVal.toFixed(2))
+    overviewVolChartsResult?.forEach((item: any) => {
+      xbarArr.unshift(format.formatDate(item.hourStartUnix, 'HH:mm'))
+      ybarArr.unshift(item.hourlyVolumeUSD?.toFixed(2))
+    })
     setXLineData(xlineArr)
     setYLineData(ylineArr)
     setXBarData(xbarArr)
     setYBarData(ybarArr)
-  }, [overviewChartsResult])
+
+    const totaLinelVal = ylineArr.reduce((prev, curr) => new Decimal(prev).add(new Decimal(curr)).toNumber(), 0)
+    const totalBarVal = ybarArr.reduce((prev, curr) => new Decimal(prev).add(new Decimal(curr)).toNumber(), 0)
+    setChartLineTotal(totaLinelVal.toFixed(2))
+    setChartBarTotal(totalBarVal.toFixed(2))
+  }, [overviewTvlChartsResult, overviewVolChartsResult])
 
   // staking info for connected account
 
@@ -149,6 +155,14 @@ export default function StakingPool() {
   const handleInput = (event: any) => {
     const input = event.target.value
     setInputValue(input)
+  }
+
+  const getTvlCurrentData = (xCurrent: any, yCurrent: any) => {
+    setTvlCurrentInfo({ x: xCurrent, y: yCurrent })
+  }
+
+  const getVolCurrentData = (xCurrent: any, yCurrent: any) => {
+    setVolCurrentInfo({ x: xCurrent, y: yCurrent })
   }
 
   return (
@@ -167,20 +181,31 @@ export default function StakingPool() {
           <div>
             <AutoRow gap={'10px'}>
               <NameText>TVL</NameText>
-              <NameText>{tvlTotal ? tvlTotal : '--'}</NameText>
-              <TimeText>last 7Days</TimeText>
+              <AmountText>{tvlCurrentInfo.y}</AmountText>
+              <TimeText>{tvlCurrentInfo.x === 'total' ? `Last 7 Days` : tvlCurrentInfo.x}</TimeText>
             </AutoRow>
-            <LineCharts xData={xLineData} yData={yLineData} height={240}></LineCharts>
+            <LineCharts
+              xData={xLineData}
+              yData={yLineData}
+              height={240}
+              total={chartLineTotal}
+              getCurrentData={getTvlCurrentData}
+            ></LineCharts>
           </div>
         </PoolsWrapper>
         <PoolsWrapper style={{ width: '49%', height: '340px' }}>
           <div>
             <AutoRow gap={'10px'}>
               <NameText>Volume</NameText>
-              <NameText>{overviewData ? `$${overviewData.oneDayVolumeUSD.toFixed(2)}` : `0.00`}</NameText>
-              <TimeText>last 7Days</TimeText>
+              <AmountText>{volCurrentInfo.y}</AmountText>
+              <TimeText>{volCurrentInfo.x === 'total' ? `Last 24 Hour` : volCurrentInfo.x}</TimeText>
             </AutoRow>
-            <BarCharts xData={xBarData} yData={yBarData}></BarCharts>
+            <BarCharts
+              xData={xBarData}
+              yData={yBarData}
+              total={chartBarTotal}
+              getCurrentData={getVolCurrentData}
+            ></BarCharts>
           </div>
         </PoolsWrapper>
       </RowBetween>
