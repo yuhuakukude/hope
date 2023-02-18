@@ -17,12 +17,15 @@ import TransactionConfirmationModal, {
 } from '../../../../components/TransactionConfirmationModal'
 import './index.scss'
 
+import { useHistory } from 'react-router-dom'
+
 const isNotNull = (val: string | number | null) => {
   return val && Number(val) !== 0
 }
 
 export default function Rewards({ data }: { data: PortfolioReward[] }) {
   const { account, chainId } = useActiveWeb3React()
+  const history = useHistory()
   const { toClaim } = useToClaim()
   const [curTableItem, setCurTableItem]: any = useState({})
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
@@ -136,8 +139,12 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
           options.push({
             label: 'Stake',
             value: 'Stake',
-            onClick: item => {
-              console.log(item)
+            onClick: () => {
+              if (record.extRewardList && record.extRewardList.length > 0) {
+                history.push(`/swap/stake/${record.gomboc}`)
+              } else {
+                history.push(`/staking`)
+              }
             }
           })
         }
@@ -145,8 +152,12 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
           options.push({
             label: 'Unstake',
             value: 'Unstake',
-            onClick: item => {
-              console.log(item)
+            onClick: () => {
+              if (record.extRewardList && record.extRewardList.length > 0) {
+                history.push(`/swap/withdraw/${record.gomboc}`)
+              } else {
+                history.push(`/staking?type=unstake`)
+              }
             }
           })
         }
@@ -160,28 +171,28 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
           })
         }
 
-        if (record.name !== 'HOPE Staking') {
+        if (record.extRewardList && record.extRewardList.length > 0) {
           if (isNotNull(record.stakeable)) {
+            options.push({
+              label: 'Provide',
+              value: 'Provide',
+              onClick: () => {
+                history.push(`/add/ETH/${record.gomboc}`)
+              }
+            })
             options.push({
               label: 'Withdraw',
               value: 'Withdraw',
-              onClick: item => {
-                console.log(item)
+              onClick: () => {
+                history.push(`/remove/ETH/${record.gomboc}`)
               }
             })
           }
           options.push({
-            label: 'Provide',
-            value: 'Provide',
-            onClick: item => {
-              console.log(item)
-            }
-          })
-          options.push({
             label: 'Boost',
             value: 'Boost',
-            onClick: item => {
-              console.log(item)
+            onClick: () => {
+              history.push('/dao/locker')
             }
           })
         }

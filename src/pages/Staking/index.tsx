@@ -5,8 +5,16 @@ import { AutoColumn } from '../../components/Column'
 import NumericalInput from '../../components/NumericalInput'
 import QuestionHelper from '../../components/QuestionHelper'
 import { useActiveWeb3React } from '../../hooks'
-import { useTokenBalance } from '../../state/wallet/hooks'
-import { HOPE, LT, PERMIT2_ADDRESS, ST_HOPE, STAKING_HOPE_GOMBOC_ADDRESS } from '../../constants'
+import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
+import {
+  HOPE,
+  HOPE_STAKING,
+  HOPE_UNSTAKING,
+  LT,
+  PERMIT2_ADDRESS,
+  ST_HOPE,
+  STAKING_HOPE_GOMBOC_ADDRESS
+} from '../../constants'
 import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
 import HopeCard from '../../components/ahp/card'
@@ -18,14 +26,16 @@ import { ButtonPrimary } from '../../components/Button'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import ActionButton from '../../components/Button/ActionButton'
-import { Token, TokenAmount } from '@uniswap/sdk'
+import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
 import './index.scss'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import { ethers } from 'ethers'
 import { NavLink } from 'react-router-dom'
 import { TransactionResponse } from '@ethersproject/providers'
-import { useEstimate } from '../../hooks/ahp'
+import { useLocation } from 'react-router-dom'
+import useGasPrice from '../../hooks/useGasPrice'
+import JSBI from 'jsbi'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -43,8 +53,9 @@ enum ACTION {
 export default function Staking() {
   const { account, chainId, library } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
+  const gasPrice = useGasPrice()
   const [curType, setStakingType] = useState('stake')
-  const [curBuzType, setCurBuzType] = useState('')
+  const { search } = useLocation()
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
   const [actionType, setActionType] = useState(ACTION.STAKE)
 
@@ -52,14 +63,10 @@ export default function Staking() {
   const [claimPendingText, setClaimPendingText] = useState('')
   const [withdrawPendingText, setWithdrawPendingText] = useState('')
 
-  const isEthBalanceInsufficient = useEstimate()
-
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
-  // Subscribed
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(false)
   // txn values
   const [txHash, setTxHash] = useState<string>('')
 
@@ -77,13 +84,13 @@ export default function Staking() {
   const { toClaim } = useToClaim()
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
 
-  const isUnSub = useMemo(() => {
-    let res = false
-    if (curBuzType === 'unStaking' && isSubscribed) {
-      res = true
-    }
-    return res
-  }, [curBuzType, isSubscribed])
+  const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
+  const gas = useMemo(() => {
+    if (!gasPrice) return undefined
+    return curType === 'stake'
+      ? JSBI.multiply(gasPrice, JSBI.BigInt(HOPE_STAKING))
+      : JSBI.multiply(gasPrice, JSBI.BigInt(HOPE_UNSTAKING))
+  }, [curType, gasPrice])
 
   const totalRewards = useMemo(() => {
     let res
@@ -143,7 +150,6 @@ export default function Staking() {
 
   const stakingCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
-    setCurBuzType('')
     setCurToken(ST_HOPE[chainId ?? 1])
     onTxStart()
     setActionType(ACTION.STAKE)
@@ -186,24 +192,8 @@ export default function Staking() {
       })
   }, [account, inputAmount, library, chainId, onTxStart, toStaked, onTxSubmitted, onTxError])
 
-  const getIsSub = useCallback(async () => {
-    try {
-      const res = await StakingApi.getSubscriptionInfo({
-        address: account
-      })
-      if (res && res.result === false) {
-        setIsSubscribed(true)
-      } else {
-        setIsSubscribed(false)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }, [account])
-
   const unStakingCallback = useCallback(async () => {
     if (!amount || !account || !inputAmount) return
-    setCurBuzType('unStaking')
     setCurToken(undefined)
     onTxStart()
     setActionType(ACTION.UNSTAKING)
@@ -213,17 +203,15 @@ export default function Staking() {
         setStakePendingText('')
         onTxSubmitted(hash)
         setAmount('')
-        getIsSub()
       })
       .catch((err: any) => {
         setStakePendingText('')
         onTxError(err)
       })
-  }, [amount, account, inputAmount, onTxStart, toUnStaked, onTxSubmitted, getIsSub, onTxError])
+  }, [amount, account, inputAmount, onTxStart, toUnStaked, onTxSubmitted, onTxError])
 
   const claimCallback = useCallback(async () => {
     if (!account) return
-    setCurBuzType('')
     setCurToken(LT[chainId ?? 1])
     onTxStart()
     setClaimPendingText(`claim LT`)
@@ -241,7 +229,6 @@ export default function Staking() {
 
   const toWithdrawCallback = useCallback(async () => {
     if (!account) return
-    setCurBuzType('')
     setCurToken(HOPE[chainId ?? 1])
     onTxStart()
     setActionType(ACTION.WITHDRAW)
@@ -280,20 +267,22 @@ export default function Staking() {
   }
 
   function changeAmount(val: any) {
-    console.log(val)
     setAmount(val)
   }
 
   const init = useCallback(async () => {
     await initApy()
-    if (account) {
-      await getIsSub()
-    }
-  }, [account, getIsSub])
+  }, [])
 
   useEffect(() => {
     init()
   }, [init])
+
+  useEffect(() => {
+    if (search) {
+      setStakingType('unstake')
+    }
+  }, [search])
 
   const confirmationContent = useCallback(
     () =>
@@ -331,7 +320,6 @@ export default function Staking() {
               : claimPendingText
           }
           currencyToAdd={curToken}
-          isShowSubscribe={isUnSub}
         />
         <div className="staking-page">
           <div className="staking-head">
@@ -403,7 +391,7 @@ export default function Staking() {
                   </div>
                   <div className="flex jc-between m-t-30">
                     <span className="text-white">Est Transaction Fee</span>
-                    <span className="text-white">0.0012 ETH</span>
+                    <span className="text-white">≈{gas ? CurrencyAmount.ether(gas).toSignificant() : '--'} ETH</span>
                   </div>
                   <div className="flex jc-between m-t-20">
                     <span className="text-white">Receive </span>
@@ -449,7 +437,7 @@ export default function Staking() {
                     )}
                   </div>
                   <div className="staking-tip">
-                    {account && isEthBalanceInsufficient && (
+                    {gas && userEthBalance && userEthBalance?.lessThan(CurrencyAmount.ether(gas)) && (
                       <div className="flex m-t-15">
                         <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
                         <div>
@@ -460,6 +448,7 @@ export default function Staking() {
                         </div>
                       </div>
                     )}
+
                     {curType === 'unstake' && (
                       <div className="flex m-t-15">
                         <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>

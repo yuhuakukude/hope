@@ -1,6 +1,6 @@
 import Row, { AutoRowBetween } from '../Row'
 import { GapColumn } from '../Column'
-import React, { useState } from 'react'
+import React from 'react'
 import { NavLink } from 'react-router-dom'
 import Avatar from 'assets/images/metamask-logo.png'
 import { useActiveWeb3React } from '../../hooks'
@@ -10,7 +10,7 @@ import styled from 'styled-components'
 import Arrow from 'assets/images/arrow-right-white.png'
 import useTheme from '../../hooks/useTheme'
 import { Text } from 'rebass'
-import { PrimaryText, SecondaryText } from '../Text'
+import { PrimaryText } from '../Text'
 import Test1 from 'assets/images/test1.jpg'
 import Test2 from 'assets/images/test2.jpg'
 import Test3 from 'assets/images/test3.jpg'
@@ -49,36 +49,6 @@ function BalanceDetail({ data }: { data: BalanceData }) {
   )
 }
 
-interface GasTypeData {
-  speed: string
-  gas: string
-  time: string
-}
-
-const GasDiv = styled(GapColumn)`
-  border-radius: 10px;
-  padding: 17px;
-
-  :hover {
-    cursor: pointer;
-  }
-`
-
-function GasType({ data, isSelected, onClick }: { data: GasTypeData; isSelected: boolean; onClick: () => void }) {
-  const theme = useTheme()
-  return (
-    <GasDiv
-      gap={'10px'}
-      onClick={_ => onClick()}
-      style={{ border: isSelected ? `1px solid ${theme.primary1}` : '1px solid rgba(61, 61, 61, 1)' }}
-    >
-      <PrimaryText size={'14px'}>{data.speed}</PrimaryText>
-      <PrimaryText size={'14px'}>{data.gas}</PrimaryText>
-      <SecondaryText size={'14px'}>{data.time}</SecondaryText>
-    </GasDiv>
-  )
-}
-
 const ThemeText = styled.p`
   color: ${({ theme }) => theme.text1};
 `
@@ -103,30 +73,12 @@ export default function WalletDetail({
 }) {
   const { account, chainId, deactivate } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
-  const [gas, setGas] = useState(0)
   const theme = useTheme()
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   const hopeBalance = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
   const stHopeBalance = useTokenBalance(account ?? undefined, ST_HOPE[chainId ?? 1])
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
 
-  const gasType: GasTypeData[] = [
-    {
-      speed: 'Standard',
-      gas: '14 Gwei | $0.40',
-      time: '~10 min 0 secs'
-    },
-    {
-      speed: 'Fast',
-      gas: '16 Gwei  |  $0.45',
-      time: '~10 min 0 secs'
-    },
-    {
-      speed: 'Instant',
-      gas: '21 Gwei  |  $0.51',
-      time: '~10 min 0 secs'
-    }
-  ]
   const fakeIcon = <img src={Avatar} style={{ width: '24px', height: '24px' }} alt="" />
   return (
     <div
@@ -135,8 +87,7 @@ export default function WalletDetail({
         width: '460px',
         display: 'flex',
         background: theme.bg1,
-        top: '40px',
-        bottom: '40px',
+        top: '80px',
         right: '20px',
         borderRadius: '20px',
         alignItems: 'center',
@@ -207,21 +158,6 @@ export default function WalletDetail({
           }}
         />
       </GapColumn>
-      <DivideLine />
-      <PrimaryText style={{ width: '100%', padding: '30px', fontSize: '18px' }}>Gas Priority Fee</PrimaryText>
-      <div
-        style={{
-          display: 'flex',
-          width: '100%',
-          justifyContent: 'space-between',
-          padding: '0px 30px 30px 30px',
-          textAlign: 'center'
-        }}
-      >
-        {gasType.map((type, index) => {
-          return <GasType data={type} isSelected={index === gas} key={index} onClick={() => setGas(index)} />
-        })}
-      </div>
       <DivideLine />
       <TransactionLayout
         onClick={() => {

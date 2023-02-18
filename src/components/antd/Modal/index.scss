@@ -1,0 +1,39 @@
+.ant-modal-wrap {
+  .ant-modal-content {
+    border-radius: 20px;
+    background-color: rgba(38, 38, 44, 1);
+    padding: 30px;
+  }
+
+  .ant-modal-header {
+    background-color: transparent;
+    padding: 0 0 30px 0;
+    border: 0;
+    border-radius: 0;
+
+
+    .ant-modal-title {
+      font-size: 18px;
+      color: #fff;
+    }
+  }
+
+  .ant-modal-close {
+    color: #fff;
+    top: 12px;
+    right: 10px;
+  }
+
+  .ant-modal-close :hover {
+    color: #E4C989;
+  }
+
+  .ant-modal-footer {
+    display: none;
+  }
+
+  .ant-modal-body {
+    padding: 0;
+    border-radius: 0;
+  }
+}

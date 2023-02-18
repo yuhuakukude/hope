@@ -1,15 +1,17 @@
 import JSBI from 'jsbi'
-import { useMemo } from 'react'
+import { useEffect, useState } from 'react'
 
-import { useSingleCallResult } from '../state/multicall/hooks'
-import { useGasPriceContract } from './useContract'
+import { useActiveWeb3React } from './index'
+import { useBlockNumber } from '../state/application/hooks'
 
-/**
- * Returns the price of 1 gas in WEI for the currently selected network using the chainlink fast gas price oracle
- */
 export default function useGasPrice(): JSBI | undefined {
-  const contract = useGasPriceContract()
-
-  const resultStr = useSingleCallResult(contract, 'latestAnswer').result?.[0]?.toString()
-  return useMemo(() => (typeof resultStr === 'string' ? JSBI.BigInt(resultStr) : undefined), [resultStr])
+  const [gasPrice, setGasPrice] = useState<undefined | JSBI>()
+  const blockNumber = useBlockNumber()
+  const { library } = useActiveWeb3React()
+  useEffect(() => {
+    library?.getGasPrice().then(gas => {
+      setGasPrice(JSBI.BigInt(gas))
+    })
+  }, [blockNumber, library])
+  return gasPrice
 }

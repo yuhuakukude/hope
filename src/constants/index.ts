@@ -382,4 +382,8 @@ export enum ACTION_TYPE {
   SWAP
 }
 
-export const BUY_HOPE_GAS = 193646
+export const BUY_HOPE_GAS = 179618
+
+export const HOPE_STAKING = 374135
+
+export const HOPE_UNSTAKING = 285071
