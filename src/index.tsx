@@ -19,6 +19,7 @@ import TransactionUpdater from './state/transactions/updater'
 import UserUpdater from './state/user/updater'
 import ThemeProvider, { FixedGlobalStyle, ThemedGlobalStyle } from './theme'
 import getLibrary from './utils/getLibrary'
+import ScrollToTop from 'components/ScrollToTop'
 
 const Web3ProviderNetwork = createWeb3ReactRoot(NetworkContextName)
 
@@ -72,7 +73,9 @@ ReactDOM.render(
             <ThemeProvider>
               <ThemedGlobalStyle />
               <HashRouter>
-                <App />
+                <ScrollToTop>
+                  <App />
+                </ScrollToTop>
               </HashRouter>
             </ThemeProvider>
           </Provider>

@@ -97,7 +97,11 @@ export default function StakingModal({
         />
 
         <RowBetween>
-          <ButtonError disabled={!!error} error={!!error && !!parsedAmount} onClick={() => onStake(action)}>
+          <ButtonError
+            disabled={!!error && error !== 'Connect Wallet'}
+            error={!!error && !!parsedAmount}
+            onClick={() => onStake(action)}
+          >
             {error ?? 'Deposit'}
           </ButtonError>
         </RowBetween>
