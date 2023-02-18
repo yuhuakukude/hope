@@ -13,15 +13,14 @@ import TransactionConfirmationModal, { TransactionErrorContent } from '../../com
 import { ethers } from 'ethers'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useActiveWeb3React } from '../../hooks'
-import { useTokenBalance } from '../../state/wallet/hooks'
+import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
 import { useBuyHopeContract } from '../../hooks/useContract'
 import { useSingleCallResult } from '../../state/multicall/hooks'
 import { tryParseAmount } from '../../state/swap/hooks'
-import { HOPE, PERMIT2_ADDRESS, TOKEN_SALE_ADDRESS, USDC, USDT } from '../../constants'
+import { BUY_HOPE_GAS, HOPE, PERMIT2_ADDRESS, TOKEN_SALE_ADDRESS, USDC, USDT } from '../../constants'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
-import { useEstimate } from '../../hooks/ahp'
 import './index.scss'
 import useGasPrice from '../../hooks/useGasPrice'
 
@@ -40,9 +39,9 @@ export default function BuyHope() {
   const { account, chainId, library } = useActiveWeb3React()
   const buyHopeContract = useBuyHopeContract()
   const addTransaction = useTransactionAdder()
-  const isEthBalanceInsufficient = useEstimate()
   const gasPrice = useGasPrice()
-  console.log('gasPrice', gasPrice)
+  const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
+
   // state
   const [currencyModalFlag, setCurrencyModalFlag] = useState(false)
   const [inputBorder, setInputBorder] = useState('')
@@ -396,10 +395,16 @@ export default function BuyHope() {
           {account && (
             <div className="gas flex jc-between p-t-30 m-t-30">
               <div className="label font-nor text-normal">Gas Fee</div>
-              <div className="value font-nor text-medium">≈0.001 ETH</div>
+              <div className="value font-nor text-medium">
+                ≈
+                {gasPrice
+                  ? CurrencyAmount.ether(JSBI.multiply(gasPrice, JSBI.BigInt(BUY_HOPE_GAS))).toSignificant()
+                  : '--'}{' '}
+                ETH
+              </div>
             </div>
           )}
-          {account && isEthBalanceInsufficient && (
+          {gasPrice && userEthBalance && userEthBalance.lessThan(CurrencyAmount.ether(gasPrice)) && (
             <div className="tip flex p-t-30">
               <div className="icon m-r-15">
                 <i className="iconfont font-28">&#xe614;</i>

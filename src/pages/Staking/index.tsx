@@ -5,8 +5,16 @@ import { AutoColumn } from '../../components/Column'
 import NumericalInput from '../../components/NumericalInput'
 import QuestionHelper from '../../components/QuestionHelper'
 import { useActiveWeb3React } from '../../hooks'
-import { useTokenBalance } from '../../state/wallet/hooks'
-import { HOPE, LT, PERMIT2_ADDRESS, ST_HOPE, STAKING_HOPE_GOMBOC_ADDRESS } from '../../constants'
+import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
+import {
+  HOPE,
+  HOPE_STAKING,
+  HOPE_UNSTAKING,
+  LT,
+  PERMIT2_ADDRESS,
+  ST_HOPE,
+  STAKING_HOPE_GOMBOC_ADDRESS
+} from '../../constants'
 import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
 import HopeCard from '../../components/ahp/card'
@@ -18,15 +26,16 @@ import { ButtonPrimary } from '../../components/Button'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import ActionButton from '../../components/Button/ActionButton'
-import { Token, TokenAmount } from '@uniswap/sdk'
+import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
 import './index.scss'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import { ethers } from 'ethers'
 import { NavLink } from 'react-router-dom'
 import { TransactionResponse } from '@ethersproject/providers'
-import { useEstimate } from '../../hooks/ahp'
 import { useLocation } from 'react-router-dom'
+import useGasPrice from '../../hooks/useGasPrice'
+import JSBI from 'jsbi'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -44,6 +53,7 @@ enum ACTION {
 export default function Staking() {
   const { account, chainId, library } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
+  const gasPrice = useGasPrice()
   const [curType, setStakingType] = useState('stake')
   const { search } = useLocation()
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
@@ -52,8 +62,6 @@ export default function Staking() {
   const [stakePendingText, setStakePendingText] = useState('')
   const [claimPendingText, setClaimPendingText] = useState('')
   const [withdrawPendingText, setWithdrawPendingText] = useState('')
-
-  const isEthBalanceInsufficient = useEstimate()
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -75,6 +83,14 @@ export default function Staking() {
   const { toWithdraw } = useToWithdraw()
   const { toClaim } = useToClaim()
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
+
+  const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
+  const gas = useMemo(() => {
+    if (!gasPrice) return undefined
+    return curType === 'stake'
+      ? JSBI.multiply(gasPrice, JSBI.BigInt(HOPE_STAKING))
+      : JSBI.multiply(gasPrice, JSBI.BigInt(HOPE_UNSTAKING))
+  }, [curType, gasPrice])
 
   const totalRewards = useMemo(() => {
     let res
@@ -375,7 +391,7 @@ export default function Staking() {
                   </div>
                   <div className="flex jc-between m-t-30">
                     <span className="text-white">Est Transaction Fee</span>
-                    <span className="text-white">0.0012 ETH</span>
+                    <span className="text-white">≈{gas ? CurrencyAmount.ether(gas).toSignificant() : '--'} ETH</span>
                   </div>
                   <div className="flex jc-between m-t-20">
                     <span className="text-white">Receive </span>
@@ -421,7 +437,7 @@ export default function Staking() {
                     )}
                   </div>
                   <div className="staking-tip">
-                    {account && isEthBalanceInsufficient && (
+                    {gas && userEthBalance && userEthBalance?.lessThan(CurrencyAmount.ether(gas)) && (
                       <div className="flex m-t-15">
                         <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
                         <div>
@@ -432,6 +448,7 @@ export default function Staking() {
                         </div>
                       </div>
                     )}
+
                     {curType === 'unstake' && (
                       <div className="flex m-t-15">
                         <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
