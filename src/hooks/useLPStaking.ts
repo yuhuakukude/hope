@@ -77,12 +77,13 @@ export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc',
 
   const [loading, setLoading] = useState<boolean>(false)
   const [resultLength, setResultLength] = useState<number>(0)
+  const [resTokenList, setResTokenList] = useState<any>([])
 
   useEffect(() => {
     ;(async () => {
       setLoading(true)
       try {
-        const { list, total } = await fetchPairsList(
+        const { list, total, tokenList } = await fetchPairsList(
           account ?? '',
           searchName,
           sort,
@@ -91,6 +92,7 @@ export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc',
           pageSize
         )
         setResultLength(total)
+        setResTokenList(tokenList)
         const addressList = list.map((e: GraphPairInfo) => e.address)
         const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
         setLoading(false)
@@ -106,7 +108,8 @@ export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc',
   return {
     total: resultLength,
     loading: loading,
-    result
+    result,
+    tokenList: resTokenList
   }
 }
 

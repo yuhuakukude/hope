@@ -722,7 +722,7 @@ export async function fetchPairsList(
   orderBy: string,
   page: number,
   size: number
-): Promise<{ list: GraphPairInfo[]; total: number }> {
+): Promise<{ list: GraphPairInfo[]; total: number; tokenList: [] }> {
   try {
     const utcCurrentTime = dayjs()
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
@@ -736,8 +736,14 @@ export async function fetchPairsList(
       utcTwoWeeksBack
     ])
     const curRes = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, searchContent, sort, orderBy, page, size))
-    const totalRes = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, searchContent, sort, orderBy, 1, 200))
+    const totalRes = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, '', sort, orderBy, 1, 200))
     const total = totalRes.data.pairs?.length || 0
+    const tokenList = totalRes.data.pairs.map((e: any) => ({
+      label: `${e.token0.symbol}/${e.token1.symbol}`,
+      value: e.id,
+      token0: new Token(ChainId.SEPOLIA, e.token0.id, Number(e.token0.decimals), e.token0.symbol),
+      token1: new Token(ChainId.SEPOLIA, e.token1.id, Number(e.token1.decimals), e.token1.symbol)
+    }))
     const d1Res = await postQuery(
       SUBGRAPH,
       PAIR_LIST_QUERY(account, searchContent, sort, orderBy, page, size, oneDayBlock.number)
@@ -800,10 +806,10 @@ export async function fetchPairsList(
         reserve1: Number(pair.reserve1)
       }
     })
-    return { list: curPairs, total }
+    return { list: curPairs, total, tokenList }
   } catch (error) {
     console.error(`error${error}`)
-    return { list: [], total: 0 }
+    return { list: [], total: 0, tokenList: [] }
   }
 }
 

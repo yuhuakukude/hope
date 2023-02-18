@@ -4,11 +4,11 @@ import * as echarts from 'echarts'
 
 export default function PieCharts({ data, size }: { data?: any; size?: number }) {
   const chartRef: any = useRef()
-  const handleResizeChart = (myChart: any) => {
-    myChart && myChart.resize()
+  const handleResizeChart = (pieChart: any) => {
+    pieChart && pieChart.resize()
   }
   useEffect(() => {
-    const myChart = echarts.init(chartRef.current)
+    const pieChart = echarts.init(chartRef.current)
     const option = {
       series: [
         {
@@ -33,11 +33,8 @@ export default function PieCharts({ data, size }: { data?: any; size?: number })
         }
       ]
     }
-    myChart.setOption(option)
-    window.addEventListener('resize', () => handleResizeChart(myChart))
-    return () => {
-      myChart.dispose()
-    }
+    pieChart.setOption(option)
+    window.addEventListener('resize', () => handleResizeChart(pieChart))
   }, [data, size])
   return <div style={{ width: `${size ? size : 120}px`, height: `${size ? size : 120}px` }} ref={chartRef} />
 }

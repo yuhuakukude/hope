@@ -1,11 +1,10 @@
-import React, { useState, useRef, RefObject, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 import { AutoColumn } from '../../components/Column'
 import styled from 'styled-components'
 import { AutoRow, RowBetween, RowFixed } from '../../components/Row'
 import { CardSection, DataCard } from '../../components/earn/styled'
 import Loader from '../../components/Loader'
 import { OutlineCard } from '../../components/Card'
-import { SearchInput } from '../../components/SearchModal/styleds'
 import { ButtonPrimary } from '../../components/Button'
 import { useLPStakingPairsInfos, useOverviewData } from '../../hooks/useLPStaking'
 import StakingPoolCard from '../../components/stakingPool/StakingPoolCard'
@@ -15,9 +14,10 @@ import LineCharts from '../../components/pool/LineCharts'
 import BarCharts from '../../components/pool/BarCharts'
 import { Pagination } from 'antd'
 import Row from '../../components/Row'
+import SearchSelect from '../../components/SearchSelect'
 import { Link } from 'react-router-dom'
-import format from '../../utils/format'
 import { Decimal } from 'decimal.js'
+import format from '../../utils/format'
 import { useOverviewTvlChartsData, useOverviewVolChartsData } from '../../hooks/useCharts'
 import QuestionHelper from 'components/QuestionHelper'
 
@@ -75,13 +75,11 @@ const TimeText = styled.p`
 type Sort = 'asc' | 'desc'
 
 export default function StakingPool() {
-  const inputRef = useRef<HTMLInputElement>()
   const [inputValue, setInputValue] = useState('')
   const [chartLineTotal, setChartLineTotal] = useState<string>('0')
   const [chartBarTotal, setChartBarTotal] = useState<string>('0')
   const [tvlCurrentInfo, setTvlCurrentInfo] = useState<any>({ x: '', y: '' })
   const [volCurrentInfo, setVolCurrentInfo] = useState<any>({ x: '', y: '' })
-  const [searchContent, setSearchContent] = useState('')
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(5)
   const [sort] = useState<Sort>('desc')
@@ -95,29 +93,29 @@ export default function StakingPool() {
       title: 'Pool Overview',
       isRise: !!overviewData && overviewData.tvlChangeUSD > 0,
       rate: overviewData ? `${overviewData.tvlChangeUSD.toFixed(2)} %` : `--`,
-      amount: overviewData ? `$${Number(overviewData.tvl).toFixed(2)}` : `--`
+      amount: overviewData ? `$${format.separate(Number(overviewData.tvl).toFixed(2))}` : `--`
     },
     {
       title: 'Volume(24H)',
       isRise: !!overviewData && overviewData.volumeChangeUSD > 0,
-      rate: overviewData ? `${overviewData.volumeChangeUSD.toFixed(2)}` : `--`,
-      amount: overviewData ? `$${overviewData.oneDayVolumeUSD.toFixed(2)}` : `--`
+      rate: overviewData ? `${overviewData.volumeChangeUSD.toFixed(2)} %` : `--`,
+      amount: overviewData ? `$${format.separate(overviewData.oneDayVolumeUSD.toFixed(2))}` : `--`
     },
     {
       title: 'Fees(24H)',
       isRise: !!overviewData && overviewData.volumeChangeUSD > 0,
-      rate: overviewData ? `${overviewData.volumeChangeUSD.toFixed(2)}` : `--`,
-      amount: overviewData ? `$${overviewData.dayFees.toFixed(2)}` : `--`
+      rate: overviewData ? `${overviewData.volumeChangeUSD.toFixed(2)} %` : `--`,
+      amount: overviewData ? `$${format.separate(overviewData.dayFees.toFixed(2))}` : `--`
     },
     {
-      title: 'Fess(7d)',
+      title: 'Fees(7d)',
       isRise: !!overviewData && overviewData.weeklyVolumeChange > 0,
-      rate: overviewData ? `${overviewData.weeklyVolumeChange.toFixed(2)}` : `--`,
-      amount: overviewData ? `$${overviewData.weekFees.toFixed(2)}` : `--`
+      rate: overviewData ? `${overviewData.weeklyVolumeChange.toFixed(2)} %` : `--`,
+      amount: overviewData ? `$${format.separate(overviewData.weekFees.toFixed(2))}` : `--`
     }
   ]
 
-  const { result: pairs, loading, total } = useLPStakingPairsInfos(searchContent, sort, currentPage, pageSize)
+  const { result: pairs, loading, total, tokenList } = useLPStakingPairsInfos(inputValue, sort, currentPage, pageSize)
   const { result: overviewTvlChartsResult } = useOverviewTvlChartsData()
   const { result: overviewVolChartsResult } = useOverviewVolChartsData()
 
@@ -128,11 +126,11 @@ export default function StakingPool() {
     const xbarArr: string[] = []
     const ybarArr: string[] = []
     overviewTvlChartsResult?.forEach((item: any) => {
-      xlineArr.unshift(format.formatDate(item.date, 'MM-DD'))
+      xlineArr.unshift(item.date)
       ylineArr.unshift(item.totalLiquidityUSD?.toFixed(2))
     })
     overviewVolChartsResult?.forEach((item: any) => {
-      xbarArr.unshift(format.formatDate(item.hourStartUnix, 'HH:mm'))
+      xbarArr.unshift(item.hourStartUnix)
       ybarArr.unshift(item.hourlyVolumeUSD?.toFixed(2))
     })
     setXLineData(xlineArr)
@@ -153,11 +151,6 @@ export default function StakingPool() {
     setPageSize(pageSize)
   }
 
-  const handleInput = (event: any) => {
-    const input = event.target.value
-    setInputValue(input)
-  }
-
   const getTvlCurrentData = (xCurrent: any, yCurrent: any) => {
     setTvlCurrentInfo({ x: xCurrent, y: yCurrent })
   }
@@ -171,7 +164,7 @@ export default function StakingPool() {
       <TopSection>
         <RowBetween>
           <p style={{ fontSize: '28px' }}>Pool Overview</p>
-          <ButtonPrimary as={Link} to={'/swap/add/ETH'} style={{ width: 'max-content' }}>
+          <ButtonPrimary padding={'12px 24px'} as={Link} to={'/swap/add/ETH'} style={{ width: 'max-content' }}>
             New Position
           </ButtonPrimary>
         </RowBetween>
@@ -182,7 +175,7 @@ export default function StakingPool() {
           <div>
             <AutoRow gap={'10px'}>
               <NameText>TVL</NameText>
-              <AmountText>{tvlCurrentInfo.y}</AmountText>
+              <AmountText>$ {format.separate(tvlCurrentInfo.y, 2)}</AmountText>
               <TimeText>{tvlCurrentInfo.x === 'total' ? `Last 7 Days` : tvlCurrentInfo.x}</TimeText>
             </AutoRow>
             <LineCharts
@@ -190,6 +183,8 @@ export default function StakingPool() {
               yData={yLineData}
               height={240}
               total={chartLineTotal}
+              left={8}
+              bottom={13}
               getCurrentData={getTvlCurrentData}
             ></LineCharts>
           </div>
@@ -198,13 +193,15 @@ export default function StakingPool() {
           <div>
             <AutoRow gap={'10px'}>
               <NameText>Volume</NameText>
-              <AmountText>{volCurrentInfo.y}</AmountText>
+              <AmountText>$ {format.separate(volCurrentInfo.y, 2)}</AmountText>
               <TimeText>{volCurrentInfo.x === 'total' ? `Last 24 Hour` : volCurrentInfo.x}</TimeText>
             </AutoRow>
             <BarCharts
               xData={xBarData}
               yData={yBarData}
+              left={8}
               total={chartBarTotal}
+              is24Hour={true}
               getCurrentData={getVolCurrentData}
             ></BarCharts>
           </div>
@@ -216,19 +213,24 @@ export default function StakingPool() {
             <CardSection>
               <AutoColumn justify="end">
                 <RowFixed gap={'md'}>
-                  <SearchInput
-                    width={440}
-                    type="text"
-                    id="token-search-input"
-                    placeholder={'Search Token Symbol / Address'}
-                    autoComplete="off"
-                    ref={inputRef as RefObject<HTMLInputElement>}
-                    value={inputValue}
-                    onChange={handleInput}
-                  />
-                  <ButtonPrimary marginLeft={20} onClick={() => setSearchContent(inputValue)}>
-                    Search
-                  </ButtonPrimary>
+                  <div style={{ width: '440px' }} className="m-r-20">
+                    {/* <SearchInput
+                      fontSize={'16px'}
+                      padding={'10px 16px 10px 45px'}
+                      type="text"
+                      id="token-search-input"
+                      placeholder={'Search Token Symbol / Address'}
+                      autoComplete="off"
+                      ref={inputRef as RefObject<HTMLInputElement>}
+                      value={inputValue}
+                      onChange={handleInput}
+                    /> */}
+                    <SearchSelect
+                      getResult={adress => setInputValue(adress)}
+                      placeholder={'Search Token Symbol / Address'}
+                      list={tokenList}
+                    ></SearchSelect>
+                  </div>
                 </RowFixed>
               </AutoColumn>
             </CardSection>

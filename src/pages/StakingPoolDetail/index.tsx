@@ -237,20 +237,21 @@ export default function StakingPoolDetail({
     result?.forEach((item: any) => {
       if (timeIndex === '24H') {
         if (tabIndex === 'Volume') {
-          yArr.push(item.hourlyVolumeUSD?.toFixed(2))
+          yArr.unshift(item.hourlyVolumeUSD?.toFixed(2))
         }
         if (tabIndex === 'TVL') {
-          yArr.push(item.reserveUSD?.toFixed(2))
+          yArr.unshift(item.reserveUSD?.toFixed(2))
         }
         if (tabIndex === 'Fees') {
-          yArr.push(
+          yArr.unshift(
             new Decimal(item.hourlyVolumeUSD || 0)
               .mul(new Decimal(0.003))
               .toNumber()
               .toFixed(2)
           )
         }
-        xArr.push(format.formatDate(item.hourStartUnix, 'HH:mm'))
+        // xArr.unshift(format.formatDate(item.hourStartUnix, 'HH:mm'))
+        xArr.unshift(item.hourStartUnix)
       } else if (utcStartTime && item.date >= utcStartTime) {
         if (tabIndex === 'Volume') {
           yArr.push(item.dailyVolumeUSD?.toFixed(2))
@@ -266,7 +267,8 @@ export default function StakingPoolDetail({
               .toFixed(2)
           )
         }
-        xArr.push(format.formatDate(item.date, 'YYYY-MM-DD'))
+        // xArr.push(format.formatDate(item.date, 'YYYY-MM-DD'))
+        xArr.push(item.date)
       }
     })
     setXData(xArr)
@@ -280,25 +282,25 @@ export default function StakingPoolDetail({
       title: 'Pool Overview',
       isRise: !!pool && pool.tvlChangeUSD > 0,
       rate: pool ? `${pool.tvlChangeUSD.toFixed(2)} %` : `--`,
-      amount: pool ? `$${Number(pool.tvl).toFixed(2)}` : `--`
+      amount: pool ? `$${format.separate(Number(pool.tvl).toFixed(2))}` : `--`
     },
     {
       title: 'Volume(24H)',
       isRise: !!pool && pool.volumeChangeUSD > 0,
-      rate: pool ? `${pool.volumeChangeUSD.toFixed(2)}` : `--`,
-      amount: pool ? `$${pool.oneDayVolumeUSD.toFixed(2)}` : `--`
+      rate: pool ? `${pool.volumeChangeUSD.toFixed(2)} %` : `--`,
+      amount: pool ? `$${format.separate(pool.oneDayVolumeUSD.toFixed(2))}` : `--`
     },
     {
       title: 'Fees(24H)',
       isRise: !!pool && pool.volumeChangeUSD > 0,
-      rate: pool ? `${pool.volumeChangeUSD.toFixed(2)}` : `--`,
-      amount: pool ? `$${pool.dayFees.toFixed(2)}` : `--`
+      rate: pool ? `${pool.volumeChangeUSD.toFixed(2)} %` : `--`,
+      amount: pool ? `$${format.separate(pool.dayFees.toFixed(2))}` : `--`
     },
     {
-      title: 'Fess(7d)',
+      title: 'Fees(7d)',
       isRise: !!pool && pool.weeklyVolumeChange > 0,
-      rate: pool ? `${pool.weeklyVolumeChange.toFixed(2)}` : `--`,
-      amount: pool ? `$${pool.weekFees.toFixed(2)}` : `--`
+      rate: pool ? `${pool.weeklyVolumeChange.toFixed(2)} %` : `--`,
+      amount: pool ? `$${format.separate(pool.weekFees.toFixed(2))}` : `--`
     }
   ]
 
@@ -369,20 +371,6 @@ export default function StakingPoolDetail({
   }, [errorStatus])
   const [aprInfo, setAprInfo] = useState<any>({})
 
-  const getScale = (amount: string | undefined) => {
-    if (!amount) return '--'
-    const total = new Decimal(pool?.token0Amount.toFixed(2) || 0)
-      .add(new Decimal(pool?.token1Amount.toFixed(2) || 0))
-      .toNumber()
-    return (
-      new Decimal(amount)
-        .div(new Decimal(total))
-        .mul(100)
-        .toNumber()
-        .toFixed(2) + '%'
-    )
-  }
-
   const getCurrentData = (xCurrent: string, yCurrent: string) => {
     setXCurrentData(xCurrent)
     setYCurrentData(yCurrent)
@@ -448,22 +436,22 @@ export default function StakingPoolDetail({
           <LightCard padding={'30px'}>
             <RowBetween>
               <Row>
-                <PieCharts data={[pool?.token0Amount.toFixed(2), pool?.token1Amount.toFixed(2)]}></PieCharts>
+                <PieCharts data={[50, 50]}></PieCharts>
                 <div className="m-l-20">
                   <Row>
                     <Circular></Circular>
                     <CurrencyLogo currency={pool?.tokens[0]} />
                     <TYPE.body marginLeft={9}>
-                      {pool?.token0Amount.toFixed(2, { groupSeparator: ',' })} {pool?.tokens[0].symbol} (
-                      {getScale(pool?.token0Amount.toFixed(2))})
+                      {pool?.token0Amount.toFixed(2, { groupSeparator: ',' })} {pool?.tokens[0].symbol}
+                      {!!pool?.token0Amount && ' (50%)'}
                     </TYPE.body>
                   </Row>
                   <Row margin={'35px 0 0 0'}>
                     <Circular color={'#8FFBAE'}></Circular>
                     <CurrencyLogo currency={pool?.tokens[1]} />
                     <TYPE.body marginLeft={9}>
-                      {pool?.token1Amount.toFixed(2, { groupSeparator: ',' })} {pool?.tokens[1].symbol} (
-                      {getScale(pool?.token1Amount.toFixed(2))})
+                      {pool?.token1Amount.toFixed(2, { groupSeparator: ',' })} {pool?.tokens[1].symbol}
+                      {!!pool?.token1Amount && ' (50%)'}
                     </TYPE.body>
                   </Row>
                 </div>
@@ -499,18 +487,18 @@ export default function StakingPoolDetail({
               <Row marginTop={30}>
                 <CurrencyLogo currency={pool?.tokens[1]} />
                 <TYPE.body marginLeft={9} marginRight={40}>
-                  1.00 {pool?.tokens[0].symbol} = {pool?.token1Price} {pool?.tokens[1].symbol}
+                  1.00 {pool?.tokens[0].symbol} = {format.separate(pool?.token1Price ?? 0)} {pool?.tokens[1].symbol}
                 </TYPE.body>
                 <CurrencyLogo currency={pool?.tokens[0]} />
                 <TYPE.body marginLeft={9}>
                   {' '}
-                  1.00 {pool?.tokens[1].symbol} = {pool?.token0Price} {pool?.tokens[0].symbol}
+                  1.00 {pool?.tokens[1].symbol} = {format.separate(pool?.token0Price ?? 0)} {pool?.tokens[0].symbol}
                 </TYPE.body>
               </Row>
             )}
           </LightCard>
           <Overview viewData={viewData} smallSize={true}></Overview>
-          <LightCard style={{ marginTop: '20px' }} padding={'30px 40px'}>
+          <LightCard style={{ marginTop: '20px' }} padding={'30px 30px 20px'}>
             <div style={{ height: '435px' }}>
               <div className="charts-tab">
                 <Row justify={'space-between'} align={'flex-start'}>
@@ -520,7 +508,9 @@ export default function StakingPoolDetail({
                   </div>
                   {!!yCurrentData && (
                     <div>
-                      <p className="text-success font-20 text-medium text-right">$ {yCurrentData}</p>
+                      <p className="text-success font-20 text-medium text-right">
+                        $ {format.amountFormat(yCurrentData, 2)}
+                      </p>
                       <p className="font-nor text-right m-t-12">
                         {xCurrentData === 'total' ? `Last ${timeIndex}` : xCurrentData}
                       </p>
@@ -534,6 +524,7 @@ export default function StakingPoolDetail({
                   yData={yData}
                   height={330}
                   total={chartTotal}
+                  is24Hour={timeIndex === '24H'}
                   getCurrentData={getCurrentData}
                 ></LineCharts>
               ) : (
@@ -543,6 +534,7 @@ export default function StakingPoolDetail({
                   total={chartTotal}
                   bottom={10}
                   height={330}
+                  is24Hour={timeIndex === '24H'}
                   getCurrentData={getCurrentData}
                 ></BarCharts>
               )}
@@ -611,7 +603,7 @@ export default function StakingPoolDetail({
           <AutoColumn>
             <AutoRow gap={'20px'}>
               <StyledTabTitle onClick={() => setShowTx(false)} active={!showTx}>
-                Infomation
+                Information
               </StyledTabTitle>
               <StyledTabTitle
                 onClick={() => {

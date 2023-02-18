@@ -63,18 +63,19 @@ export default function StakingPoolCard({ pair }: { pair: GraphPairInfo }) {
         <ContentRow flex={2.5}>
           <Column>
             <Row>
-              <PieCharts
-                data={pair ? [pair.reserve0.toFixed(2), pair.reserve1.toFixed(2)] : [100, 0]}
-                size={42}
-              ></PieCharts>
+              {pair.reserve0 && pair.reserve1 && <PieCharts data={[50, 50]} size={42}></PieCharts>}
               <div className="m-l-12">
                 <Row>
                   <Circular></Circular>
-                  <TYPE.white>{pair ? `${pair.reserve0.toFixed(2)} / ${token0.symbol}` : '-- / --'}</TYPE.white>
+                  <TYPE.white>
+                    {pair ? `${format.separate(pair.reserve0.toFixed(2))} / ${token0.symbol}` : '-- / --'}
+                  </TYPE.white>
                 </Row>
                 <Row>
                   <Circular color={'#8FFBAE'}></Circular>
-                  <TYPE.white>{pair ? `${pair.reserve1.toFixed(2)} / ${token1.symbol}` : '-- / --'}</TYPE.white>
+                  <TYPE.white>
+                    {pair ? `${format.separate(pair.reserve1.toFixed(2))} / ${token1.symbol}` : '-- / --'}
+                  </TYPE.white>
                 </Row>
               </div>
             </Row>
@@ -84,17 +85,21 @@ export default function StakingPoolCard({ pair }: { pair: GraphPairInfo }) {
           <Column>
             <Row>
               <Circular></Circular>
-              <TYPE.white>{pair ? `${pair.volume0.toFixed(2)} / ${token0.symbol}` : '-- / --'}</TYPE.white>
+              <TYPE.white>
+                {pair ? `${format.separate(pair.volume0.toFixed(2))} / ${token0.symbol}` : '-- / --'}
+              </TYPE.white>
             </Row>
             <Row>
               <Circular color={'#8FFBAE'}></Circular>
-              <TYPE.white>{pair ? `${pair.volume1.toFixed(2)} / ${token1.symbol}` : '-- / --'}</TYPE.white>
+              <TYPE.white>
+                {pair ? `${format.separate(pair.volume1.toFixed(2))} / ${token1.symbol}` : '-- / --'}
+              </TYPE.white>
             </Row>
           </Column>
         </ContentRow>
         <ContentRow>
           <Column>
-            <TYPE.white>{pair ? `$${pair.oneDayVolumeUSD.toFixed(2)}` : '--'}</TYPE.white>
+            <TYPE.white>{pair ? `$${format.separate(pair.oneDayVolumeUSD.toFixed(2))}` : '--'}</TYPE.white>
           </Column>
         </ContentRow>
         <ContentRow>
