@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom'
 import format from '../../utils/format'
 import { Decimal } from 'decimal.js'
 import { useOverviewTvlChartsData, useOverviewVolChartsData } from '../../hooks/useCharts'
+import QuestionHelper from 'components/QuestionHelper'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -240,7 +241,12 @@ export default function StakingPool() {
             <PositionTitle flex={2.5}>Liquidity（TVL）</PositionTitle>
             <PositionTitle flex={2}>Fees(24H)</PositionTitle>
             <PositionTitle>Volume(24H)</PositionTitle>
-            <PositionTitle>Combined APR</PositionTitle>
+            <PositionTitle>
+              <div className="flex ai-center">
+                Combined APR
+                <QuestionHelper text="The APR (USD denominated) is calculated using token prices denominated in USD. Prices are fetched either from HopeSwap pools. Also, the APR is a 365 day projection based on each pool's performance over the last 24h. See Hope Ecosystem Disclaimers & Disclosures for more details" />{' '}
+              </div>
+            </PositionTitle>
             <PositionTitle>Actions</PositionTitle>
           </PositionTitleWrapper>
           <PoolSection>

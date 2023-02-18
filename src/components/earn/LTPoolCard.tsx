@@ -43,7 +43,7 @@ export default function LTPoolCard({
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
   return (
     <Wrapper>
-      <Card padding={'0'}>
+      <Card borderRadius={'0'} padding={'0'}>
         <AutoColumn gap={'lg'}>
           <RowFixed>
             <DoubleCurrencyLogo margin size={24} currency0={token0} currency1={token1} />

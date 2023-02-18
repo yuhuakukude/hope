@@ -7,6 +7,7 @@ const Card = styled(Box)<{ width?: string; padding?: string; border?: string; bo
   width: ${({ width }) => width ?? '100%'};
   border-radius: 16px;
   padding: 1.25rem;
+  overflow: hidden;
   padding: ${({ padding }) => padding};
   border: ${({ border }) => border};
   border-radius: ${({ borderRadius }) => borderRadius};

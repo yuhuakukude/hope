@@ -468,7 +468,7 @@ export default function StakingPoolDetail({
                   </Row>
                 </div>
               </Row>
-              <div style={{ width: '266px' }}>
+              <div style={{ width: '286px' }}>
                 <Row>
                   <div>
                     <TYPE.body>Base APR</TYPE.body>
