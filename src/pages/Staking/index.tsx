@@ -46,7 +46,6 @@ export default function Staking() {
   const toggleWalletModal = useWalletModalToggle()
   const [curType, setStakingType] = useState('stake')
   const { search } = useLocation()
-  const [curBuzType, setCurBuzType] = useState('')
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
   const [actionType, setActionType] = useState(ACTION.STAKE)
 
@@ -60,8 +59,6 @@ export default function Staking() {
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
-  // Subscribed
-  const [isSubscribed, setIsSubscribed] = useState<boolean>(false)
   // txn values
   const [txHash, setTxHash] = useState<string>('')
 
@@ -78,14 +75,6 @@ export default function Staking() {
   const { toWithdraw } = useToWithdraw()
   const { toClaim } = useToClaim()
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
-
-  const isUnSub = useMemo(() => {
-    let res = false
-    if (curBuzType === 'unStaking' && isSubscribed) {
-      res = true
-    }
-    return res
-  }, [curBuzType, isSubscribed])
 
   const totalRewards = useMemo(() => {
     let res
@@ -145,7 +134,6 @@ export default function Staking() {
 
   const stakingCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
-    setCurBuzType('')
     setCurToken(ST_HOPE[chainId ?? 1])
     onTxStart()
     setActionType(ACTION.STAKE)
@@ -188,24 +176,8 @@ export default function Staking() {
       })
   }, [account, inputAmount, library, chainId, onTxStart, toStaked, onTxSubmitted, onTxError])
 
-  const getIsSub = useCallback(async () => {
-    try {
-      const res = await StakingApi.getSubscriptionInfo({
-        address: account
-      })
-      if (res && res.result === false) {
-        setIsSubscribed(true)
-      } else {
-        setIsSubscribed(false)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }, [account])
-
   const unStakingCallback = useCallback(async () => {
     if (!amount || !account || !inputAmount) return
-    setCurBuzType('unStaking')
     setCurToken(undefined)
     onTxStart()
     setActionType(ACTION.UNSTAKING)
@@ -215,17 +187,15 @@ export default function Staking() {
         setStakePendingText('')
         onTxSubmitted(hash)
         setAmount('')
-        getIsSub()
       })
       .catch((err: any) => {
         setStakePendingText('')
         onTxError(err)
       })
-  }, [amount, account, inputAmount, onTxStart, toUnStaked, onTxSubmitted, getIsSub, onTxError])
+  }, [amount, account, inputAmount, onTxStart, toUnStaked, onTxSubmitted, onTxError])
 
   const claimCallback = useCallback(async () => {
     if (!account) return
-    setCurBuzType('')
     setCurToken(LT[chainId ?? 1])
     onTxStart()
     setClaimPendingText(`claim LT`)
@@ -243,7 +213,6 @@ export default function Staking() {
 
   const toWithdrawCallback = useCallback(async () => {
     if (!account) return
-    setCurBuzType('')
     setCurToken(HOPE[chainId ?? 1])
     onTxStart()
     setActionType(ACTION.WITHDRAW)
@@ -287,10 +256,7 @@ export default function Staking() {
 
   const init = useCallback(async () => {
     await initApy()
-    if (account) {
-      await getIsSub()
-    }
-  }, [account, getIsSub])
+  }, [])
 
   useEffect(() => {
     init()
@@ -338,7 +304,6 @@ export default function Staking() {
               : claimPendingText
           }
           currencyToAdd={curToken}
-          isShowSubscribe={isUnSub}
         />
         <div className="staking-page">
           <div className="staking-head">

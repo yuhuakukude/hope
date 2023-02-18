@@ -13,7 +13,6 @@ import MetaMaskLogo from '../../assets/images/metamask.png'
 import { getEtherscanLink } from '../../utils'
 import { useActiveWeb3React } from '../../hooks'
 import useAddTokenToMetamask from 'hooks/useAddTokenToMetamask'
-import SubscribeCon from '../ahp/SubscribeCon'
 import { ReactComponent as Commited } from '../../assets/svg/commited.svg'
 import { ReactComponent as Warning } from '../../assets/svg/warning.svg'
 import { ReactComponent as Reject } from '../../assets/svg/reject.svg'
@@ -52,7 +51,6 @@ function ConfirmationPendingContent({ onDismiss, pendingText }: { onDismiss: () 
         <ConfirmedIcon>
           <Wallet />
         </ConfirmedIcon>
-        {/* <SubscribeCon subSuccess={onDismiss} /> */}
         <AutoColumn gap="12px" justify={'center'}>
           <Text fontWeight={500} fontSize={20}>
             Waiting For Confirmation
@@ -75,14 +73,12 @@ function TransactionSubmittedContent({
   onDismiss,
   chainId,
   hash,
-  currencyToAdd,
-  isShowSubscribe
+  currencyToAdd
 }: {
   onDismiss: () => void
   hash: string | undefined
   chainId: ChainId
   currencyToAdd?: Currency | undefined
-  isShowSubscribe?: boolean
 }) {
   const theme = useContext(ThemeContext)
 
@@ -118,7 +114,6 @@ function TransactionSubmittedContent({
               )}
             </ButtonLight>
           )}
-          {isShowSubscribe && <SubscribeCon subSuccess={onDismiss} />}
           {chainId && hash && (
             <ExternalLink href={getEtherscanLink(chainId, hash, 'transaction')}>
               <Text mt="30px" mb="30px" fontWeight={500} fontSize={16} color={theme.primary1}>
@@ -222,7 +217,6 @@ interface ConfirmationModalProps {
   attemptingTxn: boolean
   pendingText: string
   currencyToAdd?: Currency | undefined
-  isShowSubscribe?: boolean
 }
 
 export default function TransactionConfirmationModal({
@@ -232,8 +226,7 @@ export default function TransactionConfirmationModal({
   hash,
   pendingText,
   content,
-  currencyToAdd,
-  isShowSubscribe
+  currencyToAdd
 }: ConfirmationModalProps) {
   const { chainId } = useActiveWeb3React()
 
@@ -250,7 +243,6 @@ export default function TransactionConfirmationModal({
           hash={hash}
           onDismiss={onDismiss}
           currencyToAdd={currencyToAdd}
-          isShowSubscribe={isShowSubscribe}
         />
       ) : (
         content()
