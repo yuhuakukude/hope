@@ -74,10 +74,13 @@ export const MenuItem = styled(RowBetween)`
   opacity: ${({ disabled, selected }) => (disabled || selected ? 0.5 : 1)};
 `
 
-export const SearchInput = styled.input`
+export const SearchInput = styled.input<{
+  padding?: string
+  fontSize?: string
+}>`
   position: relative;
   display: flex;
-  padding: 16px;
+  padding: ${({ padding }) => (padding ? padding : '16px')};
   align-items: center;
   width: 100%;
   white-space: nowrap;
@@ -90,7 +93,7 @@ export const SearchInput = styled.input`
   border: 1px solid ${({ theme }) => theme.bg3};
   -webkit-appearance: none;
 
-  font-size: 18px;
+  font-size: ${({ fontSize }) => (fontSize ? fontSize : '18px')};
 
   ::placeholder {
     color: ${({ theme }) => theme.text3};
