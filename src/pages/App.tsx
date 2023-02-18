@@ -109,7 +109,7 @@ export default function App() {
             <HeaderWrapper>
               <Header />
             </HeaderWrapper>
-            <BodyWrapper>
+            <BodyWrapper id="BodyWrapper">
               <Popups />
               <Polling />
               <TopLevelModals />
