@@ -7,7 +7,7 @@ export type FormaticSupportedChains = Extract<ChainId, ChainId.MAINNET | ChainId
 
 export const CHAIN_ID_NETWORK_ARGUMENT: { readonly [chainId in FormaticSupportedChains]: string | undefined } = {
   [ChainId.MAINNET]: 'ETH',
-  [ChainId.SEPOLIA]: 'Seplia',
+  [ChainId.SEPOLIA]: 'Sepolia',
   [ChainId.HOPE]: 'Hope'
 }
 

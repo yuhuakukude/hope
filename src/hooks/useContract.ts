@@ -6,7 +6,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk'
 import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
 import { useMemo } from 'react'
-import {GAS_ADDRESS, GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, PERMIT2_ADDRESS, UNI} from '../constants'
+import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, PERMIT2_ADDRESS, UNI } from '../constants'
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS
@@ -43,6 +43,7 @@ import GOMBOC_CONTROLLER_ABI from '../constants/abis/ahp/GOMBOC_CONTROLLER.json'
 import POOL_GOMBOC_ABI from '../constants/abis/ahp/POOL_GOMBOC.json'
 import FEE_DIS_ABI from '../constants/abis/ahp/Fee_Distributor.json'
 import GOM_FEE_DIS_ABI from '../constants/abis/ahp/Gomboc_Fee_Distributor.json'
+import useENSAddress from './useENSAddress'
 
 // returns null on errors
 export function useContract(address: string | undefined, ABI: any, withSignerIfPossible = true): Contract | null {
@@ -211,6 +212,7 @@ const CHAIN_DATA_ABI = [
 ]
 
 export function useGasPriceContract(): Contract | null {
-  const { chainId } = useActiveWeb3React()
-  return useContract(chainId && GAS_ADDRESS[chainId], CHAIN_DATA_ABI, true)
+  const { address } = useENSAddress('fast-gas-gwei.data.eth')
+
+  return useContract(address ?? undefined, CHAIN_DATA_ABI, true)
 }
