@@ -17,13 +17,13 @@ import AprApi from '../api/apr.api'
 export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
   const { account } = useActiveWeb3React()
   const [result, setResult] = useState<PoolInfo[]>([])
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = useState(0)
   const [resTokenList, setResTokenList] = useState<any>([])
   const [loading, setLoading] = useState<boolean>(false)
   // const [total, setTotal] = useState<number>(0)
   const pageSize = 10
   useEffect(() => {
-    setCurrentPage(1)
+    setCurrentPage(0)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [searchName])
 
@@ -31,24 +31,15 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
     ;(async () => {
       setLoading(true)
       try {
-        const { tokenList } = await fetchPairsList(
-          account ?? '',
-          searchName,
-          sort,
-          'apr',
-          (currentPage - 1) * pageSize,
-          pageSize
-        )
-
+        const allList = await fetchStakeList(account ?? '', '', sort, 'apr', 0, 200)
+        const tokenList = allList.map((e: PoolInfo) => ({
+          label: `${e.tokens[0].symbol}/${e.tokens[1].symbol}`,
+          value: e.stakingRewardAddress,
+          token0: e.tokens[0],
+          token1: e.tokens[1]
+        }))
         setResTokenList(tokenList)
-        const list = await fetchStakeList(
-          account ?? '',
-          searchName,
-          sort,
-          'apr',
-          (currentPage - 1) * pageSize,
-          pageSize
-        )
+        const list = await fetchStakeList(account ?? '', searchName, sort, 'apr', currentPage * pageSize, pageSize)
         const addressList = list.map((e: PoolInfo) => e.stakingRewardAddress)
         const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
         if (res) {
