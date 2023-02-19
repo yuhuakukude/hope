@@ -34,7 +34,7 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
         const allList = await fetchStakeList(account ?? '', '', sort, 'apr', 0, 200)
         const tokenList = allList.map((e: PoolInfo) => ({
           label: `${e.tokens[0].symbol}/${e.tokens[1].symbol}`,
-          value: e.stakingRewardAddress,
+          value: e.id,
           token0: e.tokens[0],
           token1: e.tokens[1]
         }))

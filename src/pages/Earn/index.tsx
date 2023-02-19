@@ -74,8 +74,7 @@ export default function Earn() {
   const [action, setAction] = useState<STAKE_ACTION>(STAKE_ACTION.STAKE)
   const [inputValue, setInputValue] = useState('')
   console.log(curType, setCurType, setSort)
-  const { result: stakingInfos, loading, page, tokenList } = useLPStakingInfos(inputValue, sort)
-  console.log('poolStakingInfos', page)
+  const { result: stakingInfos, loading, tokenList } = useLPStakingInfos(inputValue, sort)
   // staking info for connected account
 
   const typedAmount = tryParseAmount(typedValue, poolInfo?.lpToken)
@@ -321,6 +320,7 @@ export default function Earn() {
                 <RowFixed gap={'md'}>
                   <div style={{ width: '440px' }} className="m-r-20">
                     <SearchSelect
+                      isLarge={true}
                       getResult={adress => setInputValue(adress)}
                       placeholder={'Search Token Symbol / Address'}
                       list={tokenList}
