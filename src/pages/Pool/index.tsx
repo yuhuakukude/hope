@@ -1,11 +1,9 @@
-import React, { useContext, useMemo } from 'react'
+import React, { useContext } from 'react'
 import styled, { ThemeContext } from 'styled-components'
-import { Pair, JSBI } from '@uniswap/sdk'
 import { Link } from 'react-router-dom'
 import { SwapPoolTabs } from '../../components/NavigationTabs'
 
 import FullPositionCard from '../../components/PositionCard'
-import { useTokenBalancesWithLoadingIndicator } from '../../state/wallet/hooks'
 import { ExternalLink, TYPE, HideSmall } from '../../theme'
 
 import Card from '../../components/Card'
@@ -14,14 +12,11 @@ import { ButtonOutlined, ButtonPrimary } from '../../components/Button'
 import { AutoColumn, GapColumn } from '../../components/Column'
 
 import { useActiveWeb3React } from '../../hooks'
-import { usePairs } from '../../data/Reserves'
-import { toV2LiquidityToken, useTrackedTokenPairs } from '../../state/user/hooks'
 import { Dots } from '../../components/swap/styleds'
 import { CardSection } from '../../components/earn/styled'
-import { useStakingInfo } from '../../state/stake/hooks'
-import { BIG_INT_ZERO } from '../../constants'
 import empty from '../../assets/images/empty.png'
 import { useWalletModalToggle } from '../../state/application/hooks'
+import usePairsInfo from '../../hooks/usePairInfo'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
@@ -99,51 +94,11 @@ const PositionTitle = styled(TYPE.subHeader)`
 export default function Pool() {
   const theme = useContext(ThemeContext)
   const { account } = useActiveWeb3React()
-
   const toggleWalletModal = useWalletModalToggle()
-
   // fetch the user's balances of all tracked V2 LP tokens
-  const trackedTokenPairs = useTrackedTokenPairs()
-  const tokenPairsWithLiquidityTokens = useMemo(
-    () => trackedTokenPairs.map(tokens => ({ liquidityToken: toV2LiquidityToken(tokens), tokens })),
-    [trackedTokenPairs]
-  )
-  const liquidityTokens = useMemo(() => tokenPairsWithLiquidityTokens.map(tpwlt => tpwlt.liquidityToken), [
-    tokenPairsWithLiquidityTokens
-  ])
-  const [v2PairsBalances, fetchingV2PairBalances] = useTokenBalancesWithLoadingIndicator(
-    account ?? undefined,
-    liquidityTokens
-  )
-
-  // fetch the reserves for all V2 pools in which the user has a balance
-  const liquidityTokensWithBalances = useMemo(
-    () =>
-      tokenPairsWithLiquidityTokens.filter(({ liquidityToken }) =>
-        v2PairsBalances[liquidityToken.address]?.greaterThan('0')
-      ),
-    [tokenPairsWithLiquidityTokens, v2PairsBalances]
-  )
-
-  const v2Pairs = usePairs(liquidityTokensWithBalances.map(({ tokens }) => tokens))
-  const v2IsLoading =
-    fetchingV2PairBalances || v2Pairs?.length < liquidityTokensWithBalances.length || v2Pairs?.some(V2Pair => !V2Pair)
-
-  const allV2PairsWithLiquidity = v2Pairs.map(([, pair]) => pair).filter((v2Pair): v2Pair is Pair => Boolean(v2Pair))
-
-  // show liquidity even if its deposited in rewards contract
-  const stakingInfo = useStakingInfo()
-  const stakingInfosWithBalance = stakingInfo?.filter(pool => JSBI.greaterThan(pool.stakedAmount.raw, BIG_INT_ZERO))
-  const stakingPairs = usePairs(stakingInfosWithBalance?.map(stakingInfo => stakingInfo.tokens))
-
-  // remove any pairs that also are included in pairs with stake in mining pool
-  const v2PairsWithoutStakedAmount = allV2PairsWithLiquidity.filter(v2Pair => {
-    return (
-      stakingPairs
-        ?.map(stakingPair => stakingPair[1])
-        .filter(stakingPair => stakingPair?.liquidityToken.address === v2Pair.liquidityToken.address).length === 0
-    )
-  })
+  //const trackedTokenPairs = useBasePairs()
+  const { pairInfos, loading } = usePairsInfo()
+  console.log('pairs', pairInfos)
 
   return (
     <>
@@ -197,13 +152,13 @@ export default function Pool() {
                     Connect Wallet
                   </ButtonOutlined>
                 </Card>
-              ) : v2IsLoading ? (
+              ) : loading ? (
                 <EmptyProposals>
                   <TYPE.body color={theme.text3} textAlign="center">
                     <Dots>Loading</Dots>
                   </TYPE.body>
                 </EmptyProposals>
-              ) : allV2PairsWithLiquidity?.length > 0 || stakingPairs?.length > 0 ? (
+              ) : pairInfos?.length > 0 ? (
                 <>
                   {/*<ButtonSecondary>*/}
                   {/*  <RowBetween>*/}
@@ -220,8 +175,12 @@ export default function Pool() {
                     <PositionTitle>My Pool Share</PositionTitle>
                     <PositionTitle>Actions</PositionTitle>
                   </PositionTitleWrapper>
-                  {v2PairsWithoutStakedAmount.map(v2Pair => (
-                    <FullPositionCard key={v2Pair.liquidityToken.address} pair={v2Pair} />
+                  {pairInfos.map(amountPair => (
+                    <FullPositionCard
+                      key={amountPair.pair.liquidityToken.address}
+                      pairInfo={amountPair.pair}
+                      stakedBalance={amountPair.stakedAmount}
+                    />
                   ))}
                 </>
               ) : (
