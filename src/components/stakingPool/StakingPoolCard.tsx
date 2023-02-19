@@ -4,14 +4,16 @@ import Card from '../Card'
 import Row, { AutoRow, RowFixed } from '../Row'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { Text } from 'rebass'
-import { shortenAddress } from '../../utils'
 import { TYPE } from '../../theme'
 import Column, { GapColumn } from '../Column'
 import React from 'react'
 import { Link } from 'react-router-dom'
 import { Box } from 'rebass/styled-components'
 import format from '../../utils/format'
+import { useActiveWeb3React } from '../../hooks'
 import PieCharts from '../../components/pool/PieCharts'
+import { getEtherscanLink, shortenAddress } from '../../utils'
+import { ExternalLink } from '../../theme'
 
 const StyledPoolCard = styled(Card)`
   border-radius: 0;
@@ -41,6 +43,8 @@ export default function StakingPoolCard({ pair }: { pair: GraphPairInfo }) {
   const token0 = pair.token0
   const token1 = pair.token1
 
+  const { chainId } = useActiveWeb3React()
+
   return (
     <StyledPoolCard>
       <AutoRow>
@@ -50,9 +54,16 @@ export default function StakingPoolCard({ pair }: { pair: GraphPairInfo }) {
               <DoubleCurrencyLogo margin currency0={token0} currency1={token1} size={24} />
               <TYPE.white>{`${token0.symbol}/${token1.symbol}`}</TYPE.white>
             </RowFixed>
-            <Text ml={'-10px'} fontWeight={500}>
-              {shortenAddress(pair.address)}
-            </Text>
+            <div className="flex ai-center">
+              <Text ml={'-10px'} fontWeight={500}>
+                {shortenAddress(pair.address)}
+              </Text>
+              <ExternalLink href={`${getEtherscanLink(chainId || 1, pair.address, 'address')}`}>
+                <i className="iconfont" style={{ fontSize: '16px', marginLeft: '10px', color: '#fff' }}>
+                  &#xe60e;
+                </i>
+              </ExternalLink>
+            </div>
           </GapColumn>
         </ContentRow>
         <ContentRow>

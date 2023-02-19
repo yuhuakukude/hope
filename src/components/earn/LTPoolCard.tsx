@@ -76,11 +76,15 @@ export default function LTPoolCard({
             </RowBetween>
             <RowBetween>
               <TYPE.main>Pool Liquidity</TYPE.main>
-              <TYPE.white>{pool.totalStakedAmount ? pool.totalStakedAmount.toFixed(2) : '0'}</TYPE.white>
+              <TYPE.white>
+                {pool.totalStakedAmount ? pool.totalStakedAmount.toFixed(2, { groupSeparator: ',' }) : '0'}
+              </TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.main>Total staked</TYPE.main>
-              <TYPE.white>{pool.totalStakedAmount ? pool.totalStakedAmount.toFixed(2) : '0'}</TYPE.white>
+              <TYPE.white>
+                {pool.totalStakedAmount ? pool.totalStakedAmount.toFixed(2, { groupSeparator: ',' }) : '0'}
+              </TYPE.white>
             </RowBetween>
           </AutoColumn>
           <Divider style={{ margin: '8px 0', backgroundColor: '#3D3E46' }} />
@@ -91,16 +95,22 @@ export default function LTPoolCard({
             </RowBetween>
             <RowBetween>
               <TYPE.main>My Stakeable</TYPE.main>
-              <TYPE.white>{userLiquidityUnstaked ? `${userLiquidityUnstaked.toFixed(2)} LP token` : '--'}</TYPE.white>
+              <TYPE.white>
+                {userLiquidityUnstaked ? `${userLiquidityUnstaked.toFixed(2, { groupSeparator: ',' })} LP token` : '--'}
+              </TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.main>My Staked</TYPE.main>
-              <TYPE.white>{stakedAmount ? `${stakedAmount.toFixed(2)} LP token` : '--'}</TYPE.white>
+              <TYPE.white>
+                {stakedAmount ? `${stakedAmount.toFixed(2, { groupSeparator: ',' })} LP token` : '--'}
+              </TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.main>My Reward</TYPE.main>
               <RowFixed>
-                <TYPE.white>{earnedAmount ? `${earnedAmount.toFixed(2)} LT` : '--'}</TYPE.white>
+                <TYPE.white>
+                  {earnedAmount ? `${earnedAmount.toFixed(2, { groupSeparator: ',' })} LT` : '--'}
+                </TYPE.white>
                 {earnedAmount && earnedAmount.greaterThan(JSBI.BigInt(0)) && (
                   <ButtonOutlined
                     ml={'12px'}

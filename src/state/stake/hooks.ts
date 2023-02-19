@@ -355,6 +355,7 @@ export interface PoolInfo {
 
   volume1Amount: TokenAmount
 
+  id?: string
   baseApr?: string | undefined
   feeApr?: string | undefined
   ltAmountPerDay?: string | undefined
@@ -402,7 +403,8 @@ export async function fetchStakeList(
   size = 10
 ): Promise<PoolInfo[]> {
   const query = `{
-  poolGombocs {
+      poolGombocs(first: ${size}, skip: ${skip}, orderDirection: ${sort}, ${searchContent &&
+    `where: {pair_:{id: "${searchContent}"}}`}) {
     id
     totalStakedBalanceUSD
     totalStakedBalance
@@ -469,6 +471,7 @@ export async function fetchStakeList(
       const stakingToken = new Token(11155111, pool.id, 18, '')
       return {
         stakingRewardAddress,
+        id: pool.pair.id,
         tokens,
         pair: dummyPair,
         lpToken: dummyPair.liquidityToken,

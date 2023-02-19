@@ -657,7 +657,7 @@ export default function LiquidityStake({
                       ) ? (
                       'Insufficient LP'
                     ) : (
-                      'Deposit'
+                      'Stake'
                     )}
                   </ButtonError>
                 </RowBetween>

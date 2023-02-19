@@ -90,7 +90,7 @@ export default function StakingPool() {
   const { result: overviewData } = useOverviewData()
   const viewData: OverviewData[] = [
     {
-      title: 'Pool Overview',
+      title: 'TVL',
       isRise: !!overviewData && overviewData.tvlChangeUSD > 0,
       rate: overviewData ? `${overviewData.tvlChangeUSD.toFixed(2)} %` : `--`,
       amount: overviewData ? `$${format.separate(Number(overviewData.tvl).toFixed(2))}` : `--`
@@ -214,17 +214,6 @@ export default function StakingPool() {
               <AutoColumn justify="end">
                 <RowFixed gap={'md'}>
                   <div style={{ width: '440px' }} className="m-r-20">
-                    {/* <SearchInput
-                      fontSize={'16px'}
-                      padding={'10px 16px 10px 45px'}
-                      type="text"
-                      id="token-search-input"
-                      placeholder={'Search Token Symbol / Address'}
-                      autoComplete="off"
-                      ref={inputRef as RefObject<HTMLInputElement>}
-                      value={inputValue}
-                      onChange={handleInput}
-                    /> */}
                     <SearchSelect
                       getResult={adress => setInputValue(adress)}
                       placeholder={'Search Token Symbol / Address'}

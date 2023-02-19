@@ -83,10 +83,13 @@ export async function getPairChartDaysData(pairAddress: string): Promise<any[]> 
 
 export async function getPairChart24HourData(pairAddress: string): Promise<any[]> {
   let data: any = []
-  const endTime = dayjs.utc().unix()
+  const endTime = dayjs
+    .utc()
+    .subtract(1, 'hour')
+    .unix()
   const startTime = dayjs
     .utc()
-    .subtract(24, 'hour')
+    .subtract(25, 'hour')
     .endOf('hour')
     .unix()
 

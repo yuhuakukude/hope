@@ -4,7 +4,7 @@ import { usePairTxs, useStakingPairPool } from '../../hooks/useLPStaking'
 import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
 import { AutoColumn } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
-import { TYPE } from '../../theme'
+import { TYPE, ExternalLink } from '../../theme'
 import { GreyCard, LightCard } from '../../components/Card'
 import { LT } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
@@ -21,7 +21,7 @@ import { useLtMinterContract, useStakingContract } from '../../hooks/useContract
 import { useSingleCallResult } from '../../state/multicall/hooks'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
-import { calculateGasMargin, shortenAddress } from '../../utils'
+import { calculateGasMargin, shortenAddress, getEtherscanLink } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
@@ -176,7 +176,7 @@ export default function StakingPoolDetail({
   }
 
   const getTimeframe = (timeWindow: string) => {
-    const utcEndTime = dayjs.utc()
+    const utcEndTime = dayjs.utc().subtract(1, 'day')
     let utcStartTime = undefined
     if (timeWindow === '7Day') {
       utcStartTime =
@@ -252,7 +252,16 @@ export default function StakingPoolDetail({
         }
         // xArr.unshift(format.formatDate(item.hourStartUnix, 'HH:mm'))
         xArr.unshift(item.hourStartUnix)
-      } else if (utcStartTime && item.date >= utcStartTime) {
+      } else if (
+        utcStartTime &&
+        item.date >= utcStartTime &&
+        item.date <
+          dayjs
+            .utc()
+            .endOf('day')
+            .subtract(1, 'day')
+            .unix()
+      ) {
         if (tabIndex === 'Volume') {
           yArr.push(item.dailyVolumeUSD?.toFixed(2))
         }
@@ -279,7 +288,7 @@ export default function StakingPoolDetail({
 
   const viewData: OverviewData[] = [
     {
-      title: 'Pool Overview',
+      title: 'TVL',
       isRise: !!pool && pool.tvlChangeUSD > 0,
       rate: pool ? `${pool.tvlChangeUSD.toFixed(2)} %` : `--`,
       amount: pool ? `$${format.separate(Number(pool.tvl).toFixed(2))}` : `--`
@@ -389,7 +398,7 @@ export default function StakingPoolDetail({
   }, [initFn])
 
   return (
-    <AutoColumn style={{ width: '100%', padding: '0 30px' }}>
+    <AutoColumn style={{ width: '100%', padding: '0 30px', maxWidth: '1440px' }}>
       {pool && (
         <ClaimRewardModal
           isOpen={showClaimModal}
@@ -649,7 +658,11 @@ export default function StakingPoolDetail({
                             }`}</TYPE.subHeader>
                           </TxItem>
                           <TxItem>
-                            <TYPE.subHeader>{`${shortenAddress(tx.sender)}`}</TYPE.subHeader>
+                            <ExternalLink href={`${getEtherscanLink(chainId || 1, tx.sender, 'address')}`}>
+                              <TYPE.subHeader style={{ color: '#fff' }}>{`${shortenAddress(
+                                tx.sender
+                              )}`}</TYPE.subHeader>
+                            </ExternalLink>
                           </TxItem>
                           <TxItem>
                             <TYPE.subHeader>{`${Date.parse(tx.transaction.timestamp)}`}</TYPE.subHeader>
@@ -676,9 +689,17 @@ export default function StakingPoolDetail({
 
                 <LightCard>
                   <AutoRow align={'flex-start'}>
-                    <TableTitle>{shortenAddress(address)}</TableTitle>
+                    <TableTitle>
+                      <ExternalLink href={`${getEtherscanLink(chainId || 1, address, 'address')}`}>
+                        <span style={{ color: '#fff' }}>{shortenAddress(address)}</span>
+                      </ExternalLink>
+                    </TableTitle>
                     <TableTitle>2022/01/21 15:02:39</TableTitle>
-                    <TableTitle flex={0.8}>{shortenAddress(address)}</TableTitle>
+                    <TableTitle flex={0.8}>
+                      <ExternalLink href={`${getEtherscanLink(chainId || 1, address, 'address')}`}>
+                        <span style={{ color: '#fff' }}>{shortenAddress(address)}</span>
+                      </ExternalLink>
+                    </TableTitle>
                     <TableTitle flex={0.8}>0.30%</TableTitle>
                     <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
                       <TableTitle>{pool ? `$${pool.totalVolume.toFixed(2)}` : '--'}</TableTitle>
