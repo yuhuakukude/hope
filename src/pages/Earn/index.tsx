@@ -26,6 +26,7 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import { ethers } from 'ethers'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
+import { useWalletModalToggle } from '../../state/application/hooks'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -56,6 +57,7 @@ const PoolSection = styled.div`
 type Sort = 'asc' | 'desc'
 
 export default function Earn() {
+  const toggleWalletModal = useWalletModalToggle()
   const { chainId, account, library } = useActiveWeb3React()
   const [curType, setCurType] = useState(1)
   const [showStakeModal, setShowStakeModal] = useState(false)
@@ -268,7 +270,9 @@ export default function Earn() {
         <StakingModal
           action={action}
           onStake={action => {
-            action === STAKE_ACTION.UNSTAKE
+            !account
+              ? toggleWalletModal()
+              : action === STAKE_ACTION.UNSTAKE
               ? onUnstakeCallback()
               : approvalState === ApprovalState.NOT_APPROVED
               ? onApproveCallback()
