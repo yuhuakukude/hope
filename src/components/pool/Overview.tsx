@@ -1,5 +1,4 @@
 import React from 'react'
-import { PoolInfo } from '../../state/stake/hooks'
 // import Row from '../Row'
 import { RowBetween } from '..//Row'
 import styled from 'styled-components'
@@ -21,6 +20,7 @@ const RateText = styled.p`
 `
 
 const Text2 = styled.p`
+  font-size: 16px;
   color: ${({ theme }) => theme.text2};
 `
 export interface OverviewData {
@@ -30,21 +30,13 @@ export interface OverviewData {
   amount: string
 }
 
-export default function PieCharts({
-  pool,
-  smallSize,
-  viewData
-}: {
-  pool?: PoolInfo
-  smallSize?: boolean
-  viewData: OverviewData[]
-}) {
+export default function PieCharts({ smallSize, viewData }: { smallSize?: boolean; viewData: OverviewData[] }) {
   const PoolOverview = () => {
     const OverviewBlock = ({ data }: { data: OverviewData }) => {
       return (
         <div>
           <RowBetween>
-            <Text2>{data.title}</Text2>
+            <Text2 style={{ fontSize: `${smallSize ? '14px' : '16px'}` }}>{data.title}</Text2>
             <RiseText data={data} />
           </RowBetween>
           <p

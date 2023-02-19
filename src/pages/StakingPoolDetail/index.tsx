@@ -176,7 +176,7 @@ export default function StakingPoolDetail({
   }
 
   const getTimeframe = (timeWindow: string) => {
-    const utcEndTime = dayjs.utc()
+    const utcEndTime = dayjs.utc().subtract(1, 'day')
     let utcStartTime = undefined
     if (timeWindow === '7Day') {
       utcStartTime =
@@ -252,7 +252,16 @@ export default function StakingPoolDetail({
         }
         // xArr.unshift(format.formatDate(item.hourStartUnix, 'HH:mm'))
         xArr.unshift(item.hourStartUnix)
-      } else if (utcStartTime && item.date >= utcStartTime) {
+      } else if (
+        utcStartTime &&
+        item.date >= utcStartTime &&
+        item.date <
+          dayjs
+            .utc()
+            .endOf('day')
+            .subtract(1, 'day')
+            .unix()
+      ) {
         if (tabIndex === 'Volume') {
           yArr.push(item.dailyVolumeUSD?.toFixed(2))
         }
@@ -279,7 +288,7 @@ export default function StakingPoolDetail({
 
   const viewData: OverviewData[] = [
     {
-      title: 'Pool Overview',
+      title: 'TVL',
       isRise: !!pool && pool.tvlChangeUSD > 0,
       rate: pool ? `${pool.tvlChangeUSD.toFixed(2)} %` : `--`,
       amount: pool ? `$${format.separate(Number(pool.tvl).toFixed(2))}` : `--`
@@ -389,7 +398,7 @@ export default function StakingPoolDetail({
   }, [initFn])
 
   return (
-    <AutoColumn style={{ width: '100%', padding: '0 30px' }}>
+    <AutoColumn style={{ width: '100%', padding: '0 30px', maxWidth: '1440px' }}>
       {pool && (
         <ClaimRewardModal
           isOpen={showClaimModal}

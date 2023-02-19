@@ -119,6 +119,7 @@ export default function PieCharts({
     })
     window.addEventListener('resize', () => handleResizeChart(myChart))
     return () => {
+      window.removeEventListener('resize', () => handleResizeChart(myChart))
       myChart.dispose()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
