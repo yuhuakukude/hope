@@ -6,8 +6,7 @@ import { AutoRow, RowFixed } from '../../components/Row'
 import { CardSection, DataCard, EarnBGImage } from '../../components/earn/styled'
 import Loader from '../../components/Loader'
 import { OutlineCard } from '../../components/Card'
-import { SearchInput } from '../../components/SearchModal/styleds'
-import { ButtonGray } from '../../components/Button'
+import SearchSelect from '../../components/SearchSelect'
 import { useLPStakingInfos } from '../../hooks/useLPStaking'
 import LTPoolCard from '../../components/earn/LTPoolCard'
 import { PoolInfo } from '../../state/stake/hooks'
@@ -65,7 +64,6 @@ export default function Earn() {
   const addTransaction = useTransactionAdder()
 
   const [poolInfo, setPoolInfo] = useState<PoolInfo | undefined>()
-  const [searchContent, setSearchContent] = useState('')
   const [sort, setSort] = useState<Sort>('desc')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
@@ -74,8 +72,9 @@ export default function Earn() {
   const [typedValue, setTypedValue] = useState('')
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [action, setAction] = useState<STAKE_ACTION>(STAKE_ACTION.STAKE)
-  console.log(curType, setCurType, setSearchContent, setSort)
-  const { result: stakingInfos, loading, page } = useLPStakingInfos(searchContent, sort)
+  const [inputValue, setInputValue] = useState('')
+  console.log(curType, setCurType, setSort)
+  const { result: stakingInfos, loading, page, tokenList } = useLPStakingInfos(inputValue, sort)
   console.log('poolStakingInfos', page)
   // staking info for connected account
 
@@ -318,18 +317,17 @@ export default function Earn() {
                 <TYPE.main>Total Value Locked(TVL)</TYPE.main>
                 <TYPE.white fontSize={28}>$1,934,015,678.26</TYPE.white>
               </AutoColumn>
-              <RowFixed>
-                <SearchInput
-                  width={640}
-                  type="text"
-                  id="token-search-input"
-                  placeholder={'Search Token Symbol / Address'}
-                  autoComplete="off"
-                  value={searchContent}
-                  onChange={value => setSearchContent(value.target.value)}
-                />
-                <ButtonGray ml={'20px'}>Search</ButtonGray>
-              </RowFixed>
+              <AutoColumn>
+                <RowFixed gap={'md'}>
+                  <div style={{ width: '440px' }} className="m-r-20">
+                    <SearchSelect
+                      getResult={adress => setInputValue(adress)}
+                      placeholder={'Search Token Symbol / Address'}
+                      list={tokenList}
+                    ></SearchSelect>
+                  </div>
+                </RowFixed>
+              </AutoColumn>
             </AutoColumn>
           </CardSection>
           <EarnBGImage />

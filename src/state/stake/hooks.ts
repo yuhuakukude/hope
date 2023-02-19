@@ -401,8 +401,9 @@ export async function fetchStakeList(
   skip = 0,
   size = 10
 ): Promise<PoolInfo[]> {
-  const query = `{
-  poolGombocs {
+  console.log(searchContent, '😈')
+  const query =  `{
+      poolGombocs(${searchContent ? `where: {id:"${searchContent}"}` : ''}) {
     id
     totalStakedBalanceUSD
     totalStakedBalance

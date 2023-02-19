@@ -21,7 +21,7 @@ import { CardSection } from '../../components/earn/styled'
 import { useStakingInfo } from '../../state/stake/hooks'
 import { BIG_INT_ZERO } from '../../constants'
 import empty from '../../assets/images/empty.png'
-import {useWalletModalToggle} from "../../state/application/hooks";
+import { useWalletModalToggle } from '../../state/application/hooks'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
