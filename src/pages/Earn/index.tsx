@@ -7,7 +7,8 @@ import { CardSection, DataCard, EarnBGImage } from '../../components/earn/styled
 import Loader from '../../components/Loader'
 import { OutlineCard } from '../../components/Card'
 import SearchSelect from '../../components/SearchSelect'
-import { useLPStakingInfos } from '../../hooks/useLPStaking'
+import format from 'utils/format'
+import { useLPStakingInfos, useLPTotalLocked} from '../../hooks/useLPStaking'
 import LTPoolCard from '../../components/earn/LTPoolCard'
 import { PoolInfo } from '../../state/stake/hooks'
 import StakingModal, { STAKE_ACTION } from '../../components/earn/StakingModal'
@@ -26,6 +27,7 @@ import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../perm
 import { ethers } from 'ethers'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
 import { useWalletModalToggle } from '../../state/application/hooks'
+
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -75,6 +77,7 @@ export default function Earn() {
   const [inputValue, setInputValue] = useState('')
   console.log(curType, setCurType, setSort)
   const { result: stakingInfos, loading, tokenList } = useLPStakingInfos(inputValue, sort)
+  const { totalAmount } = useLPTotalLocked()
   // staking info for connected account
 
   const typedAmount = tryParseAmount(typedValue, poolInfo?.lpToken)
@@ -311,17 +314,17 @@ export default function Earn() {
                   Provide Liquidity, Earn $LT
                 </TYPE.white>
                 <a
-                  href="https://docs.hope.money/light/lRGc3srjpd2008mDaMdR/light-hyfi-applications-roadmap/roadmap"
+                  href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="link text-primary m-l-20 flex ai-center"
+                  className="link m-l-0 text-primary flex ai-center"
                 >
-                  Learn more <i className="iconfont m-l-5">&#xe619;</i>{' '}
+                  Tutorial <i className="iconfont m-l-5">&#xe619;</i>{' '}
                 </a>
               </AutoRow>
               <AutoColumn gap={'sm'}>
                 <TYPE.main>Total Value Locked(TVL)</TYPE.main>
-                <TYPE.white fontSize={28}>$1,934,015,678.26</TYPE.white>
+                <TYPE.white fontSize={28}>$ {format.amountFormat(totalAmount, 2)}</TYPE.white>
               </AutoColumn>
               <AutoColumn>
                 <RowFixed gap={'md'}>
