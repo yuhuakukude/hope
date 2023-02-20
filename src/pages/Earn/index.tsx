@@ -310,7 +310,14 @@ export default function Earn() {
                 <TYPE.white fontSize={28} fontWeight={600}>
                   Provide Liquidity, Earn $LT
                 </TYPE.white>
-                <TYPE.link>Tutorial</TYPE.link>
+                <a
+                  href="https://docs.hope.money/light/lRGc3srjpd2008mDaMdR/light-hyfi-applications-roadmap/roadmap"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="link text-primary m-l-20 flex ai-center"
+                >
+                  Learn more <i className="iconfont m-l-5">&#xe619;</i>{' '}
+                </a>
               </AutoRow>
               <AutoColumn gap={'sm'}>
                 <TYPE.main>Total Value Locked(TVL)</TYPE.main>
