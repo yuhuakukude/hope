@@ -834,7 +834,6 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const d2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoDayBlock.number, stakingAddress }))
     const w1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: oneWeekBlock.number, stakingAddress }))
     const w2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoWeekBlock?.number, stakingAddress }))
-
     const pair = res.data.pairs[0]
     const d1Pair = d1Res?.data.pairs[0]
     const d2Pair = d2Res?.data.pairs[0]
@@ -846,7 +845,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
 
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
       pair.totalVolumeUSD,
-      w1Pair.volumeUSD,
+      w1Pair?.volumeUSD,
       w2Pair?.volumeUSD
     )
 
@@ -867,7 +866,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const token0Price = pair.token0Price
     const token1Price = pair.token1Price
     return {
-      tvl: Number(pair.reserveUSD),
+      tvl: Number(pair?.reserveUSD),
       oneDayTVLUSD: Number(oneDayTVLUSD),
       tvlChangeUSD: Number(tvlChangeUSD),
       oneDayVolumeUSD: Number(oneDayVolumeUSD),
@@ -893,6 +892,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       volumeAmount: tryParseAmount(pair.volumeUSD, dummyPair.liquidityToken) as TokenAmount
     }
   } catch (error) {
+    console.log('error', error)
     return undefined
   }
 }
