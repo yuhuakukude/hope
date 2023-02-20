@@ -911,6 +911,7 @@ export async function fetchGlobalData() {
       utcTwoWeeksBack
     ])
     const totalRes = await postQuery(SUBGRAPH, GLOBAL_QUERY())
+    console.log('totalRes', totalRes)
     const d1Res = await postQuery(SUBGRAPH, GLOBAL_QUERY(oneDayBlock.number))
     const d2Res = await postQuery(SUBGRAPH, GLOBAL_QUERY(twoDayBlock.number))
 
@@ -919,27 +920,27 @@ export async function fetchGlobalData() {
     const w2Res = await postQuery(SUBGRAPH, GLOBAL_QUERY(twoWeekBlock?.number))
 
     const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0].totalLiquidityUSD,
-      d1Res.data.lightswapFactories[0].totalLiquidityUSD,
-      d2Res.data.lightswapFactories[0].totalLiquidityUSD
+      totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
+      d1Res.data.lightswapFactories[0]?.totalLiquidityUSD,
+      d2Res.data.lightswapFactories[0]?.totalLiquidityUSD
     )
 
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0].totalVolumeUSD,
-      d1Res.data.lightswapFactories[0].totalVolumeUSD,
-      d2Res.data.lightswapFactories[0].totalVolumeUSD
+      totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
+      d1Res.data.lightswapFactories[0]?.totalVolumeUSD,
+      d2Res.data.lightswapFactories[0]?.totalVolumeUSD
     )
 
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0].totalVolumeUSD,
-      w1Res.data.lightswapFactories[0].totalVolumeUSD,
-      w2Res.data.lightswapFactories[0].totalVolumeUSD
+      totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
+      w1Res.data.lightswapFactories[0]?.totalVolumeUSD,
+      w2Res.data.lightswapFactories[0]?.totalVolumeUSD
     )
     return {
-      tvl: totalRes.data.lightswapFactories[0].totalLiquidityUSD,
+      tvl: totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
       tvlChangeUSD,
       oneDayTVLUSD,
-      totalVolume: totalRes.data.lightswapFactories[0].totalVolumeUSD,
+      totalVolume: totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
       oneDayVolumeUSD,
       volumeChangeUSD,
       dayFees: oneDayVolumeUSD * 0.003,
@@ -947,7 +948,7 @@ export async function fetchGlobalData() {
       weeklyVolumeChange
     }
   } catch (error) {
-    console.error(error)
+    console.error('fetchGlobalData', error)
     return undefined
   }
 }
