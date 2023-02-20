@@ -518,7 +518,10 @@ export default function StakingPoolDetail({
                   {!!yCurrentData && (
                     <div>
                       <p className="text-success font-20 text-medium text-right">
-                        $ {format.amountFormat(yCurrentData, 2)}
+                        ${' '}
+                        {yCurrentData === 'total'
+                          ? format.separate(Number(pool?.tvl).toFixed(2))
+                          : format.amountFormat(yCurrentData, 2)}
                       </p>
                       <p className="font-nor text-right m-t-12">
                         {xCurrentData === 'total' ? `Last ${timeIndex}` : xCurrentData}
@@ -532,7 +535,6 @@ export default function StakingPoolDetail({
                   xData={xData}
                   yData={yData}
                   height={330}
-                  total={chartTotal}
                   is24Hour={timeIndex === '24H'}
                   getCurrentData={getCurrentData}
                 ></LineCharts>
