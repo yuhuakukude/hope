@@ -39,7 +39,7 @@ export default function Detail({ withdrawAll, overviewData, hopePrice, platformF
           <p className="text-white lh15">
             Your lock expires soon. You need to lock at least for two weeks in
             <NavLink to={'/dao/locker'}>
-              <span className="text-primary">Locker</span>
+              <span className="text-primary"> Locker </span>
             </NavLink>
           </p>
         </div>
