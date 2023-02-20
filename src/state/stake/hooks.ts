@@ -911,7 +911,6 @@ export async function fetchGlobalData() {
       utcTwoWeeksBack
     ])
     const totalRes = await postQuery(SUBGRAPH, GLOBAL_QUERY())
-    console.log('totalRes', totalRes)
     const d1Res = await postQuery(SUBGRAPH, GLOBAL_QUERY(oneDayBlock.number))
     const d2Res = await postQuery(SUBGRAPH, GLOBAL_QUERY(twoDayBlock.number))
 
