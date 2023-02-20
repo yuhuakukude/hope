@@ -16,7 +16,7 @@ export const timeframeOptions = {
   ALL_TIME: 'All time'
 }
 
-export const ROUTER_ADDRESS = '0x812Cd1878203Ff2Bdf46b38FFc1e62A93f3cE9dD'
+export const ROUTER_ADDRESS = '0x6D462210539D9e37dcaea17A825A50b6df20a9E4'
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
