@@ -36,7 +36,7 @@ export default function usePairsInfo() {
         .map((pair, index) => {
           return {
             pair,
-            stakedAmount: stakedAmounts[index].result
+            stakedAmount: stakedAmounts[index]?.result
               ? new TokenAmount(pair.liquidityToken, stakedAmounts[index].result?.[0])
               : undefined
           }

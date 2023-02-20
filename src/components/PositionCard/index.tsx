@@ -8,7 +8,7 @@ import { useTotalSupply } from '../../data/TotalSupply'
 
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
-import { TYPE } from '../../theme'
+import { ExternalLink, TYPE } from '../../theme'
 import { currencyId } from '../../utils/currencyId'
 import { unwrappedToken } from '../../utils/wrappedCurrency'
 
@@ -19,7 +19,7 @@ import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed, AutoRow } from '../Row'
 import { BIG_INT_ZERO } from '../../constants'
-import { shortenAddress } from '../../utils'
+import { getEtherscanLink, shortenAddress } from '../../utils'
 import { usePair } from '../../data/Reserves'
 
 export const FixedHeightRow = styled(RowBetween)`
@@ -166,7 +166,7 @@ interface FullCardProps {
 }
 
 export default function FullPositionCard({ pairInfo, border, stakedBalance }: FullCardProps) {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
 
   const currency0 = unwrappedToken(pairInfo.tokens[0])
   const currency1 = unwrappedToken(pairInfo.tokens[1])
@@ -193,7 +193,6 @@ export default function FullPositionCard({ pairInfo, border, stakedBalance }: Fu
           pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false)
         ]
       : [undefined, undefined]
-  console.log('userPoolBalance', token1Deposited?.raw.toString(), userPoolBalance?.raw.toString())
 
   const backgroundColor = useColor(pair?.token0)
 
@@ -202,9 +201,15 @@ export default function FullPositionCard({ pairInfo, border, stakedBalance }: Fu
       <AutoRow>
         <ContentRow>
           <DoubleCurrencyLogo margin currency0={currency0} currency1={currency1} size={24} />
-          <Text ml={10} fontWeight={500} fontSize={20}>
+          <TYPE.link
+            as={ExternalLink}
+            href={getEtherscanLink(chainId ?? 1, pairInfo.liquidityToken.address, 'address')}
+            ml={10}
+            fontWeight={500}
+            fontSize={20}
+          >
             {shortenAddress(pairInfo.liquidityToken.address)}
-          </Text>
+          </TYPE.link>
         </ContentRow>
         <ContentRow>
           <Text fontSize={16} fontWeight={500}>
