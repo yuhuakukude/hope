@@ -435,7 +435,7 @@ export default function StakingPoolDetail({
           <ButtonPrimary
             as={Link}
             width={'150px'}
-            to={`/swap/add/?inputCurrency=${pool?.tokens?.[0].address}&outputCurrency=${pool?.tokens?.[1].address}`}
+            to={`/swap/add/${pool?.tokens?.[0].address}/${pool?.tokens?.[1].address}`}
           >
             Add Liquidity
           </ButtonPrimary>
@@ -703,7 +703,7 @@ export default function StakingPoolDetail({
                     <TableTitle>{formatUTCDate(pool?.createAt)}</TableTitle>
                     <TableTitle flex={0.8}>
                       <ExternalLink href={`${getEtherscanLink(chainId || 1, address, 'address')}`}>
-                        <span style={{ color: '#fff' }}>{shortenAddress(address)}</span>
+                        <span style={{ color: '#fff' }}>--</span>
                       </ExternalLink>
                     </TableTitle>
                     <TableTitle flex={0.8}>0.30%</TableTitle>
@@ -722,7 +722,7 @@ export default function StakingPoolDetail({
                         </TYPE.main>
                       </AutoRow>
                     </AutoColumn>
-                    <TableTitle>{pool ? (pool.totalVolume * 0.003).toFixed() : '--'}</TableTitle>
+                    <TableTitle>{pool ? `$${(pool.totalVolume * 0.003).toFixed()}` : '--'}</TableTitle>
                     <TableTitle>{pool ? pool.txCount : '--'}</TableTitle>
                   </AutoRow>
                 </LightCard>

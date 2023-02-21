@@ -44,7 +44,6 @@ const TitleRow = styled(RowBetween)`
 `
 
 const ButtonRow = styled(RowFixed)`
-  width: 300px;
   gap: 8px;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     width: 100%;
@@ -95,10 +94,7 @@ export default function Pool() {
   const theme = useContext(ThemeContext)
   const { account } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
-  // fetch the user's balances of all tracked V2 LP tokens
-  //const trackedTokenPairs = useBasePairs()
   const { pairInfos, loading } = usePairsInfo()
-  console.log('pairs', pairInfos)
 
   return (
     <>
@@ -111,9 +107,6 @@ export default function Pool() {
           </HideSmall>
           {account && (
             <ButtonRow>
-              <ButtonPrimary as={Link} padding="12px 16px" to="/swap/find">
-                Import
-              </ButtonPrimary>
               <ButtonPrimary id="join-pool-button" as={Link} padding="12px 16px" borderRadius="12px" to="/swap/add/ETH">
                 New Position
               </ButtonPrimary>
