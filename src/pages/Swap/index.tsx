@@ -353,7 +353,7 @@ export default function Swap({ history }: RouteComponentProps) {
     // if (txHash) {
     //   onUserInput(Field.INPUT, '')
     // }
-  }, [attemptingTxn, swapErrorMessage, tradeToConfirm, txHash])
+  }, [attemptingTxn, swapErrorMessage, tradeToConfirm, txHash, pendingMessage])
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
