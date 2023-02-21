@@ -8,7 +8,7 @@ import Loader from '../../components/Loader'
 import { OutlineCard } from '../../components/Card'
 import SearchSelect from '../../components/SearchSelect'
 import format from 'utils/format'
-import { useLPStakingInfos, useLPTotalLocked} from '../../hooks/useLPStaking'
+import { useLPStakingInfos, useLPTotalLocked } from '../../hooks/useLPStaking'
 import LTPoolCard from '../../components/earn/LTPoolCard'
 import { PoolInfo } from '../../state/stake/hooks'
 import StakingModal, { STAKE_ACTION } from '../../components/earn/StakingModal'
@@ -27,7 +27,7 @@ import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../perm
 import { ethers } from 'ethers'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
 import { useWalletModalToggle } from '../../state/application/hooks'
-
+import { Switch, Select } from 'antd'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -58,11 +58,14 @@ const PoolSection = styled.div`
 type Sort = 'asc' | 'desc'
 
 export default function Earn() {
+  const { Option } = Select
   const toggleWalletModal = useWalletModalToggle()
   const { chainId, account, library } = useActiveWeb3React()
   const [curType, setCurType] = useState(1)
+  const [userCurrency, setUserCurrency] = useState('')
   const [showStakeModal, setShowStakeModal] = useState(false)
   const [showClaimModal, setShowClaimModal] = useState(false)
+  const [isMyVote, setIsMyVote] = useState(false)
   const addTransaction = useTransactionAdder()
 
   const [poolInfo, setPoolInfo] = useState<PoolInfo | undefined>()
@@ -76,7 +79,7 @@ export default function Earn() {
   const [action, setAction] = useState<STAKE_ACTION>(STAKE_ACTION.STAKE)
   const [inputValue, setInputValue] = useState('')
   console.log(curType, setCurType, setSort)
-  const { result: stakingInfos, loading, tokenList } = useLPStakingInfos(inputValue, sort)
+  const { result: stakingInfos, loading, tokenList } = useLPStakingInfos(inputValue, sort, isMyVote)
   const { totalAmount } = useLPTotalLocked()
   // staking info for connected account
 
@@ -265,6 +268,10 @@ export default function Earn() {
       })
   }, [account, library, chainId, poolInfo, onTxStart, onClaim, onTxSubmitted, onTxError])
 
+  const changeSwitch = (val: boolean) => {
+    setIsMyVote(val)
+  }
+
   return (
     <PageWrapper gap="lg" justify="center">
       {poolInfo && (
@@ -311,7 +318,7 @@ export default function Earn() {
             <AutoColumn style={{ padding: 30 }} gap="lg">
               <AutoRow gap={'20px'}>
                 <TYPE.white fontSize={28} fontWeight={600}>
-                  Provide Liquidity, Earn $LT
+                  Provide Liquidity, Earn $LT{`${isMyVote}`}
                 </TYPE.white>
                 <a
                   href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
@@ -343,6 +350,32 @@ export default function Earn() {
           <EarnBGImage />
         </DataCard>
       </TopSection>
+
+      <div className="action flex jc-between ai-center" style={{ width: '100%' }}>
+        <div>
+          <span className="text-white text-medium font-nor">My Staked Only</span>
+          <Switch className="m-l-10 is-grey" onChange={changeSwitch} />
+        </div>
+        <div>
+          <Select
+            style={{ width: '210px', height: '42px' }}
+            value={userCurrency}
+            onChange={(val: string) => {
+              setUserCurrency(val)
+            }}
+            placeholder="Available Balance"
+            className="hp-select m-t-10"
+          >
+            {['WETH', 'USDC', 'LT', 'USDT', 'HOPE'].map((data: any, index: number) => {
+              return (
+                <Option key={index} value={data}>
+                  {data}
+                </Option>
+              )
+            })}
+          </Select>
+        </div>
+      </div>
 
       <AutoColumn gap="lg" style={{ width: '100%' }}>
         <PoolSection>

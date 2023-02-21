@@ -37,7 +37,7 @@ export function useLPTotalLocked() {
   }
 }
 
-export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
+export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc', isMyVote: boolean) {
   const { account } = useActiveWeb3React()
   const [result, setResult] = useState<PoolInfo[]>([])
   const [currentPage, setCurrentPage] = useState(0)
@@ -54,7 +54,7 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
     ;(async () => {
       setLoading(true)
       try {
-        const allList = await fetchStakeList(account ?? '', '', sort, 'apr', 0, 200)
+        const allList = await fetchStakeList(account ?? '', '', sort, 'apr', 0, 200, false)
         const tokenList = allList.map((e: PoolInfo) => ({
           label: `${e.tokens[0].symbol}/${e.tokens[1].symbol}`,
           value: e.id,
@@ -62,7 +62,15 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
           token1: e.tokens[1]
         }))
         setResTokenList(tokenList)
-        const list = await fetchStakeList(account ?? '', searchName, sort, 'apr', currentPage * pageSize, pageSize)
+        const list = await fetchStakeList(
+          account ?? '',
+          searchName,
+          sort,
+          'apr',
+          currentPage * pageSize,
+          pageSize,
+          isMyVote
+        )
         const addressList = list.map((e: PoolInfo) => e.stakingRewardAddress)
         const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
         if (res) {
@@ -79,7 +87,7 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
         setLoading(false)
       }
     })()
-  }, [searchName, sort, currentPage, account])
+  }, [searchName, sort, currentPage, account, isMyVote])
 
   return {
     loading: loading,
@@ -95,45 +103,32 @@ export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
   }
 }
 
-export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc', page: number, pageSize: number) {
+export function useLPStakingPairsInfos(sort: 'asc' | 'desc') {
   const { account } = useActiveWeb3React()
   const [result, setResult] = useState<GraphPairInfo[]>([])
-
   const [loading, setLoading] = useState<boolean>(false)
-  const [resultLength, setResultLength] = useState<number>(0)
-  const [resTokenList, setResTokenList] = useState<any>([])
 
   useEffect(() => {
     ;(async () => {
       setLoading(true)
       try {
-        const { list, total, tokenList } = await fetchPairsList(
-          account ?? '',
-          searchName,
-          sort,
-          'trackedReserveETH',
-          page,
-          pageSize
-        )
-        setResultLength(total)
-        setResTokenList(tokenList)
+        let list = await fetchPairsList(account ?? '', sort, 'trackedReserveETH')
         const addressList = list.map((e: GraphPairInfo) => e.address)
         const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
+        list = list.map((e: GraphPairInfo) => ({ ...e, ...res.result[e.address] }))
+        setResult(list)
         setLoading(false)
-        setResult(list.map((e: GraphPairInfo) => ({ ...e, ...res.result[e.address] })))
       } catch (error) {
         setResult([])
         setLoading(false)
         console.warn(error)
       }
     })()
-  }, [searchName, sort, page, account, pageSize])
+  }, [sort, account])
 
   return {
-    total: resultLength,
     loading: loading,
-    result,
-    tokenList: resTokenList
+    result
   }
 }
 

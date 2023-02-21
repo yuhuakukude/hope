@@ -419,3 +419,11 @@ $fonts-list: 12,
 a:hover {
   color: #E4C989;
 }
+
+.search-input-icon{
+  position: absolute;
+  left: 20px;
+  top: 50%;
+  color: #A8A8AA;
+  transform: translate(0, -50%);
+}
