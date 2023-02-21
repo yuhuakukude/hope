@@ -342,7 +342,7 @@ export default function DaoLocker() {
           const de = item.token?.derivedETH || 0
           const bu = item.bundle?.ethPrice || 0
           const pr = new Decimal(de).mul(new Decimal(bu)).toNumber()
-          const num = pr.toFixed(6)
+          const num = pr.toFixed(18)
           if (num && Number(num) > 0) {
             setLTPrice(num)
           }
