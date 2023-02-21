@@ -113,6 +113,7 @@ export default function RemoveLiquidity({
     setAttemptingTxn(false)
     setErrorStatus({ code: error?.code, message: error.message })
     setShowConfirm(true)
+    setPendingText('')
   }, [])
 
   const onTxStart = useCallback(confirmMessage => {
