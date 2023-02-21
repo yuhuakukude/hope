@@ -355,12 +355,14 @@ export interface PoolInfo {
 
   volume1Amount: TokenAmount
 
+  id: string
   baseApr?: string | undefined
   feeApr?: string | undefined
   ltAmountPerDay?: string | undefined
   ltApr?: string | undefined
   maxApr?: string | undefined
   rewardRate?: string | undefined
+  searchString?: string | undefined
 
   // the amount of token currently staked, or undefined if no account
   //stakedAmount: TokenAmount
@@ -382,6 +384,8 @@ export interface PoolInfo {
 
 export interface PairDetail extends PoolInfo {
   tvl: number
+  createAt: number
+  txCount: number
   oneDayTVLUSD: number
   tvlChangeUSD: number
   oneDayVolumeUSD: number
@@ -393,16 +397,26 @@ export interface PairDetail extends PoolInfo {
   weekFees: number
 }
 
-export async function fetchStakeList(
-  account: string,
-  searchContent: string | undefined,
-  sort: 'asc' | 'desc',
-  orderBy: 'apr',
-  skip = 0,
-  size = 10
-): Promise<PoolInfo[]> {
+export async function fetchTotalAmount(): Promise<any> {
+  const query = `{  
+    gombocFactories{    
+      totalValueLockedUSD
+    }
+  }
+  `
+  try {
+    const response = await postQuery(SUBGRAPH, query)
+    const tInfo = response.data
+    return tInfo
+  } catch (error) {
+    return ''
+  }
+}
+
+export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMyVote: boolean): Promise<PoolInfo[]> {
   const query = `{
-  poolGombocs {
+    poolGombocs(first: 500, orderDirection: ${sort}, ${isMyVote ? `where: {user: "${account}"}` : ''}
+    ) {
     id
     totalStakedBalanceUSD
     totalStakedBalance
@@ -468,7 +482,9 @@ export async function fetchStakeList(
       const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken)
       const stakingToken = new Token(11155111, pool.id, 18, '')
       return {
+        searchString: `${pool.pair.id}${pool.pair.token0.symbol}${pool.pair.token1.symbol}`,
         stakingRewardAddress,
+        id: pool.pair.id,
         tokens,
         pair: dummyPair,
         lpToken: dummyPair.liquidityToken,
@@ -542,6 +558,7 @@ export async function fetchStakingPool(stakingAddress: string): Promise<PoolInfo
     const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
     const stakingToken = new Token(11155111, pool.id, 18, '')
     return {
+      id: pool.pair.id,
       stakingRewardAddress: stakingAddress,
       pair: dummyPair,
       tokens,
@@ -631,6 +648,8 @@ function PAIR_QUERY({ block, stakingAddress }: { block?: number[]; stakingAddres
       volumeUSD
       token0Price
       token1Price
+      txCount
+      createdAtTimestamp
       token0 {
         id
         symbol
@@ -650,18 +669,9 @@ function PAIR_QUERY({ block, stakingAddress }: { block?: number[]; stakingAddres
   }`
 }
 
-function PAIR_LIST_QUERY(
-  account: string,
-  searchContent: string | undefined,
-  sort: 'asc' | 'desc',
-  orderBy: string,
-  page: number,
-  size: number,
-  block?: number[]
-) {
+function PAIR_LIST_QUERY(account: string, sort: 'asc' | 'desc', orderBy: string, block?: number[]) {
   return `{
-    pairs(${block ? `block: { number: ${block}}` : ``},first: ${size}, skip: ${(page - 1) *
-    size}, orderBy: ${orderBy}, orderDirection: ${sort}, ${searchContent && `where: {id:"${searchContent}"}`}) {
+    pairs(${block ? `block: { number: ${block}}` : ``},first: 500, orderBy: ${orderBy}, orderDirection: ${sort}) {
       id
       reserve0
       reserve1
@@ -713,16 +723,10 @@ export interface GraphPairInfo {
   ltApr?: string | undefined
   maxApr?: string | undefined
   rewardRate?: string | undefined
+  searchString?: string | undefined
 }
 
-export async function fetchPairsList(
-  account: string,
-  searchContent: string | undefined,
-  sort: 'asc' | 'desc',
-  orderBy: string,
-  page: number,
-  size: number
-): Promise<{ list: GraphPairInfo[]; total: number; tokenList: [] }> {
+export async function fetchPairsList(account: string, sort: 'asc' | 'desc', orderBy: string): Promise<GraphPairInfo[]> {
   try {
     const utcCurrentTime = dayjs()
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
@@ -735,39 +739,19 @@ export async function fetchPairsList(
       utcOneWeekBack,
       utcTwoWeeksBack
     ])
-    const curRes = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, searchContent, sort, orderBy, page, size))
-    const totalRes = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, '', sort, orderBy, 1, 200))
-    const total = totalRes.data.pairs?.length || 0
-    const tokenList = totalRes.data.pairs.map((e: any) => ({
-      label: `${e.token0.symbol}/${e.token1.symbol}`,
-      value: e.id,
-      token0: new Token(ChainId.SEPOLIA, e.token0.id, Number(e.token0.decimals), e.token0.symbol),
-      token1: new Token(ChainId.SEPOLIA, e.token1.id, Number(e.token1.decimals), e.token1.symbol)
-    }))
-    const d1Res = await postQuery(
-      SUBGRAPH,
-      PAIR_LIST_QUERY(account, searchContent, sort, orderBy, page, size, oneDayBlock.number)
-    )
-    const d2Res = await postQuery(
-      SUBGRAPH,
-      PAIR_LIST_QUERY(account, searchContent, sort, orderBy, page, size, twoDayBlock.number)
-    )
+    const curRes = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, sort, orderBy))
+    const d1Res = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, sort, orderBy, oneDayBlock.number))
+    const d2Res = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, sort, orderBy, twoDayBlock.number))
 
-    const w1Res = await postQuery(
-      SUBGRAPH,
-      PAIR_LIST_QUERY(account, searchContent, sort, orderBy, page, size, oneWeekBlock.number)
-    )
+    const w1Res = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, sort, orderBy, oneWeekBlock.number))
 
-    const w2Res = await postQuery(
-      SUBGRAPH,
-      PAIR_LIST_QUERY(account, searchContent, sort, orderBy, page, size, twoWeekBlock?.number)
-    )
-    let curPairs = curRes.data.pairs
+    const w2Res = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, sort, orderBy, twoWeekBlock?.number))
+    const curPairs = curRes.data.pairs
     const d1Pairs = d1Res.data.pairs
     const d2Pairs = d2Res.data.pairs
     const w1Pairs = w1Res.data.pairs
     const w2Pairs = w2Res.data.pairs
-    curPairs = curPairs.map((pair: any, index: number) => {
+    return curPairs.map((pair: any, index: number) => {
       const d1Pair = d1Pairs[index]
       const d2Pair = d2Pairs[index]
       const w1Pair = w1Pairs[index]
@@ -790,6 +774,7 @@ export async function fetchPairsList(
       )
 
       return {
+        searchString: `${pair.id}${pair.token0.symbol}${pair.token1.symbol}`,
         address: pair.id,
         oneDayTVLUSD: Number(oneDayTVLUSD),
         tvlChangeUSD: Number(tvlChangeUSD),
@@ -806,10 +791,9 @@ export async function fetchPairsList(
         reserve1: Number(pair.reserve1)
       }
     })
-    return { list: curPairs, total, tokenList }
   } catch (error) {
     console.error(`error${error}`)
-    return { list: [], total: 0, tokenList: [] }
+    return []
   }
 }
 
@@ -831,7 +815,6 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const d2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoDayBlock.number, stakingAddress }))
     const w1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: oneWeekBlock.number, stakingAddress }))
     const w2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoWeekBlock?.number, stakingAddress }))
-
     const pair = res.data.pairs[0]
     const d1Pair = d1Res?.data.pairs[0]
     const d2Pair = d2Res?.data.pairs[0]
@@ -843,7 +826,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
 
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
       pair.totalVolumeUSD,
-      w1Pair.volumeUSD,
+      w1Pair?.volumeUSD,
       w2Pair?.volumeUSD
     )
 
@@ -864,7 +847,10 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const token0Price = pair.token0Price
     const token1Price = pair.token1Price
     return {
-      tvl: Number(pair.reserveUSD),
+      id: pair.id,
+      tvl: Number(pair?.reserveUSD),
+      createAt: pair?.createdAtTimestamp,
+      txCount: pair?.txCount,
       oneDayTVLUSD: Number(oneDayTVLUSD),
       tvlChangeUSD: Number(tvlChangeUSD),
       oneDayVolumeUSD: Number(oneDayVolumeUSD),
@@ -890,6 +876,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       volumeAmount: tryParseAmount(pair.volumeUSD, dummyPair.liquidityToken) as TokenAmount
     }
   } catch (error) {
+    console.log('error', error)
     return undefined
   }
 }
@@ -916,27 +903,27 @@ export async function fetchGlobalData() {
     const w2Res = await postQuery(SUBGRAPH, GLOBAL_QUERY(twoWeekBlock?.number))
 
     const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0].totalLiquidityUSD,
-      d1Res.data.lightswapFactories[0].totalLiquidityUSD,
-      d2Res.data.lightswapFactories[0].totalLiquidityUSD
+      totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
+      d1Res.data.lightswapFactories[0]?.totalLiquidityUSD,
+      d2Res.data.lightswapFactories[0]?.totalLiquidityUSD
     )
 
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0].totalVolumeUSD,
-      d1Res.data.lightswapFactories[0].totalVolumeUSD,
-      d2Res.data.lightswapFactories[0].totalVolumeUSD
+      totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
+      d1Res.data.lightswapFactories[0]?.totalVolumeUSD,
+      d2Res.data.lightswapFactories[0]?.totalVolumeUSD
     )
 
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0].totalVolumeUSD,
-      w1Res.data.lightswapFactories[0].totalVolumeUSD,
-      w2Res.data.lightswapFactories[0].totalVolumeUSD
+      totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
+      w1Res.data.lightswapFactories[0]?.totalVolumeUSD,
+      w2Res.data.lightswapFactories[0]?.totalVolumeUSD
     )
     return {
-      tvl: totalRes.data.lightswapFactories[0].totalLiquidityUSD,
+      tvl: totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
       tvlChangeUSD,
       oneDayTVLUSD,
-      totalVolume: totalRes.data.lightswapFactories[0].totalVolumeUSD,
+      totalVolume: totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
       oneDayVolumeUSD,
       volumeChangeUSD,
       dayFees: oneDayVolumeUSD * 0.003,
@@ -944,7 +931,7 @@ export async function fetchGlobalData() {
       weeklyVolumeChange
     }
   } catch (error) {
-    console.error(error)
+    console.error('fetchGlobalData', error)
     return undefined
   }
 }

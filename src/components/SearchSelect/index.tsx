@@ -42,7 +42,7 @@ export default function SearchSelect({
         value={inputValue}
         onChange={handleInput}
         onSearch={handleSearch}
-        className="select-input-tem"
+        className={inputValue ? 'select-input-tem is-hide-placeholder' : 'select-input-tem'}
         showSearch
         allowClear={true}
         placeholder={placeholder}

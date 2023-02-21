@@ -1,7 +1,7 @@
-import { useCallback, useEffect, useState } from "react"
-import { postQuery } from "utils/graph"
+import { useCallback, useEffect, useState } from 'react'
+import { postQuery } from 'utils/graph'
 import Decimal from 'decimal.js'
-import {  SUBGRAPH } from '../constants'
+import { SUBGRAPH } from '../constants'
 
 const usePrice = () => {
   const [hopePrice, setHopePrice] = useState('')
@@ -33,7 +33,7 @@ const usePrice = () => {
           const de = item.token?.derivedETH || 0
           const bu = item.bundle?.ethPrice || 0
           const pr = new Decimal(de).mul(new Decimal(bu)).toNumber()
-          const num = pr.toFixed(6)
+          const num = pr.toFixed(18)
           if (num && Number(num) > 0) {
             setHopePrice(num)
           }
@@ -46,8 +46,8 @@ const usePrice = () => {
 
   useEffect(() => {
     initPrice()
-  },[initPrice])
+  }, [initPrice])
   return hopePrice
 }
 
-export default  usePrice
+export default usePrice

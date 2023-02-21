@@ -1,4 +1,4 @@
-import { JSBI, Pair, Percent, TokenAmount } from '@uniswap/sdk'
+import { JSBI, Pair, Percent, Token, TokenAmount } from '@uniswap/sdk'
 import { darken } from 'polished'
 import React, { useState } from 'react'
 import { Link } from 'react-router-dom'
@@ -8,7 +8,7 @@ import { useTotalSupply } from '../../data/TotalSupply'
 
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
-import { TYPE } from '../../theme'
+import { ExternalLink, TYPE } from '../../theme'
 import { currencyId } from '../../utils/currencyId'
 import { unwrappedToken } from '../../utils/wrappedCurrency'
 
@@ -19,7 +19,8 @@ import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed, AutoRow } from '../Row'
 import { BIG_INT_ZERO } from '../../constants'
-import { shortenAddress } from '../../utils'
+import { getEtherscanLink, shortenAddress } from '../../utils'
+import { usePair } from '../../data/Reserves'
 
 export const FixedHeightRow = styled(RowBetween)`
   height: 24px;
@@ -157,25 +158,30 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
   )
 }
 
-export default function FullPositionCard({ pair, border, stakedBalance }: PositionCardProps) {
-  const { account } = useActiveWeb3React()
+interface FullCardProps {
+  pairInfo: { liquidityToken: Token; tokens: [Token, Token] }
+  showUnwrapped?: boolean
+  border?: string
+  stakedBalance?: TokenAmount // optional balance to indicate that liquidity is deposited in mining pool
+}
 
-  const currency0 = unwrappedToken(pair.token0)
-  const currency1 = unwrappedToken(pair.token1)
+export default function FullPositionCard({ pairInfo, border, stakedBalance }: FullCardProps) {
+  const { account, chainId } = useActiveWeb3React()
 
-  //const [showMore, setShowMore] = useState(false)
+  const currency0 = unwrappedToken(pairInfo.tokens[0])
+  const currency1 = unwrappedToken(pairInfo.tokens[1])
 
-  const userDefaultPoolBalance = useTokenBalance(account ?? undefined, pair.liquidityToken)
-  const totalPoolTokens = useTotalSupply(pair.liquidityToken)
+  const [, pair] = usePair(currency0, currency1)
+
+  const userDefaultPoolBalance = useTokenBalance(account ?? undefined, pairInfo.liquidityToken)
+  const totalPoolTokens = useTotalSupply(pairInfo.liquidityToken)
 
   // if staked balance balance provided, add to standard liquidity amount
   const userPoolBalance = stakedBalance ? userDefaultPoolBalance?.add(stakedBalance) : userDefaultPoolBalance
-
   const poolTokenPercentage =
     !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
       ? new Percent(userPoolBalance.raw, totalPoolTokens.raw)
       : undefined
-
   const [token0Deposited, token1Deposited] =
     !!pair &&
     !!totalPoolTokens &&
@@ -195,14 +201,20 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
       <AutoRow>
         <ContentRow>
           <DoubleCurrencyLogo margin currency0={currency0} currency1={currency1} size={24} />
-          <Text ml={10} fontWeight={500} fontSize={20}>
-            {shortenAddress(pair.liquidityToken.address)}
-          </Text>
+          <TYPE.link
+            as={ExternalLink}
+            href={getEtherscanLink(chainId ?? 1, pairInfo.liquidityToken.address, 'address')}
+            ml={10}
+            fontWeight={500}
+            fontSize={20}
+          >
+            {shortenAddress(pairInfo.liquidityToken.address)}
+          </TYPE.link>
         </ContentRow>
         <ContentRow>
           <Text fontSize={16} fontWeight={500}>
-            {`${token0Deposited ? token0Deposited?.toFixed(2) : '-'} ${currency0 ? currency0.symbol : '-'} / ${
-              token1Deposited ? token1Deposited?.toFixed(2) : '-'
+            {`${token0Deposited ? token0Deposited?.toSignificant(4) : '-'} ${currency0 ? currency0.symbol : '-'} / ${
+              token1Deposited ? token1Deposited?.toSignificant(4) : '-'
             }
                 ${currency1 ? currency1.symbol : '-'}`}
           </Text>
@@ -211,10 +223,10 @@ export default function FullPositionCard({ pair, border, stakedBalance }: Positi
           <Text fontSize={16} fontWeight={500}>
             {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}{' '}
           </Text>
-          <TYPE.gray ml={10} alignSelf={'end'} fontSize={12}>
+          <TYPE.main ml={10} alignSelf={'end'} fontSize={12}>
             Staked(
             {stakedBalance ? stakedBalance.toSignificant(6) : '--'})
-          </TYPE.gray>
+          </TYPE.main>
         </ContentRow>
         <ContentRow>
           <Text fontSize={16} fontWeight={500}>

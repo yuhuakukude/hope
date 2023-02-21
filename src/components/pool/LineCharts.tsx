@@ -3,7 +3,7 @@ import * as echarts from 'echarts'
 
 import format from '../../utils/format'
 
-export default function PieCharts({
+export default function LineCharts({
   xData,
   yData,
   top,
@@ -39,7 +39,7 @@ export default function PieCharts({
     })
     let indexFlag = ''
     const option = {
-      grid: { top: `${top || 6}%`, bottom: `${bottom || 15}%`, left: `${left || 5}%`, right: `${right || 4}%` },
+      grid: { top: `${top || 6}%`, bottom: `${bottom || 15}%`, left: `${left || 6.5}%`, right: `${right || 4}%` },
       tooltip: {
         trigger: 'axis',
         // showContent: false
@@ -53,7 +53,7 @@ export default function PieCharts({
           if (indexFlag !== params[0].dataIndex) {
             indexFlag = params[0].dataIndex
             const formatStr = is24Hour ? 'DD MMM YYYY HH:mm' : 'DD MMM YYYY'
-            getCurrentData(format.formatDate(params[0].name, formatStr), format.amountFormat(params[0].value, 2))
+            getCurrentData(format.formatDate(params[0].name, formatStr), params[0].value)
           }
           return
         }
@@ -120,14 +120,15 @@ export default function PieCharts({
     }
     myChart.setOption(option)
     if (xData && yData) {
-      getCurrentData('total', total || '0')
+      getCurrentData('total', total ? total : 'total')
       myChart.hideLoading()
     }
     myChart.getZr().on('mouseout', () => {
-      getCurrentData('total', total || '0')
+      getCurrentData('total', total ? total : 'total')
     })
     window.addEventListener('resize', () => handleResizeChart(myChart))
     return () => {
+      window.removeEventListener('resize', () => handleResizeChart(myChart))
       myChart.dispose()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

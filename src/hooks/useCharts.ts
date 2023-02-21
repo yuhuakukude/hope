@@ -41,6 +41,7 @@ export function useLine24HourChartsData(address: string) {
           const tiemList = [
             dayjs
               .utc()
+              .subtract(1, 'hour')
               .startOf('hour')
               .unix()
           ]
@@ -48,7 +49,7 @@ export function useLine24HourChartsData(address: string) {
             tiemList.push(
               dayjs
                 .utc()
-                .subtract(i, 'hour')
+                .subtract(i + 1, 'hour')
                 .startOf('hour')
                 .unix()
             )
@@ -99,15 +100,19 @@ export function useOverviewVolChartsData() {
   useEffect(() => {
     ;(async () => {
       try {
-        const endTime = dayjs.utc().unix()
+        const endTime = dayjs
+          .utc()
+          .subtract(1, 'hour')
+          .unix()
         const startTime = dayjs
           .utc()
-          .subtract(24, 'hour')
+          .subtract(25, 'hour')
           .endOf('hour')
           .unix()
         const tiemList = [
           dayjs
             .utc()
+            .subtract(1, 'hour')
             .startOf('hour')
             .unix()
         ]
@@ -115,7 +120,7 @@ export function useOverviewVolChartsData() {
           tiemList.push(
             dayjs
               .utc()
-              .subtract(i, 'hour')
+              .subtract(i + 1, 'hour')
               .startOf('hour')
               .unix()
           )

@@ -4,7 +4,7 @@ import { usePairTxs, useStakingPairPool } from '../../hooks/useLPStaking'
 import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
 import { AutoColumn } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
-import { TYPE } from '../../theme'
+import { TYPE, ExternalLink } from '../../theme'
 import { GreyCard, LightCard } from '../../components/Card'
 import { LT } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
@@ -21,18 +21,19 @@ import { useLtMinterContract, useStakingContract } from '../../hooks/useContract
 import { useSingleCallResult } from '../../state/multicall/hooks'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
-import { calculateGasMargin, shortenAddress } from '../../utils'
+import { calculateGasMargin, shortenAddress, getEtherscanLink } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import AprApi from '../../api/apr.api'
-import format from '../../utils/format'
+import format, { formatUTCDate } from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { darken } from 'polished'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useLineDaysChartsData, useLine24HourChartsData } from '../../hooks/useCharts'
+import { NavLink } from 'react-router-dom'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -126,7 +127,7 @@ const TimeItem = styled.div<{ isActive?: boolean }>`
 const GoBackIcon = styled(Link)`
   text-decoration: none;
   cursor: pointer;
-  color: #fff
+  color: #fff;
   font-weight: 500;
   &:hover {
     color: #fff;
@@ -176,7 +177,7 @@ export default function StakingPoolDetail({
   }
 
   const getTimeframe = (timeWindow: string) => {
-    const utcEndTime = dayjs.utc()
+    const utcEndTime = dayjs.utc().subtract(1, 'day')
     let utcStartTime = undefined
     if (timeWindow === '7Day') {
       utcStartTime =
@@ -252,7 +253,16 @@ export default function StakingPoolDetail({
         }
         // xArr.unshift(format.formatDate(item.hourStartUnix, 'HH:mm'))
         xArr.unshift(item.hourStartUnix)
-      } else if (utcStartTime && item.date >= utcStartTime) {
+      } else if (
+        utcStartTime &&
+        item.date >= utcStartTime &&
+        item.date <
+          dayjs
+            .utc()
+            .endOf('day')
+            .subtract(1, 'day')
+            .unix()
+      ) {
         if (tabIndex === 'Volume') {
           yArr.push(item.dailyVolumeUSD?.toFixed(2))
         }
@@ -279,7 +289,7 @@ export default function StakingPoolDetail({
 
   const viewData: OverviewData[] = [
     {
-      title: 'Pool Overview',
+      title: 'TVL',
       isRise: !!pool && pool.tvlChangeUSD > 0,
       rate: pool ? `${pool.tvlChangeUSD.toFixed(2)} %` : `--`,
       amount: pool ? `$${format.separate(Number(pool.tvl).toFixed(2))}` : `--`
@@ -389,7 +399,7 @@ export default function StakingPoolDetail({
   }, [initFn])
 
   return (
-    <AutoColumn style={{ width: '100%', padding: '0 30px' }}>
+    <AutoColumn style={{ width: '100%', padding: '0 30px', maxWidth: '1440px' }}>
       {pool && (
         <ClaimRewardModal
           isOpen={showClaimModal}
@@ -425,7 +435,7 @@ export default function StakingPoolDetail({
           <ButtonPrimary
             as={Link}
             width={'150px'}
-            to={`/swap/add/?inputCurrency=${pool?.tokens?.[0].address}&outputCurrency=${pool?.tokens?.[1].address}`}
+            to={`/swap/add/${pool?.tokens?.[0].address}/${pool?.tokens?.[1].address}`}
           >
             Add Liquidity
           </ButtonPrimary>
@@ -466,7 +476,10 @@ export default function StakingPoolDetail({
                   </div>
                   <div className="m-l-30">
                     <TYPE.body>
-                      After <span className="text-primary">Boost</span>
+                      After
+                      <NavLink to={'/dao/gomboc'}>
+                        <span className="text-primary"> Locker </span>
+                      </NavLink>
                     </TYPE.body>
                     <TYPE.green fontSize={30} marginTop={12} fontFamily={'Arboria-Medium'}>
                       {format.rate(aprInfo.baseApr)}{' '}
@@ -509,7 +522,10 @@ export default function StakingPoolDetail({
                   {!!yCurrentData && (
                     <div>
                       <p className="text-success font-20 text-medium text-right">
-                        $ {format.amountFormat(yCurrentData, 2)}
+                        ${' '}
+                        {yCurrentData === 'total'
+                          ? format.separate(Number(pool?.tvl).toFixed(2))
+                          : format.amountFormat(yCurrentData, 2)}
                       </p>
                       <p className="font-nor text-right m-t-12">
                         {xCurrentData === 'total' ? `Last ${timeIndex}` : xCurrentData}
@@ -523,7 +539,6 @@ export default function StakingPoolDetail({
                   xData={xData}
                   yData={yData}
                   height={330}
-                  total={chartTotal}
                   is24Hour={timeIndex === '24H'}
                   getCurrentData={getCurrentData}
                 ></LineCharts>
@@ -580,7 +595,7 @@ export default function StakingPoolDetail({
           <LightCard>
             <CardHeader>
               <TYPE.white fontSize={20} fontWeight={700}>
-                My Rewards
+                My Position
               </TYPE.white>
               <TYPE.white fontSize={20}>{''}</TYPE.white>
             </CardHeader>
@@ -649,7 +664,11 @@ export default function StakingPoolDetail({
                             }`}</TYPE.subHeader>
                           </TxItem>
                           <TxItem>
-                            <TYPE.subHeader>{`${shortenAddress(tx.sender)}`}</TYPE.subHeader>
+                            <ExternalLink href={`${getEtherscanLink(chainId || 1, tx.sender, 'address')}`}>
+                              <TYPE.subHeader style={{ color: '#fff' }}>{`${shortenAddress(
+                                tx.sender
+                              )}`}</TYPE.subHeader>
+                            </ExternalLink>
                           </TxItem>
                           <TxItem>
                             <TYPE.subHeader>{`${Date.parse(tx.transaction.timestamp)}`}</TYPE.subHeader>
@@ -676,9 +695,17 @@ export default function StakingPoolDetail({
 
                 <LightCard>
                   <AutoRow align={'flex-start'}>
-                    <TableTitle>{shortenAddress(address)}</TableTitle>
-                    <TableTitle>2022/01/21 15:02:39</TableTitle>
-                    <TableTitle flex={0.8}>{shortenAddress(address)}</TableTitle>
+                    <TableTitle>
+                      <ExternalLink href={`${getEtherscanLink(chainId || 1, address, 'address')}`}>
+                        <span style={{ color: '#fff' }}>{shortenAddress(address)}</span>
+                      </ExternalLink>
+                    </TableTitle>
+                    <TableTitle>{formatUTCDate(pool?.createAt)}</TableTitle>
+                    <TableTitle flex={0.8}>
+                      <ExternalLink href={`${getEtherscanLink(chainId || 1, address, 'address')}`}>
+                        <span style={{ color: '#fff' }}>--</span>
+                      </ExternalLink>
+                    </TableTitle>
                     <TableTitle flex={0.8}>0.30%</TableTitle>
                     <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
                       <TableTitle>{pool ? `$${pool.totalVolume.toFixed(2)}` : '--'}</TableTitle>
@@ -691,12 +718,12 @@ export default function StakingPoolDetail({
                       <AutoRow gap={'5px'}>
                         <CurrencyLogo currency={pool?.tokens[0]} />
                         <TYPE.main>
-                          {pool?.volume0Amount ? `${pool.volume0Amount.toFixed(2)} ${pool?.tokens[0].symbol}` : '--'}
+                          {pool?.volume1Amount ? `${pool.volume1Amount.toFixed(2)} ${pool?.tokens[1].symbol}` : '--'}
                         </TYPE.main>
                       </AutoRow>
                     </AutoColumn>
-                    <TableTitle>{pool ? (pool.totalVolume * 0.003).toFixed() : '--'}</TableTitle>
-                    <TableTitle>0</TableTitle>
+                    <TableTitle>{pool ? `$${(pool.totalVolume * 0.003).toFixed()}` : '--'}</TableTitle>
+                    <TableTitle>{pool ? pool.txCount : '--'}</TableTitle>
                   </AutoRow>
                 </LightCard>
               </>

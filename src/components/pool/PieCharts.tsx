@@ -29,12 +29,16 @@ export default function PieCharts({ data, size }: { data?: any; size?: number })
           labelLine: {
             show: false
           },
-          data: data
+          data: [50, 50]
         }
       ]
     }
     pieChart.setOption(option)
     window.addEventListener('resize', () => handleResizeChart(pieChart))
-  }, [data, size])
+    return () => {
+      window.removeEventListener('resize', () => handleResizeChart(pieChart))
+      pieChart.dispose()
+    }
+  }, [size])
   return <div style={{ width: `${size ? size : 120}px`, height: `${size ? size : 120}px` }} ref={chartRef} />
 }

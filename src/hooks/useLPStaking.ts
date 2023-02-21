@@ -3,6 +3,7 @@ import {
   fetchStakeList,
   fetchStakingPool,
   PoolInfo,
+  fetchTotalAmount,
   fetchPairsList,
   fetchPairPool,
   fetchGlobalData,
@@ -14,102 +15,87 @@ import {
 import { useActiveWeb3React } from './index'
 import AprApi from '../api/apr.api'
 
-export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
-  const { account } = useActiveWeb3React()
-  const [result, setResult] = useState<PoolInfo[]>([])
-  const [currentPage, setCurrentPage] = useState(1)
-
-  const [loading, setLoading] = useState<boolean>(false)
-  // const [total, setTotal] = useState<number>(0)
-  const pageSize = 10
+export function useLPTotalLocked() {
+  const [totalAmount, setTotalAmount] = useState('')
 
   useEffect(() => {
-    setCurrentPage(1)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchName])
+    ;(async () => {
+      try {
+        const total = await fetchTotalAmount()
+        if (total && total.gombocFactories && total.gombocFactories.length > 0) {
+          const num = total.gombocFactories[0].totalValueLockedUSD
+          setTotalAmount(num)
+        }
+      } catch (error) {
+        setTotalAmount('')
+      }
+    })()
+  }, [])
+
+  return {
+    totalAmount
+  }
+}
+
+export function useLPStakingInfos(sort: 'asc' | 'desc', isMyVote: boolean) {
+  const { account } = useActiveWeb3React()
+  const [result, setResult] = useState<PoolInfo[]>([])
+  const [loading, setLoading] = useState<boolean>(false)
 
   useEffect(() => {
     ;(async () => {
       setLoading(true)
       try {
-        const list = await fetchStakeList(
-          account ?? '',
-          searchName,
-          sort,
-          'apr',
-          (currentPage - 1) * pageSize,
-          pageSize
-        )
-        const addressList = list.map((e: PoolInfo) => e.stakingRewardAddress)
+        const list = await fetchStakeList(account ?? '', sort, isMyVote)
+        const addressList = list.map((e: PoolInfo) => e.id)
         const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
         if (res) {
           setResult(
             list.map((e: PoolInfo) => {
-              return { ...e, ...res.result[e.stakingRewardAddress] }
+              return { ...e, ...res.result[e.id] }
             })
           )
         }
         setLoading(false)
-        // setResult([])
       } catch (error) {
         setResult([])
         setLoading(false)
       }
     })()
-  }, [searchName, sort, currentPage, account])
+  }, [sort, account, isMyVote])
 
   return {
     loading: loading,
-    page: {
-      setCurrentPage,
-      currentPage,
-      hasPrev: currentPage > 1,
-      hasNext: result?.length === pageSize,
-      pageSize
-    },
     result
   }
 }
 
-export function useLPStakingPairsInfos(searchName: string, sort: 'asc' | 'desc', page: number, pageSize: number) {
+export function useLPStakingPairsInfos(sort: 'asc' | 'desc') {
   const { account } = useActiveWeb3React()
   const [result, setResult] = useState<GraphPairInfo[]>([])
-
   const [loading, setLoading] = useState<boolean>(false)
-  const [resultLength, setResultLength] = useState<number>(0)
-  const [resTokenList, setResTokenList] = useState<any>([])
 
   useEffect(() => {
     ;(async () => {
       setLoading(true)
       try {
-        const { list, total, tokenList } = await fetchPairsList(
-          account ?? '',
-          searchName,
-          sort,
-          'trackedReserveETH',
-          page,
-          pageSize
-        )
-        setResultLength(total)
-        setResTokenList(tokenList)
+        let list = await fetchPairsList(account ?? '', sort, 'trackedReserveETH')
         const addressList = list.map((e: GraphPairInfo) => e.address)
         const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
+        list = list.map((e: GraphPairInfo) => ({ ...e, ...res.result[e.address] }))
+        setResult(list)
         setLoading(false)
-        setResult(list.map((e: GraphPairInfo) => ({ ...e, ...res.result[e.address] })))
       } catch (error) {
         setResult([])
         setLoading(false)
         console.warn(error)
       }
     })()
-  }, [searchName, sort, page, account, pageSize])
+  }, [sort, account])
 
   return {
-    total: resultLength,
     loading: loading,
-    result,
-    tokenList: resTokenList
+    result
   }
 }
 
