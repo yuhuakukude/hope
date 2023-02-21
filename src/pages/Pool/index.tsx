@@ -185,7 +185,7 @@ export default function Pool() {
                 padding="12px 16px"
                 borderRadius="12px"
                 onClick={() => {
-                  if (!pairInfos || pairInfos.length == 0) {
+                  if (!pairInfos || pairInfos.length === 0) {
                     setShowRiskModal(true)
                   } else {
                     history.push('/swap/add/ETH')
