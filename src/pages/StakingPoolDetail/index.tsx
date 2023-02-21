@@ -27,7 +27,7 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import AprApi from '../../api/apr.api'
-import format from '../../utils/format'
+import format, {formatUTCDate} from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { darken } from 'polished'
 import dayjs from 'dayjs'
@@ -126,7 +126,7 @@ const TimeItem = styled.div<{ isActive?: boolean }>`
 const GoBackIcon = styled(Link)`
   text-decoration: none;
   cursor: pointer;
-  color: #fff
+  color: #fff;
   font-weight: 500;
   &:hover {
     color: #fff;
@@ -694,7 +694,7 @@ export default function StakingPoolDetail({
                         <span style={{ color: '#fff' }}>{shortenAddress(address)}</span>
                       </ExternalLink>
                     </TableTitle>
-                    <TableTitle>2022/01/21 15:02:39</TableTitle>
+                    <TableTitle>{formatUTCDate(pool?.createAt)}</TableTitle>
                     <TableTitle flex={0.8}>
                       <ExternalLink href={`${getEtherscanLink(chainId || 1, address, 'address')}`}>
                         <span style={{ color: '#fff' }}>{shortenAddress(address)}</span>
@@ -712,12 +712,12 @@ export default function StakingPoolDetail({
                       <AutoRow gap={'5px'}>
                         <CurrencyLogo currency={pool?.tokens[0]} />
                         <TYPE.main>
-                          {pool?.volume0Amount ? `${pool.volume0Amount.toFixed(2)} ${pool?.tokens[0].symbol}` : '--'}
+                          {pool?.volume1Amount ? `${pool.volume1Amount.toFixed(2)} ${pool?.tokens[1].symbol}` : '--'}
                         </TYPE.main>
                       </AutoRow>
                     </AutoColumn>
                     <TableTitle>{pool ? (pool.totalVolume * 0.003).toFixed() : '--'}</TableTitle>
-                    <TableTitle>0</TableTitle>
+                    <TableTitle>{pool ? pool.txCount : '--'}</TableTitle>
                   </AutoRow>
                 </LightCard>
               </>
