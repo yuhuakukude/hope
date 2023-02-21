@@ -383,6 +383,8 @@ export interface PoolInfo {
 
 export interface PairDetail extends PoolInfo {
   tvl: number
+  createAt: number
+  txCount: number
   oneDayTVLUSD: number
   tvlChangeUSD: number
   oneDayVolumeUSD: number
@@ -653,6 +655,8 @@ function PAIR_QUERY({ block, stakingAddress }: { block?: number[]; stakingAddres
       volumeUSD
       token0Price
       token1Price
+      txCount
+      createdAtTimestamp
       token0 {
         id
         symbol
@@ -851,6 +855,8 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const token1Price = pair.token1Price
     return {
       tvl: Number(pair?.reserveUSD),
+      createAt: pair?.createdAtTimestamp,
+      txCount: pair?.txCount,
       oneDayTVLUSD: Number(oneDayTVLUSD),
       tvlChangeUSD: Number(tvlChangeUSD),
       oneDayVolumeUSD: Number(oneDayVolumeUSD),

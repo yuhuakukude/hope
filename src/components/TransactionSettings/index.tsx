@@ -33,7 +33,7 @@ const FancyButton = styled.button`
     border: 1px solid ${({ theme }) => theme.bg4};
   }
   :focus {
-    background-color: ${({ theme }) => theme.primary1};
+    // background-color: ${({ theme }) => theme.primary1};
     color: ${({ theme }) => theme.black};
   }
 `

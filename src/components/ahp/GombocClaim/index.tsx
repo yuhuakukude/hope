@@ -69,7 +69,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
                   <Tips title={`Claimable Rewards`} />
                 </div>
                 <div>
-                  <p className="text-normal text-right">~ {format.amountFormat(tableItem?.usdOfReward, 2)}</p>
+                  <p className="text-normal text-right">~ {format.amountFormat(tableItem?.usdOfExtReward, 2)}</p>
                 </div>
               </div>
               {tableItem && tableItem.extRewardList && tableItem.extRewardList.length > 0 && (
@@ -78,12 +78,14 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
                     return (
                       <div key={index} className="flex jc-between">
                         <div className="coin-box flex ai-center cursor-select">
-                          <div className="hope-icon"></div>
+                          {/* <div className="hope-icon"></div> */}
                           <div className="currency text-white text-medium m-l-12">{data.symbol}</div>
                         </div>
                         <div>
-                          <p className="text-white text-right">{format.amountFormat(data.amount, 2)} LT</p>
-                          {/* <p className="text-white text-right">~$ --</p> */}
+                          <p className="text-white text-right">
+                            {format.amountFormat(data.amount, 2)} {data.symbol}
+                          </p>
+                          <p className="text-white text-right">≈$ {format.amountFormat(data.usdOfToken, 2)}</p>
                         </div>
                       </div>
                     )

@@ -112,6 +112,7 @@ export default function Swap({ history }: RouteComponentProps) {
     [Version.v2]: v2Trade
   }
   const trade = showWrap ? undefined : tradesByVersion[toggledVersion]
+  console.log('trade', trade)
   const defaultTrade = showWrap ? undefined : tradesByVersion[DEFAULT_VERSION]
 
   const betterTradeLinkV2: Version | undefined =
@@ -147,7 +148,7 @@ export default function Swap({ history }: RouteComponentProps) {
   // reset if they close warning without tokens in params
   const handleDismissTokenWarning = useCallback(() => {
     setDismissTokenWarning(true)
-    history.push('/swap/')
+    history.push('/swap/exchange')
   }, [history])
 
   // modal and loading
@@ -340,7 +341,7 @@ export default function Swap({ history }: RouteComponentProps) {
   const handleConfirmDismiss = useCallback(() => {
     setPending(false)
     setSwapState({
-      pendingMessage: undefined,
+      pendingMessage: pendingMessage,
       showConfirm: false,
       tradeToConfirm,
       attemptingTxn,
@@ -352,7 +353,7 @@ export default function Swap({ history }: RouteComponentProps) {
     // if (txHash) {
     //   onUserInput(Field.INPUT, '')
     // }
-  }, [attemptingTxn, swapErrorMessage, tradeToConfirm, txHash])
+  }, [attemptingTxn, swapErrorMessage, tradeToConfirm, txHash, pendingMessage])
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
@@ -414,6 +415,7 @@ export default function Swap({ history }: RouteComponentProps) {
 
           <AutoColumn gap={'md'}>
             <CurrencyInputPanel
+              showCommonBases
               label={independentField === Field.OUTPUT && !showWrap && trade ? 'Pay (estimated)' : 'Pay'}
               value={formattedAmounts[Field.INPUT]}
               showMaxButton={!atMaxAmountInput}
@@ -444,6 +446,7 @@ export default function Swap({ history }: RouteComponentProps) {
               </AutoRow>
             </AutoColumn>
             <CurrencyInputPanel
+              showCommonBases
               value={formattedAmounts[Field.OUTPUT]}
               onUserInput={handleTypeOutput}
               label={independentField === Field.INPUT && !showWrap && trade ? 'Receive (Estimated)' : 'Receive'}
@@ -603,7 +606,9 @@ export default function Swap({ history }: RouteComponentProps) {
                     error={isValid && priceImpactSeverity > 2 && !swapCallbackError}
                   >
                     <Text fontSize={16} fontWeight={500}>
-                      {swapInputError
+                      {pendingMessage
+                        ? 'Confirm in your wallet'
+                        : swapInputError
                         ? swapInputError
                         : priceImpactSeverity > 3 && !isExpertMode
                         ? `Price Impact Too High`

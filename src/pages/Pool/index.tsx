@@ -1,6 +1,6 @@
 import React, { useCallback, useContext, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
-import { Link, useHistory } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { SwapPoolTabs } from '../../components/NavigationTabs'
 
 import FullPositionCard from '../../components/PositionCard'
@@ -48,7 +48,6 @@ const TitleRow = styled(RowBetween)`
 `
 
 const ButtonRow = styled(RowFixed)`
-  width: 300px;
   gap: 8px;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     width: 100%;
@@ -102,8 +101,6 @@ function RiskAlert({ onDismiss, isOpen }: { onDismiss: () => void; isOpen: boole
   const [isAgreeTerms, setIsAgreeTerms] = useState(false)
   const theme = useTheme()
   const history = useHistory()
-  const [isAgreeTermsError, setIsAgreeTermsError] = useState(false)
-  console.log(setIsAgreeTermsError)
   return (
     <Modal isOpen={isOpen} onDismiss={wrappedOnDismiss}>
       <GreyCard padding={'0px'}>
@@ -133,9 +130,7 @@ function RiskAlert({ onDismiss, isOpen }: { onDismiss: () => void; isOpen: boole
                 and <span style={{ color: theme.primary1 }}>Privacy Policy</span>
               </PrimaryText>
             </div>
-            {isAgreeTermsError && !isAgreeTerms && (
-              <p style={{ color: theme.red1, marginLeft: '25px' }}>Agreement is required to login</p>
-            )}
+            {!isAgreeTerms && <p style={{ color: theme.red1, marginLeft: '25px' }}>Agreement is required to login</p>}
           </div>
           <ButtonPrimary
             onClick={() => {
@@ -159,11 +154,8 @@ export default function Pool() {
   const { account } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const [showRiskModal, setShowRiskModal] = useState(false)
-  // fetch the user's balances of all tracked V2 LP tokens
-  //const trackedTokenPairs = useBasePairs()
   const { pairInfos, loading } = usePairsInfo()
   const history = useHistory()
-  console.log('pairs', pairInfos)
 
   return (
     <>
@@ -177,9 +169,6 @@ export default function Pool() {
           </HideSmall>
           {account && (
             <ButtonRow>
-              <ButtonPrimary as={Link} padding="12px 16px" to="/swap/find">
-                Import
-              </ButtonPrimary>
               <ButtonPrimary
                 id="join-pool-button"
                 padding="12px 16px"

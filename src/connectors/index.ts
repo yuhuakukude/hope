@@ -39,8 +39,7 @@ export const walletconnect = new WalletConnectConnector({
     11155111: TEST_NETWORK_URL ?? 'https://sepolia.infura.io/v3/092b404ef4534f8e9f3acb4e047049c9'
   },
   bridge: WALLETCONNECT_BRIDGE_URL,
-  qrcode: true,
-  pollingInterval: 15000
+  qrcode: true
 })
 
 // mainnet only

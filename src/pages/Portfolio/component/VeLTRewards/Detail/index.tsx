@@ -61,7 +61,7 @@ export default function Detail({ withdrawAll, overviewData, hopePrice, platformF
           <div className="velt-rewards-item">
             <div className="velt-rewards-item-title">Belongs to me</div>
             <div className="velt-rewards-item-amount">≈ {amountFormat(overviewData.belongsToMe, 2)} stHOPE</div>
-            <div className="velt-rewards-item-date">≈ ~ ${toUsdPrice(overviewData.belongsToMe, hopePrice) || '--'}</div>
+            <div className="velt-rewards-item-date">≈ ${toUsdPrice(overviewData.belongsToMe, hopePrice) || '--'}</div>
           </div>
         </div>
         <div className="velt-rewards-bottom flex ai-center">

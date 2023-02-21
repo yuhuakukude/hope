@@ -117,13 +117,13 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
       }
     },
     {
-      title: 'Reward',
+      title: 'Claimable Reward',
       dataIndex: 'ltTotalReward',
       key: 'ltTotalReward',
       render: (text: string, record: PortfolioReward) => {
         return (
           <div>
-            <div>{format.amountFormat(text, 2) ? `${format.amountFormat(text, 2)} ${record.rewardSymbol}` : `--`}</div>
+            <div>{format.amountFormat(text, 2) ? `${format.amountFormat(text, 2)} LT` : `--`}</div>
             <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${format.amountFormat(record.usdOfReward, 2)}</div>
           </div>
         )

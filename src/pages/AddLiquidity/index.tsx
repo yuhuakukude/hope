@@ -455,7 +455,7 @@ export default function AddLiquidity({
               />
               {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
                 <>
-                  <LightCard margin={'20px 0'} padding="0px" borderRadius={'0px'}>
+                  <LightCard margin={'20px 0'} padding="0px" borderRadius={'0'}>
                     <AutoColumn gap={'20px'}>
                       <RowBetween padding="1rem 0">
                         <TYPE.subHeader fontWeight={500} fontSize={18}>
