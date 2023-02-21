@@ -247,11 +247,6 @@ export default function StakingPool() {
               <AutoColumn justify="end">
                 <RowFixed gap={'md'}>
                   <div style={{ width: '440px' }} className="m-r-20">
-                    {/* <SearchSelect
-                      getResult={adress => setInputValue(adress)}
-                      placeholder={'Search Token Symbol / Address'}
-                      list={tokenList}
-                    ></SearchSelect> */}
                     <div className="flex">
                       <div style={{ position: 'relative', width: '440px' }} className="flex m-r-20">
                         <SearchInput

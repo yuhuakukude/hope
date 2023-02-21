@@ -355,13 +355,14 @@ export interface PoolInfo {
 
   volume1Amount: TokenAmount
 
-  id?: string
+  id: string
   baseApr?: string | undefined
   feeApr?: string | undefined
   ltAmountPerDay?: string | undefined
   ltApr?: string | undefined
   maxApr?: string | undefined
   rewardRate?: string | undefined
+  searchString?: string | undefined
 
   // the amount of token currently staked, or undefined if no account
   //stakedAmount: TokenAmount
@@ -412,19 +413,9 @@ export async function fetchTotalAmount(): Promise<any> {
   }
 }
 
-export async function fetchStakeList(
-  account: string,
-  searchContent: string | undefined,
-  sort: 'asc' | 'desc',
-  orderBy: 'apr',
-  skip = 0,
-  size = 10,
-  isMyVote: boolean
-): Promise<PoolInfo[]> {
+export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMyVote: boolean): Promise<PoolInfo[]> {
   const query = `{
-    poolGombocs(first: ${size}, skip: ${skip}, orderDirection: ${sort},
-      ${searchContent && `where: {pair_:{id: "${searchContent}"}}`}
-      ${isMyVote ? `where: {user: "${account}"}` : ''}
+    poolGombocs(first: 500, orderDirection: ${sort}, ${isMyVote ? `where: {user: "${account}"}` : ''}
     ) {
     id
     totalStakedBalanceUSD
@@ -491,6 +482,7 @@ export async function fetchStakeList(
       const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken)
       const stakingToken = new Token(11155111, pool.id, 18, '')
       return {
+        searchString: `${pool.pair.id}${pool.pair.token0.symbol}${pool.pair.token1.symbol}`,
         stakingRewardAddress,
         id: pool.pair.id,
         tokens,
@@ -566,6 +558,7 @@ export async function fetchStakingPool(stakingAddress: string): Promise<PoolInfo
     const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
     const stakingToken = new Token(11155111, pool.id, 18, '')
     return {
+      id: pool.pair.id,
       stakingRewardAddress: stakingAddress,
       pair: dummyPair,
       tokens,
@@ -854,6 +847,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const token0Price = pair.token0Price
     const token1Price = pair.token1Price
     return {
+      id: pair.id,
       tvl: Number(pair?.reserveUSD),
       createAt: pair?.createdAtTimestamp,
       txCount: pair?.txCount,

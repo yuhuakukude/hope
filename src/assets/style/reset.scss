@@ -343,6 +343,10 @@
 
 //
 .ant-select{
+  &.small-select .ant-select-selection-selected-value{
+    height: 42px;
+    line-height: 42px;
+  }
   .ant-select-selection {
     height: 100%;
     border-radius: 10px;
@@ -359,8 +363,21 @@
   .ant-select-selection-selected-value {
     line-height: 55px;
     height: 56px;
+    color: #fff;
+    font-family: Arboria-Medium;
+    font-size: 16px;
   }
   .ant-select-arrow {
     color: #A8A8AA;
+  }
+  .anticon{
+    color: #A8A8AA !important;
+    background-color: #26262C !important;
+  }
+  &.show-placeholder .ant-select-selection__placeholder{
+    display: block !important;
+  }
+  &.hide-placeholder .ant-select-selection__placeholder{
+    display: none !important;
   }
 }

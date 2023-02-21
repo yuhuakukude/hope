@@ -37,68 +37,35 @@ export function useLPTotalLocked() {
   }
 }
 
-export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc', isMyVote: boolean) {
+export function useLPStakingInfos(sort: 'asc' | 'desc', isMyVote: boolean) {
   const { account } = useActiveWeb3React()
   const [result, setResult] = useState<PoolInfo[]>([])
-  const [currentPage, setCurrentPage] = useState(0)
-  const [resTokenList, setResTokenList] = useState<any>([])
   const [loading, setLoading] = useState<boolean>(false)
-  // const [total, setTotal] = useState<number>(0)
-  const pageSize = 10
-  useEffect(() => {
-    setCurrentPage(0)
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [searchName])
 
   useEffect(() => {
     ;(async () => {
       setLoading(true)
       try {
-        const allList = await fetchStakeList(account ?? '', '', sort, 'apr', 0, 200, false)
-        const tokenList = allList.map((e: PoolInfo) => ({
-          label: `${e.tokens[0].symbol}/${e.tokens[1].symbol}`,
-          value: e.id,
-          token0: e.tokens[0],
-          token1: e.tokens[1]
-        }))
-        setResTokenList(tokenList)
-        const list = await fetchStakeList(
-          account ?? '',
-          searchName,
-          sort,
-          'apr',
-          currentPage * pageSize,
-          pageSize,
-          isMyVote
-        )
-        const addressList = list.map((e: PoolInfo) => e.stakingRewardAddress)
+        const list = await fetchStakeList(account ?? '', sort, isMyVote)
+        const addressList = list.map((e: PoolInfo) => e.id)
         const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
         if (res) {
           setResult(
             list.map((e: PoolInfo) => {
-              return { ...e, ...res.result[e.stakingRewardAddress] }
+              return { ...e, ...res.result[e.id] }
             })
           )
         }
         setLoading(false)
-        // setResult([])
       } catch (error) {
         setResult([])
         setLoading(false)
       }
     })()
-  }, [searchName, sort, currentPage, account, isMyVote])
+  }, [sort, account, isMyVote])
 
   return {
     loading: loading,
-    page: {
-      setCurrentPage,
-      currentPage,
-      hasPrev: currentPage > 1,
-      hasNext: result?.length === pageSize,
-      pageSize
-    },
-    tokenList: resTokenList,
     result
   }
 }
