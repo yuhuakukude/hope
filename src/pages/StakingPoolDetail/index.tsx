@@ -127,7 +127,7 @@ const TimeItem = styled.div<{ isActive?: boolean }>`
 const GoBackIcon = styled(Link)`
   text-decoration: none;
   cursor: pointer;
-  color: #fff
+  color: #fff;
   font-weight: 500;
   &:hover {
     color: #fff;
@@ -595,7 +595,7 @@ export default function StakingPoolDetail({
           <LightCard>
             <CardHeader>
               <TYPE.white fontSize={20} fontWeight={700}>
-                My Rewards
+                My Position
               </TYPE.white>
               <TYPE.white fontSize={20}>{''}</TYPE.white>
             </CardHeader>
