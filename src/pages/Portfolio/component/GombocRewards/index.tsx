@@ -117,7 +117,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
       }
     },
     {
-      title: 'Reward',
+      title: 'Claimable Reward',
       dataIndex: 'ltTotalReward',
       key: 'ltTotalReward',
       render: (text: string, record: PortfolioReward) => {
