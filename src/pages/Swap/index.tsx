@@ -112,6 +112,7 @@ export default function Swap({ history }: RouteComponentProps) {
     [Version.v2]: v2Trade
   }
   const trade = showWrap ? undefined : tradesByVersion[toggledVersion]
+  console.log('trade', trade)
   const defaultTrade = showWrap ? undefined : tradesByVersion[DEFAULT_VERSION]
 
   const betterTradeLinkV2: Version | undefined =
