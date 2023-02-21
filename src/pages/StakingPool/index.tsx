@@ -76,7 +76,6 @@ type Sort = 'asc' | 'desc'
 
 export default function StakingPool() {
   const [inputValue, setInputValue] = useState('')
-  const [chartLineTotal, setChartLineTotal] = useState<string>('0')
   const [chartBarTotal, setChartBarTotal] = useState<string>('0')
   const [tvlCurrentInfo, setTvlCurrentInfo] = useState<any>({ x: '', y: '' })
   const [volCurrentInfo, setVolCurrentInfo] = useState<any>({ x: '', y: '' })
@@ -138,15 +137,14 @@ export default function StakingPool() {
     setXBarData(xbarArr)
     setYBarData(ybarArr)
 
-    const totaLinelVal = ylineArr.reduce((prev, curr) => new Decimal(prev).add(new Decimal(curr)).toNumber(), 0)
     const totalBarVal = ybarArr.reduce((prev, curr) => new Decimal(prev).add(new Decimal(curr)).toNumber(), 0)
-    setChartLineTotal(totaLinelVal.toFixed(2))
     setChartBarTotal(totalBarVal.toFixed(2))
   }, [overviewTvlChartsResult, overviewVolChartsResult])
 
   // staking info for connected account
 
   const onPagesChange = (page: any, pageSize: any) => {
+    console.log(page, pageSize)
     setCurrentPage(page)
     setPageSize(pageSize)
   }
@@ -174,15 +172,19 @@ export default function StakingPool() {
         <PoolsWrapper style={{ width: '49%', height: '340px' }}>
           <div>
             <AutoRow gap={'10px'}>
-              <NameText>TVL</NameText>
-              <AmountText>$ {format.separate(tvlCurrentInfo.y, 2)}</AmountText>
+              <NameText>TVL</NameText>{' '}
+              <AmountText>
+                ${' '}
+                {tvlCurrentInfo.y === 'total'
+                  ? format.separate(Number(overviewData?.tvl).toFixed(2))
+                  : format.amountFormat(tvlCurrentInfo.y, 2)}
+              </AmountText>
               <TimeText>{tvlCurrentInfo.x === 'total' ? `Last 7 Days` : tvlCurrentInfo.x}</TimeText>
             </AutoRow>
             <LineCharts
               xData={xLineData}
               yData={yLineData}
               height={240}
-              total={chartLineTotal}
               left={8}
               bottom={13}
               getCurrentData={getTvlCurrentData}
@@ -193,7 +195,7 @@ export default function StakingPool() {
           <div>
             <AutoRow gap={'10px'}>
               <NameText>Volume</NameText>
-              <AmountText>$ {format.separate(volCurrentInfo.y, 2)}</AmountText>
+              <AmountText>$ {format.amountFormat(volCurrentInfo.y, 2)}</AmountText>
               <TimeText>{volCurrentInfo.x === 'total' ? `Last 24 Hour` : volCurrentInfo.x}</TimeText>
             </AutoRow>
             <BarCharts
@@ -260,7 +262,9 @@ export default function StakingPool() {
                 current={currentPage}
                 pageSize={pageSize}
                 showSizeChanger
+                pageSizeOptions={['5', '10', '20', '30', '40']}
                 onChange={onPagesChange}
+                onShowSizeChange={onPagesChange}
               />{' '}
               <span className="m-l-15" style={{ color: '#868790' }}>
                 Total {total}

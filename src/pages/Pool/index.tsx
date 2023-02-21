@@ -270,9 +270,16 @@ export default function Pool() {
                           {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
                         </TYPE.white>
                       </RowBetween>
-                      <ButtonOutlined primary mt={20} width={'70%'}>
-                        <TYPE.link textAlign="center">Learn about providing liquidity</TYPE.link>
-                      </ButtonOutlined>
+                      <a
+                        style={{ width: `400px` }}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={`https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/`}
+                      >
+                        <ButtonOutlined primary mt={20}>
+                          <TYPE.link textAlign="center">Learn about providing liquidity</TYPE.link>
+                        </ButtonOutlined>
+                      </a>
                     </AutoColumn>
                   </CardSection>
                 </EmptyProposals>

@@ -3,7 +3,7 @@ import React, { useEffect, useRef } from 'react'
 import * as echarts from 'echarts'
 import format from '../../utils/format'
 
-export default function PieCharts({
+export default function BarCharts({
   xData,
   yData,
   top,
@@ -57,7 +57,7 @@ export default function PieCharts({
           if (indexFlag !== params[0].dataIndex) {
             indexFlag = params[0].dataIndex
             const formatStr = is24Hour ? 'DD MMM YYYY HH:mm' : 'DD MMM YYYY'
-            getCurrentData(format.formatDate(params[0].name, formatStr), format.amountFormat(params[0].value, 2))
+            getCurrentData(format.formatDate(params[0].name, formatStr), params[0].value)
           }
           return
         }

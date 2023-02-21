@@ -33,6 +33,7 @@ import { darken } from 'polished'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useLineDaysChartsData, useLine24HourChartsData } from '../../hooks/useCharts'
+import { NavLink } from 'react-router-dom'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -475,7 +476,10 @@ export default function StakingPoolDetail({
                   </div>
                   <div className="m-l-30">
                     <TYPE.body>
-                      After <span className="text-primary">Boost</span>
+                      After
+                      <NavLink to={'/dao/gomboc'}>
+                        <span className="text-primary"> Locker </span>
+                      </NavLink>
                     </TYPE.body>
                     <TYPE.green fontSize={30} marginTop={12} fontFamily={'Arboria-Medium'}>
                       {format.rate(aprInfo.baseApr)}{' '}
@@ -518,7 +522,10 @@ export default function StakingPoolDetail({
                   {!!yCurrentData && (
                     <div>
                       <p className="text-success font-20 text-medium text-right">
-                        $ {format.amountFormat(yCurrentData, 2)}
+                        ${' '}
+                        {yCurrentData === 'total'
+                          ? format.separate(Number(pool?.tvl).toFixed(2))
+                          : format.amountFormat(yCurrentData, 2)}
                       </p>
                       <p className="font-nor text-right m-t-12">
                         {xCurrentData === 'total' ? `Last ${timeIndex}` : xCurrentData}
@@ -532,7 +539,6 @@ export default function StakingPoolDetail({
                   xData={xData}
                   yData={yData}
                   height={330}
-                  total={chartTotal}
                   is24Hour={timeIndex === '24H'}
                   getCurrentData={getCurrentData}
                 ></LineCharts>

@@ -394,6 +394,22 @@ export interface PairDetail extends PoolInfo {
   weekFees: number
 }
 
+export async function fetchTotalAmount(): Promise<any> {
+  const query = `{  
+    gombocFactories{    
+      totalValueLockedUSD
+    }
+  }
+  `
+  try {
+    const response = await postQuery(SUBGRAPH, query)
+    const tInfo = response.data
+    return tInfo
+  } catch (error) {
+    return ''
+  }
+}
+
 export async function fetchStakeList(
   account: string,
   searchContent: string | undefined,
@@ -834,7 +850,6 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const d2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoDayBlock.number, stakingAddress }))
     const w1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: oneWeekBlock.number, stakingAddress }))
     const w2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoWeekBlock?.number, stakingAddress }))
-
     const pair = res.data.pairs[0]
     const d1Pair = d1Res?.data.pairs[0]
     const d2Pair = d2Res?.data.pairs[0]
@@ -846,7 +861,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
 
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
       pair.totalVolumeUSD,
-      w1Pair.volumeUSD,
+      w1Pair?.volumeUSD,
       w2Pair?.volumeUSD
     )
 
@@ -867,7 +882,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const token0Price = pair.token0Price
     const token1Price = pair.token1Price
     return {
-      tvl: Number(pair.reserveUSD),
+      tvl: Number(pair?.reserveUSD),
       oneDayTVLUSD: Number(oneDayTVLUSD),
       tvlChangeUSD: Number(tvlChangeUSD),
       oneDayVolumeUSD: Number(oneDayVolumeUSD),
@@ -893,6 +908,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       volumeAmount: tryParseAmount(pair.volumeUSD, dummyPair.liquidityToken) as TokenAmount
     }
   } catch (error) {
+    console.log('error', error)
     return undefined
   }
 }
@@ -919,27 +935,27 @@ export async function fetchGlobalData() {
     const w2Res = await postQuery(SUBGRAPH, GLOBAL_QUERY(twoWeekBlock?.number))
 
     const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0].totalLiquidityUSD,
-      d1Res.data.lightswapFactories[0].totalLiquidityUSD,
-      d2Res.data.lightswapFactories[0].totalLiquidityUSD
+      totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
+      d1Res.data.lightswapFactories[0]?.totalLiquidityUSD,
+      d2Res.data.lightswapFactories[0]?.totalLiquidityUSD
     )
 
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0].totalVolumeUSD,
-      d1Res.data.lightswapFactories[0].totalVolumeUSD,
-      d2Res.data.lightswapFactories[0].totalVolumeUSD
+      totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
+      d1Res.data.lightswapFactories[0]?.totalVolumeUSD,
+      d2Res.data.lightswapFactories[0]?.totalVolumeUSD
     )
 
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0].totalVolumeUSD,
-      w1Res.data.lightswapFactories[0].totalVolumeUSD,
-      w2Res.data.lightswapFactories[0].totalVolumeUSD
+      totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
+      w1Res.data.lightswapFactories[0]?.totalVolumeUSD,
+      w2Res.data.lightswapFactories[0]?.totalVolumeUSD
     )
     return {
-      tvl: totalRes.data.lightswapFactories[0].totalLiquidityUSD,
+      tvl: totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
       tvlChangeUSD,
       oneDayTVLUSD,
-      totalVolume: totalRes.data.lightswapFactories[0].totalVolumeUSD,
+      totalVolume: totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
       oneDayVolumeUSD,
       volumeChangeUSD,
       dayFees: oneDayVolumeUSD * 0.003,
@@ -947,7 +963,7 @@ export async function fetchGlobalData() {
       weeklyVolumeChange
     }
   } catch (error) {
-    console.error(error)
+    console.error('fetchGlobalData', error)
     return undefined
   }
 }

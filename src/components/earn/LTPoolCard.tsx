@@ -77,7 +77,7 @@ export default function LTPoolCard({
             <RowBetween>
               <TYPE.main>Pool Liquidity</TYPE.main>
               <TYPE.white>
-                {pool.totalStakedAmount ? pool.totalStakedAmount.toFixed(2, { groupSeparator: ',' }) : '0'}
+                {pool.totalStakedAmount ? '≈$' + pool.totalStakedAmount.toFixed(2, { groupSeparator: ',' }) : '0'}
               </TYPE.white>
             </RowBetween>
             <RowBetween>
