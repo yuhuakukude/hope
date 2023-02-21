@@ -341,7 +341,7 @@ export default function Swap({ history }: RouteComponentProps) {
   const handleConfirmDismiss = useCallback(() => {
     setPending(false)
     setSwapState({
-      pendingMessage: undefined,
+      pendingMessage: pendingMessage,
       showConfirm: false,
       tradeToConfirm,
       attemptingTxn,
@@ -606,7 +606,9 @@ export default function Swap({ history }: RouteComponentProps) {
                     error={isValid && priceImpactSeverity > 2 && !swapCallbackError}
                   >
                     <Text fontSize={16} fontWeight={500}>
-                      {swapInputError
+                      {pendingMessage
+                        ? 'Confirm in your wallet'
+                        : swapInputError
                         ? swapInputError
                         : priceImpactSeverity > 3 && !isExpertMode
                         ? `Price Impact Too High`

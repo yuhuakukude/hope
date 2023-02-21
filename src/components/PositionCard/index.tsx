@@ -223,10 +223,10 @@ export default function FullPositionCard({ pairInfo, border, stakedBalance }: Fu
           <Text fontSize={16} fontWeight={500}>
             {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}{' '}
           </Text>
-          <TYPE.gray ml={10} alignSelf={'end'} fontSize={12}>
+          <TYPE.main ml={10} alignSelf={'end'} fontSize={12}>
             Staked(
             {stakedBalance ? stakedBalance.toSignificant(6) : '--'})
-          </TYPE.gray>
+          </TYPE.main>
         </ContentRow>
         <ContentRow>
           <Text fontSize={16} fontWeight={500}>
