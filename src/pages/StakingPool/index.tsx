@@ -185,7 +185,7 @@ export default function StakingPool() {
     const totalList = list.filter((e: GraphPairInfo) => e.searchString?.includes(inputValue))
     setPageTotal(totalList.length || 0)
     setPairs(totalList)
-    setSearchList(list.slice(0, 5))
+    setSearchList(totalList.slice(0, 5))
   }
 
   return (
