@@ -15,6 +15,7 @@ export interface PortfolioReward {
   usdOfReward: string | number
   rewardSymbol: string
   extRewardList: any
+  lpToken: string
 }
 export interface PortfolioInfo {
   hope: string | number

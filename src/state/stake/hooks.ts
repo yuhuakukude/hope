@@ -396,6 +396,22 @@ export interface PairDetail extends PoolInfo {
   weekFees: number
 }
 
+export async function fetchTotalAmount(): Promise<any> {
+  const query = `{  
+    gombocFactories{    
+      totalValueLockedUSD
+    }
+  }
+  `
+  try {
+    const response = await postQuery(SUBGRAPH, query)
+    const tInfo = response.data
+    return tInfo
+  } catch (error) {
+    return ''
+  }
+}
+
 export async function fetchStakeList(
   account: string,
   searchContent: string | undefined,

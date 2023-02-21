@@ -92,7 +92,7 @@ export default function StakingModal({
           pair={dummyPair}
           label={''}
           disableCurrencySelect={true}
-          customBalanceText={'Available to deposit: '}
+          customBalanceText={`Available to ${action === STAKE_ACTION.STAKE ? 'Deposit' : 'Withdraw'}: `}
           id="stake-liquidity-token"
         />
 
@@ -102,7 +102,7 @@ export default function StakingModal({
             error={!!error && !!parsedAmount}
             onClick={() => onStake(action)}
           >
-            {error ?? 'Deposit'}
+            {error ?? `${action === STAKE_ACTION.STAKE ? 'Deposit' : 'Withdraw'}`}
           </ButtonError>
         </RowBetween>
       </ContentWrapper>

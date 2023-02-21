@@ -3,6 +3,7 @@ import {
   fetchStakeList,
   fetchStakingPool,
   PoolInfo,
+  fetchTotalAmount,
   fetchPairsList,
   fetchPairPool,
   fetchGlobalData,
@@ -13,6 +14,28 @@ import {
 } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
 import AprApi from '../api/apr.api'
+
+export function useLPTotalLocked() {
+  const [totalAmount, setTotalAmount] = useState('')
+
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const total = await fetchTotalAmount()
+        if (total && total.gombocFactories && total.gombocFactories.length > 0) {
+          const num = total.gombocFactories[0].totalValueLockedUSD
+          setTotalAmount(num)
+        }
+      } catch (error) {
+        setTotalAmount('')
+      }
+    })()
+  }, [])
+
+  return {
+    totalAmount
+  }
+}
 
 export function useLPStakingInfos(searchName: string, sort: 'asc' | 'desc') {
   const { account } = useActiveWeb3React()
