@@ -11,8 +11,6 @@ import { Text } from 'rebass'
 import { NavLink, useLocation } from 'react-router-dom'
 import { PrimaryText } from '../Text'
 
-import './index.scss'
-
 const Bar = styled('div')`
   display: flex;
   background: #26262c;
@@ -20,41 +18,42 @@ const Bar = styled('div')`
   flex-direction: column;
   align-items: center;
   justify-content: space-between;
-  transition: all 0.5s;
-  width: 100px;
-  position: relative;
-  :hover {
-    width: 200px;
-  }
+
   :hover .showOnHover {
-    display: inline-block;
-  }
-  :hover .SidebarOnHover {
-    text-align: left;
+    opacity: 1;
+    transform: scaleX(1);
+    transition: all 0.5s;
   }
 `
 
 const SidebarIcon = styled('div')`
   color: white;
   font-size: 20px;
-  // display: flex;
-  // flex-direction: row;
-  // align-items: center;
-  white-space: nowrap;
-  padding: 0 40px;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  padding-right: 20px;
   height: 60px;
-  line-height: 60px;
-  width: 100%;
-  transition: all 1s;
 
   :hover {
     cursor: pointer;
   }
 `
 
+//const SidebarSelectedPre = styled(SidebarIcon)``
+const SidebarSelected = styled(SidebarIcon)`
+  background-color: ${({ theme }) => theme.bg2};
+  border-radius: 30px 0 0 30px;
+  color: ${({ theme }) => theme.primary1};
+  transition: all 0.5s;
+`
+//const SidebarSelectedNext = styled(SidebarIcon)``
+
 const Icon = styled('i')`
-  position: relative;
-  zindex: 1;
+  margin-left: 20px;
+  margin-top: auto;
+  margin-bottom: auto;
+  text-align: center;
 `
 
 const MenuText = styled(Text)`
@@ -66,17 +65,21 @@ const MenuText = styled(Text)`
 const SidebarText = styled.p`
   margin-left: 10px;
   font-size: 18px;
-  display: none;
-  zindex: 1;
-  position: relative;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
 `
 
 const LogoText = styled(PrimaryText)`
   font-size: 30px;
-  display: none;
+  opacity: 0;
+  transform: scaleX(0);
+  transform-origin: left center;
 `
 
-const TabBox = styled(Column)``
+const TabBox = styled(Column)`
+  padding-left: 5px;
+`
 
 export default function SideBar() {
   const location = useLocation()
@@ -94,19 +97,33 @@ export default function SideBar() {
 
   return (
     <Bar id="side-bar">
-      <Column style={{ width: '100%' }}>
+      <Column style={{ width: 'auto' }}>
         <div style={{ display: 'flex', alignItems: 'center', margin: '25px auto' }}>
           <Logo style={{ alignSelf: 'center' }} />
           <LogoText className="showOnHover">HOPE</LogoText>
         </div>
         <TabBox>
           {ROUTERS.map(({ title, router, icon }, index) => {
+            if (currentTab() === index) {
+              return (
+                <NavLink key={index} to={router}>
+                  <SidebarSelected>
+                    <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />
+                    <SidebarText className="showOnHover">{title}</SidebarText>
+                  </SidebarSelected>
+                </NavLink>
+              )
+            }
+            // if (currentTab + 1 === index) {
+            //   return (
+            //     <SidebarSelectedNext key={index} onClick={() => setCurrentTab(index)}>
+            //       <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />{' '}
+            //     </SidebarSelectedNext>
+            //   )
+            // }
             return (
               <NavLink key={index} to={router}>
-                <SidebarIcon
-                  key={index}
-                  className={currentTab() === index ? 'SidebarOnHover SidebarOnSelect' : 'SidebarOnHover'}
-                >
+                <SidebarIcon key={index}>
                   <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />
                   <SidebarText className="showOnHover">{title}</SidebarText>
                 </SidebarIcon>
