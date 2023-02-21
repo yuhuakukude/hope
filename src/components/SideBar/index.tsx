@@ -43,7 +43,6 @@ const SidebarIcon = styled('div')`
   height: 60px;
   line-height: 60px;
   width: 100%;
-  transition: all 1s;
 
   :hover {
     cursor: pointer;
