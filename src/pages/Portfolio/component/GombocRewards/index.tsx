@@ -177,14 +177,14 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
               label: 'Provide',
               value: 'Provide',
               onClick: () => {
-                history.push(`/add/ETH/${record.gomboc}`)
+                history.push(`/swap/add/ETH/${record.lpToken}`)
               }
             })
             options.push({
               label: 'Withdraw',
               value: 'Withdraw',
               onClick: () => {
-                history.push(`/remove/ETH/${record.gomboc}`)
+                history.push(`/remove/ETH/${record.lpToken}`)
               }
             })
           }
