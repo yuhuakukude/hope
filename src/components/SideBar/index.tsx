@@ -37,9 +37,7 @@ const Bar = styled('div')`
 const SidebarIcon = styled('div')`
   color: white;
   font-size: 20px;
-  // display: flex;
-  // flex-direction: row;
-  // align-items: center;
+  margin-top: 10px;
   white-space: nowrap;
   padding: 0 40px;
   height: 60px;
