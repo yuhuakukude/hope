@@ -27,7 +27,7 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import AprApi from '../../api/apr.api'
-import format, {formatUTCDate} from '../../utils/format'
+import format, { formatUTCDate } from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { darken } from 'polished'
 import dayjs from 'dayjs'
@@ -595,7 +595,7 @@ export default function StakingPoolDetail({
           <LightCard>
             <CardHeader>
               <TYPE.white fontSize={20} fontWeight={700}>
-                My Rewards
+                My Position
               </TYPE.white>
               <TYPE.white fontSize={20}>{''}</TYPE.white>
             </CardHeader>

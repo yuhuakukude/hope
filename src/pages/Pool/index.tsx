@@ -1,12 +1,12 @@
-import React, { useContext } from 'react'
+import React, { useCallback, useContext, useState } from 'react'
 import styled, { ThemeContext } from 'styled-components'
-import { Link } from 'react-router-dom'
+import { useHistory } from 'react-router-dom'
 import { SwapPoolTabs } from '../../components/NavigationTabs'
 
 import FullPositionCard from '../../components/PositionCard'
-import { ExternalLink, TYPE, HideSmall } from '../../theme'
+import { ExternalLink, TYPE, HideSmall, CloseIcon } from '../../theme'
 
-import Card from '../../components/Card'
+import Card, { GreyCard } from '../../components/Card'
 import { AutoRow, RowBetween, RowFixed } from '../../components/Row'
 import { ButtonOutlined, ButtonPrimary } from '../../components/Button'
 import { AutoColumn, GapColumn } from '../../components/Column'
@@ -17,6 +17,10 @@ import { CardSection } from '../../components/earn/styled'
 import empty from '../../assets/images/empty.png'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import usePairsInfo from '../../hooks/usePairInfo'
+import Modal from '../../components/Modal'
+import { Checkbox, Divider } from 'antd'
+import { PrimaryText } from '../../components/Text'
+import useTheme from '../../hooks/useTheme'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
@@ -90,15 +94,73 @@ const PositionTitle = styled(TYPE.subHeader)`
   flex: 1;
 `
 
+function RiskAlert({ onDismiss, isOpen }: { onDismiss: () => void; isOpen: boolean }) {
+  const wrappedOnDismiss = useCallback(() => {
+    onDismiss()
+  }, [onDismiss])
+  const [isAgreeTerms, setIsAgreeTerms] = useState(false)
+  const theme = useTheme()
+  const history = useHistory()
+  return (
+    <Modal isOpen={isOpen} onDismiss={wrappedOnDismiss}>
+      <GreyCard padding={'0px'}>
+        <RowBetween padding={'1.25rem 1.25rem 0 1.25rem'}>
+          <TYPE.mediumHeader>My Position</TYPE.mediumHeader>
+          <CloseIcon onClick={wrappedOnDismiss} />
+        </RowBetween>
+        <Divider />
+        <div style={{ padding: '0 1.25rem 1.25rem 1.25rem' }}>
+          <TYPE.white>
+            Market making and liquidity provision involve risk of logs and are not suitable for every user. The
+            valuation and prices of token assets may fluctuate substantially, and, as a result, users may soo profits
+            that aro below expectations, or even sustain losses.
+          </TYPE.white>
+          <div>
+            <div style={{ color: 'white', marginBottom: '10px', display: 'flex', marginTop: '40px' }}>
+              <Checkbox
+                style={{ marginTop: '5px' }}
+                checked={isAgreeTerms}
+                onChange={e => {
+                  setIsAgreeTerms(e.target.checked)
+                }}
+              />
+              <PrimaryText style={{ marginLeft: '8px', lineHeight: '24px' }}>
+                I have read, understand, and agree to the{' '}
+                <span style={{ color: theme.primary1 }}>Terms of Service </span>
+                and <span style={{ color: theme.primary1 }}>Privacy Policy</span>
+              </PrimaryText>
+            </div>
+            {!isAgreeTerms && <p style={{ color: theme.red1, marginLeft: '25px' }}>Agreement is required to login</p>}
+          </div>
+          <ButtonPrimary
+            onClick={() => {
+              history.push('/swap/add/ETH')
+            }}
+            disabled={!isAgreeTerms}
+            style={{ marginTop: '40px' }}
+            padding="12px 16px"
+            borderRadius="12px"
+          >
+            Continue
+          </ButtonPrimary>
+        </div>
+      </GreyCard>
+    </Modal>
+  )
+}
+
 export default function Pool() {
   const theme = useContext(ThemeContext)
   const { account } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
+  const [showRiskModal, setShowRiskModal] = useState(false)
   const { pairInfos, loading } = usePairsInfo()
+  const history = useHistory()
 
   return (
     <>
       <PageWrapper>
+        <RiskAlert onDismiss={() => setShowRiskModal(false)} isOpen={showRiskModal} />
         <TitleRow padding={'0'}>
           <HideSmall>
             <TYPE.mediumHeader style={{ marginTop: '0.5rem', justifySelf: 'flex-start' }}>
@@ -107,7 +169,18 @@ export default function Pool() {
           </HideSmall>
           {account && (
             <ButtonRow>
-              <ButtonPrimary id="join-pool-button" as={Link} padding="12px 16px" borderRadius="12px" to="/swap/add/ETH">
+              <ButtonPrimary
+                id="join-pool-button"
+                padding="12px 16px"
+                borderRadius="12px"
+                onClick={() => {
+                  if (!pairInfos || pairInfos.length == 0) {
+                    setShowRiskModal(true)
+                  } else {
+                    history.push('/swap/add/ETH')
+                  }
+                }}
+              >
                 New Position
               </ButtonPrimary>
             </ButtonRow>
