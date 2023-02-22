@@ -32,12 +32,14 @@ const Bar = styled('div')`
   :hover .SidebarOnHover {
     text-align: left;
   }
+  :hover .showOnHover2 {
+    width: 100%;
+  }
 `
 
 const SidebarIcon = styled('div')`
   color: white;
   font-size: 20px;
-  // margin-top: 10px;
   white-space: nowrap;
   padding: 0 40px;
   height: 60px;
@@ -70,7 +72,10 @@ const SidebarText = styled.p`
 
 const LogoText = styled(PrimaryText)`
   font-size: 30px;
-  display: none;
+  transition: width 0.8s;
+  overflow: hidden;
+  width: 0;
+  transform-origin: left center;
 `
 
 const TabBox = styled(Column)``
@@ -93,9 +98,9 @@ export default function SideBar() {
   return (
     <Bar id="side-bar">
       <Column style={{ width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', margin: '25px auto' }}>
-          <Logo style={{ alignSelf: 'center' }} />
-          <LogoText className="showOnHover">HOPE</LogoText>
+        <div className="sidebar-logo">
+          <Logo style={{ alignSelf: 'center', marginRight: '5px' }} />
+          <LogoText className="showOnHover2">HOPE</LogoText>
         </div>
         <TabBox>
           {ROUTERS.map(({ title, router, icon }, index) => {
