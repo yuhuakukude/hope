@@ -57,7 +57,7 @@ PortfolioController
 | &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&#124;─boost | string | 当前boost |
 | &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&#124;─maxBoost | string | 最大 boost |
 | &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&#124;─staked | integer | 展示地址当前质押到 Gömböc 中的对应的 LP Token 的数量；同时展示质押数量的资产估值。<br>例如：1个 LT-HOPE LP Token 可以赎回 100.00 个 LT + 15.00 个HOPE （含fee), 那么估值就是 LT Price * 100.00 + HOPE Price * 15.00; |
-| &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&#124;─ustOfStaked | number |  |
+| &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&#124;─usdOfStaked | number |  |
 | &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&#124;─stakeable | integer | Stakeable 列： 展示地址当前可以用于质押的 LP Token 的数量； 同时展示资产估值。<br>     例如：1个 LT-HOPE LP Token 可以赎回 100.00 个 LT + 15.00 个HOPE （含fee), 那么估值就是 LT Price * 100.00 + HOPE Price * 15.00; |
 | &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&#124;─usdOfStakeable | number |  |
 | &ensp;&ensp;&ensp;&ensp;&ensp;&ensp;&#124;─stakeSymbol | string | 质押单位 LP HOPE |
@@ -88,7 +88,7 @@ PortfolioController
         "boost": "",
         "maxBoost": "",
         "staked": 0,
-        "ustOfStaked": 0.0,
+        "usdOfStaked": 0.0,
         "stakeable": 0,
         "usdOfStakeable": 0.0,
         "stakeSymbol": "",
