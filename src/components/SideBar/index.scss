@@ -1,3 +1,19 @@
+.sidebar-transition {
+  transition: width 0.5s;
+  overflow: hidden;
+  width: 0;
+  transform-origin: left center;
+}
+.sidebar-logo {
+  white-space: nowrap;
+  padding: 35px;
+  text-align: left;
+
+  p {
+    display: inline-block;
+  }
+}
+
 .sidebar-select-arc {
   position: absolute;
   right: 0;

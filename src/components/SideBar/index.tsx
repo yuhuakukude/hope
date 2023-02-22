@@ -26,18 +26,14 @@ const Bar = styled('div')`
   :hover {
     width: 200px;
   }
-  :hover .showOnHover {
-    display: inline-block;
-  }
-  :hover .SidebarOnHover {
-    text-align: left;
+  :hover .sidebar-transition {
+    width: 100%;
   }
 `
 
 const SidebarIcon = styled('div')`
   color: white;
   font-size: 20px;
-  // margin-top: 10px;
   white-space: nowrap;
   padding: 0 40px;
   height: 60px;
@@ -51,7 +47,9 @@ const SidebarIcon = styled('div')`
 
 const Icon = styled('i')`
   position: relative;
-  zindex: 1;
+  z-index: 1;
+  display: inline-block;
+  vertical-align: top;
 `
 
 const MenuText = styled(Text)`
@@ -63,14 +61,13 @@ const MenuText = styled(Text)`
 const SidebarText = styled.p`
   margin-left: 10px;
   font-size: 18px;
-  display: none;
+  display: inline-block;
   zindex: 1;
   position: relative;
 `
 
 const LogoText = styled(PrimaryText)`
   font-size: 30px;
-  display: none;
 `
 
 const TabBox = styled(Column)``
@@ -88,28 +85,23 @@ export default function SideBar() {
     return ROUTERS.findIndex(({ baseRouter }) => baseRouter && location.pathname.startsWith(baseRouter))
   }, [ROUTERS, location.pathname])
 
-  console.log('=<<<<<>>>>>', currentTab())
-
   return (
     <Bar id="side-bar">
       <Column style={{ width: '100%' }}>
-        <div style={{ display: 'flex', alignItems: 'center', margin: '25px auto' }}>
-          <Logo style={{ alignSelf: 'center' }} />
-          <LogoText className="showOnHover">HOPE</LogoText>
+        <div className="sidebar-logo">
+          <Logo style={{ alignSelf: 'center', marginRight: '5px' }} />
+          <LogoText className="sidebar-transition">HOPE</LogoText>
         </div>
         <TabBox>
           {ROUTERS.map(({ title, router, icon }, index) => {
             return (
               <NavLink key={index} to={router}>
-                <SidebarIcon
-                  key={index}
-                  className={currentTab() === index ? 'SidebarOnHover SidebarOnSelect' : 'SidebarOnHover'}
-                >
+                <SidebarIcon key={index} className={currentTab() === index ? 'SidebarOnSelect' : ''}>
                   <span className="sidebar-select-arc">
                     <span className="sidebar-select-arc-mask"></span>
                   </span>
                   <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />
-                  <SidebarText className="showOnHover">{title}</SidebarText>
+                  <SidebarText className="sidebar-transition">{title}</SidebarText>
                   <span className="sidebar-select-arc sidebar-select-arc-2">
                     <span className="sidebar-select-arc-mask"></span>
                   </span>

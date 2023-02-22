@@ -168,6 +168,7 @@ export interface Overview {
   dayFees: number
   weekFees: number
   weeklyVolumeChange: number
+  oneWeekTVLUSD: number
 }
 
 export function useOverviewData() {

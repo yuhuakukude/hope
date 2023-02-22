@@ -395,6 +395,10 @@ export interface PairDetail extends PoolInfo {
   totalVolume: number
   dayFees: number
   weekFees: number
+  oneWeekTVLUSD: number
+  oneMonthTVLUSD: number
+  oneMonthVolume: number
+  monthFees: number
 }
 
 export async function fetchTotalAmount(): Promise<any> {
@@ -811,31 +815,50 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix()
     const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix()
     const utcTwoWeeksBack = utcCurrentTime.subtract(2, 'week').unix()
-    const [oneDayBlock, twoDayBlock, oneWeekBlock, twoWeekBlock] = await getBlocksFromTimestamps([
+    const utcOneMonthsBack = utcCurrentTime.subtract(1, 'month').unix()
+    const utcTwoMonthsBack = utcCurrentTime.subtract(2, 'month').unix()
+    const [
+      oneDayBlock,
+      twoDayBlock,
+      oneWeekBlock,
+      twoWeekBlock,
+      utcOneMonthBlock,
+      utcTwoMonthBlock
+    ] = await getBlocksFromTimestamps([
       utcOneDayBack,
       utcTwoDaysBack,
       utcOneWeekBack,
-      utcTwoWeeksBack
+      utcTwoWeeksBack,
+      utcOneMonthsBack,
+      utcTwoMonthsBack
     ])
     const res = await postQuery(SUBGRAPH, PAIR_QUERY({ stakingAddress }))
     const d1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: oneDayBlock.number, stakingAddress }))
     const d2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoDayBlock.number, stakingAddress }))
     const w1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: oneWeekBlock.number, stakingAddress }))
     const w2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoWeekBlock?.number, stakingAddress }))
+    const m1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: utcOneMonthBlock?.number, stakingAddress }))
+    const m2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: utcTwoMonthBlock?.number, stakingAddress }))
     const pair = res.data.pairs[0]
     const d1Pair = d1Res?.data.pairs[0]
     const d2Pair = d2Res?.data.pairs[0]
     const w1Pair = w1Res?.data.pairs[0]
     const w2Pair = w2Res?.data.pairs[0]
+    const m1Pair = m1Res?.data.pairs[0]
+    const m2Pair = m2Res?.data.pairs[0]
 
     const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(pair.reserveUSD, d1Pair.reserveUSD, d2Pair.reserveUSD)
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(pair.volumeUSD, d1Pair.volumeUSD, d2Pair.volumeUSD)
 
+    const [oneWeekTVLUSD] = get2DayPercentChange(pair?.reserveUSD, w1Pair?.reserveUSD, w2Pair?.reserveUSD)
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
-      pair.totalVolumeUSD,
+      pair?.totalVolumeUSD,
       w1Pair?.volumeUSD,
       w2Pair?.volumeUSD
     )
+
+    const [oneMonthTVLUSD] = get2DayPercentChange(pair.reserveUSD, m1Pair?.reserveUSD, m2Pair?.reserveUSD)
+    const [oneMonthVolume] = get2DayPercentChange(pair.totalVolumeUSD, m1Pair?.volumeUSD, m2Pair?.volumeUSD)
 
     const gombocAddress = await GombocApi.getGombocsAddress({ pairAddress: pair.id })
     const token0 = new Token(ChainId.SEPOLIA, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol)
@@ -858,15 +881,22 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       tvl: Number(pair?.reserveUSD),
       createAt: pair?.createdAtTimestamp,
       txCount: pair?.txCount,
-      oneDayTVLUSD: Number(oneDayTVLUSD),
       tvlChangeUSD: Number(tvlChangeUSD),
-      oneDayVolumeUSD: Number(oneDayVolumeUSD),
       volumeChangeUSD: Number(volumeChangeUSD),
-      oneWeekVolume: Number(oneWeekVolume),
       weeklyVolumeChange: Number(weeklyVolumeChange),
       totalVolume: Number(pair.volumeUSD),
+
+      oneDayTVLUSD: Number(oneDayTVLUSD),
+      oneWeekTVLUSD: Number(oneWeekTVLUSD),
+      oneMonthTVLUSD: Number(oneMonthTVLUSD),
+
+      oneDayVolumeUSD: Number(oneDayVolumeUSD),
+      oneWeekVolume: Number(oneWeekVolume),
+      oneMonthVolume: Number(oneMonthVolume),
+
       dayFees: oneDayVolumeUSD * 0.003,
       weekFees: oneWeekVolume * 0.003,
+      monthFees: oneMonthVolume * 0.003,
       stakingRewardAddress: gombocAddress.result,
       token0Price: Number(token0Price)?.toFixed(4) || '0.00',
       token1Price: Number(token1Price)?.toFixed(4) || '0.00',
@@ -926,10 +956,17 @@ export async function fetchGlobalData() {
       w1Res.data.lightswapFactories[0]?.totalVolumeUSD,
       w2Res.data.lightswapFactories[0]?.totalVolumeUSD
     )
+
+    const [oneWeekTVLUSD] = get2DayPercentChange(
+      totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
+      w1Res.data.lightswapFactories[0]?.totalLiquidityUSD,
+      w2Res.data.lightswapFactories[0]?.totalLiquidityUSD
+    )
     return {
       tvl: totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
       tvlChangeUSD,
       oneDayTVLUSD,
+      oneWeekTVLUSD,
       totalVolume: totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
       oneDayVolumeUSD,
       volumeChangeUSD,
