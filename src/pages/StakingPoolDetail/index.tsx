@@ -35,6 +35,7 @@ import utc from 'dayjs/plugin/utc'
 import { useLineDaysChartsData, useLine24HourChartsData } from '../../hooks/useCharts'
 import { NavLink } from 'react-router-dom'
 import SelectTips, { TitleTipsProps } from '../Portfolio/component/SelectTips'
+import moment from 'moment'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -731,7 +732,9 @@ export default function StakingPoolDetail({
                             </ExternalLink>
                           </TxItem>
                           <TxItem>
-                            <TYPE.subHeader>{`${Date.parse(tx.transaction.timestamp)}`}</TYPE.subHeader>
+                            <TYPE.subHeader>{`${moment(new Date(parseInt(tx.transaction.timestamp) * 1000)).format(
+                              'YYYY-MM-DD HH:mm:ss'
+                            )}`}</TYPE.subHeader>
                           </TxItem>
                         </AutoRow>
                       )
