@@ -16,7 +16,6 @@ import { Pagination } from 'antd'
 import Row from '../../components/Row'
 // import SearchSelect from '../../components/SearchSelect'
 import { Link } from 'react-router-dom'
-import { Decimal } from 'decimal.js'
 import format from '../../utils/format'
 import { SearchInput } from '../../components/SearchModal/styleds'
 import { useOverviewTvlChartsData, useOverviewVolChartsData } from '../../hooks/useCharts'
@@ -81,7 +80,6 @@ export default function StakingPool() {
   const [pairs, setPairs] = useState<GraphPairInfo[]>([])
   const [searchList, setSearchList] = useState<GraphPairInfo[]>([])
   const [pageTotal, setPageTotal] = useState<number>(0)
-  const [chartBarTotal, setChartBarTotal] = useState<string>('0')
   const [tvlCurrentInfo, setTvlCurrentInfo] = useState<any>({ x: '', y: '' })
   const [volCurrentInfo, setVolCurrentInfo] = useState<any>({ x: '', y: '' })
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -141,9 +139,6 @@ export default function StakingPool() {
     setYLineData(ylineArr)
     setXBarData(xbarArr)
     setYBarData(ybarArr)
-
-    const totalBarVal = ybarArr.reduce((prev, curr) => new Decimal(prev).add(new Decimal(curr)).toNumber(), 0)
-    setChartBarTotal(totalBarVal.toFixed(2))
   }, [overviewTvlChartsResult, overviewVolChartsResult])
 
   // staking info for connected account
@@ -203,13 +198,7 @@ export default function StakingPool() {
         <PoolsWrapper style={{ width: '49%', height: '340px' }}>
           <div>
             <AutoRow gap={'10px'}>
-              <NameText>TVL</NameText>{' '}
-              <AmountText>
-                ${' '}
-                {tvlCurrentInfo.y === 'total'
-                  ? format.separate(Number(overviewData?.tvl).toFixed(2))
-                  : format.amountFormat(tvlCurrentInfo.y, 2)}
-              </AmountText>
+              <NameText>TVL</NameText> <AmountText>$ {format.amountFormat(tvlCurrentInfo.y, 2)}</AmountText>
               <TimeText>{tvlCurrentInfo.x === 'total' ? `Last 7 Days` : tvlCurrentInfo.x}</TimeText>
             </AutoRow>
             <LineCharts
@@ -217,6 +206,7 @@ export default function StakingPool() {
               yData={yLineData}
               height={240}
               left={8}
+              total={Number(overviewData?.oneWeekTVLUSD).toFixed(2)}
               bottom={13}
               getCurrentData={getTvlCurrentData}
             ></LineCharts>
@@ -233,8 +223,8 @@ export default function StakingPool() {
               xData={xBarData}
               yData={yBarData}
               left={8}
-              total={chartBarTotal}
               is24Hour={true}
+              total={Number(overviewData?.dayFees).toFixed(2)}
               getCurrentData={getVolCurrentData}
             ></BarCharts>
           </div>

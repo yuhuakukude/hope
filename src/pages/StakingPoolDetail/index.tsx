@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import { Link, RouteComponentProps } from 'react-router-dom'
 import { usePairTxs, useStakingPairPool } from '../../hooks/useLPStaking'
 import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
@@ -161,7 +161,6 @@ export default function StakingPoolDetail({
   // charts
   const [tabIndex, setTabIndex] = useState('Volume')
   const [timeIndex, setTimeIndex] = useState('24H')
-  const [chartTotal, setChartTotal] = useState<string>('0')
   const [xData, setXData] = useState<string[]>()
   const [yData, setYData] = useState<string[]>()
   const [xCurrentData, setXCurrentData] = useState<string>()
@@ -283,8 +282,6 @@ export default function StakingPoolDetail({
     })
     setXData(xArr)
     setYData(yArr)
-    const totalVal = yArr.reduce((prev, curr) => new Decimal(prev).add(new Decimal(curr)).toNumber(), 0)
-    setChartTotal(totalVal.toFixed(2))
   }, [timeIndex, tabIndex, hourChartResult, dayChartResult])
 
   const viewData: OverviewData[] = [
@@ -393,6 +390,28 @@ export default function StakingPoolDetail({
       setAprInfo(res.result)
     }
   }, [address])
+
+  const lineToTal = useMemo(() => {
+    if (timeIndex === '24H') {
+      return pool?.oneDayTVLUSD.toFixed(2)
+    } else if (timeIndex === '1W') {
+      return pool?.oneWeekTVLUSD.toFixed(2)
+    } else if (timeIndex === '1M') {
+      return pool?.oneMonthTVLUSD.toFixed(2)
+    }
+    return '0'
+  }, [pool, timeIndex])
+
+  const barToTal = useMemo(() => {
+    if (timeIndex === '24H') {
+      return tabIndex === 'Volume' ? pool?.oneDayVolumeUSD.toFixed(2) : pool?.dayFees.toFixed(2)
+    } else if (timeIndex === '1W') {
+      return tabIndex === 'Volume' ? pool?.oneWeekVolume.toFixed(2) : pool?.weekFees.toFixed(2)
+    } else if (timeIndex === '1M') {
+      return tabIndex === 'Volume' ? pool?.oneMonthVolume.toFixed(2) : pool?.monthFees.toFixed(2)
+    }
+    return '0'
+  }, [pool, timeIndex, tabIndex])
 
   useEffect(() => {
     initFn()
@@ -522,10 +541,7 @@ export default function StakingPoolDetail({
                   {!!yCurrentData && (
                     <div>
                       <p className="text-success font-20 text-medium text-right">
-                        ${' '}
-                        {yCurrentData === 'total'
-                          ? format.separate(Number(pool?.tvl).toFixed(2))
-                          : format.amountFormat(yCurrentData, 2)}
+                        {!!pool && `$ ${format.amountFormat(yCurrentData, 2)}`}
                       </p>
                       <p className="font-nor text-right m-t-12">
                         {xCurrentData === 'total' ? `Last ${timeIndex}` : xCurrentData}
@@ -539,6 +555,7 @@ export default function StakingPoolDetail({
                   xData={xData}
                   yData={yData}
                   height={330}
+                  total={lineToTal}
                   is24Hour={timeIndex === '24H'}
                   getCurrentData={getCurrentData}
                 ></LineCharts>
@@ -546,7 +563,7 @@ export default function StakingPoolDetail({
                 <BarCharts
                   xData={xData}
                   yData={yData}
-                  total={chartTotal}
+                  total={barToTal}
                   bottom={10}
                   height={330}
                   is24Hour={timeIndex === '24H'}

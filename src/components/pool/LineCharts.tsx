@@ -120,11 +120,11 @@ export default function LineCharts({
     }
     myChart.setOption(option)
     if (xData && yData) {
-      getCurrentData('total', total ? total : 'total')
+      getCurrentData('total', total || '0')
       myChart.hideLoading()
     }
     myChart.getZr().on('mouseout', () => {
-      getCurrentData('total', total ? total : 'total')
+      getCurrentData('total', total || '0')
     })
     window.addEventListener('resize', () => handleResizeChart(myChart))
     return () => {
