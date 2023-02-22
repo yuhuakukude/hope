@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef, RefObject } from 'react'
 import { AutoColumn } from '../../components/Column'
 import styled from 'styled-components'
 import { AutoRow, RowBetween, RowFixed } from '../../components/Row'
@@ -14,12 +14,14 @@ import LineCharts from '../../components/pool/LineCharts'
 import BarCharts from '../../components/pool/BarCharts'
 import { Pagination } from 'antd'
 import Row from '../../components/Row'
-import SearchSelect from '../../components/SearchSelect'
+// import SearchSelect from '../../components/SearchSelect'
 import { Link } from 'react-router-dom'
 import { Decimal } from 'decimal.js'
 import format from '../../utils/format'
+import { SearchInput } from '../../components/SearchModal/styleds'
 import { useOverviewTvlChartsData, useOverviewVolChartsData } from '../../hooks/useCharts'
 import QuestionHelper from 'components/QuestionHelper'
+import { GraphPairInfo } from '../../state/stake/hooks'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -76,6 +78,9 @@ type Sort = 'asc' | 'desc'
 
 export default function StakingPool() {
   const [inputValue, setInputValue] = useState('')
+  const [pairs, setPairs] = useState<GraphPairInfo[]>([])
+  const [searchList, setSearchList] = useState<GraphPairInfo[]>([])
+  const [pageTotal, setPageTotal] = useState<number>(0)
   const [chartBarTotal, setChartBarTotal] = useState<string>('0')
   const [tvlCurrentInfo, setTvlCurrentInfo] = useState<any>({ x: '', y: '' })
   const [volCurrentInfo, setVolCurrentInfo] = useState<any>({ x: '', y: '' })
@@ -87,6 +92,7 @@ export default function StakingPool() {
   const [xBarData, setXBarData] = useState<string[]>()
   const [yBarData, setYBarData] = useState<string[]>()
   const { result: overviewData } = useOverviewData()
+  const inputRef = useRef<HTMLInputElement>()
   const viewData: OverviewData[] = [
     {
       title: 'TVL',
@@ -113,8 +119,7 @@ export default function StakingPool() {
       amount: overviewData ? `$${format.separate(overviewData.weekFees.toFixed(2))}` : `--`
     }
   ]
-
-  const { result: pairs, loading, total, tokenList } = useLPStakingPairsInfos(inputValue, sort, currentPage, pageSize)
+  const { result: list, loading } = useLPStakingPairsInfos(sort)
   const { result: overviewTvlChartsResult } = useOverviewTvlChartsData()
   const { result: overviewVolChartsResult } = useOverviewVolChartsData()
 
@@ -143,10 +148,15 @@ export default function StakingPool() {
 
   // staking info for connected account
 
+  const setPageSearch = (page: number, pagesize: number) => {
+    const resList = pairs?.slice((page - 1) * pagesize, Number(pagesize) + (page - 1) * pagesize)
+    setSearchList(resList)
+  }
+
   const onPagesChange = (page: any, pageSize: any) => {
-    console.log(page, pageSize)
-    setCurrentPage(page)
-    setPageSize(pageSize)
+    setCurrentPage(Number(page))
+    setPageSize(Number(pageSize))
+    setPageSearch(page, pageSize)
   }
 
   const getTvlCurrentData = (xCurrent: any, yCurrent: any) => {
@@ -155,6 +165,27 @@ export default function StakingPool() {
 
   const getVolCurrentData = (xCurrent: any, yCurrent: any) => {
     setVolCurrentInfo({ x: xCurrent, y: yCurrent })
+  }
+
+  const handleInput = (event: any) => {
+    const input = event.target.value
+    setInputValue(input)
+  }
+
+  useEffect(() => {
+    setSearchList(list.slice(currentPage - 1, pageSize))
+    setPairs(list)
+    setPageTotal(list.length || 0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [list])
+
+  const toSearch = () => {
+    setPageSize(5)
+    setCurrentPage(1)
+    const totalList = list.filter((e: GraphPairInfo) => e.searchString?.includes(inputValue))
+    setPageTotal(totalList.length || 0)
+    setPairs(totalList)
+    setSearchList(totalList.slice(0, 5))
   }
 
   return (
@@ -216,11 +247,25 @@ export default function StakingPool() {
               <AutoColumn justify="end">
                 <RowFixed gap={'md'}>
                   <div style={{ width: '440px' }} className="m-r-20">
-                    <SearchSelect
-                      getResult={adress => setInputValue(adress)}
-                      placeholder={'Search Token Symbol / Address'}
-                      list={tokenList}
-                    ></SearchSelect>
+                    <div className="flex">
+                      <div style={{ position: 'relative', width: '440px' }} className="flex m-r-20">
+                        <SearchInput
+                          fontSize={'16px'}
+                          padding={'10px 16px 10px 45px'}
+                          type="text"
+                          id="token-search-input"
+                          placeholder={'Search Token Symbol / Address'}
+                          autoComplete="off"
+                          ref={inputRef as RefObject<HTMLInputElement>}
+                          value={inputValue}
+                          onChange={handleInput}
+                        />
+                        <i className="iconfont search-input-icon">&#xe61b;</i>
+                      </div>
+                      <ButtonPrimary padding={'12px 24px'} style={{ width: 'max-content' }} onClick={toSearch}>
+                        Search
+                      </ButtonPrimary>
+                    </div>
                   </div>
                 </RowFixed>
               </AutoColumn>
@@ -234,7 +279,7 @@ export default function StakingPool() {
             <PositionTitle flex={2.5}>Liquidity（TVL）</PositionTitle>
             <PositionTitle flex={2}>Fees(24H)</PositionTitle>
             <PositionTitle>Volume(24H)</PositionTitle>
-            <PositionTitle>
+            <PositionTitle flex={2}>
               <div className="flex ai-center">
                 Combined APR
                 <QuestionHelper text="The APR (USD denominated) is calculated using token prices denominated in USD. Prices are fetched either from HopeSwap pools. Also, the APR is a 365 day projection based on each pool's performance over the last 24h. See Hope Ecosystem Disclaimers & Disclosures for more details" />{' '}
@@ -245,20 +290,20 @@ export default function StakingPool() {
           <PoolSection>
             {loading ? (
               <Loader style={{ margin: 'auto' }} />
-            ) : pairs && pairs?.length === 0 ? (
+            ) : searchList && searchList?.length === 0 ? (
               <OutlineCard>No active pools</OutlineCard>
             ) : (
-              pairs.map((pair, index) => {
+              searchList.map((pair, index) => {
                 // need to sort by added liquidity here
                 return <StakingPoolCard key={index} pair={pair} />
               })
             )}
           </PoolSection>
-          {total > 0 && (
+          {pageTotal > 0 && (
             <Row justify="center">
               <Pagination
                 showQuickJumper
-                total={total}
+                total={pageTotal}
                 current={currentPage}
                 pageSize={pageSize}
                 showSizeChanger
@@ -267,7 +312,7 @@ export default function StakingPool() {
                 onShowSizeChange={onPagesChange}
               />{' '}
               <span className="m-l-15" style={{ color: '#868790' }}>
-                Total {total}
+                Total {pageTotal}
               </span>
             </Row>
           )}

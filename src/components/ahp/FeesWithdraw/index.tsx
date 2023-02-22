@@ -7,7 +7,8 @@ import { Radio } from 'antd'
 import Tips from 'components/Tips'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 import format from 'utils/format'
-
+import { useEstimate } from 'hooks/ahp'
+import { useActiveWeb3React } from '../../../hooks'
 interface GombocClaimProps {
   onSubmit: any
   onDismiss: () => void
@@ -27,6 +28,8 @@ const GombocClaim = ({
   tableItem,
   hopePrice
 }: GombocClaimProps) => {
+  const { account } = useActiveWeb3React()
+  const isEthBalanceInsufficient = useEstimate()
   const [curClaimType, setCurClaimType] = useState('')
   const [otherAmount, setOtherAmount] = useState('')
   function changeRadio(item: any) {
@@ -179,6 +182,17 @@ const GombocClaim = ({
           >
             Claim
           </ButtonPrimary>
+          {account && isEthBalanceInsufficient && (
+            <div className="tip flex m-t-30">
+              <div className="icon m-r-15">
+                <i className="iconfont font-20 text-primary font-bold">&#xe614;</i>
+              </div>
+              <p className="text-normal font-nor lh15">
+                Your wallet balance is below 0.001 ETH. The approve action require small transaction fees, so you may
+                have deposit additional funds to complete them.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </>

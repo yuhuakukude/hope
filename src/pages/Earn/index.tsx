@@ -1,4 +1,4 @@
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useState, useRef, RefObject, useEffect } from 'react'
 import { AutoColumn } from '../../components/Column'
 import styled from 'styled-components'
 import { TYPE } from '../../theme'
@@ -6,9 +6,8 @@ import { AutoRow, RowFixed } from '../../components/Row'
 import { CardSection, DataCard, EarnBGImage } from '../../components/earn/styled'
 import Loader from '../../components/Loader'
 import { OutlineCard } from '../../components/Card'
-import SearchSelect from '../../components/SearchSelect'
 import format from 'utils/format'
-import { useLPStakingInfos, useLPTotalLocked} from '../../hooks/useLPStaking'
+import { useLPStakingInfos, useLPTotalLocked } from '../../hooks/useLPStaking'
 import LTPoolCard from '../../components/earn/LTPoolCard'
 import { PoolInfo } from '../../state/stake/hooks'
 import StakingModal, { STAKE_ACTION } from '../../components/earn/StakingModal'
@@ -27,11 +26,14 @@ import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../perm
 import { ethers } from 'ethers'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
 import { useWalletModalToggle } from '../../state/application/hooks'
-
+import { Switch, Select } from 'antd'
+import { SearchInput } from '../../components/SearchModal/styleds'
+import { ButtonPrimary } from '../../components/Button'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
   padding: 0 30px;
+  max-width: 1440px;
 `
 
 const TopSection = styled(AutoColumn)`
@@ -49,21 +51,23 @@ const PoolSection = styled.div`
   justify-self: center;
 `
 
-// const DataRow = styled(RowBetween)`
-//   ${({ theme }) => theme.mediaWidth.upToSmall`
-// flex-direction: column;
-// `};
-// `
-
 type Sort = 'asc' | 'desc'
 
 export default function Earn() {
+  const { Option } = Select
+  const inputRef = useRef<HTMLInputElement>()
   const toggleWalletModal = useWalletModalToggle()
   const { chainId, account, library } = useActiveWeb3React()
   const [curType, setCurType] = useState(1)
+  const [userCurrency, setUserCurrency] = useState('')
+  const [searchList, setSearchList] = useState<PoolInfo[]>([])
   const [showStakeModal, setShowStakeModal] = useState(false)
   const [showClaimModal, setShowClaimModal] = useState(false)
+  const [isMyVote, setIsMyVote] = useState(false)
   const addTransaction = useTransactionAdder()
+
+  // const [currentPage, setCurrentPage] = useState<number>(1)
+  // const [pageSize, setPageSize] = useState<number>(5)
 
   const [poolInfo, setPoolInfo] = useState<PoolInfo | undefined>()
   const [sort, setSort] = useState<Sort>('desc')
@@ -76,7 +80,7 @@ export default function Earn() {
   const [action, setAction] = useState<STAKE_ACTION>(STAKE_ACTION.STAKE)
   const [inputValue, setInputValue] = useState('')
   console.log(curType, setCurType, setSort)
-  const { result: stakingInfos, loading, tokenList } = useLPStakingInfos(inputValue, sort)
+  const { result: stakingInfos, loading } = useLPStakingInfos(sort, isMyVote)
   const { totalAmount } = useLPTotalLocked()
   // staking info for connected account
 
@@ -265,6 +269,38 @@ export default function Earn() {
       })
   }, [account, library, chainId, poolInfo, onTxStart, onClaim, onTxSubmitted, onTxError])
 
+  const changeSwitch = (val: boolean) => {
+    setIsMyVote(val)
+  }
+
+  const handleInput = (event: any) => {
+    const input = event.target.value
+    setInputValue(input)
+  }
+
+  useEffect(() => {
+    setSearchList(stakingInfos)
+    // setPageTotal(list.length || 0)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [stakingInfos])
+
+  const toSearch = () => {
+    // setPageSize(5)
+    // setCurrentPage(1)
+    const totalList = stakingInfos.filter((e: PoolInfo) => e.searchString?.includes(inputValue))
+    // setPageTotal(totalList.length || 0)
+    // setPairs(totalList)
+    setSearchList(totalList)
+  }
+
+  const currencyChange = (val: string) => {
+    console.log(val)
+    const value = val || ''
+    setUserCurrency(value)
+    const resList = stakingInfos.filter((e: PoolInfo) => e.searchString?.includes(value))
+    setSearchList(resList)
+  }
+
   return (
     <PageWrapper gap="lg" justify="center">
       {poolInfo && (
@@ -311,7 +347,7 @@ export default function Earn() {
             <AutoColumn style={{ padding: 30 }} gap="lg">
               <AutoRow gap={'20px'}>
                 <TYPE.white fontSize={28} fontWeight={600}>
-                  Provide Liquidity, Earn $LT
+                  Provide Liquidity, Earn $LT{`${isMyVote}`}
                 </TYPE.white>
                 <a
                   href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
@@ -329,12 +365,25 @@ export default function Earn() {
               <AutoColumn>
                 <RowFixed gap={'md'}>
                   <div style={{ width: '440px' }} className="m-r-20">
-                    <SearchSelect
-                      isLarge={true}
-                      getResult={adress => setInputValue(adress)}
-                      placeholder={'Search Token Symbol / Address'}
-                      list={tokenList}
-                    ></SearchSelect>
+                    <div className="flex">
+                      <div style={{ position: 'relative', width: '440px' }} className="flex m-r-20">
+                        <SearchInput
+                          fontSize={'16px'}
+                          padding={'10px 16px 10px 45px'}
+                          type="text"
+                          id="token-search-input"
+                          placeholder={'Search Token Symbol / Address'}
+                          autoComplete="off"
+                          ref={inputRef as RefObject<HTMLInputElement>}
+                          value={inputValue}
+                          onChange={handleInput}
+                        />
+                        <i className="iconfont search-input-icon">&#xe61b;</i>
+                      </div>
+                      <ButtonPrimary padding={'12px 24px'} style={{ width: 'max-content' }} onClick={toSearch}>
+                        Search
+                      </ButtonPrimary>
+                    </div>
                   </div>
                 </RowFixed>
               </AutoColumn>
@@ -344,14 +393,40 @@ export default function Earn() {
         </DataCard>
       </TopSection>
 
+      <div className="action flex jc-between ai-center" style={{ width: '100%' }}>
+        <div>
+          <span className="text-white text-medium font-nor">My Staked Only</span>
+          <Switch className="m-l-10 is-grey" onChange={changeSwitch} />
+        </div>
+        <div>
+          <Select
+            // mode="multiple"
+            style={{ width: '210px', height: '42px' }}
+            value={userCurrency}
+            allowClear
+            onChange={currencyChange}
+            placeholder="Available Balance"
+            className={userCurrency ? 'small-select hide-placeholder' : 'small-select show-placeholder'}
+          >
+            {['WETH', 'USDC', 'LT', 'USDT', 'HOPE'].map((data: any, index: number) => {
+              return (
+                <Option key={index} value={data}>
+                  {data}
+                </Option>
+              )
+            })}
+          </Select>
+        </div>
+      </div>
+
       <AutoColumn gap="lg" style={{ width: '100%' }}>
         <PoolSection>
           {loading ? (
             <Loader size={'50px'} style={{ margin: 'auto' }} />
-          ) : stakingInfos && stakingInfos?.length === 0 ? (
+          ) : searchList && searchList?.length === 0 ? (
             <OutlineCard>No active pools</OutlineCard>
           ) : (
-            stakingInfos.map((pool, index) => {
+            searchList.map((pool, index) => {
               // need to sort by added liquidity here
               return (
                 <LTPoolCard
