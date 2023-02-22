@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, ETHER, JSBI, TokenAmount } from '@uniswap/sdk'
+import { Currency, ETHER, JSBI, TokenAmount, WETH } from '@uniswap/sdk'
 import React, { useCallback, useContext, useState } from 'react'
 import { PlusCircle } from 'react-feather'
 import { RouteComponentProps } from 'react-router-dom'
@@ -77,8 +77,8 @@ export default function LiquidityStake({
   const { account, chainId, library } = useActiveWeb3React()
   const { result: pool } = useStakingPool(stakingRewardAddress ?? '')
   const theme = useContext(ThemeContext)
-  const currencyIdA = pool?.tokens[0].address
-  const currencyIdB = pool?.tokens[1].address
+  const currencyIdA = pool?.tokens[0].address === WETH[chainId ?? 1].address ? 'eth' : pool?.tokens[0].address
+  const currencyIdB = pool?.tokens[1].address === WETH[chainId ?? 1].address ? 'eth' : pool?.tokens[1].address
 
   const currencyA = useCurrency(currencyIdA)
   const currencyB = useCurrency(currencyIdB)
@@ -482,7 +482,7 @@ export default function LiquidityStake({
         pendingText={pendingText}
         currencyToAdd={pair?.liquidityToken}
       />
-      <AddRemoveTabs creating={isCreate} adding={true} />
+      <AddRemoveTabs title={'Stake Liquidity'} creating={isCreate} adding={true} />
       <AutoRowBetween align={'flex-start'} gap={'30px'} padding={'30px'}>
         <LightCard flex={4} padding={'20px'}>
           <AutoColumn gap={'30px'}>

@@ -19,7 +19,7 @@ import { Box } from 'rebass/styled-components'
 import Overview, { OverviewData } from '../../components/pool/Overview'
 import { useLtMinterContract, useStakingContract } from '../../hooks/useContract'
 import { useSingleCallResult } from '../../state/multicall/hooks'
-import { JSBI, TokenAmount } from '@uniswap/sdk'
+import { JSBI, Percent, TokenAmount } from '@uniswap/sdk'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
 import { calculateGasMargin, shortenAddress, getEtherscanLink } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
@@ -510,7 +510,7 @@ export default function StakingPoolDetail({
                     <Circular></Circular>
                     <CurrencyLogo currency={pool?.tokens[0]} />
                     <TYPE.body marginLeft={9}>
-                      {pool?.token0Amount.toFixed(2, { groupSeparator: ',' })} {pool?.tokens[0].symbol}
+                      {pool?.token0Value.toFixed(2)} {pool?.tokens[0].symbol}
                       {!!pool?.token0Amount && ' (50%)'}
                     </TYPE.body>
                   </Row>
@@ -518,7 +518,7 @@ export default function StakingPoolDetail({
                     <Circular color={'#8FFBAE'}></Circular>
                     <CurrencyLogo currency={pool?.tokens[1]} />
                     <TYPE.body marginLeft={9}>
-                      {pool?.token1Amount.toFixed(2, { groupSeparator: ',' })} {pool?.tokens[1].symbol}
+                      {pool?.token1Value.toFixed(2)} {pool?.tokens[1].symbol}
                       {!!pool?.token1Amount && ' (50%)'}
                     </TYPE.body>
                   </Row>
@@ -622,7 +622,13 @@ export default function StakingPoolDetail({
                 <TYPE.white fontSize={20} fontWeight={700}>
                   My Rewards
                 </TYPE.white>
-                <TYPE.white fontSize={20}>{earnedAmount ? earnedAmount.toFixed(2) : '--'}</TYPE.white>
+                <TYPE.white fontSize={20}>
+                  {earnedAmount
+                    ? pool?.totalLiquidity
+                        .multiply(new Percent(earnedAmount.raw, pool?.totalSupply?.raw))
+                        .toFixed(2, { groupSeparator: ',' })
+                    : '--'}
+                </TYPE.white>
               </RowBetween>
             </CardHeader>
             <AutoColumn style={{ padding: 30 }} gap={'lg'}>

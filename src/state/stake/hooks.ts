@@ -402,6 +402,8 @@ export interface PairDetail extends PoolInfo {
   oneMonthTVLUSD: number
   oneMonthVolume: number
   monthFees: number
+  token0Value: number
+  token1Value: number
 }
 
 export async function fetchTotalAmount(): Promise<any> {
@@ -854,9 +856,12 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const w2Pair = w2Res?.data.pairs[0]
     const m1Pair = m1Res?.data.pairs[0]
     const m2Pair = m2Res?.data.pairs[0]
-    const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(pair.reserveUSD, d1Pair.reserveUSD, d2Pair.reserveUSD)
-    console.warn(pair.reserveUSD, d1Pair.reserveUSD, d2Pair.reserveUSD)
-    const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(pair.volumeUSD, d1Pair.volumeUSD, d2Pair.volumeUSD)
+    const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(pair?.reserveUSD, d1Pair?.reserveUSD, d2Pair?.reserveUSD)
+    const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+      pair?.volumeUSD,
+      d1Pair?.volumeUSD,
+      d2Pair?.volumeUSD
+    )
 
     const [oneWeekTVLUSD] = get2DayPercentChange(pair?.reserveUSD, w1Pair?.reserveUSD, w2Pair?.reserveUSD)
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
@@ -912,6 +917,8 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       tokens,
       lpToken: dummyPair.liquidityToken,
       token0Amount,
+      token0Value: Number(pair.reserve0),
+      token1Value: Number(pair.reserve1),
       token1Amount,
       volume0Amount,
       volume1Amount,

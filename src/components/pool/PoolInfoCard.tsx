@@ -6,6 +6,7 @@ import { AutoColumn } from '../Column'
 import { AutoRow, RowBetween, RowFixed } from '../Row'
 import CurrencyLogo from '../CurrencyLogo'
 import { usePosition, useStakePosition } from '../../hooks/usePosition'
+import { Percent } from '@uniswap/sdk'
 
 export const CardHeader = styled(AutoColumn)`
   padding: 30px 30px 30px 20px;
@@ -23,7 +24,9 @@ export default function BasePoolInfoCard({ pool }: { pool?: PoolInfo }) {
           Unstaked Position
         </TYPE.white>
         <TYPE.white fontWeight={700} fontSize={18}>
-          {balance ? balance.toFixed(2, { groupSeparator: ',' }) : '--'}
+          {balance && pool?.totalSupply
+            ? `${new Percent(balance.raw, pool.totalSupply.raw).toFixed(2, { groupSeparator: ',' })}%`
+            : '--'}
         </TYPE.white>
       </RowBetween>
       <RowBetween>
@@ -63,7 +66,9 @@ export default function BasePoolInfoCard({ pool }: { pool?: PoolInfo }) {
           Staked Position
         </TYPE.white>
         <TYPE.white fontWeight={700} fontSize={18}>
-          {stakedAmount ? stakedAmount.toFixed(2, { groupSeparator: ',' }) : '--'}
+          {stakedAmount && pool?.totalSupply
+            ? `${new Percent(stakedAmount.raw, pool.totalSupply.raw).toFixed(2, { groupSeparator: ',' })}%`
+            : '--'}
         </TYPE.white>
       </RowBetween>
       <RowBetween>
