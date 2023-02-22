@@ -33,10 +33,8 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingInfo, onCla
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
 
-  const claimedRes = useSingleCallResult(stakingContract, 'integrateFraction', [account ?? undefined])
-  const totalRewardAmount = claimedRes?.result?.[0]
-    ? new TokenAmount(LT[chainId ?? 1], claimedRes?.result?.[0])
-    : undefined
+  const totalRes = useSingleCallResult(stakingContract, 'integrateFraction', [account ?? undefined])
+  const totalRewardAmount = totalRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], totalRes?.result?.[0]) : undefined
 
   return (
     <Modal isOpen={isOpen} onDismiss={onDismiss} maxHeight={90}>

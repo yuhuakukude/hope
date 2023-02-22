@@ -1,3 +1,62 @@
+.sidebar-transition {
+  transition: width 0.5s;
+  overflow: hidden;
+  width: 0;
+  transform-origin: left center;
+}
+.sidebar-logo {
+  white-space: nowrap;
+  padding: 35px;
+  text-align: left;
+
+  p {
+    display: inline-block;
+  }
+}
+
+.sidebar-select-arc {
+  position: absolute;
+  right: 0;
+  top: -10px;
+  width: 10px;
+  height: 10px;
+  background-color: rgba(12, 12, 13, 1);
+  display: none;
+  overflow: hidden;
+
+  .sidebar-select-arc-mask {
+    width: 10px;
+    height: 10px;
+    background-color: #26262c;
+    border-bottom-right-radius: 10px;
+    position: absolute;
+    left: 0px;
+    top: 0;
+  }
+}
+
+.sidebar-select-arc-2 {
+  top: auto;
+  bottom: -10px;
+
+  .sidebar-select-arc-mask {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 0px;
+  }
+}
+
+.SidebarOnSelect {
+  // height: 80px;
+  position: relative;
+  color: #E4C989;
+
+  .sidebar-select-arc {
+    display: block;
+  }
+}
+
+
+
 .SidebarOnSelect::before {
   content: ' ';
   height: 60px;

@@ -135,15 +135,16 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
       key: 'Actions',
       render: (text: string, record: PortfolioReward) => {
         const options: ITitleTips[] = []
+        const hsg = STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLowerCase()
         if (isNotNull(record.stakeable)) {
           options.push({
             label: 'Stake',
             value: 'Stake',
             onClick: () => {
-              if (record.extRewardList && record.extRewardList.length > 0) {
-                history.push(`/swap/stake/${record.gomboc}`)
-              } else {
+              if (record.gomboc === hsg) {
                 history.push(`/staking`)
+              } else {
+                history.push(`/swap/stake/${record.gomboc}`)
               }
             }
           })
@@ -153,10 +154,10 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
             label: 'Unstake',
             value: 'Unstake',
             onClick: () => {
-              if (record.extRewardList && record.extRewardList.length > 0) {
-                history.push(`/swap/withdraw/${record.gomboc}`)
-              } else {
+              if (record.gomboc === hsg) {
                 history.push(`/staking?type=unstake`)
+              } else {
+                history.push(`/swap/withdraw/${record.gomboc}`)
               }
             }
           })
@@ -170,8 +171,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
             }
           })
         }
-
-        if (record.extRewardList && record.extRewardList.length > 0) {
+        if (!(record.gomboc === hsg)) {
           if (isNotNull(record.stakeable)) {
             options.push({
               label: 'Provide',

@@ -127,7 +127,7 @@ export function useToClaim() {
   const contract = useLtMinterContract()
   const { account } = useActiveWeb3React()
   const toClaim = useCallback(
-    async (address: string) => {
+    async (address: string, claRewards) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [address]
@@ -139,7 +139,7 @@ export function useToClaim() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Claim`
+            summary: `Claim ${claRewards?.toFixed(2, { groupSeparator: ',' })} LT`
           })
           return response.hash
         })
