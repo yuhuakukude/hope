@@ -14,7 +14,7 @@ import { useToVote, conFnNameEnum } from '../../../../hooks/ahp/useGomVote'
 import { JSBI, Percent, Token } from '@uniswap/sdk'
 import { useSingleCallResult } from '../../../../state/multicall/hooks'
 import ActionButton from '../../../../components/Button/ActionButton'
-import { NavLink } from 'react-router-dom'
+import { NavLink, useLocation } from 'react-router-dom'
 
 import TransactionConfirmationModal, {
   TransactionErrorContent
@@ -34,11 +34,11 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   const toggleWalletModal = useWalletModalToggle()
   const gomConContract = useGomConContract()
   const { toVote } = useToVote()
-
+  const location = useLocation()
+  const searchParams = new URLSearchParams(location.search)
   const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
   const veLtBal = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const [voteAmount, setVoteAmount] = useState('')
-
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
@@ -231,6 +231,13 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
       updateTable()
     }
   }, [updateTable, txHash, isTranPending])
+
+  useEffect(() => {
+    if (selList && selList.length > 0 && searchParams.get('gomboc')) {
+      setCurGomAddress(`${searchParams?.get('gomboc')}`)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [selList])
 
   function changeAmount(val: any) {
     setAmount(val)

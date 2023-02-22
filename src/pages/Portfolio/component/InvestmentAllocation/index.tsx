@@ -136,7 +136,7 @@ export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) 
               />
             </div>
             <div className="investment-allocation-total2">{format.amountFormat(data.totalHope, 2)} HOPE </div>
-            <div className="investment-allocation-total3">~ ${format.amountFormat(data.usdOfTotalHope, 2)}</div>
+            <div className="investment-allocation-total3">≈ ${format.amountFormat(data.usdOfTotalHope, 2)}</div>
           </div>
         </div>
         <div className="investment-allocation-bottom">
@@ -150,7 +150,7 @@ export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) 
                       <Tips title={item.tips} />
                     </span>
                   </div>
-                  <div className="investment-allocation-box-amount">~ {item.formatValue} HOPE</div>
+                  <div className="investment-allocation-box-amount">≈ {item.formatValue} HOPE</div>
                 </div>
               )
             })}
