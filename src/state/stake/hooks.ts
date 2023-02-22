@@ -981,10 +981,8 @@ export async function fetchGlobalData() {
   }
 }
 
-function QUERY_TXS_QUERY() {
-  return `
-  query ($allPairs: [Bytes]!) {
-    mints(first: 20, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
+const Mints = `
+ mints(first: 20, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
       transaction {
         id
         timestamp
@@ -1005,7 +1003,10 @@ function QUERY_TXS_QUERY() {
       amount1
       amountUSD
     }
-    burns(first: 20, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
+`
+
+const Burns = `
+ burns(first: 20, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
       transaction {
         id
         timestamp
@@ -1026,7 +1027,10 @@ function QUERY_TXS_QUERY() {
       amount1
       amountUSD
     }
-    swaps(first: 30, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
+`
+
+const Swaps = `
+ swaps(first: 30, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
       transaction {
         id
         timestamp
@@ -1050,6 +1054,44 @@ function QUERY_TXS_QUERY() {
       amountUSD
       to
     }
+`
+
+function QUERY_TXS_QUERY(type?: string | undefined) {
+  let sql
+  switch (type) {
+    case 'All':
+      sql = `
+         ${Mints}
+         ${Burns}
+         ${Swaps} 
+      `
+      break
+    case 'Swaps':
+      sql = `
+         ${Swaps} 
+      `
+      break
+    case 'Adds':
+      sql = `
+         ${Mints}
+      `
+      break
+    case 'Removes':
+      sql = `
+         ${Burns}
+      `
+      break
+    case undefined:
+      sql = `
+         ${Mints}
+         ${Burns}
+         ${Swaps} 
+      `
+      break
+  }
+  return `
+  query ($allPairs: [Bytes]!) {
+    ${sql}
   }
 `
 }
@@ -1125,17 +1167,27 @@ export interface TxResponse {
   amountUSD: number
 }
 
-export async function fetchPairTxs(pairAddress: string): Promise<TxResponse[]> {
+export async function fetchPairTxs(pairAddress: string, type?: string): Promise<TxResponse[]> {
   try {
-    const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(), { allPairs: [pairAddress] })
-    return response.data.mints.concat(response.data.burns).concat(
-      response.data.swaps.map((swap: any) => {
-        const swapItem = swap
-        swap.amount0 = swap.amount0In === '0' ? swap.amount0Out : swap.amount0In
-        swap.amount1 = swap.amount1In === '0' ? swap.amount1Out : swap.amount1In
-        return swapItem
-      })
-    )
+    const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(type), { allPairs: [pairAddress] })
+    let result: TxResponse[] = []
+    if (response.data.mints) {
+      result = result.concat(response.data.mints)
+    }
+    if (response.data.burns) {
+      result = result.concat(response.data.burns)
+    }
+    if (response.data.swaps) {
+      result = result.concat(
+        response.data.swaps.map((swap: any) => {
+          const swapItem = swap
+          swap.amount0 = swap.amount0In === '0' ? swap.amount0Out : swap.amount0In
+          swap.amount1 = swap.amount1In === '0' ? swap.amount1Out : swap.amount1In
+          return swapItem
+        })
+      )
+    }
+    return result
   } catch (error) {
     return []
   }

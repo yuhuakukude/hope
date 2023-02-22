@@ -34,6 +34,7 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useLineDaysChartsData, useLine24HourChartsData } from '../../hooks/useCharts'
 import { NavLink } from 'react-router-dom'
+import SelectTips, { TitleTipsProps } from '../Portfolio/component/SelectTips'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -91,9 +92,11 @@ const TabItem = styled.div<{ isActive?: boolean }>`
   user-select: none;
   position: relative;
   padding-bottom: 12px;
+
   &:hover {
     color: #e4c989;
   }
+
   &::after {
     content: '';
     width: 24px;
@@ -119,6 +122,7 @@ const TimeItem = styled.div<{ isActive?: boolean }>`
   user-select: none;
   margin-right: 16px;
   background-color: ${({ isActive }) => (isActive ? '#434343' : 'none')};
+
   &:hover {
     background-color: #434343;
   }
@@ -129,6 +133,7 @@ const GoBackIcon = styled(Link)`
   cursor: pointer;
   color: #fff;
   font-weight: 500;
+
   &:hover {
     color: #fff;
   }
@@ -152,8 +157,8 @@ export default function StakingPoolDetail({
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [showTx, setShowTx] = useState<boolean>(false)
-
-  const txs = usePairTxs(address)
+  const [transactionType, setTransactionType] = useState('All')
+  const txs = usePairTxs(address, transactionType)
 
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
@@ -167,6 +172,37 @@ export default function StakingPoolDetail({
   const [yCurrentData, setYCurrentData] = useState<string>()
   const { result: dayChartResult } = useLineDaysChartsData(address ?? '')
   const { result: hourChartResult } = useLine24HourChartsData(address ?? '')
+
+  const TransactionType: TitleTipsProps[] = [
+    {
+      label: 'All',
+      value: 'All',
+      onClick: data => {
+        setTransactionType(data.label)
+      }
+    },
+    {
+      label: 'Swaps',
+      value: 'Swaps',
+      onClick: data => {
+        setTransactionType(data.label)
+      }
+    },
+    {
+      label: 'Adds',
+      value: 'Adds',
+      onClick: data => {
+        setTransactionType(data.label)
+      }
+    },
+    {
+      label: 'Removes',
+      value: 'Removes',
+      onClick: data => {
+        setTransactionType(data.label)
+      }
+    }
+  ]
 
   const tabChange = (e: string) => {
     setTabIndex(e)
@@ -655,7 +691,9 @@ export default function StakingPoolDetail({
               <>
                 <GreyCard marginTop={30}>
                   <AutoRow>
-                    <TableTitle>All</TableTitle>
+                    <TableTitle>
+                      <SelectTips options={TransactionType} label={transactionType} />
+                    </TableTitle>
                     <TableTitle>Total Value</TableTitle>
                     <TableTitle>Token Amount</TableTitle>
                     <TableTitle>Token Amount</TableTitle>
@@ -707,7 +745,6 @@ export default function StakingPoolDetail({
                   <AutoRow>
                     <TableTitle>Contract Address</TableTitle>
                     <TableTitle>Creation Time(UTC)</TableTitle>
-                    <TableTitle flex={0.8}>Creator</TableTitle>
                     <TableTitle flex={0.8}>Fee Rate</TableTitle>
                     <TableTitle flex={1.5}>Total Swap Volume</TableTitle>
                     <TableTitle>Total Swap Fee</TableTitle>
@@ -723,11 +760,6 @@ export default function StakingPoolDetail({
                       </ExternalLink>
                     </TableTitle>
                     <TableTitle>{formatUTCDate(pool?.createAt)}</TableTitle>
-                    <TableTitle flex={0.8}>
-                      <ExternalLink href={`${getEtherscanLink(chainId || 1, address, 'address')}`}>
-                        <span style={{ color: '#fff' }}>--</span>
-                      </ExternalLink>
-                    </TableTitle>
                     <TableTitle flex={0.8}>0.30%</TableTitle>
                     <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
                       <TableTitle>{pool ? `$${pool.totalVolume.toFixed(2)}` : '--'}</TableTitle>

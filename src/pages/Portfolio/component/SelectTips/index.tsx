@@ -3,13 +3,13 @@ import React, { useCallback, useState } from 'react'
 
 import './index.scss'
 
-export interface ITitleTips {
+export interface TitleTipsProps {
   label: string
   value: any
-  onClick: (data: ITitleTips) => void
+  onClick: (data: TitleTipsProps) => void
 }
 
-export default function TitleTips({ options }: { options: ITitleTips[] }) {
+export default function TitleTips({ options, label }: { options: TitleTipsProps[]; label?: string | HTMLElement }) {
   const getTitle = useCallback(
     () => (
       <div className="select-tips-list">
@@ -18,7 +18,7 @@ export default function TitleTips({ options }: { options: ITitleTips[] }) {
             <div
               key={index}
               onClick={() => {
-                item.onClick(item.value)
+                item.onClick(item)
               }}
               className="select-tips-item"
             >
@@ -45,7 +45,7 @@ export default function TitleTips({ options }: { options: ITitleTips[] }) {
         onVisibleChange={onVisibleChange}
       >
         <span className="select-tips-more">
-          More
+          {label ? label : 'More'}
           <i className={`iconfont ${visible ? 'iconfont-visible' : ''}`}>&#xe60d;</i>
         </span>
       </Tooltip>
