@@ -37,7 +37,7 @@ const Bar = styled('div')`
 const SidebarIcon = styled('div')`
   color: white;
   font-size: 20px;
-  margin-top: 10px;
+  // margin-top: 10px;
   white-space: nowrap;
   padding: 0 40px;
   height: 60px;
@@ -79,7 +79,7 @@ export default function SideBar() {
   const location = useLocation()
 
   const ROUTERS = [
-    { title: 'Portfolio', icon: '&#xe609;', router: '/portfolio' },
+    { title: 'Portfolio', icon: '&#xe609;', baseRouter: '/portfolio', router: '/portfolio' },
     { title: 'Staking', icon: '&#xe606;', baseRouter: '/hope', router: '/hope/staking' },
     { title: 'LightSwap', icon: '&#xe605;', baseRouter: '/swap', router: '/swap/exchange' },
     { title: 'LT&DAO', icon: '&#xe608;', baseRouter: '/dao', router: '/dao/gomboc' }
@@ -87,6 +87,8 @@ export default function SideBar() {
   const currentTab = useCallback(() => {
     return ROUTERS.findIndex(({ baseRouter }) => baseRouter && location.pathname.startsWith(baseRouter))
   }, [ROUTERS, location.pathname])
+
+  console.log('=<<<<<>>>>>', currentTab())
 
   return (
     <Bar id="side-bar">
@@ -103,8 +105,14 @@ export default function SideBar() {
                   key={index}
                   className={currentTab() === index ? 'SidebarOnHover SidebarOnSelect' : 'SidebarOnHover'}
                 >
+                  <span className="sidebar-select-arc">
+                    <span className="sidebar-select-arc-mask"></span>
+                  </span>
                   <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />
                   <SidebarText className="showOnHover">{title}</SidebarText>
+                  <span className="sidebar-select-arc sidebar-select-arc-2">
+                    <span className="sidebar-select-arc-mask"></span>
+                  </span>
                 </SidebarIcon>
               </NavLink>
             )
