@@ -144,6 +144,8 @@ export function getDateForLastOccurence(strDay: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 
   let difference = date.getDay() - index
   if (difference < 0) {
     difference = -7 - difference
+  } else {
+    difference *= -1
   }
   date.setDate(date.getDate() + difference)
   return date

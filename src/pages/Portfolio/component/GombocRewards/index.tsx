@@ -98,7 +98,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
         return (
           <div>
             <div>{format.amountFormat(text, 2) ? `${format.amountFormat(text, 2)} ${record.stakeSymbol}` : `--`}</div>
-            <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${format.amountFormat(record.ustOfStaked, 2)}</div>
+            <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${format.amountFormat(record.usdOfStaked, 2)}</div>
           </div>
         )
       }
@@ -124,7 +124,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
         return (
           <div>
             <div>{format.amountFormat(text, 2) ? `${format.amountFormat(text, 2)} LT` : `--`}</div>
-            <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${format.amountFormat(record.usdOfReward, 2)}</div>
+            <div style={{ color: 'rgba(14, 203, 129, 1)' }}>~ ${format.amountFormat(record.usdOfTotalReward, 2)}</div>
           </div>
         )
       }

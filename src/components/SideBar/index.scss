@@ -1,0 +1,10 @@
+.SidebarOnSelect::before {
+  content: ' ';
+  height: 60px;
+  left: 20px;
+  border-top-left-radius: 30px;
+  border-bottom-left-radius: 30px;
+  position: absolute;
+  width: calc(100% - 20px);
+  background-color: rgba(12, 12, 13, 1);
+}

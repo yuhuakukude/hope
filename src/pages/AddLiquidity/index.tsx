@@ -6,7 +6,7 @@ import { PlusCircle } from 'react-feather'
 import { RouteComponentProps } from 'react-router-dom'
 import { Text } from 'rebass'
 import styled, { ThemeContext } from 'styled-components'
-import { ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
+import { ButtonConfirmed, ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
 import { GreyCard, LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter, GapColumn } from '../../components/Column'
 import TransactionConfirmationModal, {
@@ -17,7 +17,7 @@ import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs, StyledMenuIcon } from '../../components/NavigationTabs'
 import { MinimalPositionCard } from '../../components/PositionCard'
-import Row, { RowBetween, RowFlat } from '../../components/Row'
+import Row, { AutoRow, RowBetween, RowFlat } from '../../components/Row'
 
 import { ONE_BIPS, ROUTER_ADDRESS } from '../../constants'
 import { PairState } from '../../data/Reserves'
@@ -31,7 +31,7 @@ import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../s
 
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { useIsExpertMode, useUserSlippageTolerance } from '../../state/user/hooks'
-import { StyledInternalLink, TYPE } from '../../theme'
+import { CustomLightSpinner, StyledInternalLink, TYPE } from '../../theme'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '../../utils'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { wrappedCurrency } from '../../utils/wrappedCurrency'
@@ -42,6 +42,7 @@ import { currencyId } from '../../utils/currencyId'
 import { PoolPriceBar } from './PoolPriceBar'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
+import spinner from '../../assets/svg/spinner.svg'
 
 const PageWrapper = styled(GapColumn)`
   width: 100%;
@@ -133,6 +134,7 @@ export default function AddLiquidity({
     setAttemptingTxn(false)
     setErrorStatus({ code: error?.code, message: error.message })
     setShowConfirm(true)
+    setPendingText('')
   }, [])
 
   const onTxStart = useCallback(confirmMessage => {
@@ -527,17 +529,31 @@ export default function AddLiquidity({
                         )}
                       </RowBetween>
                     )}
-                  <ButtonError
-                    onClick={() => {
-                      expertMode ? addCallback() : addCallback()
-                    }}
-                    disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
-                    error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
-                  >
-                    <Text fontSize={16} fontWeight={500}>
-                      {error ?? 'Supply'}
-                    </Text>
-                  </ButtonError>
+                  {pendingText ? (
+                    <ButtonConfirmed
+                      altDisabledStyle={!!pendingText} // show solid button while waiting
+                      confirmed={!!pendingText}
+                    >
+                      <AutoRow gap="6px" justify="center">
+                        Confirm in your wallet
+                        <CustomLightSpinner style={{ marginLeft: 10 }} size={'16px'} src={spinner} />
+                      </AutoRow>
+                    </ButtonConfirmed>
+                  ) : (
+                    <ButtonError
+                      onClick={() => {
+                        expertMode ? addCallback() : addCallback()
+                      }}
+                      disabled={
+                        !isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED
+                      }
+                      error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
+                    >
+                      <Text fontSize={16} fontWeight={500}>
+                        {error ?? 'Supply'}
+                      </Text>
+                    </ButtonError>
+                  )}
                 </AutoColumn>
               )}
             </AutoColumn>

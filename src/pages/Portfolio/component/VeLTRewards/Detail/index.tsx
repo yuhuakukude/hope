@@ -2,7 +2,7 @@
 import Tips from 'components/Tips'
 // import { useActiveWeb3React } from 'hooks'
 import React, { useMemo } from 'react'
-import { formatDate, getDateForLastOccurence, amountFormat } from 'utils/format'
+import { formatDate, amountFormat } from 'utils/format'
 import { ButtonOutlined } from 'components/Button'
 import { toUsdPrice } from '../../../../../hooks/ahp/usePortfolio'
 import { NavLink } from 'react-router-dom'
@@ -10,10 +10,7 @@ import { useLocker } from 'hooks/ahp/useLocker'
 import format from 'utils/format'
 import moment from 'moment'
 import { DetailInfo } from 'api/portfolio.api'
-
-const diffTime = getDateForLastOccurence('Thurs')
-export const endTimestamp = (diffTime.getTime() / 1000) | 0
-export const startTimestamp = ((diffTime.getTime() - 1000 * 60 * 60 * 24 * 7) / 1000) | 0
+import { useDateForLastOccurence } from 'hooks/useDateForLastOccurence'
 
 interface DetailProps {
   withdrawAll: () => void
@@ -31,6 +28,7 @@ export default function Detail({ withdrawAll, overviewData, hopePrice, platformF
     }
     return moment(format.formatDate(Number(`${lockerEndDate}`))).diff(moment(), 'days') < 14
   }, [lockerRes])
+  const { startTimestamp, endTimestamp } = useDateForLastOccurence()
   return (
     <>
       {isShowTip && (
