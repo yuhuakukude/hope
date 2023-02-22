@@ -195,7 +195,10 @@ export default function Earn() {
         from: account
       }).then((response: TransactionResponse) => {
         addTransaction(response, {
-          summary: `Claim`
+          summary: `Claim`,
+          actionTag: {
+            recipient: `claim-${account}-${poolInfo?.id}`
+          }
         })
         return response.hash
       })
@@ -262,9 +265,11 @@ export default function Earn() {
     onClaim()
       .then(hash => {
         onTxSubmitted(hash)
+        setShowClaimModal(false)
       })
       .catch((error: any) => {
         onTxError(error)
+        setShowClaimModal(false)
         throw error
       })
   }, [account, library, chainId, poolInfo, onTxStart, onClaim, onTxSubmitted, onTxError])
@@ -435,11 +440,13 @@ export default function Earn() {
                     setShowClaimModal(true)
                   }}
                   onUnstake={() => {
+                    setTypedValue('')
                     setShowStakeModal(true)
                     setAction(STAKE_ACTION.UNSTAKE)
                     setPoolInfo(pool)
                   }}
                   onStake={() => {
+                    setTypedValue('')
                     setAction(STAKE_ACTION.STAKE)
                     setPoolInfo(pool)
                     setShowStakeModal(true)
