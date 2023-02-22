@@ -751,11 +751,19 @@ export async function fetchPairsList(account: string, sort: 'asc' | 'desc', orde
     const d2Pairs = d2Res.data.pairs
     const w1Pairs = w1Res.data.pairs
     const w2Pairs = w2Res.data.pairs
-    return curPairs.map((pair: any, index: number) => {
-      const d1Pair = d1Pairs[index]
-      const d2Pair = d2Pairs[index]
-      const w1Pair = w1Pairs[index]
-      const w2Pair = w2Pairs[index]
+    return curPairs.map((pair: any) => {
+      const d1Pair = d1Pairs.find((d1pair: any) => {
+        return d1pair.id === pair.id
+      })
+      const d2Pair = d2Pairs.find((d2pair: any) => {
+        return d2pair.id === pair.id
+      })
+      const w1Pair = w1Pairs.find((w1pair: any) => {
+        return w1pair.id === pair.id
+      })
+      const w2Pair = w2Pairs.find((w2pair: any) => {
+        return w2pair.id === pair.id
+      })
       const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(
         pair?.reserveUSD,
         d1Pair?.reserveUSD,
