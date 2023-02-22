@@ -606,9 +606,7 @@ export default function Swap({ history }: RouteComponentProps) {
                     error={isValid && priceImpactSeverity > 2 && !swapCallbackError}
                   >
                     <Text fontSize={16} fontWeight={500}>
-                      {pendingMessage
-                        ? 'Confirm in your wallet'
-                        : swapInputError
+                      {swapInputError
                         ? swapInputError
                         : priceImpactSeverity > 3 && !isExpertMode
                         ? `Price Impact Too High`

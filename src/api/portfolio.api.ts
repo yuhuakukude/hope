@@ -7,7 +7,7 @@ export interface PortfolioReward {
   boost: string
   maxBoost: string
   staked: string | number
-  ustOfStaked: string | number
+  usdOfStaked: string | number
   stakeable: string | number
   usdOfStakeable: string | number
   stakeSymbol: string
@@ -16,6 +16,7 @@ export interface PortfolioReward {
   rewardSymbol: string
   extRewardList: any
   lpToken: string
+  usdOfTotalReward: string | number
 }
 export interface PortfolioInfo {
   hope: string | number
