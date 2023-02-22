@@ -197,7 +197,7 @@ export default function Staking() {
     setCurToken(undefined)
     onTxStart()
     setActionType(ACTION.UNSTAKING)
-    setStakePendingText(`Unstake ${inputAmount.toFixed(2)} HOPE`)
+    setStakePendingText(`Unstake ${inputAmount.toFixed(2)} stHOPE`)
     toUnStaked(inputAmount)
       .then(hash => {
         setStakePendingText('')

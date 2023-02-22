@@ -28,6 +28,7 @@ const GombocClaim = ({
   tableItem,
   hopePrice
 }: GombocClaimProps) => {
+  const [drapIndex, setDrapIndex] = useState(true)
   const { account } = useActiveWeb3React()
   const isEthBalanceInsufficient = useEstimate()
   const [curClaimType, setCurClaimType] = useState('')
@@ -49,6 +50,10 @@ const GombocClaim = ({
       res = true
     }
     return res
+  }
+
+  const drapFn = () => {
+    setDrapIndex(!drapIndex)
   }
 
   useEffect(() => {
@@ -74,7 +79,7 @@ const GombocClaim = ({
           {curWithType === 'all' && totalFee && (
             <div className="flex jc-between">
               <span className="text-white">Total Claimable Fees</span>
-              <span className="text-white">~ {format.amountFormat(totalFee, 2)}</span>
+              <span className="text-white">≈ {format.amountFormat(totalFee, 2)}</span>
             </div>
           )}
           <Radio.Group
@@ -97,7 +102,7 @@ const GombocClaim = ({
                 </div>
                 <div>
                   <p className="text-white text-right">{format.amountFormat(tableItem.withdrawable, 2)} stHOPE</p>
-                  <p className="text-normal text-right">~ ${toUsdPrice(tableItem.withdrawable, hopePrice) || '--'}</p>
+                  <p className="text-normal text-right">≈ ${toUsdPrice(tableItem.withdrawable, hopePrice) || '--'}</p>
                 </div>
               </div>
             )}
@@ -114,7 +119,7 @@ const GombocClaim = ({
                 </div>
                 <div>
                   <p className="text-white text-right">{format.amountFormat(tableItem.withdrawable, 2)} stHOPE</p>
-                  <p className="text-normal text-right">~ ${toUsdPrice(tableItem.withdrawable, hopePrice) || '--'}</p>
+                  <p className="text-normal text-right">≈ ${toUsdPrice(tableItem.withdrawable, hopePrice) || '--'}</p>
                 </div>
               </div>
             )}
@@ -129,7 +134,7 @@ const GombocClaim = ({
                   </div>
                   <div>
                     <p className="text-white text-right">{format.amountFormat(otherAmount, 2)}</p>
-                    <p className="text-normal text-right">~ ${toUsdPrice(otherAmount, hopePrice) || '--'}</p>
+                    <p className="text-normal text-right">≈ ${toUsdPrice(otherAmount, hopePrice) || '--'}</p>
                   </div>
                 </div>
                 <div className="m-t-30 radio-item">
@@ -140,11 +145,14 @@ const GombocClaim = ({
                       </Radio>
                       <Tips title={`Claimable Rewards`} />
                     </div>
-                    <div>
-                      <p className="text-normal text-right">~ {format.amountFormat(allAmount, 2)} stHOPE</p>
+                    <div className="flex ai-center">
+                      <p className="text-normal text-right">≈ {format.amountFormat(allAmount, 2)} stHOPE</p>
+                      <i className={drapIndex ? 'iconfont icon-drap ' : 'iconfont icon-drap active'} onClick={drapFn}>
+                        &#xe60d;
+                      </i>
                     </div>
                   </div>
-                  <div className="radio-box-con">
+                  <div className={drapIndex ? 'radio-box-con hide' : 'radio-box-con'}>
                     {tableData &&
                       tableData.length > 0 &&
                       tableData.map((data: any, index: number) => {
@@ -157,10 +165,10 @@ const GombocClaim = ({
                                 </div>
                                 <div>
                                   <p className="text-white text-right">
-                                    {format.amountFormat(data.withdrawable, 2)} stHope
+                                    ≈ {format.amountFormat(data.withdrawable, 2)} stHope
                                   </p>
                                   <p className="text-white text-right">
-                                    ~$ {toUsdPrice(data.withdrawable, hopePrice) || '--'}
+                                    ≈ $ {toUsdPrice(data.withdrawable, hopePrice) || '--'}
                                   </p>
                                 </div>
                               </div>

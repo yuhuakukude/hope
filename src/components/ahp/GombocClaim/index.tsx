@@ -33,7 +33,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
           <div className="flex jc-between">
             <span className="text-white">Total Claimable Rewards</span>
             <span className="text-white">
-              ~ {format.amountFormat(tableItem?.ltTotalReward, 2)} {tableItem?.rewardSymbol}
+              ≈ {format.amountFormat(tableItem?.ltTotalReward, 2)} {tableItem?.rewardSymbol}
             </span>
           </div>
           <Radio.Group
@@ -57,7 +57,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
                 <p className="text-white text-right">
                   {format.amountFormat(tableItem?.ltOfReward, 2)} {tableItem?.rewardSymbol}
                 </p>
-                <p className="text-normal text-right">~ {format.amountFormat(tableItem?.usdOfReward, 2)}</p>
+                <p className="text-normal text-right">≈ {format.amountFormat(tableItem?.usdOfReward, 2)}</p>
               </div>
             </div>
             {!(tableItem && tableItem.gomboc === STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLowerCase()) && (
@@ -73,7 +73,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
                     <Tips title={`Claimable Rewards`} />
                   </div>
                   <div>
-                    <p className="text-normal text-right">~ {format.amountFormat(tableItem?.usdOfExtReward, 2)}</p>
+                    <p className="text-normal text-right">≈ {format.amountFormat(tableItem?.usdOfExtReward, 2)}</p>
                   </div>
                 </div>
                 {tableItem && tableItem.extRewardList && tableItem.extRewardList.length > 0 && (
