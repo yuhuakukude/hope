@@ -3,7 +3,7 @@ import Table from 'components/Table'
 import Tips from 'components/Tips'
 import React, { useCallback, useState, useMemo } from 'react'
 import Card from '../Card'
-import SelectTips, { ITitleTips } from '../SelectTips'
+import SelectTips, { TitleTipsProps } from '../SelectTips'
 import TitleTips from '../TitleTips'
 // import { TokenAmount, JSBI, Token } from '@uniswap/sdk'
 import { Token } from '@uniswap/sdk'
@@ -134,7 +134,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
       dataIndex: 'Actions',
       key: 'Actions',
       render: (text: string, record: PortfolioReward) => {
-        const options: ITitleTips[] = []
+        const options: TitleTipsProps[] = []
         if (isNotNull(record.stakeable)) {
           options.push({
             label: 'Stake',

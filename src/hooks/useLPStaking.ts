@@ -196,7 +196,7 @@ export function useOverviewData() {
   }
 }
 
-export function usePairTxs(pairAddress: string) {
+export function usePairTxs(pairAddress: string, type?: string) {
   const [result, setResult] = useState<TxResponse[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   // const [total, setTotal] = useState<number>(0)
@@ -205,7 +205,7 @@ export function usePairTxs(pairAddress: string) {
     ;(async () => {
       setLoading(true)
       try {
-        const data = await fetchPairTxs(pairAddress)
+        const data = await fetchPairTxs(pairAddress, type)
         setLoading(false)
         setResult(data)
       } catch (error) {
@@ -214,7 +214,7 @@ export function usePairTxs(pairAddress: string) {
         console.error('useOverviewData', error)
       }
     })()
-  }, [pairAddress])
+  }, [pairAddress, type])
 
   return {
     loading: loading,
