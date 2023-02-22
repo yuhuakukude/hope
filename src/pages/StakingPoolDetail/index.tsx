@@ -392,6 +392,7 @@ export default function StakingPoolDetail({
   }, [address])
 
   const lineToTal = useMemo(() => {
+    if (!pool) return '0'
     if (timeIndex === '24H') {
       return pool?.oneDayTVLUSD.toFixed(2)
     } else if (timeIndex === '1W') {
@@ -403,6 +404,7 @@ export default function StakingPoolDetail({
   }, [pool, timeIndex])
 
   const barToTal = useMemo(() => {
+    if (!pool) return '0'
     if (timeIndex === '24H') {
       return tabIndex === 'Volume' ? pool?.oneDayVolumeUSD.toFixed(2) : pool?.dayFees.toFixed(2)
     } else if (timeIndex === '1W') {
@@ -541,7 +543,12 @@ export default function StakingPoolDetail({
                   {!!yCurrentData && (
                     <div>
                       <p className="text-success font-20 text-medium text-right">
-                        {!!pool && `$ ${format.amountFormat(yCurrentData, 2)}`}
+                        {!!pool &&
+                          `$ ${
+                            yCurrentData === 'total'
+                              ? format.amountFormat(tabIndex === 'TVL' ? lineToTal : barToTal, 2)
+                              : format.amountFormat(yCurrentData, 2)
+                          }`}
                       </p>
                       <p className="font-nor text-right m-t-12">
                         {xCurrentData === 'total' ? `Last ${timeIndex}` : xCurrentData}
@@ -555,7 +562,6 @@ export default function StakingPoolDetail({
                   xData={xData}
                   yData={yData}
                   height={330}
-                  total={lineToTal}
                   is24Hour={timeIndex === '24H'}
                   getCurrentData={getCurrentData}
                 ></LineCharts>
@@ -563,7 +569,6 @@ export default function StakingPoolDetail({
                 <BarCharts
                   xData={xData}
                   yData={yData}
-                  total={barToTal}
                   bottom={10}
                   height={330}
                   is24Hour={timeIndex === '24H'}

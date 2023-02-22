@@ -111,11 +111,11 @@ export default function BarCharts({
     }
     myChart.setOption(option)
     if (xData && yData) {
-      getCurrentData('total', total || '0')
+      getCurrentData('total', total ? total : 'total')
       myChart.hideLoading()
     }
     myChart.getZr().on('mouseout', () => {
-      getCurrentData('total', total || '0')
+      getCurrentData('total', total ? total : 'total')
     })
     window.addEventListener('resize', () => handleResizeChart(myChart))
     return () => {
