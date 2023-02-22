@@ -46,7 +46,6 @@ export default function LTPoolCard({
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
   const totalRes = useSingleCallResult(stakingContract, 'integrateFraction', [account ?? undefined])
   console.log(totalRes)
-  console.log('percent', pool.totalLiquidity.raw.toString(), pool.totalStakedAmount.raw.toString())
   return (
     <Wrapper>
       <Card borderRadius={'0'} padding={'0'}>
@@ -83,15 +82,16 @@ export default function LTPoolCard({
             <RowBetween>
               <TYPE.main>Pool Liquidity</TYPE.main>
               <TYPE.white>
-                {pool.totalStakedAmount ? '≈$' + pool.totalStakedAmount.toFixed(2, { groupSeparator: ',' }) : '0'}
+                {pool.totalLiquidity ? '≈$' + pool.totalLiquidity.toFixed(2, { groupSeparator: ',' }) : '0'}
               </TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.main>Total staked</TYPE.main>
               <TYPE.white>
-                {pool.totalStakedAmount && pool
-                  ? new Percent(pool.totalStakedAmount.raw, pool.totalLiquidity.raw).toFixed(2)
-                  : '0'}
+                {pool.totalStakedAmount && pool?.totalSupply
+                  ? new Percent(pool.totalStakedAmount.raw, pool?.totalSupply.raw).toFixed(2)
+                  : '0'}{' '}
+                %
               </TYPE.white>
             </RowBetween>
           </AutoColumn>
@@ -99,7 +99,16 @@ export default function LTPoolCard({
           <AutoColumn gap={'lg'}>
             <RowBetween>
               <TYPE.main>My Position</TYPE.main>
-              <TYPE.white>LT</TYPE.white>
+              <TYPE.white>
+                {stakedAmount && pool.totalLiquidity
+                  ? `≈$${pool.totalLiquidity
+                      .multiply(new Percent(stakedAmount.raw, pool?.totalStakedAmount.raw))
+                      .toFixed(2, { groupSeparator: ',' })} (${new Percent(
+                      stakedAmount.raw,
+                      pool?.totalStakedAmount.raw
+                    ).toFixed(2)}%)`
+                  : '--'}
+              </TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.main>My Stakeable</TYPE.main>

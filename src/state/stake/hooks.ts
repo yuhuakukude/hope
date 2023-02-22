@@ -296,6 +296,7 @@ export interface StakeInfo {
     reserve1: string
     volumeToken0: string
     volumeToken1: string
+    totalSupply: string
     token0: {
       decimals: string
       id: string
@@ -354,6 +355,8 @@ export interface PoolInfo {
   volume0Amount: TokenAmount
 
   volume1Amount: TokenAmount
+
+  totalSupply?: TokenAmount
 
   id: string
   baseApr?: string | undefined
@@ -426,6 +429,7 @@ export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMy
     totalStakedBalance
     pair{
       id
+      totalSupply
       reserveUSD
       volumeUSD
       reserve0
@@ -499,7 +503,8 @@ export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMy
         totalStakedAmount,
         stakingToken,
         totalLiquidity: tryParseAmount(pool.pair.reserveUSD, dummyPair.liquidityToken),
-        volumeAmount: tryParseAmount(pool.pair.volumeUSD, dummyPair.liquidityToken)
+        volumeAmount: tryParseAmount(pool.pair.volumeUSD, dummyPair.liquidityToken),
+        totalSupply: tryParseAmount(pool.pair.totalSupply, dummyPair.liquidityToken)
       }
     }, [])
     return poolInfos
@@ -653,6 +658,7 @@ function PAIR_QUERY({ block, stakingAddress }: { block?: number[]; stakingAddres
       token0Price
       token1Price
       txCount
+      totalSupply
       createdAtTimestamp
       token0 {
         id
@@ -715,6 +721,7 @@ export interface GraphPairInfo {
   oneWeekVolume: number
   weeklyVolumeChange: number
   totalVolume: number
+  totalSupply: number
   token0: Token
   token1: Token
   volume0: number
@@ -789,11 +796,12 @@ export async function fetchPairsList(account: string, sort: 'asc' | 'desc', orde
         address: pair.id,
         oneDayTVLUSD: Number(oneDayTVLUSD),
         tvlChangeUSD: Number(tvlChangeUSD),
-        oneDayVolumeUSD: Number(oneDayVolumeUSD),
+        oneDayVolumeUSD:
+          oneDayVolumeUSD && oneDayVolumeUSD.toString() !== '0' ? Number(oneDayVolumeUSD) : Number(pair.reserveUSD),
         volumeChangeUSD: Number(volumeChangeUSD),
         oneWeekVolume: Number(oneWeekVolume),
         weeklyVolumeChange: Number(weeklyVolumeChange),
-        totalVolume: Number(pair.totalVolumeUSD),
+        totalVolume: Number(pair.reserveUSD),
         token0: new Token(ChainId.SEPOLIA, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol),
         token1: new Token(ChainId.SEPOLIA, pair.token1.id, Number(pair.token1.decimals), pair.token1.symbol),
         volume0: Number(pair.volumeToken0),
@@ -846,7 +854,6 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const w2Pair = w2Res?.data.pairs[0]
     const m1Pair = m1Res?.data.pairs[0]
     const m2Pair = m2Res?.data.pairs[0]
-
     const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(pair.reserveUSD, d1Pair.reserveUSD, d2Pair.reserveUSD)
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(pair.volumeUSD, d1Pair.volumeUSD, d2Pair.volumeUSD)
 
@@ -910,6 +917,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       totalStakedAmount,
       stakingToken,
       totalLiquidity: tryParseAmount(pair.reserveUSD, dummyPair.liquidityToken) as TokenAmount,
+      totalSupply: tryParseAmount(pair.totalSupply, dummyPair.liquidityToken) as TokenAmount,
       volumeAmount: tryParseAmount(pair.volumeUSD, dummyPair.liquidityToken) as TokenAmount
     }
   } catch (error) {
