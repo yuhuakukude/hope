@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 // import Row from '../Row'
 import * as echarts from 'echarts'
 import format from '../../utils/format'
@@ -27,7 +27,7 @@ export default function BarCharts({
   getCurrentData: (xCurrent: string, yCurrent: string) => void
 }) {
   const chartRef: any = useRef()
-
+  const [indexFlag, setIndexFlag] = useState('')
   const handleResizeChart = (myChart: any) => {
     myChart && myChart.resize()
   }
@@ -39,7 +39,6 @@ export default function BarCharts({
       color: '#E4C989',
       maskColor: 'rgba(255, 255, 255, 0)'
     })
-    let indexFlag = ''
     const option = {
       grid: { top: `${top || 6}%`, bottom: `${bottom || 15}%`, left: `${left || 6}%`, right: `${right || 4}%` },
       tooltip: {
@@ -55,7 +54,7 @@ export default function BarCharts({
         },
         formatter: (params: any) => {
           if (indexFlag !== params[0].dataIndex) {
-            indexFlag = params[0].dataIndex
+            setIndexFlag(params[0].dataIndex)
             const formatStr = is24Hour ? 'DD MMM YYYY HH:mm' : 'DD MMM YYYY'
             getCurrentData(format.formatDate(params[0].name, formatStr), params[0].value)
           }
@@ -115,6 +114,7 @@ export default function BarCharts({
       myChart.hideLoading()
     }
     myChart.getZr().on('mouseout', () => {
+      setIndexFlag('')
       getCurrentData('total', total ? total : 'total')
     })
     window.addEventListener('resize', () => handleResizeChart(myChart))
