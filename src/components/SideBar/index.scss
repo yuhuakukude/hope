@@ -1,3 +1,9 @@
+.sidebar-transition {
+  transition: width 0.5s;
+  overflow: hidden;
+  width: 0;
+  transform-origin: left center;
+}
 .sidebar-logo {
   white-space: nowrap;
   padding: 35px;

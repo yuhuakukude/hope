@@ -26,14 +26,11 @@ const Bar = styled('div')`
   :hover {
     width: 200px;
   }
-  :hover .showOnHover {
-    display: inline-block;
+  :hover .sidebar-transition {
+    width: 100%;
   }
   :hover .SidebarOnHover {
     text-align: left;
-  }
-  :hover .showOnHover2 {
-    width: 100%;
   }
 `
 
@@ -53,7 +50,9 @@ const SidebarIcon = styled('div')`
 
 const Icon = styled('i')`
   position: relative;
-  zindex: 1;
+  z-index: 1;
+  display: inline-block;
+  vertical-align: top;
 `
 
 const MenuText = styled(Text)`
@@ -65,17 +64,13 @@ const MenuText = styled(Text)`
 const SidebarText = styled.p`
   margin-left: 10px;
   font-size: 18px;
-  display: none;
+  display: inline-block;
   zindex: 1;
   position: relative;
 `
 
 const LogoText = styled(PrimaryText)`
   font-size: 30px;
-  transition: width 0.8s;
-  overflow: hidden;
-  width: 0;
-  transform-origin: left center;
 `
 
 const TabBox = styled(Column)``
@@ -93,14 +88,12 @@ export default function SideBar() {
     return ROUTERS.findIndex(({ baseRouter }) => baseRouter && location.pathname.startsWith(baseRouter))
   }, [ROUTERS, location.pathname])
 
-  console.log('=<<<<<>>>>>', currentTab())
-
   return (
     <Bar id="side-bar">
       <Column style={{ width: '100%' }}>
         <div className="sidebar-logo">
           <Logo style={{ alignSelf: 'center', marginRight: '5px' }} />
-          <LogoText className="showOnHover2">HOPE</LogoText>
+          <LogoText className="sidebar-transition">HOPE</LogoText>
         </div>
         <TabBox>
           {ROUTERS.map(({ title, router, icon }, index) => {
@@ -114,7 +107,7 @@ export default function SideBar() {
                     <span className="sidebar-select-arc-mask"></span>
                   </span>
                   <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />
-                  <SidebarText className="showOnHover">{title}</SidebarText>
+                  <SidebarText className="sidebar-transition">{title}</SidebarText>
                   <span className="sidebar-select-arc sidebar-select-arc-2">
                     <span className="sidebar-select-arc-mask"></span>
                   </span>
