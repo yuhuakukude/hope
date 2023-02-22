@@ -29,9 +29,6 @@ const Bar = styled('div')`
   :hover .sidebar-transition {
     width: 100%;
   }
-  :hover .SidebarOnHover {
-    text-align: left;
-  }
 `
 
 const SidebarIcon = styled('div')`
@@ -99,10 +96,7 @@ export default function SideBar() {
           {ROUTERS.map(({ title, router, icon }, index) => {
             return (
               <NavLink key={index} to={router}>
-                <SidebarIcon
-                  key={index}
-                  className={currentTab() === index ? 'SidebarOnHover SidebarOnSelect' : 'SidebarOnHover'}
-                >
+                <SidebarIcon key={index} className={currentTab() === index ? 'SidebarOnSelect' : ''}>
                   <span className="sidebar-select-arc">
                     <span className="sidebar-select-arc-mask"></span>
                   </span>
