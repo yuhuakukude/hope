@@ -32,7 +32,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const { account, chainId } = useActiveWeb3React()
   const [searchValue, setSearchValue] = useState('')
   const [isMyVote, setIsMyVote] = useState(false)
-  const [tableData, setTableData] = useState([])
+  const [tableData, setTableData] = useState<any>([])
   const [voterAddress, setVoterAddress] = useState('')
   const [curTableItem, setCurTableItem] = useState<any>({})
   const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
@@ -95,19 +95,17 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
 
   const lastVoteData = useSingleContractMultipleData(gomConContract, 'lastUserVote', argList)
   const isTimeDis = useMemo(() => {
-    let res: any = []
-    const arr: any = []
+    const res: any = {}
     if (tableData.length > 0 && lastVoteData.length > 0 && tableData.length === lastVoteData.length) {
-      lastVoteData.forEach((e: any) => {
+      lastVoteData.forEach((e: any, index) => {
         let item = false
         if (Number(e.result)) {
           const now = dayjs()
           const end = dayjs.unix(Number(e.result)).add(10, 'day')
           item = now.isBefore(end)
         }
-        arr.push(item)
+        res[tableData[index]?.gomboc] = item
       })
-      res = arr
     }
     return res
   }, [lastVoteData, tableData])
@@ -228,7 +226,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
             {Number(getMyVoteAmount(record.userPower)) > 0 && (
               <Button
                 className="text-primary font-bold"
-                disabled={isTimeDis[index]}
+                disabled={isTimeDis[record.gomboc]}
                 onClick={() => {
                   toReset(record)
                 }}
@@ -239,7 +237,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
             )}
             <Button
               className="text-primary font-bold"
-              disabled={isTimeDis[index]}
+              disabled={isTimeDis[record.gomboc]}
               onClick={() => {
                 toVoteFn(record)
               }}
@@ -276,7 +274,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       title: 'My votes',
       dataIndex: 'userPower',
       render: votesNote,
-      sorter: account ? (a: any, b: any) => a.userPower - b.userPower : false,
+      sorter: account && isMyVote ? (a: any, b: any) => a.userPower - b.userPower : false,
       key: 'userPower'
     },
     {
