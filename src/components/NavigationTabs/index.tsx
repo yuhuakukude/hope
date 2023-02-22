@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { darken } from 'polished'
 import { useTranslation } from 'react-i18next'
-import { NavLink, Link as HistoryLink } from 'react-router-dom'
+import { NavLink, Link as HistoryLink, useHistory } from 'react-router-dom'
 
 import { ArrowLeft } from 'react-feather'
 import { RowFixed } from '../Row'
@@ -104,18 +104,19 @@ export function FindPoolTabs() {
 export function AddRemoveTabs({ adding, creating }: { adding: boolean; creating: boolean }) {
   // reset states on back
   const dispatch = useDispatch<AppDispatch>()
+  const history = useHistory()
 
   return (
     <Tabs>
       <RowFixed gap={'20px'} style={{ padding: '1rem 1rem 0 1rem' }}>
-        <HistoryLink
-          to="/swap/liquidity"
+        <div
           onClick={() => {
             adding && dispatch(resetMintState())
+            history.goBack()
           }}
         >
           <StyledArrowLeft />
-        </HistoryLink>
+        </div>
         <ActiveText style={{ marginLeft: 20 }}>
           {creating ? 'Create a pair' : adding ? 'Add Liquidity' : 'Remove Liquidity'}
         </ActiveText>

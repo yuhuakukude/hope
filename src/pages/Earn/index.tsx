@@ -29,11 +29,13 @@ import { useWalletModalToggle } from '../../state/application/hooks'
 import { Switch, Select } from 'antd'
 import { SearchInput } from '../../components/SearchModal/styleds'
 import { ButtonPrimary } from '../../components/Button'
+import { useAllTokenBalances } from '../../state/wallet/hooks'
+import CurrencyLogo from '../../components/CurrencyLogo'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
   padding: 0 30px;
-  max-width: 1440px;
+  max-width: 1340px;
 `
 
 const TopSection = styled(AutoColumn)`
@@ -45,8 +47,8 @@ const PoolSection = styled.div`
   flex-direction: row;
   flex-wrap: wrap;
   grid-template-columns: 1fr;
-  column-gap: 15px;
-  row-gap: 15px;
+  column-gap: 30px;
+  row-gap: 30px;
   width: 100%;
   justify-self: center;
 `
@@ -58,19 +60,23 @@ export default function Earn() {
   const inputRef = useRef<HTMLInputElement>()
   const toggleWalletModal = useWalletModalToggle()
   const { chainId, account, library } = useActiveWeb3React()
-  const [curType, setCurType] = useState(1)
-  const [userCurrency, setUserCurrency] = useState('')
+  const [userCurrency, setUserCurrency] = useState<string[]>([])
   const [searchList, setSearchList] = useState<PoolInfo[]>([])
   const [showStakeModal, setShowStakeModal] = useState(false)
   const [showClaimModal, setShowClaimModal] = useState(false)
   const [isMyVote, setIsMyVote] = useState(false)
   const addTransaction = useTransactionAdder()
 
-  // const [currentPage, setCurrentPage] = useState<number>(1)
-  // const [pageSize, setPageSize] = useState<number>(5)
-
+  const balances = useAllTokenBalances()
+  let userBalances = Object.values(balances).map((e: any) => ({
+    symbol: e?.currency.symbol,
+    balance: e?.lessThan(0) ? '0.00' : e.toFixed(2),
+    logo: e?.currency.tokenInfo.logoURI,
+    token: e.token
+  }))
+  userBalances = userBalances.filter((e: any) => e.balance !== '0.00').sort((a: any, b: any) => b.balance - a.balance)
   const [poolInfo, setPoolInfo] = useState<PoolInfo | undefined>()
-  const [sort, setSort] = useState<Sort>('desc')
+  const [sort] = useState<Sort>('desc')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
   const [txHash, setTxHash] = useState<string>('')
@@ -79,7 +85,6 @@ export default function Earn() {
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [action, setAction] = useState<STAKE_ACTION>(STAKE_ACTION.STAKE)
   const [inputValue, setInputValue] = useState('')
-  console.log(curType, setCurType, setSort)
   const { result: stakingInfos, loading } = useLPStakingInfos(sort, isMyVote)
   const { totalAmount } = useLPTotalLocked()
   // staking info for connected account
@@ -186,7 +191,6 @@ export default function Earn() {
     if (!account) throw new Error('none account')
     if (!ltMinterContract) throw new Error('none contract')
     const method = 'mint'
-    console.log('mint', poolInfo?.stakingRewardAddress)
     const args = [poolInfo?.stakingRewardAddress]
     return ltMinterContract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
       return ltMinterContract[method](...args, {
@@ -298,11 +302,22 @@ export default function Earn() {
     setSearchList(totalList)
   }
 
-  const currencyChange = (val: string) => {
-    console.log(val)
-    const value = val || ''
+  const currencyChange = (val: string[]) => {
+    const value = [...val]
     setUserCurrency(value)
-    const resList = stakingInfos.filter((e: PoolInfo) => e.searchString?.includes(value))
+    const resList = stakingInfos.filter((e: PoolInfo) => {
+      let flag = false
+      if (value.length > 0) {
+        value.forEach((item: string) => {
+          if (e.searchString?.includes(item)) {
+            flag = true
+          }
+        })
+      } else {
+        flag = true
+      }
+      return flag
+    })
     setSearchList(resList)
   }
 
@@ -405,18 +420,21 @@ export default function Earn() {
         </div>
         <div>
           <Select
-            // mode="multiple"
+            mode="multiple"
             style={{ width: '210px', height: '42px' }}
             value={userCurrency}
+            maxTagCount={1}
             allowClear
             onChange={currencyChange}
             placeholder="Available Balance"
-            className={userCurrency ? 'small-select hide-placeholder' : 'small-select show-placeholder'}
+            optionLabelProp="label"
+            className={userCurrency.length > 0 ? 'small-select hide-placeholder' : 'small-select show-placeholder'}
           >
-            {['WETH', 'USDC', 'LT', 'USDT', 'HOPE'].map((data: any, index: number) => {
+            {userBalances.map((data: any, index: number) => {
               return (
-                <Option key={index} value={data}>
-                  {data}
+                <Option key={index} value={data.symbol} label={data.symbol}>
+                  <CurrencyLogo currency={data.token} />
+                  <span className="m-l-10">{data.symbol}</span>
                 </Option>
               )
             })}

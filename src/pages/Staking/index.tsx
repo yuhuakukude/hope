@@ -216,7 +216,7 @@ export default function Staking() {
     onTxStart()
     setClaimPendingText(`claim LT`)
     setActionType(ACTION.CLAIM)
-    toClaim(STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1])
+    toClaim(STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1], claRewards)
       .then(hash => {
         setClaimPendingText('')
         onTxSubmitted(hash)
@@ -225,7 +225,7 @@ export default function Staking() {
         setClaimPendingText('')
         onTxError(error)
       })
-  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaim])
+  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaim, claRewards])
 
   const toWithdrawCallback = useCallback(async () => {
     if (!account) return
