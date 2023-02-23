@@ -538,7 +538,7 @@ export default function StakingPoolDetail({
                   <div className="m-l-30">
                     <TYPE.body>
                       After
-                      <NavLink to={'/dao/gomboc'}>
+                      <NavLink to={'/dao/locker'}>
                         <span className="text-primary"> Locker </span>
                       </NavLink>
                     </TYPE.body>
@@ -644,7 +644,7 @@ export default function StakingPoolDetail({
                 </RowFixed>
               </RowBetween>
               {account ? (
-                <ButtonPrimary as={Link} to={'/dao/gomboc'}>
+                <ButtonPrimary as={Link} to={`/dao/gomboc?gomboc=${pool?.stakingRewardAddress}`}>
                   Yield Boost
                 </ButtonPrimary>
               ) : (
