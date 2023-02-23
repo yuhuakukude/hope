@@ -7,6 +7,7 @@ import { Radio } from 'antd'
 import Tips from 'components/Tips'
 import { STAKING_HOPE_GOMBOC_ADDRESS } from '../../../constants'
 import { useActiveWeb3React } from '../../../hooks'
+import { useEstimate } from 'hooks/ahp'
 
 interface GombocClaimProps {
   onSubmit: any
@@ -15,7 +16,8 @@ interface GombocClaimProps {
 }
 
 const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
-  const { chainId } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
+  const isEthBalanceInsufficient = useEstimate()
   const [curClaimType, setCurClaimType] = useState('')
   function changeRadio(item: any) {
     setCurClaimType(item)
@@ -32,9 +34,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
         <div className="claim-con p-30">
           <div className="flex jc-between">
             <span className="text-white">Total Claimable Rewards</span>
-            <span className="text-white">
-              ≈ {format.amountFormat(tableItem?.ltTotalReward, 2)} {tableItem?.rewardSymbol}
-            </span>
+            <span className="text-white">≈ ${format.amountFormat(tableItem?.usdOfTotalReward, 2)}</span>
           </div>
           <Radio.Group
             className="m-t-30 w-100"
@@ -57,7 +57,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
                 <p className="text-white text-right">
                   {format.amountFormat(tableItem?.ltOfReward, 2)} {tableItem?.rewardSymbol}
                 </p>
-                <p className="text-normal text-right">≈ {format.amountFormat(tableItem?.usdOfReward, 2)}</p>
+                <p className="text-normal text-right">≈ ${format.amountFormat(tableItem?.usdOfReward, 2)}</p>
               </div>
             </div>
             {!(tableItem && tableItem.gomboc === STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLowerCase()) && (
@@ -73,7 +73,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
                     <Tips title={`Claimable Rewards`} />
                   </div>
                   <div>
-                    <p className="text-normal text-right">≈ {format.amountFormat(tableItem?.usdOfExtReward, 2)}</p>
+                    <p className="text-normal text-right">≈ ${format.amountFormat(tableItem?.usdOfExtReward, 2)}</p>
                   </div>
                 </div>
                 {tableItem && tableItem.extRewardList && tableItem.extRewardList.length > 0 && (
@@ -89,7 +89,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
                             <p className="text-white text-right">
                               {format.amountFormat(data.amount, 2)} {data.symbol}
                             </p>
-                            <p className="text-white text-right">≈$ {format.amountFormat(data.usdOfToken, 2)}</p>
+                            <p className="text-white text-right">≈ ${format.amountFormat(data.usdOfToken, 2)}</p>
                           </div>
                         </div>
                       )
@@ -108,6 +108,17 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
           >
             Claim
           </ButtonPrimary>
+          {account && isEthBalanceInsufficient && (
+            <div className="tip flex m-t-30">
+              <div className="icon m-r-15">
+                <i className="iconfont font-20 text-primary font-bold">&#xe614;</i>
+              </div>
+              <p className="text-normal font-nor lh15">
+                Your wallet balance is below 0.001 ETH. The approve action require small transaction fees, so you may
+                have deposit additional funds to complete them.
+              </p>
+            </div>
+          )}
         </div>
       </div>
     </>
