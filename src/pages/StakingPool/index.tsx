@@ -198,7 +198,13 @@ export default function StakingPool() {
         <PoolsWrapper style={{ width: '49%', height: '340px' }}>
           <div>
             <AutoRow gap={'10px'}>
-              <NameText>TVL</NameText> <AmountText>$ {format.amountFormat(tvlCurrentInfo.y, 2)}</AmountText>
+              <NameText>TVL</NameText>{' '}
+              <AmountText>
+                ${' '}
+                {tvlCurrentInfo.y === 'total'
+                  ? format.amountFormat(overviewData?.oneWeekTVLUSD || 0, 2)
+                  : format.amountFormat(tvlCurrentInfo.y, 2)}
+              </AmountText>
               <TimeText>{tvlCurrentInfo.x === 'total' ? `Last 7 Days` : tvlCurrentInfo.x}</TimeText>
             </AutoRow>
             <LineCharts
@@ -206,7 +212,6 @@ export default function StakingPool() {
               yData={yLineData}
               height={240}
               left={8}
-              total={Number(overviewData?.oneWeekTVLUSD).toFixed(2)}
               bottom={13}
               getCurrentData={getTvlCurrentData}
             ></LineCharts>
@@ -216,7 +221,12 @@ export default function StakingPool() {
           <div>
             <AutoRow gap={'10px'}>
               <NameText>Volume</NameText>
-              <AmountText>$ {format.amountFormat(volCurrentInfo.y, 2)}</AmountText>
+              <AmountText>
+                ${' '}
+                {volCurrentInfo.y === 'total'
+                  ? format.amountFormat(overviewData?.oneDayVolumeUSD || 0, 2)
+                  : format.amountFormat(volCurrentInfo.y, 2)}
+              </AmountText>
               <TimeText>{volCurrentInfo.x === 'total' ? `Last 24 Hour` : volCurrentInfo.x}</TimeText>
             </AutoRow>
             <BarCharts
@@ -224,7 +234,6 @@ export default function StakingPool() {
               yData={yBarData}
               left={8}
               is24Hour={true}
-              total={Number(overviewData?.oneDayVolumeUSD).toFixed(2)}
               getCurrentData={getVolCurrentData}
             ></BarCharts>
           </div>
