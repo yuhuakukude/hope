@@ -26,17 +26,17 @@ const GomChart = ({ votiingData }: GomChartProps) => {
         }
         const votArr = votiingData.votingList
         if (votArr && votArr.length > 0) {
-          const arr: { name: string; value: string }[] = []
+          const arr: { name: string; value: string; ravPercent: string }[] = []
           votArr.forEach((e: any) => {
             if (e.gaugeController && e.gaugeController.getGombocWeight && e.gaugeController.gombocRelativeWeight) {
               const num = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.getGombocWeight))
-              // const re = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.gombocRelativeWeight))
-              // const ra = re.multiply(JSBI.BigInt(100))
-              // textVal = `${num?.toFixed(2, { groupSeparator: ',' })} (${ra?.toFixed(2)})`
-              // console.log(textVal)
+              const re = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.gombocRelativeWeight))
+              const ra = re.multiply(JSBI.BigInt(100))
+              const rav = ra.toFixed(2)
               const item = {
                 name: e.name as string,
-                value: num.toFixed(2)
+                value: num.toFixed(2),
+                ravPercent: rav
               }
               arr.push(item)
             }
@@ -49,13 +49,13 @@ const GomChart = ({ votiingData }: GomChartProps) => {
                 color: '#fff',
                 fontSize: 14
               },
-              formatter: (params: { name: string; value: number; percent: number }) => {
+              formatter: (params: { name: string; value: number; data: any }) => {
                 return `<div>
                     <div style="font-size: 14px;">
                     Gömböc Relative Weight
                     </div>
                     <div style="font-size: 14px;margin-top: 16px">${params.name}: </div>
-                    <div style="font-size: 18px;margin-top: 8px">${params.value}(${params.percent}%)</div>
+                    <div style="font-size: 18px;margin-top: 8px">${params.value}(${params.data.ravPercent}%)</div>
                   </div>`
               },
               padding: 20,
