@@ -424,7 +424,9 @@ export async function fetchTotalAmount(): Promise<any> {
 
 export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMyVote: boolean): Promise<PoolInfo[]> {
   const query = `{
-    poolGombocs(first: 500, orderDirection: ${sort}, ${isMyVote ? `where: {user: "${account}"}` : ''}
+    poolGombocs(first: 500, orderDirection: ${sort}, ${
+    isMyVote ? `where: {stakedPoolPositions_: {user_: {id: "${account}"}, stakedPoolBalance_gt: "0"}}` : ''
+  }
     ) {
     id
     totalStakedBalanceUSD
@@ -449,17 +451,11 @@ export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMy
         decimals
       }
     }
-    stakedPoolPositions {
-      pool {
-        totalStakedBalance
-        totalStakedBalanceUSD
         stakedPoolPositions(where: {user: "${account}"}) {
           id
           stakedPoolBalanceUSD
           stakedPoolBalance
         }
-      }
-    }
   }
 }`
 
@@ -567,9 +563,9 @@ export async function fetchStakingPool(stakingAddress: string): Promise<PoolInfo
       token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
     )
     const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
-    const stakingToken = new Token(11155111, pool.id, 18, '')
+    const stakingToken = new Token(11155111, stakingAddress, 18, '')
     return {
-      id: pool.pair.id,
+      id: pool.id,
       stakingRewardAddress: stakingAddress,
       pair: dummyPair,
       tokens,
@@ -886,7 +882,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
     )
     const totalStakedAmount = tryParseAmount(pair.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
-    const stakingToken = new Token(11155111, pair.id, 18, '')
+    const stakingToken = new Token(11155111, gombocAddress.result, 18, '')
     const token0Price = pair.token0Price
     const token1Price = pair.token1Price
     return {

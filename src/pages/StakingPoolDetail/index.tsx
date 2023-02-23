@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { Link, RouteComponentProps } from 'react-router-dom'
+import { Link, RouteComponentProps, useHistory } from 'react-router-dom'
 import { usePairTxs, useStakingPairPool } from '../../hooks/useLPStaking'
 import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
 import { AutoColumn } from '../../components/Column'
@@ -8,7 +8,7 @@ import { TYPE, ExternalLink } from '../../theme'
 import { GreyCard, LightCard } from '../../components/Card'
 import { LT } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
-import { ButtonGray, ButtonPrimary } from '../../components/Button'
+import { ButtonPrimary } from '../../components/Button'
 import BasePoolInfoCard, { CardHeader } from '../../components/pool/PoolInfoCard'
 import PieCharts from '../../components/pool/PieCharts'
 import LineCharts from '../../components/pool/LineCharts'
@@ -19,7 +19,7 @@ import { Box } from 'rebass/styled-components'
 import Overview, { OverviewData } from '../../components/pool/Overview'
 import { useLtMinterContract, useStakingContract } from '../../hooks/useContract'
 import { useSingleCallResult } from '../../state/multicall/hooks'
-import { JSBI, Percent, TokenAmount } from '@uniswap/sdk'
+import { JSBI, TokenAmount } from '@uniswap/sdk'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
 import { calculateGasMargin, shortenAddress, getEtherscanLink } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
@@ -36,6 +36,7 @@ import { useLineDaysChartsData, useLine24HourChartsData } from '../../hooks/useC
 import { NavLink } from 'react-router-dom'
 import SelectTips, { TitleTipsProps } from '../Portfolio/component/SelectTips'
 import moment from 'moment'
+import { useTokenBalance } from '../../state/wallet/hooks'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -150,6 +151,7 @@ export default function StakingPoolDetail({
   const ltMinterContract = useLtMinterContract()
   const addTransaction = useTransactionAdder()
   const toggleWalletModal = useWalletModalToggle()
+  const history = useHistory()
 
   const [showClaimModal, setShowClaimModal] = useState(false)
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -163,6 +165,7 @@ export default function StakingPoolDetail({
 
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
+  const stakedAmount = useTokenBalance(account ?? undefined, pool?.stakingToken)
 
   // charts
   const [tabIndex, setTabIndex] = useState('Volume')
@@ -622,13 +625,7 @@ export default function StakingPoolDetail({
                 <TYPE.white fontSize={20} fontWeight={700}>
                   My Rewards
                 </TYPE.white>
-                <TYPE.white fontSize={20}>
-                  {earnedAmount
-                    ? pool?.totalLiquidity
-                        .multiply(new Percent(earnedAmount.raw, pool?.totalSupply?.raw))
-                        .toFixed(2, { groupSeparator: ',' })
-                    : '--'}
-                </TYPE.white>
+                <TYPE.white fontSize={20}>$--</TYPE.white>
               </RowBetween>
             </CardHeader>
             <AutoColumn style={{ padding: 30 }} gap={'lg'}>
@@ -667,9 +664,12 @@ export default function StakingPoolDetail({
             <BasePoolInfoCard pool={pool} />
             {pool?.stakingRewardAddress && (
               <AutoRowBetween gap={'30px'}>
-                <ButtonGray as={Link} to={`/swap/withdraw/${pool?.stakingRewardAddress}`}>
+                <ButtonPrimary
+                  onClick={() => history.push(`/swap/withdraw/${pool?.stakingRewardAddress}`)}
+                  disabled={!stakedAmount || (stakedAmount && !stakedAmount.greaterThan(JSBI.BigInt(0)))}
+                >
                   Unstaking
-                </ButtonGray>
+                </ButtonPrimary>
                 <ButtonPrimary as={Link} to={`/swap/stake/${pool?.stakingRewardAddress}`}>
                   Staking
                 </ButtonPrimary>

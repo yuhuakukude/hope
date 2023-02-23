@@ -32,21 +32,25 @@ export function usePosition(pair?: Pair) {
 
 export function useStakePosition(pool?: PoolInfo) {
   const { account } = useActiveWeb3React()
-  const totalPoolTokens = useTotalSupply(pool?.pair?.liquidityToken)
+  const totalPoolTokens = useTotalSupply(pool?.stakingToken)
   const stakedAmount = useTokenBalance(account ?? undefined, pool?.stakingToken)
+  const totalStakedAmount =
+    totalPoolTokens && pool?.pair.liquidityToken
+      ? new TokenAmount(pool?.pair.liquidityToken, JSBI.BigInt(totalPoolTokens?.raw.toString()))
+      : undefined
   const stakedLpAmount =
     pool?.pair.liquidityToken && stakedAmount?.raw
       ? new TokenAmount(pool?.pair.liquidityToken, JSBI.BigInt(stakedAmount?.raw.toString()))
       : undefined
   const [token0Staked, token1Staked] =
     !!pool?.pair &&
-    !!totalPoolTokens &&
+    !!totalStakedAmount &&
     !!stakedLpAmount &&
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    JSBI.greaterThanOrEqual(totalPoolTokens.raw, stakedLpAmount.raw)
+    JSBI.greaterThanOrEqual(totalStakedAmount.raw, stakedLpAmount.raw)
       ? [
-          pool.pair.getLiquidityValue(pool.pair.token0, totalPoolTokens, stakedLpAmount, false),
-          pool.pair.getLiquidityValue(pool.pair.token1, totalPoolTokens, stakedLpAmount, false)
+          pool.pair.getLiquidityValue(pool.pair.token0, totalStakedAmount, stakedLpAmount, false),
+          pool.pair.getLiquidityValue(pool.pair.token1, totalStakedAmount, stakedLpAmount, false)
         ]
       : [undefined, undefined]
 
@@ -55,6 +59,6 @@ export function useStakePosition(pool?: PoolInfo) {
     token0Staked,
     currency1: pool?.pair?.token1,
     token1Staked,
-    stakedAmount
+    stakedLpAmount
   }
 }
