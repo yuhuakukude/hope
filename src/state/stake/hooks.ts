@@ -308,6 +308,9 @@ export interface StakeInfo {
       symbol: string
     }
   }
+  stakedPoolPositions: {
+    id: string
+  }
 }
 
 export interface PairInfo {
@@ -424,10 +427,7 @@ export async function fetchTotalAmount(): Promise<any> {
 
 export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMyVote: boolean): Promise<PoolInfo[]> {
   const query = `{
-    poolGombocs(first: 500, orderDirection: ${sort}, ${
-    isMyVote ? `where: {stakedPoolPositions_: {user_: {id: "${account}"}, stakedPoolBalance_gt: "0"}}` : ''
-  }
-    ) {
+    poolGombocs(first: 500, orderDirection: ${sort}) {
     id
     totalStakedBalanceUSD
     totalStakedBalance
@@ -451,17 +451,23 @@ export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMy
         decimals
       }
     }
-    stakedPoolPositions${isMyVote ? `(where: {user_: {id: "${account}"}, stakedPoolBalance_gt: "0"})` : ''} {
+    stakedPoolPositions {
       id
       stakedPoolBalanceUSD
       stakedPoolBalance
+      user{
+        id
+      }
     }
   }
 }`
 
   try {
     const response = await postQuery(SUBGRAPH, query)
-    const pools = response.data.poolGombocs
+    let pools = response.data.poolGombocs
+    if (isMyVote) {
+      pools = pools.filter((pool: StakeInfo) => pool.stakedPoolPositions.id.includes(account))
+    }
     const poolInfos = pools.map((pool: StakeInfo) => {
       const stakingRewardAddress = pool.id
       const token0 = new Token(
