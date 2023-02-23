@@ -424,7 +424,10 @@ export async function fetchTotalAmount(): Promise<any> {
 
 export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMyVote: boolean): Promise<PoolInfo[]> {
   const query = `{
-    poolGombocs(first: 500, orderDirection: ${sort}) {
+    poolGombocs(first: 500, orderDirection: ${sort}, ${
+    isMyVote ? `where: {stakedPoolPositions_: {user_: {id: "${account}"}, stakedPoolBalance_gt: "0"}}` : ''
+  }
+    ) {
     id
     totalStakedBalanceUSD
     totalStakedBalance
