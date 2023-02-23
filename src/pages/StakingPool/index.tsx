@@ -224,7 +224,7 @@ export default function StakingPool() {
               yData={yBarData}
               left={8}
               is24Hour={true}
-              total={Number(overviewData?.dayFees).toFixed(2)}
+              total={Number(overviewData?.oneDayVolumeUSD).toFixed(2)}
               getCurrentData={getVolCurrentData}
             ></BarCharts>
           </div>
