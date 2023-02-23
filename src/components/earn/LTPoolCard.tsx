@@ -100,11 +100,11 @@ export default function LTPoolCard({
             <RowBetween>
               <TYPE.main>My Position</TYPE.main>
               <TYPE.white>
-                {stakedAmount && pool.totalLiquidity
+                {userLiquidityUnstaked && pool.totalLiquidity
                   ? `≈$${pool.totalLiquidity
-                      .multiply(new Percent(stakedAmount.raw, pool?.totalStakedAmount.raw))
+                      .multiply(new Percent(userLiquidityUnstaked.raw, pool?.totalStakedAmount.raw))
                       .toFixed(2, { groupSeparator: ',' })} (${new Percent(
-                      stakedAmount.raw,
+                      userLiquidityUnstaked.raw,
                       pool?.totalStakedAmount.raw
                     ).toFixed(2)}%)`
                   : '--'}
