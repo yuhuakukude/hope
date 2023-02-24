@@ -46,7 +46,7 @@ export function useLPStakingInfos(sort: 'asc' | 'desc', isMyVote: boolean) {
     ;(async () => {
       setLoading(true)
       try {
-        const list = await fetchStakeList(account ?? '', sort, isMyVote)
+        const list = await fetchStakeList('0xcbed65db7e177d4875ddf5b67e13326a43a7b03f', sort, isMyVote)
         const addressList = list.map((e: PoolInfo) => e.id)
         const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
         if (res) {
@@ -168,6 +168,7 @@ export interface Overview {
   dayFees: number
   weekFees: number
   weeklyVolumeChange: number
+  oneWeekTVLUSD: number
 }
 
 export function useOverviewData() {
@@ -196,7 +197,7 @@ export function useOverviewData() {
   }
 }
 
-export function usePairTxs(pairAddress: string) {
+export function usePairTxs(pairAddress: string, type?: string) {
   const [result, setResult] = useState<TxResponse[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   // const [total, setTotal] = useState<number>(0)
@@ -205,7 +206,7 @@ export function usePairTxs(pairAddress: string) {
     ;(async () => {
       setLoading(true)
       try {
-        const data = await fetchPairTxs(pairAddress)
+        const data = await fetchPairTxs(pairAddress, type)
         setLoading(false)
         setResult(data)
       } catch (error) {
@@ -214,7 +215,7 @@ export function usePairTxs(pairAddress: string) {
         console.error('useOverviewData', error)
       }
     })()
-  }, [pairAddress])
+  }, [pairAddress, type])
 
   return {
     loading: loading,

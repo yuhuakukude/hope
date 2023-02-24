@@ -18,9 +18,11 @@ import { useFeeClaim, useGomFeeClaim, useGomFeeManyClaim } from '../../../../hoo
 import './index.scss'
 import { useDateForLastOccurence } from 'hooks/useDateForLastOccurence'
 import usePrice from 'hooks/usePrice'
+import { useBlockNumber } from '../../../../state/application/hooks'
 
 export default function VeLTRewards() {
   const { account, chainId } = useActiveWeb3React()
+  const blockNumber = useBlockNumber()
   const [curWithType, setCurWithType] = useState<string>('item') // item others all
   const hopePrice = usePrice()
   const [platformFees, setPlatformFees] = useState('')
@@ -172,7 +174,6 @@ export default function VeLTRewards() {
         userAddress: account
       })
       if (res.result && res.result) {
-        console.log(res.result)
         setOverviewData(res.result)
       }
     } catch (error) {
@@ -219,7 +220,7 @@ export default function VeLTRewards() {
       initOverview()
       initPlatform()
     }
-  }, [account, chainId, initTable, initOverview, initPlatform])
+  }, [account, blockNumber, chainId, initTable, initOverview, initPlatform])
 
   const withdrawSubmit = useCallback(
     (type: string) => {

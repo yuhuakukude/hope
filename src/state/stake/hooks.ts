@@ -296,6 +296,7 @@ export interface StakeInfo {
     reserve1: string
     volumeToken0: string
     volumeToken1: string
+    totalSupply: string
     token0: {
       decimals: string
       id: string
@@ -355,6 +356,8 @@ export interface PoolInfo {
 
   volume1Amount: TokenAmount
 
+  totalSupply?: TokenAmount
+
   id: string
   baseApr?: string | undefined
   feeApr?: string | undefined
@@ -395,6 +398,12 @@ export interface PairDetail extends PoolInfo {
   totalVolume: number
   dayFees: number
   weekFees: number
+  oneWeekTVLUSD: number
+  oneMonthTVLUSD: number
+  oneMonthVolume: number
+  monthFees: number
+  token0Value: number
+  token1Value: number
 }
 
 export async function fetchTotalAmount(): Promise<any> {
@@ -415,13 +424,13 @@ export async function fetchTotalAmount(): Promise<any> {
 
 export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMyVote: boolean): Promise<PoolInfo[]> {
   const query = `{
-    poolGombocs(first: 500, orderDirection: ${sort}, ${isMyVote ? `where: {user: "${account}"}` : ''}
-    ) {
+    poolGombocs(first: 500, orderDirection: ${sort}) {
     id
     totalStakedBalanceUSD
     totalStakedBalance
     pair{
       id
+      totalSupply
       reserveUSD
       volumeUSD
       reserve0
@@ -439,23 +448,44 @@ export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMy
         decimals
       }
     }
-    stakedPoolPositions {
-      pool {
+  }
+}`
+  const isMyVoteQuery = `{
+    stakedPoolPositions(first: 500, orderDirection: ${sort}, ${
+    isMyVote ? `where: {user_: {id: "${account.toLocaleLowerCase()}"}, stakedPoolBalance_gt: "0"}` : ''
+  }) {
+      pool{
+        id
         totalStakedBalance
-        totalStakedBalanceUSD
-        stakedPoolPositions(where: {user: "${account}"}) {
+        pair{
           id
-          stakedPoolBalanceUSD
-          stakedPoolBalance
+          totalSupply
+          reserveUSD
+          volumeUSD
+          reserve0
+          reserve1
+          volumeToken0
+          volumeToken1
+          token0{
+            id
+            symbol
+            decimals
+          }
+          token1{
+            id
+            symbol
+            decimals
+          }
         }
       }
     }
-  }
-}`
+  }`
 
   try {
-    const response = await postQuery(SUBGRAPH, query)
-    const pools = response.data.poolGombocs
+    const response = await postQuery(SUBGRAPH, isMyVote ? isMyVoteQuery : query)
+    const pools = isMyVote
+      ? response.data.stakedPoolPositions.map((e: any) => ({ ...e.pool }))
+      : response.data.poolGombocs
     const poolInfos = pools.map((pool: StakeInfo) => {
       const stakingRewardAddress = pool.id
       const token0 = new Token(
@@ -482,7 +512,9 @@ export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMy
       const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken)
       const stakingToken = new Token(11155111, pool.id, 18, '')
       return {
-        searchString: `${pool.pair.id}${pool.pair.token0.symbol}${pool.pair.token1.symbol}`,
+        searchString: `${
+          pool.pair.id
+        }${pool.pair.token0.symbol.toLocaleLowerCase()}${pool.pair.token1.symbol.toLocaleLowerCase()}`,
         stakingRewardAddress,
         id: pool.pair.id,
         tokens,
@@ -495,7 +527,8 @@ export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMy
         totalStakedAmount,
         stakingToken,
         totalLiquidity: tryParseAmount(pool.pair.reserveUSD, dummyPair.liquidityToken),
-        volumeAmount: tryParseAmount(pool.pair.volumeUSD, dummyPair.liquidityToken)
+        volumeAmount: tryParseAmount(pool.pair.volumeUSD, dummyPair.liquidityToken),
+        totalSupply: tryParseAmount(pool.pair.totalSupply, dummyPair.liquidityToken)
       }
     }, [])
     return poolInfos
@@ -556,9 +589,9 @@ export async function fetchStakingPool(stakingAddress: string): Promise<PoolInfo
       token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
     )
     const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
-    const stakingToken = new Token(11155111, pool.id, 18, '')
+    const stakingToken = new Token(11155111, stakingAddress, 18, '')
     return {
-      id: pool.pair.id,
+      id: pool.id,
       stakingRewardAddress: stakingAddress,
       pair: dummyPair,
       tokens,
@@ -649,6 +682,7 @@ function PAIR_QUERY({ block, stakingAddress }: { block?: number[]; stakingAddres
       token0Price
       token1Price
       txCount
+      totalSupply
       createdAtTimestamp
       token0 {
         id
@@ -711,6 +745,7 @@ export interface GraphPairInfo {
   oneWeekVolume: number
   weeklyVolumeChange: number
   totalVolume: number
+  totalSupply: number
   token0: Token
   token1: Token
   volume0: number
@@ -781,15 +816,16 @@ export async function fetchPairsList(account: string, sort: 'asc' | 'desc', orde
         w2Pair?.volumeUSD
       )
       return {
-        searchString: `${pair.id}${pair.token0.symbol}${pair.token1.symbol}`,
+        searchString: `${pair.id}${pair.token0.symbol.toLocaleLowerCase()}${pair.token1.symbol.toLocaleLowerCase()}`,
         address: pair.id,
         oneDayTVLUSD: Number(oneDayTVLUSD),
         tvlChangeUSD: Number(tvlChangeUSD),
-        oneDayVolumeUSD: Number(oneDayVolumeUSD),
+        oneDayVolumeUSD:
+          oneDayVolumeUSD && oneDayVolumeUSD.toString() !== '0' ? Number(oneDayVolumeUSD) : Number(pair.reserveUSD),
         volumeChangeUSD: Number(volumeChangeUSD),
         oneWeekVolume: Number(oneWeekVolume),
         weeklyVolumeChange: Number(weeklyVolumeChange),
-        totalVolume: Number(pair.totalVolumeUSD),
+        totalVolume: Number(pair.reserveUSD),
         token0: new Token(ChainId.SEPOLIA, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol),
         token1: new Token(ChainId.SEPOLIA, pair.token1.id, Number(pair.token1.decimals), pair.token1.symbol),
         volume0: Number(pair.volumeToken0),
@@ -811,31 +847,53 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix()
     const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix()
     const utcTwoWeeksBack = utcCurrentTime.subtract(2, 'week').unix()
-    const [oneDayBlock, twoDayBlock, oneWeekBlock, twoWeekBlock] = await getBlocksFromTimestamps([
+    const utcOneMonthsBack = utcCurrentTime.subtract(1, 'month').unix()
+    const utcTwoMonthsBack = utcCurrentTime.subtract(2, 'month').unix()
+    const [
+      oneDayBlock,
+      twoDayBlock,
+      oneWeekBlock,
+      twoWeekBlock,
+      utcOneMonthBlock,
+      utcTwoMonthBlock
+    ] = await getBlocksFromTimestamps([
       utcOneDayBack,
       utcTwoDaysBack,
       utcOneWeekBack,
-      utcTwoWeeksBack
+      utcTwoWeeksBack,
+      utcOneMonthsBack,
+      utcTwoMonthsBack
     ])
     const res = await postQuery(SUBGRAPH, PAIR_QUERY({ stakingAddress }))
     const d1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: oneDayBlock.number, stakingAddress }))
     const d2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoDayBlock.number, stakingAddress }))
     const w1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: oneWeekBlock.number, stakingAddress }))
     const w2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoWeekBlock?.number, stakingAddress }))
+    const m1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: utcOneMonthBlock?.number, stakingAddress }))
+    const m2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: utcTwoMonthBlock?.number, stakingAddress }))
     const pair = res.data.pairs[0]
     const d1Pair = d1Res?.data.pairs[0]
     const d2Pair = d2Res?.data.pairs[0]
     const w1Pair = w1Res?.data.pairs[0]
     const w2Pair = w2Res?.data.pairs[0]
+    const m1Pair = m1Res?.data.pairs[0]
+    const m2Pair = m2Res?.data.pairs[0]
+    const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(pair?.reserveUSD, d1Pair?.reserveUSD, d2Pair?.reserveUSD)
+    const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+      pair?.volumeUSD,
+      d1Pair?.volumeUSD,
+      d2Pair?.volumeUSD
+    )
 
-    const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(pair.reserveUSD, d1Pair.reserveUSD, d2Pair.reserveUSD)
-    const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(pair.volumeUSD, d1Pair.volumeUSD, d2Pair.volumeUSD)
-
+    const [oneWeekTVLUSD] = get2DayPercentChange(pair?.reserveUSD, w1Pair?.reserveUSD, w2Pair?.reserveUSD)
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
-      pair.totalVolumeUSD,
+      pair?.totalVolumeUSD,
       w1Pair?.volumeUSD,
       w2Pair?.volumeUSD
     )
+
+    const [oneMonthTVLUSD] = get2DayPercentChange(pair.reserveUSD, m1Pair?.reserveUSD, m2Pair?.reserveUSD)
+    const [oneMonthVolume] = get2DayPercentChange(pair.totalVolumeUSD, m1Pair?.volumeUSD, m2Pair?.volumeUSD)
 
     const gombocAddress = await GombocApi.getGombocsAddress({ pairAddress: pair.id })
     const token0 = new Token(ChainId.SEPOLIA, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol)
@@ -850,7 +908,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
     )
     const totalStakedAmount = tryParseAmount(pair.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
-    const stakingToken = new Token(11155111, pair.id, 18, '')
+    const stakingToken = new Token(11155111, gombocAddress.result, 18, '')
     const token0Price = pair.token0Price
     const token1Price = pair.token1Price
     return {
@@ -858,15 +916,22 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       tvl: Number(pair?.reserveUSD),
       createAt: pair?.createdAtTimestamp,
       txCount: pair?.txCount,
-      oneDayTVLUSD: Number(oneDayTVLUSD),
       tvlChangeUSD: Number(tvlChangeUSD),
-      oneDayVolumeUSD: Number(oneDayVolumeUSD),
       volumeChangeUSD: Number(volumeChangeUSD),
-      oneWeekVolume: Number(oneWeekVolume),
       weeklyVolumeChange: Number(weeklyVolumeChange),
       totalVolume: Number(pair.volumeUSD),
+
+      oneDayTVLUSD: Number(oneDayTVLUSD),
+      oneWeekTVLUSD: Number(oneWeekTVLUSD),
+      oneMonthTVLUSD: Number(oneMonthTVLUSD),
+
+      oneDayVolumeUSD: Number(oneDayVolumeUSD),
+      oneWeekVolume: Number(oneWeekVolume),
+      oneMonthVolume: Number(oneMonthVolume),
+
       dayFees: oneDayVolumeUSD * 0.003,
       weekFees: oneWeekVolume * 0.003,
+      monthFees: oneMonthVolume * 0.003,
       stakingRewardAddress: gombocAddress.result,
       token0Price: Number(token0Price)?.toFixed(4) || '0.00',
       token1Price: Number(token1Price)?.toFixed(4) || '0.00',
@@ -874,12 +939,15 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       tokens,
       lpToken: dummyPair.liquidityToken,
       token0Amount,
+      token0Value: Number(pair.reserve0),
+      token1Value: Number(pair.reserve1),
       token1Amount,
       volume0Amount,
       volume1Amount,
       totalStakedAmount,
       stakingToken,
       totalLiquidity: tryParseAmount(pair.reserveUSD, dummyPair.liquidityToken) as TokenAmount,
+      totalSupply: tryParseAmount(pair.totalSupply, dummyPair.liquidityToken) as TokenAmount,
       volumeAmount: tryParseAmount(pair.volumeUSD, dummyPair.liquidityToken) as TokenAmount
     }
   } catch (error) {
@@ -926,10 +994,17 @@ export async function fetchGlobalData() {
       w1Res.data.lightswapFactories[0]?.totalVolumeUSD,
       w2Res.data.lightswapFactories[0]?.totalVolumeUSD
     )
+
+    const [oneWeekTVLUSD] = get2DayPercentChange(
+      totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
+      w1Res.data.lightswapFactories[0]?.totalLiquidityUSD,
+      w2Res.data.lightswapFactories[0]?.totalLiquidityUSD
+    )
     return {
       tvl: totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
       tvlChangeUSD,
       oneDayTVLUSD,
+      oneWeekTVLUSD,
       totalVolume: totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
       oneDayVolumeUSD,
       volumeChangeUSD,
@@ -943,10 +1018,8 @@ export async function fetchGlobalData() {
   }
 }
 
-function QUERY_TXS_QUERY() {
-  return `
-  query ($allPairs: [Bytes]!) {
-    mints(first: 20, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
+const Mints = `
+ mints(first: 20, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
       transaction {
         id
         timestamp
@@ -967,7 +1040,10 @@ function QUERY_TXS_QUERY() {
       amount1
       amountUSD
     }
-    burns(first: 20, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
+`
+
+const Burns = `
+ burns(first: 20, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
       transaction {
         id
         timestamp
@@ -988,7 +1064,10 @@ function QUERY_TXS_QUERY() {
       amount1
       amountUSD
     }
-    swaps(first: 30, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
+`
+
+const Swaps = `
+ swaps(first: 30, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
       transaction {
         id
         timestamp
@@ -1012,6 +1091,44 @@ function QUERY_TXS_QUERY() {
       amountUSD
       to
     }
+`
+
+function QUERY_TXS_QUERY(type?: string | undefined) {
+  let sql
+  switch (type) {
+    case 'All':
+      sql = `
+         ${Mints}
+         ${Burns}
+         ${Swaps} 
+      `
+      break
+    case 'Swaps':
+      sql = `
+         ${Swaps} 
+      `
+      break
+    case 'Adds':
+      sql = `
+         ${Mints}
+      `
+      break
+    case 'Removes':
+      sql = `
+         ${Burns}
+      `
+      break
+    case undefined:
+      sql = `
+         ${Mints}
+         ${Burns}
+         ${Swaps} 
+      `
+      break
+  }
+  return `
+  query ($allPairs: [Bytes]!) {
+    ${sql}
   }
 `
 }
@@ -1087,17 +1204,27 @@ export interface TxResponse {
   amountUSD: number
 }
 
-export async function fetchPairTxs(pairAddress: string): Promise<TxResponse[]> {
+export async function fetchPairTxs(pairAddress: string, type?: string): Promise<TxResponse[]> {
   try {
-    const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(), { allPairs: [pairAddress] })
-    return response.data.mints.concat(response.data.burns).concat(
-      response.data.swaps.map((swap: any) => {
-        const swapItem = swap
-        swap.amount0 = swap.amount0In === '0' ? swap.amount0Out : swap.amount0In
-        swap.amount1 = swap.amount1In === '0' ? swap.amount1Out : swap.amount1In
-        return swapItem
-      })
-    )
+    const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(type), { allPairs: [pairAddress] })
+    let result: TxResponse[] = []
+    if (response.data.mints) {
+      result = result.concat(response.data.mints)
+    }
+    if (response.data.burns) {
+      result = result.concat(response.data.burns)
+    }
+    if (response.data.swaps) {
+      result = result.concat(
+        response.data.swaps.map((swap: any) => {
+          const swapItem = swap
+          swap.amount0 = swap.amount0In === '0' ? swap.amount0Out : swap.amount0In
+          swap.amount1 = swap.amount1In === '0' ? swap.amount1Out : swap.amount1In
+          return swapItem
+        })
+      )
+    }
+    return result
   } catch (error) {
     return []
   }

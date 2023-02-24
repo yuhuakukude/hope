@@ -36,8 +36,12 @@ export const injected = new InjectedConnector({
 // mainnet only
 export const walletconnect = new WalletConnectConnector({
   rpc: {
-    11155111: TEST_NETWORK_URL ?? 'https://sepolia.infura.io/v3/092b404ef4534f8e9f3acb4e047049c9'
+    11155111:
+      TEST_NETWORK_URL ??
+      'https://rpc.ankr.com/eth_sepolia/128bdedab70a53096c6b5132d94384254aee84b8491502b928ab6c08652a7b78'
   },
+  supportedChainIds: [11155111],
+  chainId: 11155111,
   bridge: WALLETCONNECT_BRIDGE_URL,
   qrcode: true
 })

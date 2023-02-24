@@ -1,6 +1,6 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
-import { Currency, ETHER, JSBI, TokenAmount } from '@uniswap/sdk'
+import { Currency, ETHER, JSBI, TokenAmount, WETH } from '@uniswap/sdk'
 import React, { useCallback, useContext, useState } from 'react'
 import { PlusCircle } from 'react-feather'
 import { RouteComponentProps } from 'react-router-dom'
@@ -77,8 +77,8 @@ export default function LiquidityStake({
   const { account, chainId, library } = useActiveWeb3React()
   const { result: pool } = useStakingPool(stakingRewardAddress ?? '')
   const theme = useContext(ThemeContext)
-  const currencyIdA = pool?.tokens[0].address
-  const currencyIdB = pool?.tokens[1].address
+  const currencyIdA = pool?.tokens[0].address === WETH[chainId ?? 1].address ? 'eth' : pool?.tokens[0].address
+  const currencyIdB = pool?.tokens[1].address === WETH[chainId ?? 1].address ? 'eth' : pool?.tokens[1].address
 
   const currencyA = useCurrency(currencyIdA)
   const currencyB = useCurrency(currencyIdB)
@@ -115,6 +115,7 @@ export default function LiquidityStake({
   // stake values
   const [stakeType, setStakeType] = useState('')
   const [showStaking, setShowStaking] = useState(true)
+  const [showAdd, setShowAdd] = useState(true)
   const lpBalance = useTokenBalance(account ?? undefined, pool?.lpToken)
   const stakeTypeAmount = tryParseAmount(stakeType, pool?.lpToken)
   const maxStakeAmountInput = maxAmountSpend(lpBalance)
@@ -481,7 +482,7 @@ export default function LiquidityStake({
         pendingText={pendingText}
         currencyToAdd={pair?.liquidityToken}
       />
-      <AddRemoveTabs creating={isCreate} adding={true} />
+      <AddRemoveTabs title={'Stake Liquidity'} creating={isCreate} adding={true} />
       <AutoRowBetween align={'flex-start'} gap={'30px'} padding={'30px'}>
         <LightCard flex={4} padding={'20px'}>
           <AutoColumn gap={'30px'}>
@@ -490,97 +491,108 @@ export default function LiquidityStake({
                 <TYPE.white fontSize={18} fontWeight={700}>
                   1. Add Liquidity
                 </TYPE.white>
-                <StyledInternalLink to={'/swap/settings'}>
-                  <StyledMenuIcon />
-                </StyledInternalLink>
+                <RowFixed onClick={() => setShowAdd(!showAdd)}>
+                  <StyledDropDown selected={showAdd} />
+                </RowFixed>
               </RowBetween>
-              <Wrapper style={{ padding: 0 }}>
-                <AutoColumn gap="20px">
-                  <CurrencyInputPanel
-                    disableCurrencySelect
-                    label={' '}
-                    value={formattedAmounts[Field.CURRENCY_A]}
-                    onUserInput={onFieldAInput}
-                    onMax={() => {
-                      onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
-                    }}
-                    onCurrencySelect={handleCurrencyASelect}
-                    showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
-                    currency={currencies[Field.CURRENCY_A]}
-                    id="add-liquidity-input-tokena"
-                    showCommonBases
-                  />
-                  <ColumnCenter>
-                    <PlusCircle size="20" color={theme.text2} />
-                  </ColumnCenter>
-                  <CurrencyInputPanel
-                    label={' '}
-                    disableCurrencySelect
-                    value={formattedAmounts[Field.CURRENCY_B]}
-                    onUserInput={onFieldBInput}
-                    onCurrencySelect={handleCurrencyBSelect}
-                    onMax={() => {
-                      onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
-                    }}
-                    showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
-                    currency={currencies[Field.CURRENCY_B]}
-                    id="add-liquidity-input-tokenb"
-                    showCommonBases
-                  />
+              {showAdd && (
+                <>
+                  {' '}
+                  <StyledInternalLink
+                    style={{ marginRight: 0, marginTop: 20, marginLeft: 'auto' }}
+                    to={'/swap/settings'}
+                  >
+                    <StyledMenuIcon />
+                  </StyledInternalLink>
+                  <Wrapper style={{ padding: 0 }}>
+                    <AutoColumn gap="20px">
+                      <CurrencyInputPanel
+                        disableCurrencySelect
+                        label={' '}
+                        value={formattedAmounts[Field.CURRENCY_A]}
+                        onUserInput={onFieldAInput}
+                        onMax={() => {
+                          onFieldAInput(maxAmounts[Field.CURRENCY_A]?.toExact() ?? '')
+                        }}
+                        onCurrencySelect={handleCurrencyASelect}
+                        showMaxButton={!atMaxAmounts[Field.CURRENCY_A]}
+                        currency={currencies[Field.CURRENCY_A]}
+                        id="add-liquidity-input-tokena"
+                        showCommonBases
+                      />
+                      <ColumnCenter>
+                        <PlusCircle size="20" color={theme.text2} />
+                      </ColumnCenter>
+                      <CurrencyInputPanel
+                        label={' '}
+                        disableCurrencySelect
+                        value={formattedAmounts[Field.CURRENCY_B]}
+                        onUserInput={onFieldBInput}
+                        onCurrencySelect={handleCurrencyBSelect}
+                        onMax={() => {
+                          onFieldBInput(maxAmounts[Field.CURRENCY_B]?.toExact() ?? '')
+                        }}
+                        showMaxButton={!atMaxAmounts[Field.CURRENCY_B]}
+                        currency={currencies[Field.CURRENCY_B]}
+                        id="add-liquidity-input-tokenb"
+                        showCommonBases
+                      />
 
-                  {!account ? (
-                    <ButtonLight onClick={toggleWalletModal}>Connect Wallet</ButtonLight>
-                  ) : (
-                    <AutoColumn gap={'md'}>
-                      {(approvalA === ApprovalState.NOT_APPROVED ||
-                        approvalA === ApprovalState.PENDING ||
-                        approvalB === ApprovalState.NOT_APPROVED ||
-                        approvalB === ApprovalState.PENDING) &&
-                        isValid && (
-                          <RowBetween>
-                            {approvalA !== ApprovalState.APPROVED && (
-                              <ButtonPrimary
-                                onClick={() => approveCallback(currencyA?.symbol ?? '', approveACallback)}
-                                disabled={approvalA === ApprovalState.PENDING}
-                                width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
-                              >
-                                {approvalA === ApprovalState.PENDING ? (
-                                  <Dots>Approving {currencies[Field.CURRENCY_A]?.symbol}</Dots>
-                                ) : (
-                                  'Approve ' + currencies[Field.CURRENCY_A]?.symbol
+                      {!account ? (
+                        <ButtonLight onClick={toggleWalletModal}>Connect Wallet</ButtonLight>
+                      ) : (
+                        <AutoColumn gap={'md'}>
+                          {(approvalA === ApprovalState.NOT_APPROVED ||
+                            approvalA === ApprovalState.PENDING ||
+                            approvalB === ApprovalState.NOT_APPROVED ||
+                            approvalB === ApprovalState.PENDING) &&
+                            isValid && (
+                              <RowBetween>
+                                {approvalA !== ApprovalState.APPROVED && (
+                                  <ButtonPrimary
+                                    onClick={() => approveCallback(currencyA?.symbol ?? '', approveACallback)}
+                                    disabled={approvalA === ApprovalState.PENDING}
+                                    width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
+                                  >
+                                    {approvalA === ApprovalState.PENDING ? (
+                                      <Dots>Approving {currencies[Field.CURRENCY_A]?.symbol}</Dots>
+                                    ) : (
+                                      'Approve ' + currencies[Field.CURRENCY_A]?.symbol
+                                    )}
+                                  </ButtonPrimary>
                                 )}
-                              </ButtonPrimary>
-                            )}
-                            {approvalB !== ApprovalState.APPROVED && (
-                              <ButtonPrimary
-                                onClick={() => approveCallback(currencyA?.symbol ?? '', approveBCallback)}
-                                disabled={approvalB === ApprovalState.PENDING}
-                                width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
-                              >
-                                {approvalB === ApprovalState.PENDING ? (
-                                  <Dots>Approving {currencies[Field.CURRENCY_B]?.symbol}</Dots>
-                                ) : (
-                                  'Approve ' + currencies[Field.CURRENCY_B]?.symbol
+                                {approvalB !== ApprovalState.APPROVED && (
+                                  <ButtonPrimary
+                                    onClick={() => approveCallback(currencyA?.symbol ?? '', approveBCallback)}
+                                    disabled={approvalB === ApprovalState.PENDING}
+                                    width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
+                                  >
+                                    {approvalB === ApprovalState.PENDING ? (
+                                      <Dots>Approving {currencies[Field.CURRENCY_B]?.symbol}</Dots>
+                                    ) : (
+                                      'Approve ' + currencies[Field.CURRENCY_B]?.symbol
+                                    )}
+                                  </ButtonPrimary>
                                 )}
-                              </ButtonPrimary>
+                              </RowBetween>
                             )}
-                          </RowBetween>
-                        )}
-                      <ButtonError
-                        onClick={addCallback}
-                        disabled={
-                          !isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED
-                        }
-                        error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
-                      >
-                        <Text fontSize={16} fontWeight={500}>
-                          {error ?? 'Supply'}
-                        </Text>
-                      </ButtonError>
+                          <ButtonError
+                            onClick={addCallback}
+                            disabled={
+                              !isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED
+                            }
+                            error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
+                          >
+                            <Text fontSize={16} fontWeight={500}>
+                              {error ?? 'Supply'}
+                            </Text>
+                          </ButtonError>
+                        </AutoColumn>
+                      )}
                     </AutoColumn>
-                  )}
-                </AutoColumn>
-              </Wrapper>
+                  </Wrapper>
+                </>
+              )}
             </AutoColumn>
             <AutoColumn gap={'30px'}>
               <RowBetween>

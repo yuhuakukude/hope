@@ -3,7 +3,7 @@ import { PoolInfo } from '../../state/stake/hooks'
 import styled from 'styled-components'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { AutoRowBetween, RowBetween, RowFixed } from '../Row'
-import { TYPE } from '../../theme'
+import { CustomLightSpinner, TYPE } from '../../theme'
 import { AutoColumn } from '../Column'
 import { ButtonOutlined, ButtonPrimary } from '../Button'
 import Card from '../Card'
@@ -11,10 +11,12 @@ import { Divider } from 'antd'
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { useSingleCallResult } from '../../state/multicall/hooks'
-import { JSBI, TokenAmount } from '@uniswap/sdk'
+import { JSBI, Percent, TokenAmount } from '@uniswap/sdk'
 import { LT } from '../../constants'
 import { useStakingContract } from '../../hooks/useContract'
 import format from 'utils/format'
+import { useActionPending } from '../../state/transactions/hooks'
+import spinner from '../../assets/svg/spinner.svg'
 
 const Wrapper = styled(RowFixed)`
   background-color: ${({ theme }) => theme.bg1};
@@ -36,11 +38,13 @@ export default function LTPoolCard({
 }) {
   const { account, chainId } = useActiveWeb3React()
   const [token0, token1] = pool.tokens
+  const { pending } = useActionPending(`claim-${account}-${pool.id}`)
   const stakingContract = useStakingContract(pool?.stakingRewardAddress, true)
   const userLiquidityUnstaked = useTokenBalance(account ?? undefined, pool.lpToken)
   const stakedAmount = useTokenBalance(account ?? undefined, pool.stakingToken)
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
+  // const totalRes = useSingleCallResult(stakingContract, 'integrateFraction', [account ?? undefined])
   return (
     <Wrapper>
       <Card borderRadius={'0'} padding={'0'}>
@@ -77,13 +81,16 @@ export default function LTPoolCard({
             <RowBetween>
               <TYPE.main>Pool Liquidity</TYPE.main>
               <TYPE.white>
-                {pool.totalStakedAmount ? '≈$' + pool.totalStakedAmount.toFixed(2, { groupSeparator: ',' }) : '0'}
+                {pool.totalLiquidity ? '≈$' + pool.totalLiquidity.toFixed(2, { groupSeparator: ',' }) : '0'}
               </TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.main>Total staked</TYPE.main>
               <TYPE.white>
-                {pool.totalStakedAmount ? pool.totalStakedAmount.toFixed(2, { groupSeparator: ',' }) : '0'}
+                {pool.totalStakedAmount && pool?.totalSupply
+                  ? new Percent(pool.totalStakedAmount.raw, pool?.totalSupply.raw).toFixed(2)
+                  : '0'}{' '}
+                %
               </TYPE.white>
             </RowBetween>
           </AutoColumn>
@@ -91,7 +98,18 @@ export default function LTPoolCard({
           <AutoColumn gap={'lg'}>
             <RowBetween>
               <TYPE.main>My Position</TYPE.main>
-              <TYPE.white>LT</TYPE.white>
+              <TYPE.white>
+                {userLiquidityUnstaked && stakedAmount && pool.totalLiquidity
+                  ? `≈$${pool.totalLiquidity
+                      .multiply(
+                        new Percent(JSBI.ADD(userLiquidityUnstaked.raw, stakedAmount.raw), pool?.totalStakedAmount.raw)
+                      )
+                      .toFixed(2, { groupSeparator: ',' })} (${new Percent(
+                      JSBI.ADD(userLiquidityUnstaked.raw, stakedAmount.raw),
+                      pool?.totalStakedAmount.raw
+                    ).toFixed(2)}%)`
+                  : '--'}
+              </TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.main>My Stakeable</TYPE.main>
@@ -113,6 +131,7 @@ export default function LTPoolCard({
                 </TYPE.white>
                 {earnedAmount && earnedAmount.greaterThan(JSBI.BigInt(0)) && (
                   <ButtonOutlined
+                    disabled={pending}
                     ml={'12px'}
                     borderRadius={'4px'}
                     padding={'0 4px'}
@@ -122,7 +141,13 @@ export default function LTPoolCard({
                     primary
                     onClick={onClaim}
                   >
-                    Claim Rewards
+                    {pending ? (
+                      <RowFixed fontSize={12} padding={'0 4px'} gap="6px" justify="center">
+                        Claiming <CustomLightSpinner style={{ marginLeft: 10 }} size={'16px'} src={spinner} />
+                      </RowFixed>
+                    ) : (
+                      'Claim Rewards'
+                    )}
                   </ButtonOutlined>
                 )}
               </RowFixed>

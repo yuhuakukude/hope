@@ -44,7 +44,6 @@ export default function StakingPoolCard({ pair }: { pair: GraphPairInfo }) {
   const token1 = pair.token1
 
   const { chainId } = useActiveWeb3React()
-
   return (
     <StyledPoolCard>
       <AutoRow>
@@ -108,9 +107,11 @@ export default function StakingPoolCard({ pair }: { pair: GraphPairInfo }) {
             </Row>
           </Column>
         </ContentRow>
-        <ContentRow>
+        <ContentRow flex={2}>
           <Column>
-            <TYPE.white>{pair?.oneDayVolumeUSD ? `$${format.separate(pair.oneDayVolumeUSD.toFixed(2))}` : '--'}</TYPE.white>
+            <TYPE.white>
+              {pair?.oneDayVolumeUSD ? `$${format.separate(pair.oneDayVolumeUSD.toFixed(2))}` : '--'}
+            </TYPE.white>
           </Column>
         </ContentRow>
         <ContentRow flex={2}>

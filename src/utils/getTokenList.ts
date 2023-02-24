@@ -57,11 +57,7 @@ export default async function getTokenList(
     const json = await response.json()
     json.result.tags = {}
     json.result.timestamp = '2021-01-21T23:57:10.982Z'
-    json.result.version = {
-      major: 2,
-      minor: 0,
-      patch: 0
-    }
+    json.result.name = json.result.name.slice(0, 20)
     if (!tokenListValidator(json.result)) {
       const validationErrors: string =
         tokenListValidator.errors?.reduce<string>((memo, error) => {

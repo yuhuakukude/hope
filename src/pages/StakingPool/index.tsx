@@ -16,7 +16,6 @@ import { Pagination } from 'antd'
 import Row from '../../components/Row'
 // import SearchSelect from '../../components/SearchSelect'
 import { Link } from 'react-router-dom'
-import { Decimal } from 'decimal.js'
 import format from '../../utils/format'
 import { SearchInput } from '../../components/SearchModal/styleds'
 import { useOverviewTvlChartsData, useOverviewVolChartsData } from '../../hooks/useCharts'
@@ -26,6 +25,7 @@ import { GraphPairInfo } from '../../state/stake/hooks'
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
   padding: 0 30px;
+  max-width: 1340px;
 `
 
 const PoolsWrapper = styled(AutoColumn)`
@@ -81,7 +81,6 @@ export default function StakingPool() {
   const [pairs, setPairs] = useState<GraphPairInfo[]>([])
   const [searchList, setSearchList] = useState<GraphPairInfo[]>([])
   const [pageTotal, setPageTotal] = useState<number>(0)
-  const [chartBarTotal, setChartBarTotal] = useState<string>('0')
   const [tvlCurrentInfo, setTvlCurrentInfo] = useState<any>({ x: '', y: '' })
   const [volCurrentInfo, setVolCurrentInfo] = useState<any>({ x: '', y: '' })
   const [currentPage, setCurrentPage] = useState<number>(1)
@@ -141,9 +140,6 @@ export default function StakingPool() {
     setYLineData(ylineArr)
     setXBarData(xbarArr)
     setYBarData(ybarArr)
-
-    const totalBarVal = ybarArr.reduce((prev, curr) => new Decimal(prev).add(new Decimal(curr)).toNumber(), 0)
-    setChartBarTotal(totalBarVal.toFixed(2))
   }, [overviewTvlChartsResult, overviewVolChartsResult])
 
   // staking info for connected account
@@ -182,7 +178,7 @@ export default function StakingPool() {
   const toSearch = () => {
     setPageSize(5)
     setCurrentPage(1)
-    const totalList = list.filter((e: GraphPairInfo) => e.searchString?.includes(inputValue))
+    const totalList = list.filter((e: GraphPairInfo) => e.searchString?.includes(inputValue.toLocaleLowerCase()))
     setPageTotal(totalList.length || 0)
     setPairs(totalList)
     setSearchList(totalList.slice(0, 5))
@@ -207,7 +203,7 @@ export default function StakingPool() {
               <AmountText>
                 ${' '}
                 {tvlCurrentInfo.y === 'total'
-                  ? format.separate(Number(overviewData?.tvl).toFixed(2))
+                  ? format.amountFormat(overviewData?.oneWeekTVLUSD || 0, 2)
                   : format.amountFormat(tvlCurrentInfo.y, 2)}
               </AmountText>
               <TimeText>{tvlCurrentInfo.x === 'total' ? `Last 7 Days` : tvlCurrentInfo.x}</TimeText>
@@ -226,14 +222,18 @@ export default function StakingPool() {
           <div>
             <AutoRow gap={'10px'}>
               <NameText>Volume</NameText>
-              <AmountText>$ {format.amountFormat(volCurrentInfo.y, 2)}</AmountText>
+              <AmountText>
+                ${' '}
+                {volCurrentInfo.y === 'total'
+                  ? format.amountFormat(overviewData?.oneDayVolumeUSD || 0, 2)
+                  : format.amountFormat(volCurrentInfo.y, 2)}
+              </AmountText>
               <TimeText>{volCurrentInfo.x === 'total' ? `Last 24 Hour` : volCurrentInfo.x}</TimeText>
             </AutoRow>
             <BarCharts
               xData={xBarData}
               yData={yBarData}
               left={8}
-              total={chartBarTotal}
               is24Hour={true}
               getCurrentData={getVolCurrentData}
             ></BarCharts>
@@ -278,7 +278,7 @@ export default function StakingPool() {
             <PositionTitle>Fee Rate</PositionTitle>
             <PositionTitle flex={2.5}>Liquidity（TVL）</PositionTitle>
             <PositionTitle flex={2}>Fees(24H)</PositionTitle>
-            <PositionTitle>Volume(24H)</PositionTitle>
+            <PositionTitle flex={2}>Volume(24H)</PositionTitle>
             <PositionTitle flex={2}>
               <div className="flex ai-center">
                 Combined APR

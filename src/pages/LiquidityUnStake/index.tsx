@@ -147,7 +147,7 @@ export default function LiquidityUnStake({
         )}
         pendingText={pendingText}
       />
-      <AddRemoveTabs creating={false} adding={true} />
+      <AddRemoveTabs title={'Unstake Liquidity'} creating={false} adding={true} />
       <AutoRowBetween align={'flex-start'} gap={'30px'} padding={'30px'}>
         <LightCard flex={4} padding={'20px'}>
           <AutoColumn gap={'30px'}>

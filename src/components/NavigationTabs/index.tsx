@@ -101,7 +101,7 @@ export function FindPoolTabs() {
   )
 }
 
-export function AddRemoveTabs({ adding, creating }: { adding: boolean; creating: boolean }) {
+export function AddRemoveTabs({ adding, creating, title }: { adding: boolean; creating: boolean; title?: string }) {
   // reset states on back
   const dispatch = useDispatch<AppDispatch>()
   const history = useHistory()
@@ -118,7 +118,7 @@ export function AddRemoveTabs({ adding, creating }: { adding: boolean; creating:
           <StyledArrowLeft />
         </div>
         <ActiveText style={{ marginLeft: 20 }}>
-          {creating ? 'Create a pair' : adding ? 'Add Liquidity' : 'Remove Liquidity'}
+          {title ? title : creating ? 'Create a pair' : adding ? 'Add Liquidity' : 'Remove Liquidity'}
         </ActiveText>
       </RowFixed>
     </Tabs>

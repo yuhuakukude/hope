@@ -82,7 +82,7 @@ export function useToUnStaked() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Unstake ${amount.toFixed(2)} HOPE`
+            summary: `Unstake ${amount.toFixed(2)} stHOPE`
           })
           return response.hash
         })

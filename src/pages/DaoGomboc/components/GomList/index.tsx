@@ -10,6 +10,7 @@ import { useActiveWeb3React } from '../../../../hooks'
 import { TokenAmount } from '@uniswap/sdk'
 import { LT, VELT } from '../../../../constants'
 import { CloseIcon } from '../../../../theme/components'
+// import { useToVote } from '../../../../hooks/ahp/useGomVote'
 import { useToVote, conFnNameEnum } from '../../../../hooks/ahp/useGomVote'
 import format from '../../../../utils/format'
 import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
@@ -66,14 +67,16 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     toVote(curGomAddress, argAmount)
       .then((hash: any) => {
         setShowConfirm(true)
-        setPendingText(``)
         setAttemptingTxn(false)
-        setTxHash(hash)
+        hash && setTxHash(hash)
+        setPendingText(``)
+        setCurTableItem({})
       })
       .catch((error: any) => {
-        setTxHash('')
         setShowConfirm(true)
+        setTxHash('')
         setPendingText(``)
+        setCurTableItem({})
         setAttemptingTxn(false)
         setErrorStatus({ code: error?.code, message: error.message })
       })
@@ -195,7 +198,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
         </div>
       ),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-    [errorStatus, toVoteCallback, curTableItem, endDate]
+    [errorStatus, toVoteCallback, curTableItem]
   )
 
   const weightNode = (text: any, record: any) => {
@@ -304,7 +307,6 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
 
   function changeSwitch(val: boolean) {
     setIsMyVote(val)
-    console.log(voterAddress, isMyVote)
     let res = ''
     if (val && account) {
       res = account
@@ -324,6 +326,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   useEffect(() => {
     if (txHash && isTranPending === false) {
       setTxHash('')
+      setShowConfirm(false)
       init(voterAddress, searchValue)
     }
   }, [init, txHash, isTranPending, voterAddress, searchValue])

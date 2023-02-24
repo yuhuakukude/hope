@@ -80,7 +80,6 @@ export default function Detail({ withdrawAll, overviewData, hopePrice, platformF
             >
               Withdraw Collected
             </ButtonOutlined>
-            {/* <div className="velt-rewards-bottom-button2">Withdraw Collected</div> */}
           </div>
         </div>
       </div>
