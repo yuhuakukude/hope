@@ -1,7 +1,7 @@
 import { PortfolioReward } from 'api/portfolio.api'
 import Table from 'components/Table'
 import Tips from 'components/Tips'
-import React, { useCallback, useState, useMemo } from 'react'
+import React, { useCallback, useState, useMemo, useEffect } from 'react'
 import Card from '../Card'
 import SelectTips, { TitleTipsProps } from '../SelectTips'
 import TitleTips from '../TitleTips'
@@ -18,6 +18,9 @@ import TransactionConfirmationModal, {
 import './index.scss'
 import { useStaking } from '../../../../hooks/ahp/useStaking'
 import { useHistory } from 'react-router-dom'
+
+import { Contract } from '@ethersproject/contracts'
+import { usePairContract } from '../../../../hooks/useContract'
 
 const isNotNull = (val: string | number | null) => {
   return val && Number(val) !== 0
@@ -38,6 +41,11 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
+  // pair contract
+  const [curLpAddress, setCurLpAddress] = useState<string>('')
+  const [baseLink, setBaseLink] = useState<string>('')
+  const pairContract: Contract | null = usePairContract(curLpAddress)
+
   const curAddress = useMemo(() => {
     let res = ''
     if (curTableItem && curTableItem?.gomboc) {
@@ -55,6 +63,31 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
     setAttemptingTxn(false)
     setShowConfirm(true)
   }
+
+  const getToken = useCallback(async () => {
+    try {
+      const token0 = await pairContract?.token0()
+      const token1 = await pairContract?.token1()
+      if (token0 && token1 && baseLink) {
+        history.push(`${baseLink}/${token0}/${token1}`)
+        setBaseLink('')
+        setCurLpAddress('')
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }, [pairContract, baseLink, history])
+
+  async function toLiq(record: any, baseLink: string) {
+    setCurLpAddress(record.lpToken)
+    setBaseLink(baseLink)
+  }
+
+  useEffect(() => {
+    if (curLpAddress && pairContract && baseLink) {
+      getToken()
+    }
+  }, [curLpAddress, pairContract, getToken, baseLink])
 
   const columns = [
     {
@@ -187,14 +220,14 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
               label: 'Provide',
               value: 'Provide',
               onClick: () => {
-                history.push(`/swap/add/ETH/${record.lpToken}`)
+                toLiq(record, '/swap/add')
               }
             })
             options.push({
               label: 'Withdraw',
               value: 'Withdraw',
               onClick: () => {
-                history.push(`/remove/ETH/${record.lpToken}`)
+                toLiq(record, '/remove')
               }
             })
           }

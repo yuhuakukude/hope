@@ -107,7 +107,7 @@ export default function StakingPoolCard({ pair }: { pair: GraphPairInfo }) {
             </Row>
           </Column>
         </ContentRow>
-        <ContentRow>
+        <ContentRow flex={2}>
           <Column>
             <TYPE.white>
               {pair?.oneDayVolumeUSD ? `$${format.separate(pair.oneDayVolumeUSD.toFixed(2))}` : '--'}

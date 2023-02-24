@@ -25,6 +25,7 @@ import { GraphPairInfo } from '../../state/stake/hooks'
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
   padding: 0 30px;
+  max-width: 1340px;
 `
 
 const PoolsWrapper = styled(AutoColumn)`
@@ -177,7 +178,7 @@ export default function StakingPool() {
   const toSearch = () => {
     setPageSize(5)
     setCurrentPage(1)
-    const totalList = list.filter((e: GraphPairInfo) => e.searchString?.includes(inputValue))
+    const totalList = list.filter((e: GraphPairInfo) => e.searchString?.includes(inputValue.toLocaleLowerCase()))
     setPageTotal(totalList.length || 0)
     setPairs(totalList)
     setSearchList(totalList.slice(0, 5))
@@ -277,7 +278,7 @@ export default function StakingPool() {
             <PositionTitle>Fee Rate</PositionTitle>
             <PositionTitle flex={2.5}>Liquidity（TVL）</PositionTitle>
             <PositionTitle flex={2}>Fees(24H)</PositionTitle>
-            <PositionTitle>Volume(24H)</PositionTitle>
+            <PositionTitle flex={2}>Volume(24H)</PositionTitle>
             <PositionTitle flex={2}>
               <div className="flex ai-center">
                 Combined APR

@@ -44,8 +44,7 @@ export default function LTPoolCard({
   const stakedAmount = useTokenBalance(account ?? undefined, pool.stakingToken)
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
-  const totalRes = useSingleCallResult(stakingContract, 'integrateFraction', [account ?? undefined])
-  console.log(totalRes)
+  // const totalRes = useSingleCallResult(stakingContract, 'integrateFraction', [account ?? undefined])
   return (
     <Wrapper>
       <Card borderRadius={'0'} padding={'0'}>

@@ -129,6 +129,17 @@ const TimeItem = styled.div<{ isActive?: boolean }>`
     background-color: #434343;
   }
 `
+const RateTag = styled.div`
+  color: #a8a8aa;
+  font-size: 14px;
+  width: 50px;
+  height: 28px;
+  line-height: 28px;
+  text-align: center;
+  border-radius: 10px;
+  margin-left: 10px;
+  background-color: #26262c;
+`
 
 const GoBackIcon = styled(Link)`
   text-decoration: none;
@@ -478,12 +489,15 @@ export default function StakingPoolDetail({
         pendingText={pendingText}
       />
       <AutoRow justify={'space-between'} padding={'0 30px'}>
-        <TYPE.white fontSize={28} fontWeight={700}>
-          <GoBackIcon to={'/swap/pools'}>
-            <i className="iconfont font-28 m-r-20 cursor-select">&#xe61a;</i>
-          </GoBackIcon>
-          {`${pool?.tokens[0].symbol || '-'}/${pool?.tokens[1].symbol || '-'}`}
-        </TYPE.white>
+        <div className="flex ai-center">
+          <TYPE.white fontSize={28} fontWeight={700}>
+            <GoBackIcon to={'/swap/pools'}>
+              <i className="iconfont font-28 m-r-20 cursor-select font-bold">&#xe61a;</i>
+            </GoBackIcon>
+            {`${pool?.tokens[0].symbol || '-'}/${pool?.tokens[1].symbol || '-'}`}
+          </TYPE.white>
+          {pool && <RateTag>0.3%</RateTag>}
+        </div>
         <RowFlat>
           <ButtonPrimary
             as={Link}

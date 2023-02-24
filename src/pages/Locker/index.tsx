@@ -35,7 +35,7 @@ import { Decimal } from 'decimal.js'
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
   padding: 0 30px;
-  min-width: 1300px;
+  max-width: 1340px;
 `
 enum ACTION {
   LOCKER,
@@ -313,7 +313,7 @@ export default function DaoLocker() {
         }
       }
     }
-  }, [votePowerAmount, veltBalance])
+  }, [votePowerAmount, veltBalance, account])
 
   const initPrice = useCallback(async () => {
     try {
@@ -388,17 +388,19 @@ export default function DaoLocker() {
               <div className="item p-30">
                 <p className="font-nor text-normal">My LT Balance</p>
                 <p className="font-20 m-t-20 text-medium">
-                  {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} LT
+                  {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} LT
                 </p>
-                <p className="font-nor text-normal m-t-16">≈ $ {toUsdPrice(ltBalance?.toFixed(2), ltPrice) || '--'}</p>
+                <p className="font-nor text-normal m-t-16">
+                  ≈ $ {toUsdPrice(ltBalance?.toFixed(2), ltPrice) || '0.00'}
+                </p>
               </div>
               <div className="item p-30">
                 <p className="font-nor text-normal">My Locked LT Amount</p>
                 <p className="font-20 m-t-20 text-medium">
-                  {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '--'} LT
+                  {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'} LT
                 </p>
                 <p className="font-nor text-normal m-t-16">
-                  ≈ $ {(lockerRes && lockerRes.amount && toUsdPrice(lockerRes?.amount.toFixed(2), ltPrice)) || '--'}
+                  ≈ $ {(lockerRes && lockerRes.amount && toUsdPrice(lockerRes?.amount.toFixed(2), ltPrice)) || '0.00'}
                 </p>
                 {account &&
                   (lockerRes?.end === '--' && lockerRes?.amount && !withdrawPendingText ? (
@@ -413,11 +415,11 @@ export default function DaoLocker() {
                 <div className="-l">
                   <p className="font-nor text-normal">My veLT Amount</p>
                   <p className="font-20 m-t-20 text-medium">
-                    {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '--'} veLT
+                    {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
                   </p>
                   <p className="font-nor text-normal m-t-16">unallocated:</p>
                   <p className="font-nor text-normal m-t-12">
-                    {unUseVeltAmount} ({unUseRateVal || '--'}%)
+                    {unUseVeltAmount} ({unUseRateVal || '0.00'}%)
                   </p>
                 </div>
                 <div className="-r m-l-20 flex ai-center">
@@ -441,7 +443,7 @@ export default function DaoLocker() {
                 <div className="-l">
                   <p className="font-nor text-normal">Locked Until (UTC)</p>
                   <p className="font-20 m-t-20 text-medium">{format.formatUTCDate(Number(`${lockerRes?.end}`))}</p>
-                  <p className="font-nor text-normal m-t-16">Max increase: {maxWeek >= 2 ? maxWeek : '--'} weeks</p>
+                  {maxWeek >= 2 && <p className="font-nor text-normal m-t-16">Max increase: {maxWeek} weeks</p>}
                 </div>
                 <div className="-r m-l-20 flex ai-center">
                   {account && (

@@ -512,7 +512,9 @@ export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMy
       const totalStakedAmount = tryParseAmount(pool.totalStakedBalance, dummyPair.liquidityToken)
       const stakingToken = new Token(11155111, pool.id, 18, '')
       return {
-        searchString: `${pool.pair.id}${pool.pair.token0.symbol}${pool.pair.token1.symbol}`,
+        searchString: `${
+          pool.pair.id
+        }${pool.pair.token0.symbol.toLocaleLowerCase()}${pool.pair.token1.symbol.toLocaleLowerCase()}`,
         stakingRewardAddress,
         id: pool.pair.id,
         tokens,
@@ -814,7 +816,7 @@ export async function fetchPairsList(account: string, sort: 'asc' | 'desc', orde
         w2Pair?.volumeUSD
       )
       return {
-        searchString: `${pair.id}${pair.token0.symbol}${pair.token1.symbol}`,
+        searchString: `${pair.id}${pair.token0.symbol.toLocaleLowerCase()}${pair.token1.symbol.toLocaleLowerCase()}`,
         address: pair.id,
         oneDayTVLUSD: Number(oneDayTVLUSD),
         tvlChangeUSD: Number(tvlChangeUSD),
