@@ -137,47 +137,49 @@ const GombocClaim = ({
                     <p className="text-normal text-right">≈ ${toUsdPrice(otherAmount, hopePrice) || '--'}</p>
                   </div>
                 </div>
-                <div className="m-t-30 radio-item">
-                  <div className="radio-box-head flex jc-between">
-                    <div className="flex ai-center">
-                      <Radio disabled={isDis(allAmount)} value={`all`}>
-                        <span className="text-white">veLT voting dividends</span>
-                      </Radio>
-                      <Tips title={`Claimable Rewards`} />
+                {allAmount && (
+                  <div className="m-t-30 radio-item">
+                    <div className="radio-box-head flex jc-between">
+                      <div className="flex ai-center">
+                        <Radio disabled={isDis(allAmount)} value={`all`}>
+                          <span className="text-white">veLT voting dividends</span>
+                        </Radio>
+                        <Tips title={`Claimable Rewards`} />
+                      </div>
+                      <div className="flex ai-center">
+                        <p className="text-normal text-right">≈ {format.amountFormat(allAmount, 2)} stHOPE</p>
+                        <i className={drapIndex ? 'iconfont icon-drap ' : 'iconfont icon-drap active'} onClick={drapFn}>
+                          &#xe60d;
+                        </i>
+                      </div>
                     </div>
-                    <div className="flex ai-center">
-                      <p className="text-normal text-right">≈ {format.amountFormat(allAmount, 2)} stHOPE</p>
-                      <i className={drapIndex ? 'iconfont icon-drap ' : 'iconfont icon-drap active'} onClick={drapFn}>
-                        &#xe60d;
-                      </i>
+                    <div className={drapIndex ? 'radio-box-con hide' : 'radio-box-con'}>
+                      {tableData &&
+                        tableData.length > 0 &&
+                        tableData.map((data: any, index: number) => {
+                          return (
+                            <>
+                              {data && data.gomboc && (
+                                <div key={index} className="flex jc-between">
+                                  <div className="">
+                                    <div className="currency text-white text-medium">{data.gomboc.gombocName}</div>
+                                  </div>
+                                  <div>
+                                    <p className="text-white text-right">
+                                      ≈ {format.amountFormat(data.withdrawable, 2)} stHope
+                                    </p>
+                                    <p className="text-white text-right">
+                                      ≈ $ {toUsdPrice(data.withdrawable, hopePrice) || '--'}
+                                    </p>
+                                  </div>
+                                </div>
+                              )}
+                            </>
+                          )
+                        })}
                     </div>
                   </div>
-                  <div className={drapIndex ? 'radio-box-con hide' : 'radio-box-con'}>
-                    {tableData &&
-                      tableData.length > 0 &&
-                      tableData.map((data: any, index: number) => {
-                        return (
-                          <>
-                            {data && data.gomboc && (
-                              <div key={index} className="flex jc-between">
-                                <div className="">
-                                  <div className="currency text-white text-medium">{data.gomboc.gombocName}</div>
-                                </div>
-                                <div>
-                                  <p className="text-white text-right">
-                                    ≈ {format.amountFormat(data.withdrawable, 2)} stHope
-                                  </p>
-                                  <p className="text-white text-right">
-                                    ≈ $ {toUsdPrice(data.withdrawable, hopePrice) || '--'}
-                                  </p>
-                                </div>
-                              </div>
-                            )}
-                          </>
-                        )
-                      })}
-                  </div>
-                </div>
+                )}
               </div>
             )}
           </Radio.Group>
