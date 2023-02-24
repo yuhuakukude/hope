@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { PoolInfo } from '../../state/stake/hooks'
 import { TYPE } from '../../theme'
@@ -7,6 +7,7 @@ import { AutoRow, RowBetween, RowFixed } from '../Row'
 import CurrencyLogo from '../CurrencyLogo'
 import { usePosition, useStakePosition } from '../../hooks/usePosition'
 import { Percent } from '@uniswap/sdk'
+import { useTokenPrice } from '../../hooks/liquidity/useBasePairs'
 
 export const CardHeader = styled(AutoColumn)`
   padding: 30px 30px 30px 20px;
@@ -16,7 +17,12 @@ export const CardHeader = styled(AutoColumn)`
 export default function BasePoolInfoCard({ pool }: { pool?: PoolInfo }) {
   const { token1Deposited, token0Deposited, balance } = usePosition(pool?.pair)
   const { token0Staked, token1Staked, stakedLpAmount } = useStakePosition(pool)
-
+  console.log('tag', [pool?.tokens[0].address ?? '', pool?.tokens[1].address ?? ''])
+  const tokenAddresses = useMemo(() => {
+    return [pool?.tokens[0].address ?? '', pool?.tokens[1].address ?? '']
+  }, [pool])
+  const tokensPrice = useTokenPrice(tokenAddresses)
+  console.log('tokensPrice', tokensPrice)
   return (
     <AutoColumn gap={'30px'} style={{ padding: '30px  20px' }}>
       <RowBetween>

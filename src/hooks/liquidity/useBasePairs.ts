@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { fetchPairs } from '../../graph/fetch'
+import { fetchPairs, fetchTokensPrice } from '../../graph/fetch'
 import { useActiveWeb3React } from '../index'
 import { Token, TokenAmount } from '@uniswap/sdk'
 
@@ -30,6 +30,38 @@ export default function useBasePairs() {
       }
     })()
   }, [chainId])
+
+  return {
+    loading: loading,
+    result
+  }
+}
+
+export interface TokenPrice {
+  id: string
+  price: number
+}
+
+export function useTokenPrice(addresses: string[]) {
+  const [result, setResult] = useState<TokenPrice[]>([])
+
+  const [loading, setLoading] = useState<boolean>(false)
+
+  useEffect(() => {
+    ;(async () => {
+      setLoading(true)
+      if (addresses.length === 0) return
+      try {
+        const pairs = await fetchTokensPrice(addresses)
+        setResult(pairs)
+        setLoading(false)
+      } catch (error) {
+        setResult([])
+        setLoading(false)
+        console.warn(error)
+      }
+    })()
+  }, [addresses])
 
   return {
     loading: loading,

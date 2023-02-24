@@ -28,3 +28,16 @@ export function QUERY_PAIR_BASE() {
    }
   `
 }
+
+export function QUERY_TOKENS_PRICE() {
+  return `query tokens($tokens: [Bytes]!){
+    tokens(where: {id_in: $tokens}){
+      id
+      derivedETH
+    }
+    bundles(where: {id: 1}){
+      id
+      ethPrice
+    }
+  }`
+}
