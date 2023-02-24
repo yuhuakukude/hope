@@ -8,6 +8,7 @@ import CurrencyLogo from '../CurrencyLogo'
 import { usePosition, useStakePosition } from '../../hooks/usePosition'
 import { Percent } from '@uniswap/sdk'
 import { useTokenPrice } from '../../hooks/liquidity/useBasePairs'
+import { amountFormat } from '../../utils/format'
 
 export const CardHeader = styled(AutoColumn)`
   padding: 30px 30px 30px 20px;
@@ -70,7 +71,9 @@ export default function BasePoolInfoCard({ pool }: { pool?: PoolInfo }) {
           </RowFixed>
         </AutoRow>
         <TYPE.main>
-          {token0Deposited && token0Price ? (Number(token0Deposited.toExact()) * Number(token0Price)).toFixed(2) : '--'}
+          {token0Deposited && token0Price
+            ? `$${amountFormat(Number(token0Deposited.toExact()) * Number(token0Price))}`
+            : '--'}
         </TYPE.main>
       </RowBetween>
       <RowBetween>
@@ -84,7 +87,9 @@ export default function BasePoolInfoCard({ pool }: { pool?: PoolInfo }) {
           </RowFixed>
         </AutoRow>
         <TYPE.main>
-          {token1Deposited && token1Price ? (Number(token1Deposited.toExact()) * Number(token1Price)).toFixed(2) : '--'}
+          {token1Deposited && token1Price
+            ? `$${amountFormat(Number(token1Deposited.toExact()) * Number(token1Price))}`
+            : '--'}
         </TYPE.main>
       </RowBetween>
       <RowBetween>
@@ -118,7 +123,9 @@ export default function BasePoolInfoCard({ pool }: { pool?: PoolInfo }) {
           </RowFixed>
         </AutoRow>
         <TYPE.main>
-          {token0Staked && token0Price ? (Number(token0Staked.toExact()) * Number(token0Price)).toFixed(2) : '--'}
+          {token0Staked && token0Price
+            ? `$${amountFormat(Number(token0Staked.toExact()) * Number(token0Price))}`
+            : '--'}
         </TYPE.main>
       </RowBetween>
       <RowBetween>
@@ -132,7 +139,9 @@ export default function BasePoolInfoCard({ pool }: { pool?: PoolInfo }) {
           </RowFixed>
         </AutoRow>
         <TYPE.main>
-          {token1Staked && token1Staked ? (Number(token1Staked.toExact()) * Number(token1Price)).toFixed(2) : '--'}
+          {token1Staked && token1Staked
+            ? `$${amountFormat(Number(token1Staked.toExact()) * Number(token1Price))}`
+            : '--'}
         </TYPE.main>
       </RowBetween>
     </AutoColumn>
