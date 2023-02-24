@@ -18,8 +18,8 @@ import format from 'utils/format'
 
 const Wrapper = styled(RowFixed)`
   background-color: ${({ theme }) => theme.bg1};
-  border-radius: 10px;
-  padding: 40px 30px 20px 30px;
+  border-radius: 20px;
+  padding: 40px 30px 30px 30px;
   width: 406px;
 `
 
@@ -69,7 +69,7 @@ export default function LTPoolCard({
               <TYPE.main>Max Possible</TYPE.main>
             </AutoColumn>
           </RowBetween>
-          <AutoColumn gap={'md'}>
+          <AutoColumn gap={'20px'}>
             <RowBetween>
               <TYPE.main>Reward Token</TYPE.main>
               <TYPE.white>LT</TYPE.white>
@@ -87,7 +87,7 @@ export default function LTPoolCard({
               </TYPE.white>
             </RowBetween>
           </AutoColumn>
-          <Divider style={{ margin: '8px 0', backgroundColor: '#3D3E46' }} />
+          <Divider style={{ margin: '10px 0', backgroundColor: '#3D3E46' }} />
           <AutoColumn gap={'lg'}>
             <RowBetween>
               <TYPE.main>My Position</TYPE.main>
@@ -128,7 +128,7 @@ export default function LTPoolCard({
               </RowFixed>
             </RowBetween>
           </AutoColumn>
-          <AutoRowBetween gap={'20px'}>
+          <AutoRowBetween gap={'20px'} mt="20px">
             <ButtonPrimary onClick={onStake} height={40}>
               Stake
             </ButtonPrimary>
