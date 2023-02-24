@@ -26,7 +26,7 @@ export const numeral = (context: string | number, formatString = 2) => {
         dec = dec.slice(0, formatString)
         return Number(dec) === 0 ? `${int}` : `${int}.${dec}`
       }
-      return context.toString().replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
+      return context.toString()
     }
     let value = Number(context)
     if (value < 0) {
@@ -46,7 +46,7 @@ export const numeral = (context: string | number, formatString = 2) => {
       const val2 = value.toFixed(bitLength)
       return `${star}0${String(val2 + 1).substring(1)}`
     }
-    return star + resVal.toString().replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
+    return star + resVal.toString()
   }
   if (Number(context) === 0) {
     return 0
@@ -56,6 +56,9 @@ export const numeral = (context: string | number, formatString = 2) => {
 
 // separate
 export const separate = (value: number | string, formatString?: number) => {
+  if (Number(value) > 0 && Number(value) < 0.01) {
+    return '< 0.01'
+  }
   let decimalPart = ''
   if (formatString) {
     decimalPart = '.'.padEnd(formatString + 1, '0')
@@ -73,22 +76,19 @@ export const separate = (value: number | string, formatString?: number) => {
     }
 
     if (integerLen <= 3) {
-      return `${integerPart}${decimalPart}`.replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
+      return `${integerPart}${decimalPart}`
     }
-    return `${integerPart.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,')}${decimalPart}`.replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
+    return `${integerPart.replace(/(\d)(?=(?:\d{3})+$)/g, '$1,')}${decimalPart}`
   }
-  return `0${decimalPart}`.replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
+  return `0${decimalPart}`
 }
 
 // amountFormat
 export const amountFormat = (value: number | string, formatString?: number) => {
+  if (Number(value) > 0 && Number(value) < 0.01) {
+    return '< 0.01'
+  }
   const result = separate(numeral(value, formatString), formatString)
-  if (result.indexOf('.') === -1) {
-    return result + '.00'
-  }
-  if (result.split('.')[1].length === 1) {
-    return result + '0'
-  }
   return result
 }
 
