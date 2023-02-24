@@ -36,6 +36,7 @@ const PageWrapper = styled(AutoColumn)`
   width: 100%;
   padding: 0 30px;
   max-width: 1340px;
+  overflow: scroll;
 `
 
 const TopSection = styled(AutoColumn)`
@@ -58,14 +59,19 @@ type Sort = 'asc' | 'desc'
 export default function Earn() {
   const { Option } = Select
   const inputRef = useRef<HTMLInputElement>()
+  const wrapperRef = useRef<HTMLDivElement>()
   const toggleWalletModal = useWalletModalToggle()
   const { chainId, account, library } = useActiveWeb3React()
   const [userCurrency, setUserCurrency] = useState<string[]>([])
   const [searchList, setSearchList] = useState<PoolInfo[]>([])
+  const [resPools, setResPools] = useState<PoolInfo[]>([])
   const [showStakeModal, setShowStakeModal] = useState(false)
   const [showClaimModal, setShowClaimModal] = useState(false)
   const [isMyVote, setIsMyVote] = useState(false)
   const addTransaction = useTransactionAdder()
+  let isScrollBottom = false
+  const pageSize = 3
+  let page = 1
 
   const balances = useAllTokenBalances()
   let userBalances = Object.values(balances).map((e: any) => ({
@@ -278,7 +284,14 @@ export default function Earn() {
       })
   }, [account, library, chainId, poolInfo, onTxStart, onClaim, onTxSubmitted, onTxError])
 
+  const initPage = () => {
+    page = 1
+    isScrollBottom = false
+    setSearchList([])
+  }
+
   const changeSwitch = (val: boolean) => {
+    initPage()
     setIsMyVote(val)
   }
 
@@ -288,18 +301,16 @@ export default function Earn() {
   }
 
   useEffect(() => {
-    setSearchList(stakingInfos)
-    // setPageTotal(list.length || 0)
+    setSearchList(stakingInfos.slice(page - 1, pageSize))
+    setResPools(stakingInfos)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [stakingInfos])
 
   const toSearch = () => {
-    // setPageSize(5)
-    // setCurrentPage(1)
-    const totalList = stakingInfos.filter((e: PoolInfo) => e.searchString?.includes(inputValue))
-    // setPageTotal(totalList.length || 0)
-    // setPairs(totalList)
-    setSearchList(totalList)
+    initPage()
+    const totalList = stakingInfos.filter((e: PoolInfo) => e.searchString?.includes(inputValue.toLocaleLowerCase()))
+    setResPools(totalList)
+    setSearchList(totalList.slice(0, pageSize))
   }
 
   const currencyChange = (val: string[]) => {
@@ -318,11 +329,45 @@ export default function Earn() {
       }
       return flag
     })
+    initPage()
+    setResPools(resList)
+    setSearchList(resList.slice(0, pageSize))
+  }
+
+  const queryList = () => {
+    page = page + 1
+    const newList = resPools?.slice((page - 1) * pageSize, Number(pageSize) + (page - 1) * pageSize)
+    const resList = searchList.concat(newList)
     setSearchList(resList)
   }
 
+  const handleScroll = (event: any) => {
+    const scrollHeight = event.scrollHeight
+    const scrollTop = event.scrollTop
+    const height = event.offsetHeight
+    if (scrollTop + height === scrollHeight && !isScrollBottom) {
+      isScrollBottom = true
+      if (resPools.length > searchList.length) {
+        queryList()
+      }
+    }
+  }
+
+  useEffect(() => {
+    const wRef = wrapperRef.current
+    if (wRef) {
+      wRef.addEventListener('scroll', () => handleScroll(wRef))
+    }
+    return () => {
+      if (wRef) {
+        wRef.removeEventListener('scroll', () => handleScroll(wRef))
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [wrapperRef, resPools, searchList])
+
   return (
-    <PageWrapper gap="lg" justify="center">
+    <PageWrapper gap="lg" justify="center" className="wapper" ref={wrapperRef as RefObject<HTMLDivElement>}>
       {poolInfo && (
         <StakingModal
           action={action}
@@ -425,6 +470,7 @@ export default function Earn() {
             value={userCurrency}
             maxTagCount={1}
             allowClear
+            getPopupContainer={(triggerNode: any) => triggerNode.parentNode}
             onChange={currencyChange}
             placeholder="Available Balance"
             optionLabelProp="label"
@@ -476,6 +522,11 @@ export default function Earn() {
             })
           )}
         </PoolSection>
+        {!loading && resPools.length > searchList.length && (
+          <div className="flex jc-center">
+            <Loader size={'20px'} style={{ margin: 'auto' }} />
+          </div>
+        )}
       </AutoColumn>
     </PageWrapper>
   )

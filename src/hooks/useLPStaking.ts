@@ -46,7 +46,7 @@ export function useLPStakingInfos(sort: 'asc' | 'desc', isMyVote: boolean) {
     ;(async () => {
       setLoading(true)
       try {
-        const list = await fetchStakeList(account ?? '', sort, isMyVote)
+        const list = await fetchStakeList('0xcbed65db7e177d4875ddf5b67e13326a43a7b03f', sort, isMyVote)
         const addressList = list.map((e: PoolInfo) => e.id)
         const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
         if (res) {
