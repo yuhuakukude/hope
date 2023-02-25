@@ -44,10 +44,22 @@ const GombocClaim = ({
     return res
   }, [totalFee, otherAmount])
 
+  const curAmount = useMemo(() => {
+    let res = ''
+    if (curClaimType === 'item') {
+      res = tableItem.withdrawable
+    } else if (curClaimType === 'others') {
+      res = otherAmount
+    } else {
+      res = `${allAmount}`
+    }
+    return res
+  }, [curClaimType, tableItem, otherAmount, allAmount])
+
   function isDis(val: any) {
-    let res = false
-    if (!val) {
-      res = true
+    let res = true
+    if (val && Number(val) > 0) {
+      res = false
     }
     return res
   }
@@ -79,7 +91,7 @@ const GombocClaim = ({
           {curWithType === 'all' && totalFee && (
             <div className="flex jc-between">
               <span className="text-white">Total Claimable Fees</span>
-              <span className="text-white">≈ {format.amountFormat(totalFee, 2)}</span>
+              <span className="text-white">≈ {format.amountFormat(totalFee, 2)} stHOPE</span>
             </div>
           )}
           <Radio.Group
@@ -133,7 +145,7 @@ const GombocClaim = ({
                     <Tips title={`Claimable Rewards`} />
                   </div>
                   <div>
-                    <p className="text-white text-right">{format.amountFormat(otherAmount, 2)}</p>
+                    <p className="text-white text-right">{format.amountFormat(otherAmount, 2)} stHOPE</p>
                     <p className="text-normal text-right">≈ ${toUsdPrice(otherAmount, hopePrice) || '--'}</p>
                   </div>
                 </div>
@@ -187,7 +199,7 @@ const GombocClaim = ({
             className="hp-button-primary m-t-30"
             disabled={!curClaimType}
             onClick={() => {
-              onSubmit(curClaimType)
+              onSubmit(curClaimType, curAmount)
             }}
           >
             Claim

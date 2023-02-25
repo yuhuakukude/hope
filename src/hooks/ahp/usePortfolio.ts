@@ -5,6 +5,7 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Decimal } from 'decimal.js'
+import format from 'utils/format'
 
 export function useToClaim() {
   const addTransaction = useTransactionAdder()
@@ -67,24 +68,27 @@ export function useFeeClaim() {
   const addTransaction = useTransactionAdder()
   const contract = useFeeDisContract()
   const { account } = useActiveWeb3React()
-  const toFeeClaim = useCallback(async () => {
-    if (!account) throw new Error('none account')
-    if (!contract) throw new Error('none contract')
-    const args = [account]
-    const method = 'claim'
-    return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
-      return contract[method](...args, {
-        gasLimit: calculateGasMargin(estimatedGasLimit),
-        // gasLimit: '3500000',
-        from: account
-      }).then((response: TransactionResponse) => {
-        addTransaction(response, {
-          summary: `Fees Withdraw`
+  const toFeeClaim = useCallback(
+    async (amount: string) => {
+      if (!account) throw new Error('none account')
+      if (!contract) throw new Error('none contract')
+      const args = [account]
+      const method = 'claim'
+      return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+        return contract[method](...args, {
+          gasLimit: calculateGasMargin(estimatedGasLimit),
+          // gasLimit: '3500000',
+          from: account
+        }).then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Fees Withdraw ${format.amountFormat(amount, 2)} stHOPE`
+          })
+          return response.hash
         })
-        return response.hash
       })
-    })
-  }, [account, addTransaction, contract])
+    },
+    [account, addTransaction, contract]
+  )
   return {
     toFeeClaim
   }
@@ -95,7 +99,7 @@ export function useGomFeeClaim() {
   const contract = useGomFeeDisContract()
   const { account } = useActiveWeb3React()
   const toGomFeeClaim = useCallback(
-    async (address: string) => {
+    async (address: string, amount: string) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [address, account]
@@ -107,7 +111,7 @@ export function useGomFeeClaim() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Fees Withdraw`
+            summary: `Fees Withdraw ${format.amountFormat(amount, 2)} stHOPE`
           })
           return response.hash
         })
@@ -125,7 +129,7 @@ export function useGomFeeManyClaim() {
   const contract = useGomFeeDisContract()
   const { account } = useActiveWeb3React()
   const toGomFeeManyClaim = useCallback(
-    async (addressArr: any) => {
+    async (addressArr: any, amount: string) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [addressArr, account]
@@ -137,7 +141,7 @@ export function useGomFeeManyClaim() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Fees Withdraw`
+            summary: `Fees Withdraw ${format.amountFormat(amount, 2)} stHOPE`
           })
           return response.hash
         })

@@ -93,14 +93,6 @@ export default function Staking() {
       : JSBI.multiply(gasPrice, JSBI.BigInt(HOPE_UNSTAKING))
   }, [curType, gasPrice])
 
-  // const totalRewards = useMemo(() => {
-  //   let res
-  //   if (claRewards && mintedVal) {
-  //     res = claRewards.add(mintedVal)
-  //   }
-  //   return res
-  // }, [claRewards, mintedVal])
-
   const stakeInputError = useMemo(() => {
     if (hopeBal && inputAmount && hopeBal?.lessThan(inputAmount)) {
       return 'Insufficient Hope'
