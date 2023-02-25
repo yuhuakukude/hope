@@ -31,12 +31,14 @@ import { useActionPending } from '../../state/transactions/hooks'
 
 import { postQuery } from '../../utils/graph'
 import { Decimal } from 'decimal.js'
+import Test3 from '../../assets/images/test3.jpg'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
   padding: 0 30px;
   max-width: 1340px;
 `
+
 enum ACTION {
   LOCKER,
   WITHDRAW
@@ -444,6 +446,7 @@ export default function DaoLocker() {
                   <p className="font-nor text-normal">Locked Until (UTC)</p>
                   <p className="font-20 m-t-20 text-medium">{format.formatUTCDate(Number(`${lockerRes?.end}`))}</p>
                   {maxWeek >= 2 && <p className="font-nor text-normal m-t-16">Max increase: {maxWeek} weeks</p>}
+                  {!account && <p className="font-nor text-normal m-t-16">Max increase: -- weeks</p>}
                 </div>
                 <div className="-r m-l-20 flex ai-center">
                   {account && (
@@ -474,12 +477,14 @@ export default function DaoLocker() {
                 <div className="amout-box">
                   <p className="flex jc-between font-nor m-t-40">
                     <span className="text-normal">Lock</span>
-                    <span className="text-normal">
-                      Available: {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} LT{' '}
-                      <span className="text-primary cursor-select m-l-8" onClick={maxInputFn}>
-                        Max
+                    {account && (
+                      <span className="text-normal">
+                        Available: {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} LT{' '}
+                        <span className="text-primary cursor-select m-l-8" onClick={maxInputFn}>
+                          Max
+                        </span>
                       </span>
-                    </span>
+                    )}
                   </p>
                   <div className="inp-box m-t-12">
                     <NumericalInput
@@ -487,10 +492,15 @@ export default function DaoLocker() {
                       value={amount}
                       decimals={2}
                       align={'right'}
+                      disabled={!account || !!lockerRes?.amount}
                       onUserInput={val => {
                         setAmount(val)
                       }}
                     />
+                    <div className="lt-icon">
+                      <img src={Test3} style={{ width: '24px', height: '24px' }} alt="" />
+                      <span className="m-l-12">LT</span>
+                    </div>
                   </div>
                 </div>
                 <div className="date-box">
@@ -503,7 +513,7 @@ export default function DaoLocker() {
                     onChange={onDateChange}
                     allowClear={false}
                     format="YYYY-MM-DD"
-                    placeholder="0000-00-00"
+                    placeholder={account ? '0000-00-00' : ''}
                     showToday={false}
                     getCalendarContainer={(triggerNode: any) => triggerNode.parentNode}
                   />

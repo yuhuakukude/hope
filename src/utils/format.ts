@@ -97,7 +97,7 @@ export const formatDate = (value: any, formatString = 'YYYY-MM-DD HH:mm:ss') => 
   if (value) {
     return moment.unix(value).format(formatString)
   }
-  return '-'
+  return '--'
 }
 
 // date utc
@@ -108,7 +108,7 @@ export const formatUTCDate = (value: any, formatString = 'YYYY-MM-DD HH:mm:ss') 
       .utc()
       .format(formatString)
   }
-  return '-'
+  return '--'
 }
 
 // numFormat
@@ -139,7 +139,11 @@ export const addressDes = (value: string) => {
 
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat']
 export function getDateForLastOccurence(strDay: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thurs' | 'Fri' | 'Sat') {
-  const date = new Date(moment().utc().format('YYYY-MM-DD 00:00:00'))
+  const date = new Date(
+    moment()
+      .utc()
+      .format('YYYY-MM-DD 00:00:00')
+  )
   const index = weekDays.indexOf(strDay)
   let difference = date.getDay() - index
   if (difference < 0) {
