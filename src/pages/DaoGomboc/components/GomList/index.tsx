@@ -281,7 +281,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       key: 'userPower'
     },
     {
-      title: 'vote',
+      title: 'Vote',
       dataIndex: 'gomboc',
       render: actionNode,
       key: 'gomboc'
