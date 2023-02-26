@@ -37,6 +37,9 @@ const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
   max-width: 1340px;
   overflow: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `
 
 const TopSection = styled(AutoColumn)`
