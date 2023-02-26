@@ -445,8 +445,7 @@ export default function DaoLocker() {
                 <div className="-l">
                   <p className="font-nor text-normal">Locked Until (UTC)</p>
                   <p className="font-20 m-t-20 text-medium">{format.formatUTCDate(Number(`${lockerRes?.end}`))}</p>
-                  {maxWeek >= 2 && <p className="font-nor text-normal m-t-16">Max increase: {maxWeek} weeks</p>}
-                  {!account && <p className="font-nor text-normal m-t-16">Max increase: -- weeks</p>}
+                  <p className="font-nor text-normal m-t-16">Max increase: {maxWeek >= 2 ? maxWeek : '--'} weeks</p>
                 </div>
                 <div className="-r m-l-20 flex ai-center">
                   {account && (
