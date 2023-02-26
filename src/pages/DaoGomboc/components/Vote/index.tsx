@@ -323,7 +323,8 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
         <div className="form-box m-t-20">
           <p className="text-normal">Select a Gömböc </p>
           <Select
-            value={curGomAddress}
+            value={curGomAddress ? curGomAddress : undefined}
+            placeholder="Select a Gomboc"
             onChange={(val: string) => {
               changeSel(val)
             }}

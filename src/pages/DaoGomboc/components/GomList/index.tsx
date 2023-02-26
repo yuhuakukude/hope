@@ -257,14 +257,14 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const columns = [
     {
       title: 'Gömböc',
-      dataIndex: 'name',
-      key: 'name'
+      dataIndex: 'composition',
+      key: 'composition'
     },
     {
       title: 'Composition',
-      dataIndex: 'composition',
+      dataIndex: 'name',
       render: CompositionNode,
-      key: 'composition'
+      key: 'name'
     },
     {
       title: 'Weight',
@@ -281,7 +281,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       key: 'userPower'
     },
     {
-      title: 'vote',
+      title: 'Vote',
       dataIndex: 'gomboc',
       render: actionNode,
       key: 'gomboc'
@@ -296,6 +296,9 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       }
       const res = await GombocApi.getGombocsPoolsList(par)
       if (res.result && res.result && res.result.length > 0) {
+        res.result.sort((a: any, b: any) => {
+          return b.weight - a.weight
+        })
         setTableData(res.result)
       } else {
         setTableData([])
@@ -339,7 +342,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
 
   useEffect(() => {
     init()
-  }, [init])
+  }, [init, account])
 
   useEffect(() => {
     if (!searchValue) {

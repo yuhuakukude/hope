@@ -49,7 +49,7 @@ export default function Detail({ withdrawAll, overviewData, hopePrice, platformF
             <div className="velt-rewards-item-title">Platform Fees Gain</div>
             <div className="velt-rewards-item-amount">≈ ${amountFormat(platformFees, 2)} </div>
             <div className="velt-rewards-item-date">
-              Period : {formatDate(startTimestamp, 'MM-DD')} ~ {formatDate(endTimestamp, 'MM-DD')}
+              Period {`(UTC)`}: {formatDate(startTimestamp, 'MM-DD')} ~ {formatDate(endTimestamp, 'MM-DD')}
             </div>
           </div>
           <div className="velt-rewards-item">

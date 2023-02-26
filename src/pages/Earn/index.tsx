@@ -37,6 +37,9 @@ const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
   max-width: 1340px;
   overflow: scroll;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 `
 
 const TopSection = styled(AutoColumn)`
@@ -70,7 +73,7 @@ export default function Earn() {
   const [isMyVote, setIsMyVote] = useState(false)
   const addTransaction = useTransactionAdder()
   let isScrollBottom = false
-  const pageSize = 3
+  const pageSize = 6
   let page = 1
 
   const balances = useAllTokenBalances()
@@ -288,6 +291,7 @@ export default function Earn() {
     page = 1
     isScrollBottom = false
     setSearchList([])
+    setResPools([])
   }
 
   const changeSwitch = (val: boolean) => {
@@ -320,7 +324,7 @@ export default function Earn() {
       let flag = false
       if (value.length > 0) {
         value.forEach((item: string) => {
-          if (e.searchString?.includes(item)) {
+          if (e.searchString?.includes(item.toLocaleLowerCase())) {
             flag = true
           }
         })

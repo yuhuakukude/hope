@@ -102,54 +102,63 @@ export default function VeLTRewards() {
     setErrorStatus({ code: error?.code, message: error.message })
   }, [])
 
-  const feeClaimCallback = useCallback(async () => {
-    if (!account) return
-    setCurToken(ST_HOPE[chainId ?? 1])
-    onTxStart()
-    setClaimPendingText(`Fees Withdraw`)
-    toFeeClaim()
-      .then(hash => {
-        setClaimPendingText('')
-        onTxSubmitted(hash)
-      })
-      .catch((error: any) => {
-        setClaimPendingText('')
-        onTxError(error)
-      })
-  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toFeeClaim])
+  const feeClaimCallback = useCallback(
+    async (amount: string) => {
+      if (!account) return
+      setCurToken(ST_HOPE[chainId ?? 1])
+      onTxStart()
+      setClaimPendingText(`Fees Withdraw`)
+      toFeeClaim(amount)
+        .then(hash => {
+          setClaimPendingText('')
+          onTxSubmitted(hash)
+        })
+        .catch((error: any) => {
+          setClaimPendingText('')
+          onTxError(error)
+        })
+    },
+    [account, chainId, onTxError, onTxStart, onTxSubmitted, toFeeClaim]
+  )
 
-  const gomFeeClaimCallback = useCallback(async () => {
-    if (!account) return
-    setCurToken(ST_HOPE[chainId ?? 1])
-    onTxStart()
-    setClaimPendingText(`Fees Withdraw`)
-    const arg = (curTableItem.gomboc && curTableItem.gomboc.gombocAddress) || ''
-    toGomFeeClaim(arg)
-      .then(hash => {
-        setClaimPendingText('')
-        onTxSubmitted(hash)
-      })
-      .catch((error: any) => {
-        setClaimPendingText('')
-        onTxError(error)
-      })
-  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toGomFeeClaim, curTableItem])
+  const gomFeeClaimCallback = useCallback(
+    async (amount: string) => {
+      if (!account) return
+      setCurToken(ST_HOPE[chainId ?? 1])
+      onTxStart()
+      setClaimPendingText(`Fees Withdraw`)
+      const arg = (curTableItem.gomboc && curTableItem.gomboc.gombocAddress) || ''
+      toGomFeeClaim(arg, amount)
+        .then(hash => {
+          setClaimPendingText('')
+          onTxSubmitted(hash)
+        })
+        .catch((error: any) => {
+          setClaimPendingText('')
+          onTxError(error)
+        })
+    },
+    [account, chainId, onTxError, onTxStart, onTxSubmitted, toGomFeeClaim, curTableItem]
+  )
 
-  const gomFeeManyClaimCallback = useCallback(async () => {
-    if (!account) return
-    setCurToken(ST_HOPE[chainId ?? 1])
-    onTxStart()
-    setClaimPendingText(`Fees Withdraw`)
-    toGomFeeManyClaim(argList)
-      .then(hash => {
-        setClaimPendingText('')
-        onTxSubmitted(hash)
-      })
-      .catch((error: any) => {
-        setClaimPendingText('')
-        onTxError(error)
-      })
-  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toGomFeeManyClaim, argList])
+  const gomFeeManyClaimCallback = useCallback(
+    async (amount: string) => {
+      if (!account) return
+      setCurToken(ST_HOPE[chainId ?? 1])
+      onTxStart()
+      setClaimPendingText(`Fees Withdraw`)
+      toGomFeeManyClaim(argList, amount)
+        .then(hash => {
+          setClaimPendingText('')
+          onTxSubmitted(hash)
+        })
+        .catch((error: any) => {
+          setClaimPendingText('')
+          onTxError(error)
+        })
+    },
+    [account, chainId, onTxError, onTxStart, onTxSubmitted, toGomFeeManyClaim, argList]
+  )
 
   const initTable = useCallback(async () => {
     try {
@@ -190,6 +199,7 @@ export default function VeLTRewards() {
             date
             dailyVolumeUSD
             dailyVolumeETH
+            dailyFeeUSD
           }
         }`
         const res = await postQuery(SUBGRAPH, query)
@@ -198,8 +208,8 @@ export default function VeLTRewards() {
           if (arr && arr.length > 0) {
             let sub = 0
             arr.forEach((e: any) => {
-              if (e.dailyVolumeUSD) {
-                sub = new Decimal(sub).add(new Decimal(e.dailyVolumeUSD)).toNumber()
+              if (e.dailyFeeUSD) {
+                sub = new Decimal(sub).add(new Decimal(e.dailyFeeUSD)).toNumber()
               }
             })
             const num = sub.toFixed(2)
@@ -223,16 +233,16 @@ export default function VeLTRewards() {
   }, [account, blockNumber, chainId, initTable, initOverview, initPlatform])
 
   const withdrawSubmit = useCallback(
-    (type: string) => {
+    (type: string, amount: string) => {
       if (curWithType === 'item') {
-        gomFeeClaimCallback()
+        gomFeeClaimCallback(amount)
       } else if (curWithType === 'others') {
-        feeClaimCallback()
+        feeClaimCallback(amount)
       } else {
         if (type === 'all') {
-          gomFeeManyClaimCallback()
+          gomFeeManyClaimCallback(amount)
         } else {
-          feeClaimCallback()
+          feeClaimCallback(amount)
         }
       }
     },
@@ -249,8 +259,8 @@ export default function VeLTRewards() {
         />
       ) : (
         <FeesWithdraw
-          onSubmit={(type: string) => {
-            withdrawSubmit(type)
+          onSubmit={(type: string, amount: string) => {
+            withdrawSubmit(type, amount)
           }}
           onDismiss={() => setShowConfirm(false)}
           curWithType={curWithType}

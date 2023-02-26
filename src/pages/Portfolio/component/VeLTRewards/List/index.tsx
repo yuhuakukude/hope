@@ -24,7 +24,7 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
         if (!record.gomboc) {
           return (
             <div className="veLT-rewards-item-title">
-              <span className="veLT-rewards-item-other">others</span>
+              <span className="veLT-rewards-item-other">veLT hold dividends</span>
               <Tips title="other tips" />
             </div>
           )
@@ -33,7 +33,7 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
           <>
             <div className="veLT-rewards-item-title">{record.gomboc?.gombocName}</div>
             <div className="veLT-rewards-item-desc">
-              {record.gomboc?.gombocAddress}
+              {format.addressDes(record.gomboc?.gombocAddress)}
               <span className="veLT-rewards-item-copy">
                 <CopyHelper toCopy={record.gomboc?.gombocAddress} />
               </span>

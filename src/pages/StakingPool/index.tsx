@@ -203,7 +203,7 @@ export default function StakingPool() {
               <AmountText>
                 ${' '}
                 {tvlCurrentInfo.y === 'total'
-                  ? format.amountFormat(overviewData?.oneWeekTVLUSD || 0, 2)
+                  ? format.separate(overviewData?.oneWeekTVLUSD.toFixed(2) || '0')
                   : format.amountFormat(tvlCurrentInfo.y, 2)}
               </AmountText>
               <TimeText>{tvlCurrentInfo.x === 'total' ? `Last 7 Days` : tvlCurrentInfo.x}</TimeText>
@@ -225,7 +225,7 @@ export default function StakingPool() {
               <AmountText>
                 ${' '}
                 {volCurrentInfo.y === 'total'
-                  ? format.amountFormat(overviewData?.oneDayVolumeUSD || 0, 2)
+                  ? format.separate(overviewData?.oneDayVolumeUSD.toFixed(2) || '0')
                   : format.amountFormat(volCurrentInfo.y, 2)}
               </AmountText>
               <TimeText>{volCurrentInfo.x === 'total' ? `Last 24 Hour` : volCurrentInfo.x}</TimeText>

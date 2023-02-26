@@ -90,7 +90,7 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
     if (isMaxDisabled) {
       return `Insufficient LT balance`
     } else if (!inputAmount) {
-      return `Enter Amount`
+      return `Enter LT Amount`
     } else {
       return approvalState === ApprovalState.NOT_APPROVED ? 'Approve LT' : 'Submit'
     }
@@ -225,7 +225,11 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
               </p>
               <i className="iconfont m-x-12">&#xe619;</i>
               <p className="text-medium text-primary">
-                {afterLtAmount ? afterLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '--'}
+                {afterLtAmount
+                  ? afterLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
+                  : lockerRes?.amount
+                  ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
+                  : '--'}
               </p>
             </div>
           </div>
@@ -235,7 +239,9 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
               <p className="text-medium">{veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}</p>
               <i className="iconfont m-x-12">&#xe619;</i>
               <p className="text-medium text-primary">
-                {afterVeLtAmount ? afterVeLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '--'}
+                {afterVeLtAmount
+                  ? afterVeLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
+                  : veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}
               </p>
             </div>
           </div>
