@@ -4,7 +4,6 @@ import { TableProps } from 'antd/es/table'
 
 import './index.scss'
 import { PaginationProps } from 'antd/lib/pagination'
-
 export default function Table<T>(props: TableProps<T>) {
   let pagination: PaginationProps | undefined
   if (props.pagination) {
@@ -24,3 +23,6 @@ export default function Table<T>(props: TableProps<T>) {
     </div>
   )
 }
+
+Table.Column = ATable.Column
+Table.ColumnGroup = ATable.ColumnGroup
