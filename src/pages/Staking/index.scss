@@ -5,17 +5,26 @@
     background-size: cover;
     border-radius: 20px;
     padding: 30px;
+
     .head-total-text {
       line-height: 21px;
     }
   }
+
+  .input-max {
+    color: #E4C989;
+    margin-left: 5px;
+  }
+
   .card-bot {
     border-radius: 20px;
     background: #3D3E46;
   }
+
   .card-line {
     border-bottom: 1px solid #63636A;
   }
+
   .staking-outline {
     padding: 5px 12px;
     color: #E4C989;
@@ -23,13 +32,16 @@
     font-size: 12px;
     border-radius: 6px;
   }
+
   .staking-tab {
     border-radius: 20px;
     background: #26262C;
     overflow: hidden;
+
     .head {
       height: 75px;
       background: #18181D;
+
       .head-item {
         height: 100%;
         text-align: center;
@@ -39,10 +51,12 @@
         font-size: 18px;
         cursor: pointer;
         border-radius: 20px 20px 0 0;
+
         &:hover {
           background: #26262C;
           color: #fff;
         }
+
         &.active {
           background: #26262C;
           color: #fff;
@@ -50,47 +64,51 @@
       }
     }
   }
+
   .apy-box {
     width: 110px;
     margin-right: auto;
     flex: 1;
   }
+
   .hp-amount-box {
     height: 56px;
     position: relative;
+
     .hp-amount {
       width: 100%;
       background: none;
       border-radius: 10px;
       border: 1px solid #3d3e46;
       height: 56px;
-      padding: 0 65px 0 100px;
-      &:hover, &:focus {
+      padding: 0 20px 0 100px;
+
+      &:hover,
+      &:focus {
         border: 1px solid #E4C989;
       }
-      &.error{
+
+      &.error {
         border: 1px solid #F6465D;
       }
     }
+
     .coin-box {
       position: absolute;
       top: 25px;
       left: 20px;
     }
-    .input-max {
-      position: absolute;
-      right: 20px;
-      top: 31px;
-      color: #E4C989;
-    }
   }
+
   .withdaw-box {
     margin-top: -10px;
   }
+
   .hp-button-primary {
     background: #E4C989;
     color: #26262C;
   }
+
   .learn-more {
     &:hover {
       color: #E4C989;

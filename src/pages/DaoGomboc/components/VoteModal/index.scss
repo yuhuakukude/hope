@@ -1,5 +1,6 @@
 .vote-modal-box {
   width: 100%;
+
   .end-time-box {
     .end-item {
       background: #33333C;
@@ -11,36 +12,46 @@
       font-weight: bolder;
     }
   }
+
   .form-box {
     .hp-select {
       width: 100%;
       height: 56px;
       background: none;
       color: #fff;
+
       .ant-select-selection {
         height: 100%;
         border-radius: 10px;
         border: 1px solid #3d3e46;
         background: none;
       }
-      .ant-select-focused .ant-select-selection, .ant-select-selection:focus, .ant-select-selection:active {
+
+      .ant-select-focused .ant-select-selection,
+      .ant-select-selection:focus,
+      .ant-select-selection:active {
         border-color: #E4C989;
         box-shadow: 0 0 0 2px rgba(228, 201, 137, 0.2);
       }
+
       .ant-select-selection__rendered {
         height: 100%;
       }
+
       .ant-select-selection-selected-value {
         line-height: 55px;
         height: 56px;
       }
+
       .ant-select-arrow {
         color: #A8A8AA;
       }
     }
+
     .hp-amount-box {
       height: 56px;
       position: relative;
+
       .hp-amount {
         width: 100%;
         background: none;
@@ -48,13 +59,17 @@
         border: 1px solid #3d3e46;
         height: 56px;
         padding: 0 205px 0 20px;
-        &:hover, &:focus {
+
+        &:hover,
+        &:focus {
           border: 1px solid #E4C989;
         }
-        &.error{
+
+        &.error {
           border: 1px solid #F6465D;
         }
       }
+
       .input-tip {
         position: absolute;
         right: 20px;
@@ -69,12 +84,13 @@
   }
 }
 
-.vote-modal-box{
+.vote-modal-box {
   .vote-modal-con {
     .left {
       padding-right: 30px;
       border-right: 1px solid #3D3E46;
     }
+
     .right {
       padding-left: 30px;
     }
@@ -90,6 +106,7 @@
     font-size: 18px;
     color: #fff;
     text-align: center;
+
     .icon-close {
       position: absolute;
       line-height: 1;

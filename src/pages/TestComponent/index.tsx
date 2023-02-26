@@ -73,8 +73,8 @@ export default function TestComponent() {
             defaultValue={1}
             mode="multiple"
             options={[
-              { label: '测试', value: 1 },
-              { label: '测试2', value: 2 }
+              { label: 'test', value: 1 },
+              { label: 'test2', value: 2 }
             ]}
           ></Select>
         </div>
@@ -85,16 +85,16 @@ export default function TestComponent() {
             style={{ width: '300px' }}
             defaultValue={1}
             options={[
-              { label: '测试', value: 1 },
-              { label: '测试2', value: 2 }
+              { label: 'test', value: 1 },
+              { label: 'test2', value: 2 }
             ]}
           ></Select>
         </div>
         <div className="test-component-item">
-          <Select style={{ width: '300px' }} placeholder="测试placeholder">
+          <Select style={{ width: '300px' }} placeholder="testplaceholder">
             {[
-              { label: '测试', value: 1 },
-              { label: '测试2', value: 2 }
+              { label: 'test', value: 1 },
+              { label: 'test2', value: 2 }
             ].map((item, index) => {
               return (
                 <Select.Option key={index} value={item.value}>

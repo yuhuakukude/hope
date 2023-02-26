@@ -27,7 +27,7 @@ const HeaderFrame = styled.div`
   top: 0;
   position: relative;
   padding: 20px 63px 0 100px;
-  box-shadow: 0 1px 0 0 rgba(38, 39, 56, 1);
+  border-bottom: 1px solid rgba(61, 62, 70, 0.5);
   z-index: 2;
   ${({ theme }) => theme.mediaWidth.upToMedium`
     grid-template-columns: 1fr;

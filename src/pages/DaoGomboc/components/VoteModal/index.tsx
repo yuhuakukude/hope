@@ -9,7 +9,6 @@ import { useWalletModalToggle } from '../../../../state/application/hooks'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
 import { useGomConContract } from '../../../../hooks/useContract'
 import { VELT } from '../../../../constants'
-import { Select } from 'antd'
 import { useToVote } from '../../../../hooks/ahp/useGomVote'
 import { JSBI, Percent, Token } from '@uniswap/sdk'
 import { useSingleCallResult } from '../../../../state/multicall/hooks'
@@ -20,6 +19,7 @@ import TransactionConfirmationModal, {
 import Modal from '../../../../components/Modal'
 import { CloseIcon } from '../../../../theme/components'
 import { NavLink } from 'react-router-dom'
+import Select from 'components/antd/Select'
 
 interface VoteProps {
   isOpen: boolean

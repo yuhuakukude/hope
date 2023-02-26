@@ -6,15 +6,15 @@ import './index.scss'
 
 const Option = ASelect.Option
 
-const Select = (
-  props: SelectProps & {
+function Select<T>(
+  props: SelectProps<T> & {
     children?: JSX.Element | JSX.Element[]
-    options?: { label: string; value: string | number }[]
+    options?: { label: string | number; value: string | number }[]
   }
-) => {
+) {
   return (
     <div className="dapp-select-wrap">
-      <ASelect {...props} dropdownClassName="dapp-select-dropdown">
+      <ASelect {...(props as any)} dropdownClassName="dapp-select-dropdown">
         {props.children
           ? props.children
           : props.options?.map((opt, index) => {
