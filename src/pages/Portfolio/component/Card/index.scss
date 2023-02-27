@@ -3,7 +3,21 @@
   box-sizing: border-box;
   border-radius: 20px;
   background-color: rgba(38, 38, 44, 1);
-  padding: 30px;
+
+  .card-title {
+    font-size: 20px;
+    color: #fff;
+    border-bottom: 1px solid rgba(61, 62, 70, 1);
+  }
+
+  .card-title,
+  .card-content {
+    padding: 30px;
+  }
+
+  .hope-dapp-table {
+    padding: 0;
+  }
 }
 
 .card-bg {

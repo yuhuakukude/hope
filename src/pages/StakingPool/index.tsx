@@ -19,8 +19,8 @@ import { Link } from 'react-router-dom'
 import format from '../../utils/format'
 import { SearchInput } from '../../components/SearchModal/styleds'
 import { useOverviewTvlChartsData, useOverviewVolChartsData } from '../../hooks/useCharts'
-import QuestionHelper from 'components/QuestionHelper'
 import { GraphPairInfo } from '../../state/stake/hooks'
+import Tips from 'components/Tips'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -281,8 +281,8 @@ export default function StakingPool() {
             <PositionTitle flex={2}>Volume(24H)</PositionTitle>
             <PositionTitle flex={2}>
               <div className="flex ai-center">
-                Combined APR
-                <QuestionHelper text="The APR (USD denominated) is calculated using token prices denominated in USD. Prices are fetched either from HopeSwap pools. Also, the APR is a 365 day projection based on each pool's performance over the last 24h. See Hope Ecosystem Disclaimers & Disclosures for more details" />{' '}
+                <span style={{ marginRight: '2px' }}>Combined APR</span>
+                <Tips title="The APR (USD denominated) is calculated using token prices denominated in USD. Prices are fetched either from HopeSwap pools. Also, the APR is a 365 day projection based on each pool's performance over the last 24h. See Hope Ecosystem Disclaimers & Disclosures for more details"></Tips>
               </div>
             </PositionTitle>
             <PositionTitle>Actions</PositionTitle>

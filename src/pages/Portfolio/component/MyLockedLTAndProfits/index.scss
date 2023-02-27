@@ -1,0 +1,88 @@
+.title-button {
+  color: rgba(228, 201, 137, 1);
+  margin-left: 5px;
+  cursor: pointer;
+}
+
+.my-locked-lt-content {
+  margin-bottom: 20px;
+
+  .my-locked-lt-col {
+    flex: 1;
+
+    position: relative;
+
+    .my-locked-lt-title {
+      color: rgba(168, 168, 170, 1);
+      font-size: 16px;
+    }
+
+    .my-locked-lt-desc {
+      margin-top: 20px;
+
+      .my-locked-lt-value {
+        color: rgba(255, 255, 255, 1);
+        font-size: 18px;
+      }
+
+      .my-locked-lt-value2 {
+        color: rgba(168, 168, 170, 1);
+        font-size: 14px;
+        margin-left: 13px;
+      }
+    }
+
+    .my-locked-lt-button {
+      position: absolute;
+      top: 0px;
+      right: 0px;
+      width: 109px;
+      height: 20px;
+      line-height: 20px;
+      padding: 0;
+      text-align: center;
+      font-size: 12px;
+    }
+  }
+
+  .my-locked-lt-row {
+    display: flex;
+    background-color: rgba(51, 51, 60, 1);
+    border-radius: 8px;
+    padding: 20px;
+    border: 1px solid rgba(61, 62, 70, 1);
+
+
+    .my-locked-lt-col:last-child {
+      border-left: 1px solid rgba(61, 62, 70, 1);
+
+      .my-locked-lt-title,
+      .my-locked-lt-desc {
+        padding-left: 30px;
+        box-sizing: border-box;
+      }
+    }
+  }
+
+  .my-locked-lt-row2 {
+    margin-top: 20px;
+    display: flex;
+
+    .my-locked-lt-col {
+      flex: 1;
+      padding: 20px;
+      border-radius: 8px;
+      background-color: rgba(51, 51, 60, 1);
+      border: 1px solid rgba(61, 62, 70, 1);
+
+      .my-locked-lt-button {
+        top: 20px;
+        right: 20px;
+      }
+    }
+
+    .my-locked-lt-col:first-child {
+      margin-right: 20px;
+    }
+  }
+}
