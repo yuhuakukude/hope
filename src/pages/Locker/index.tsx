@@ -421,7 +421,13 @@ export default function DaoLocker() {
                   </p>
                   <p className="font-nor text-normal m-t-16">unallocated:</p>
                   <p className="font-nor text-normal m-t-12">
-                    {unUseVeltAmount} ({unUseRateVal || '0.00'}%)
+                    {account ? (
+                      <span>
+                        {unUseVeltAmount} ({unUseRateVal || '0.00'}%)
+                      </span>
+                    ) : (
+                      '0.00'
+                    )}
                   </p>
                 </div>
                 <div className="-r m-l-20 flex ai-center">

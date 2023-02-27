@@ -36,6 +36,9 @@ const PageWrapper = styled(AutoColumn)`
   width: 100%;
   padding: 0 30px;
   max-width: 1340px;
+`
+const ScrollWrapper = styled.div`
+  width: 100%;
   overflow: scroll;
   &::-webkit-scrollbar {
     display: none;
@@ -371,167 +374,169 @@ export default function Earn() {
   }, [wrapperRef, resPools, searchList])
 
   return (
-    <PageWrapper gap="lg" justify="center" className="wapper" ref={wrapperRef as RefObject<HTMLDivElement>}>
-      {poolInfo && (
-        <StakingModal
-          action={action}
-          onStake={action => {
-            !account
-              ? toggleWalletModal()
-              : action === STAKE_ACTION.UNSTAKE
-              ? onUnstakeCallback()
-              : approvalState === ApprovalState.NOT_APPROVED
-              ? onApproveCallback()
-              : onStakeCallback()
-          }}
-          typedValue={typedValue}
-          onTyped={setTypedValue}
-          isOpen={showStakeModal}
-          onDismiss={() => setShowStakeModal(false)}
-          stakingInfo={poolInfo}
-        />
-      )}
-
-      {poolInfo && (
-        <ClaimRewardModal
-          isOpen={showClaimModal}
-          onDismiss={() => setShowClaimModal(false)}
-          onClaim={onClaimCallback}
-          stakingInfo={poolInfo}
-        />
-      )}
-
-      <TransactionConfirmationModal
-        isOpen={showConfirm}
-        onDismiss={() => setShowConfirm(false)}
-        attemptingTxn={attemptingTxn}
-        hash={txHash}
-        content={confirmationContent}
-        pendingText={pendingText}
-      />
-
-      <TopSection gap="md">
-        <DataCard>
-          <CardSection>
-            <AutoColumn style={{ padding: 30 }} gap="lg">
-              <AutoRow gap={'20px'}>
-                <TYPE.white fontSize={28} fontWeight={600}>
-                  Provide Liquidity, Earn $LT{`${isMyVote}`}
-                </TYPE.white>
-                <a
-                  href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="link m-l-0 text-primary flex ai-center"
-                >
-                  Tutorial <i className="iconfont m-l-5">&#xe619;</i>{' '}
-                </a>
-              </AutoRow>
-              <AutoColumn gap={'sm'}>
-                <TYPE.main>Total Value Locked(TVL)</TYPE.main>
-                <TYPE.white fontSize={28}>$ {format.amountFormat(totalAmount, 2)}</TYPE.white>
-              </AutoColumn>
-              <AutoColumn>
-                <RowFixed gap={'md'}>
-                  <div style={{ width: '440px' }} className="m-r-20">
-                    <div className="flex">
-                      <div style={{ position: 'relative', width: '440px' }} className="flex m-r-20">
-                        <SearchInput
-                          fontSize={'16px'}
-                          padding={'10px 16px 10px 45px'}
-                          type="text"
-                          id="token-search-input"
-                          placeholder={'Search Token Symbol / Address'}
-                          autoComplete="off"
-                          ref={inputRef as RefObject<HTMLInputElement>}
-                          value={inputValue}
-                          onChange={handleInput}
-                        />
-                        <i className="iconfont search-input-icon">&#xe61b;</i>
-                      </div>
-                      <ButtonPrimary padding={'12px 24px'} style={{ width: 'max-content' }} onClick={toSearch}>
-                        Search
-                      </ButtonPrimary>
-                    </div>
-                  </div>
-                </RowFixed>
-              </AutoColumn>
-            </AutoColumn>
-          </CardSection>
-          <EarnBGImage />
-        </DataCard>
-      </TopSection>
-
-      <div className="action flex jc-between ai-center" style={{ width: '100%' }}>
-        <div>
-          <span className="text-white text-medium font-nor">My Staked Only</span>
-          <Switch className="m-l-10 is-grey" onChange={changeSwitch} />
-        </div>
-        <div>
-          <Select
-            mode="multiple"
-            style={{ width: '210px', height: '42px' }}
-            value={userCurrency}
-            maxTagCount={1}
-            allowClear
-            getPopupContainer={(triggerNode: any) => triggerNode.parentNode}
-            onChange={currencyChange}
-            placeholder="Available Balance"
-            optionLabelProp="label"
-            className={userCurrency.length > 0 ? 'small-select hide-placeholder' : 'small-select show-placeholder'}
-          >
-            {userBalances.map((data: any, index: number) => {
-              return (
-                <Option key={index} value={data.symbol} label={data.symbol}>
-                  <CurrencyLogo currency={data.token} />
-                  <span className="m-l-10">{data.symbol}</span>
-                </Option>
-              )
-            })}
-          </Select>
-        </div>
-      </div>
-
-      <AutoColumn gap="lg" style={{ width: '100%' }}>
-        <PoolSection>
-          {loading ? (
-            <Loader size={'50px'} style={{ margin: 'auto' }} />
-          ) : searchList && searchList?.length === 0 ? (
-            <OutlineCard>No active pools</OutlineCard>
-          ) : (
-            searchList.map((pool, index) => {
-              // need to sort by added liquidity here
-              return (
-                <LTPoolCard
-                  onClaim={() => {
-                    setPoolInfo(pool)
-                    setShowClaimModal(true)
-                  }}
-                  onUnstake={() => {
-                    setTypedValue('')
-                    setShowStakeModal(true)
-                    setAction(STAKE_ACTION.UNSTAKE)
-                    setPoolInfo(pool)
-                  }}
-                  onStake={() => {
-                    setTypedValue('')
-                    setAction(STAKE_ACTION.STAKE)
-                    setPoolInfo(pool)
-                    setShowStakeModal(true)
-                  }}
-                  key={index}
-                  pool={pool}
-                />
-              )
-            })
-          )}
-        </PoolSection>
-        {!loading && resPools.length > searchList.length && (
-          <div className="flex jc-center">
-            <Loader size={'20px'} style={{ margin: 'auto' }} />
-          </div>
+    <PageWrapper gap="lg" justify="center">
+      <ScrollWrapper className="wapper" ref={wrapperRef as RefObject<HTMLDivElement>}>
+        {poolInfo && (
+          <StakingModal
+            action={action}
+            onStake={action => {
+              !account
+                ? toggleWalletModal()
+                : action === STAKE_ACTION.UNSTAKE
+                ? onUnstakeCallback()
+                : approvalState === ApprovalState.NOT_APPROVED
+                ? onApproveCallback()
+                : onStakeCallback()
+            }}
+            typedValue={typedValue}
+            onTyped={setTypedValue}
+            isOpen={showStakeModal}
+            onDismiss={() => setShowStakeModal(false)}
+            stakingInfo={poolInfo}
+          />
         )}
-      </AutoColumn>
+
+        {poolInfo && (
+          <ClaimRewardModal
+            isOpen={showClaimModal}
+            onDismiss={() => setShowClaimModal(false)}
+            onClaim={onClaimCallback}
+            stakingInfo={poolInfo}
+          />
+        )}
+
+        <TransactionConfirmationModal
+          isOpen={showConfirm}
+          onDismiss={() => setShowConfirm(false)}
+          attemptingTxn={attemptingTxn}
+          hash={txHash}
+          content={confirmationContent}
+          pendingText={pendingText}
+        />
+
+        <TopSection gap="md">
+          <DataCard>
+            <CardSection>
+              <AutoColumn style={{ padding: 30 }} gap="lg">
+                <AutoRow gap={'20px'}>
+                  <TYPE.white fontSize={28} fontWeight={600}>
+                    Provide Liquidity, Earn $LT{`${isMyVote}`}
+                  </TYPE.white>
+                  <a
+                    href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="link m-l-0 text-primary flex ai-center"
+                  >
+                    Tutorial <i className="iconfont m-l-5">&#xe619;</i>{' '}
+                  </a>
+                </AutoRow>
+                <AutoColumn gap={'sm'}>
+                  <TYPE.main>Total Value Locked(TVL)</TYPE.main>
+                  <TYPE.white fontSize={28}>$ {format.amountFormat(totalAmount, 2)}</TYPE.white>
+                </AutoColumn>
+                <AutoColumn>
+                  <RowFixed gap={'md'}>
+                    <div style={{ width: '440px' }} className="m-r-20">
+                      <div className="flex">
+                        <div style={{ position: 'relative', width: '440px' }} className="flex m-r-20">
+                          <SearchInput
+                            fontSize={'16px'}
+                            padding={'10px 16px 10px 45px'}
+                            type="text"
+                            id="token-search-input"
+                            placeholder={'Search Token Symbol / Address'}
+                            autoComplete="off"
+                            ref={inputRef as RefObject<HTMLInputElement>}
+                            value={inputValue}
+                            onChange={handleInput}
+                          />
+                          <i className="iconfont search-input-icon">&#xe61b;</i>
+                        </div>
+                        <ButtonPrimary padding={'12px 24px'} style={{ width: 'max-content' }} onClick={toSearch}>
+                          Search
+                        </ButtonPrimary>
+                      </div>
+                    </div>
+                  </RowFixed>
+                </AutoColumn>
+              </AutoColumn>
+            </CardSection>
+            <EarnBGImage />
+          </DataCard>
+        </TopSection>
+
+        <div className="action flex jc-between ai-center" style={{ width: '100%', margin: '20px 0' }}>
+          <div>
+            <span className="text-white text-medium font-nor">My Staked Only</span>
+            <Switch className="m-l-10 is-grey" onChange={changeSwitch} />
+          </div>
+          <div>
+            <Select
+              mode="multiple"
+              style={{ width: '210px', height: '42px' }}
+              value={userCurrency}
+              maxTagCount={1}
+              allowClear
+              getPopupContainer={(triggerNode: any) => triggerNode.parentNode}
+              onChange={currencyChange}
+              placeholder="Available Balance"
+              optionLabelProp="label"
+              className={userCurrency.length > 0 ? 'small-select hide-placeholder' : 'small-select show-placeholder'}
+            >
+              {userBalances.map((data: any, index: number) => {
+                return (
+                  <Option key={index} value={data.symbol} label={data.symbol}>
+                    <CurrencyLogo currency={data.token} />
+                    <span className="m-l-10">{data.symbol}</span>
+                  </Option>
+                )
+              })}
+            </Select>
+          </div>
+        </div>
+
+        <AutoColumn gap="lg" style={{ width: '100%' }}>
+          <PoolSection>
+            {loading ? (
+              <Loader size={'50px'} style={{ margin: 'auto' }} />
+            ) : searchList && searchList?.length === 0 ? (
+              <OutlineCard>No active pools</OutlineCard>
+            ) : (
+              searchList.map((pool, index) => {
+                // need to sort by added liquidity here
+                return (
+                  <LTPoolCard
+                    onClaim={() => {
+                      setPoolInfo(pool)
+                      setShowClaimModal(true)
+                    }}
+                    onUnstake={() => {
+                      setTypedValue('')
+                      setShowStakeModal(true)
+                      setAction(STAKE_ACTION.UNSTAKE)
+                      setPoolInfo(pool)
+                    }}
+                    onStake={() => {
+                      setTypedValue('')
+                      setAction(STAKE_ACTION.STAKE)
+                      setPoolInfo(pool)
+                      setShowStakeModal(true)
+                    }}
+                    key={index}
+                    pool={pool}
+                  />
+                )
+              })
+            )}
+          </PoolSection>
+          {!loading && resPools.length > searchList.length && (
+            <div className="flex jc-center">
+              <Loader size={'20px'} style={{ margin: 'auto' }} />
+            </div>
+          )}
+        </AutoColumn>
+      </ScrollWrapper>
     </PageWrapper>
   )
 }

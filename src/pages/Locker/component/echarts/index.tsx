@@ -45,7 +45,6 @@ export default function LockerEcharts() {
             title: {
               show: false
             },
-            dataZoom: [{ type: 'inside' }],
             tooltip: {
               trigger: 'axis',
               backgroundColor: 'rgba(51, 51, 60, 1)',
@@ -141,11 +140,16 @@ export default function LockerEcharts() {
     },
     [initFn]
   )
+  const handleResizeChart = (myChart: any) => {
+    myChart && myChart.resize()
+  }
 
   useEffect(() => {
     const myChart = echarts.init(chartRef.current)
     init(myChart)
+    window.addEventListener('resize', () => handleResizeChart(myChart))
     return () => {
+      window.removeEventListener('resize', () => handleResizeChart(myChart))
       myChart.dispose()
     }
   }, [init])

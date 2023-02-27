@@ -91,6 +91,7 @@
         }
         .date-btn{
           gap: 20px;
+          flex-wrap: wrap;
           .btn-item{
             flex: 1;
             height: 40px;
@@ -109,6 +110,20 @@
           line-height: 24px;
         }
       }
+    }
+  }
+}
+@media screen and (max-width: 1150px){
+  .dao-locker-page .content-box .action-box .r .date-btn{
+    display: grid;
+    grid-auto-columns: 1fr;
+    grid-column-gap: 20px;
+    grid-row-gap: 20px;
+    -ms-grid-columns: 1fr 1fr;
+    grid-template-columns: 1fr 1fr;
+    -ms-grid-rows: auto auto;
+    grid-template-rows: auto auto;
+    .btn-item{
     }
   }
 }
