@@ -16,7 +16,7 @@ interface GombocClaimProps {
   totalFee: string
   tableData: any
   tableItem: any
-  hopePrice: string
+  hopePrice: string | number
 }
 
 const GombocClaim = ({

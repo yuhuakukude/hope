@@ -15,7 +15,7 @@ import TransactionConfirmationModal, { TransactionErrorContent } from '../../com
 import { ethers } from 'ethers'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useActiveWeb3React } from '../../hooks'
-import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS, SUBGRAPH } from '../../constants'
+import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS } from '../../constants'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { Token, TokenAmount, JSBI, Percent } from '@uniswap/sdk'
 import { useTokenBalance } from '../../state/wallet/hooks'
@@ -28,8 +28,7 @@ import LockerBanner from './component/Banner'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useEstimate } from '../../hooks/ahp'
 import { useActionPending } from '../../state/transactions/hooks'
-
-import { postQuery } from '../../utils/graph'
+import { useTokenPrice } from '../../hooks/liquidity/useBasePairs'
 import { Decimal } from 'decimal.js'
 import Test3 from '../../assets/images/test3.jpg'
 
@@ -88,7 +87,15 @@ export default function DaoLocker() {
   const { toWithdraw } = useToWithdraw()
 
   // price
-  const [ltPrice, setLTPrice] = useState('')
+  const { result: priceResult } = useTokenPrice([LT[chainId ?? 1].address])
+
+  const ltPrice = useMemo(() => {
+    let res = 0
+    if (priceResult && priceResult.length > 0) {
+      res = priceResult[0].price
+    }
+    return res
+  }, [priceResult])
 
   const getLockerTime = (val: number) => {
     const weekDate = moment().day() === 0 ? 7 : moment().day()
@@ -317,58 +324,14 @@ export default function DaoLocker() {
     }
   }, [votePowerAmount, veltBalance, account])
 
-  const initPrice = useCallback(async () => {
-    try {
-      const addQuery = `{  
-        tokens(where: {symbol: "LT"}) {    
-          symbol   
-          id 
-        } 
-      }`
-      const address = await postQuery(SUBGRAPH, addQuery)
-      if (address && address.data.tokens[0] && address.data.tokens[0].id) {
-        const add = address.data.tokens[0].id
-        const query = `{  
-          token(id: "${add}") {    
-            symbol   
-            derivedETH  
-          }  
-          bundle(id: 1) {    
-            ethPrice  
-          }
-        }`
-
-        const res = await postQuery(SUBGRAPH, query)
-        if (res && res.data) {
-          const item = res.data
-          const de = item.token?.derivedETH || 0
-          const bu = item.bundle?.ethPrice || 0
-          const pr = new Decimal(de).mul(new Decimal(bu)).toNumber()
-          const num = pr.toFixed(18)
-          if (num && Number(num) > 0) {
-            setLTPrice(num)
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }, [])
-
-  function toUsdPrice(val: any, price: string) {
+  function toUsdPrice(val: any, price: string | number) {
     let res = ''
     if (val && price) {
       const pr = new Decimal(val).mul(new Decimal(price)).toNumber()
-      res = pr.toFixed(2)
+      res = format.amountFormat(pr, 2)
     }
     return res
   }
-
-  useEffect(() => {
-    if (account) {
-      initPrice()
-    }
-  }, [account, initPrice])
 
   return (
     <>

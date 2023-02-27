@@ -35,7 +35,7 @@ import { useLocation } from 'react-router-dom'
 import useGasPrice from '../../hooks/useGasPrice'
 import JSBI from 'jsbi'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
-import usePrice from 'hooks/usePrice'
+import { useTokenPrice } from '../../hooks/liquidity/useBasePairs'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -53,7 +53,14 @@ enum ACTION {
 export default function Staking() {
   const { account, chainId, library } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
-  const hopePrice = usePrice()
+  const { result: priceResult } = useTokenPrice([HOPE[chainId ?? 1].address])
+  const hopePrice = useMemo(() => {
+    let res = 0
+    if (priceResult && priceResult.length > 0) {
+      res = priceResult[0].price
+    }
+    return res
+  }, [priceResult])
   const gasPrice = useGasPrice()
   const [curType, setStakingType] = useState('stake')
   const { search } = useLocation()

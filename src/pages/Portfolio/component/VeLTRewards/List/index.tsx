@@ -11,7 +11,7 @@ import './index.scss'
 interface ListProps {
   withdrawItem: (index: number) => void
   tableData: any
-  hopePrice: string
+  hopePrice: string | number
 }
 
 export default function List({ withdrawItem, tableData, hopePrice }: ListProps) {
