@@ -146,7 +146,7 @@ export default function MyLockedLTAndProfits() {
           </div>
           <div className="my-locked-lt-col">
             <div className="my-locked-lt-title">
-              Claimable veLT voting Fees<Tips title="Claimable veLT Held Fees Tips"></Tips>
+              Claimable veLT voting Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
             </div>
             <div className="my-locked-lt-desc">
               <span className="my-locked-lt-value">≈ 123,456,789.00 stHOPE</span>

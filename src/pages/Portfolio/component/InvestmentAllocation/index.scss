@@ -40,7 +40,9 @@
       .investment-allocation-box {
         margin-bottom: 10px;
         min-width: 170px;
-        border-right: 1px solid rgba(61, 62, 70, 1);
+        border-left: 1px solid rgba(61, 62, 70, 1);
+        padding-left: 30px;
+        box-sizing: border-box;
 
         .investment-allocation-box-head {
           .investment-allocation-box-name {
@@ -66,8 +68,9 @@
         }
       }
 
-      .investment-allocation-box:last-child {
-        border-right: 0;
+      .investment-allocation-box:first-child {
+        border-left: 0;
+        padding-left: 0;
       }
     }
   }
