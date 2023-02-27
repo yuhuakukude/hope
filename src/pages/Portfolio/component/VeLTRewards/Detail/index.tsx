@@ -15,7 +15,7 @@ import { useDateForLastOccurence } from 'hooks/useDateForLastOccurence'
 interface DetailProps {
   withdrawAll: () => void
   overviewData: DetailInfo
-  hopePrice: string | number
+  hopePrice: string
   platformFees: string
 }
 
