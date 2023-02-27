@@ -4,6 +4,7 @@ import headImg1 from '../../../../assets/images/ahp/icon-gom1.png'
 import headImg2 from '../../../../assets/images/ahp/icon-gom2.png'
 import headImg3 from '../../../../assets/images/ahp/icon-gom3.png'
 import headImg4 from '../../../../assets/images/ahp/icon-gom4.png'
+import Button from 'components/antd/Button'
 /**
  *
  * @param props
@@ -20,14 +21,16 @@ const Head = () => {
             Light Protocol liquidity incentives are directed to pools by veLT voters. Stake in these pools to earn
             incentives. Boost with veLT for up to 2.5x extra on pools.
           </p>
-          <a
-            className="learn-more m-t-20"
-            href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/reward-goemboec/goemboec-weights"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Button
+            type="link"
+            onClick={() => {
+              window.open(
+                'https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/reward-goemboec/goemboec-weights'
+              )!.opener = null
+            }}
           >
             Learn more
-          </a>
+          </Button>
         </div>
         <div className="flex-1 flex ai-center m-l-30">
           <div className="flex-1">

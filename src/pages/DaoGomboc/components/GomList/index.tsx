@@ -326,6 +326,12 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     init(voterAddress, searchValue)
   }
 
+  function reset() {
+    setIsMyVote(false)
+    setVoterAddress('')
+    setSearchValue('')
+  }
+
   useEffect(() => {
     if (txHash && isTranPending === false) {
       setTxHash('')
@@ -341,14 +347,15 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   }))
 
   useEffect(() => {
+    reset()
     init()
   }, [init, account])
 
   useEffect(() => {
     if (!searchValue) {
-      init()
+      init(voterAddress)
     }
-  }, [searchValue, init])
+  }, [voterAddress, searchValue, init])
 
   return (
     <>
@@ -367,7 +374,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
             {account && (
               <>
                 <span className="text-white">My voted Only</span>
-                <Switch className="m-l-10" onChange={changeSwitch} />
+                <Switch checked={isMyVote} className="m-l-10" onChange={changeSwitch} />
               </>
             )}
           </div>

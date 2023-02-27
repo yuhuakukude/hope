@@ -56,7 +56,7 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
       render: (text: string) => {
         return (
           <>
-            <div className="veLT-rewards-item-title">{format.amountFormat(text, 2)}</div>
+            <div className="veLT-rewards-item-title">≈ {format.amountFormat(text, 2)}</div>
             <div className="veLT-rewards-item-desc">≈ ${toUsdPrice(text, hopePrice) || '--'}</div>
           </>
         )
@@ -69,7 +69,7 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
       render: (text: string) => {
         return (
           <>
-            <div className="veLT-rewards-item-title">{format.amountFormat(text, 2)}</div>
+            <div className="veLT-rewards-item-title">≈ {format.amountFormat(text, 2)}</div>
             <div className="veLT-rewards-item-desc">≈ ${toUsdPrice(text, hopePrice) || '--'}</div>
           </>
         )

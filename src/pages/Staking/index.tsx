@@ -345,7 +345,7 @@ export default function Staking() {
               </Col>
             </Row>
           </div>
-          <Row className="m-t-40" gutter={30}>
+          <Row className="m-t-30" gutter={30}>
             <Col className="gutter-row" span={14}>
               <div className="staking-tab">
                 <div className="head flex">
@@ -376,6 +376,9 @@ export default function Staking() {
                       {curType === 'stake'
                         ? `${hopeBal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'} HOPE`
                         : `${stakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'} stHOPE`}
+                      <span onClick={() => toMax()} className="input-max cursor-select">
+                        Max
+                      </span>
                     </div>
                   </div>
                   <div className="hp-amount-box">
@@ -398,9 +401,6 @@ export default function Staking() {
                         {curType === 'stake' ? 'HOPE' : 'stHOPE'}
                       </div>
                     </div>
-                    <span onClick={() => toMax()} className="input-max cursor-select">
-                      Max
-                    </span>
                   </div>
                   <div className="flex jc-between m-t-30">
                     <span className="text-white">Est Transaction Fee</span>

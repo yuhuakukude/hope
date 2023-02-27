@@ -395,7 +395,8 @@
   .ant-select-selection:focus,
   .ant-select-selection:active {
     border-color: #E4C989;
-    box-shadow: 0 0 0 2px rgba(228, 201, 137, 0.2);
+    // box-shadow: 0 0 0 2px rgba(228, 201, 137, 0.2);
+    box-shadow: none;
   }
 
   .ant-select-selection__rendered {
