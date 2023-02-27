@@ -68,7 +68,7 @@ export default function Detail({ withdrawAll, overviewData, hopePrice, platformF
             <span className="velt-rewards-bottom-question">
               <Tips title="test" />
             </span>
-            <span className="velt-rewards-bottom-amount">: {amountFormat(overviewData.withdrawable, 2)} stHOPE</span>
+            <span className="velt-rewards-bottom-amount">: ≈ {amountFormat(overviewData.withdrawable, 2)} stHOPE</span>
           </div>
           <div className="velt-rewards-bottom-right flex jc-end">
             <ButtonOutlined
