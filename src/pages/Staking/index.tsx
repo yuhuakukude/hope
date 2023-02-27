@@ -17,7 +17,14 @@ import {
 import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
 import HopeCard from '../../components/ahp/card'
-import { useStaking, useToStaked, useToWithdraw, useToUnStaked, useToClaim } from '../../hooks/ahp/useStaking'
+import {
+  useStaking,
+  useToStaked,
+  useToWithdraw,
+  useToUnStaked,
+  useToClaim,
+  stakingFnNameEnum
+} from '../../hooks/ahp/useStaking'
 import format from '../../utils/format'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { ButtonPrimary, ButtonOutlined } from '../../components/Button'
@@ -36,6 +43,7 @@ import useGasPrice from '../../hooks/useGasPrice'
 import JSBI from 'jsbi'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 import { useTokenPrice } from '../../hooks/liquidity/useBasePairs'
+import { useActionPending } from '../../state/transactions/hooks'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -74,6 +82,7 @@ export default function Staking() {
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
+  const { pending: isMintTranPending } = useActionPending(account ? `${account}-${stakingFnNameEnum.Mint}` : '')
 
   // txn values
   const [txHash, setTxHash] = useState<string>('')
@@ -515,7 +524,11 @@ export default function Staking() {
                           {claRewards?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
                         </span>
                         {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
-                          <ButtonOutlined className="staking-outline m-l-10" onClick={claimCallback}>
+                          <ButtonOutlined
+                            disabled={isMintTranPending}
+                            className="staking-outline m-l-10"
+                            onClick={claimCallback}
+                          >
                             Claim
                           </ButtonOutlined>
                         )}
