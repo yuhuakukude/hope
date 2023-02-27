@@ -42,7 +42,7 @@ import { useLocation } from 'react-router-dom'
 import useGasPrice from '../../hooks/useGasPrice'
 import JSBI from 'jsbi'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
-import { useTokenPrice } from '../../hooks/liquidity/useBasePairs'
+import usePrice from 'hooks/usePrice'
 import { useActionPending } from '../../state/transactions/hooks'
 
 const PageWrapper = styled(AutoColumn)`
@@ -61,14 +61,7 @@ enum ACTION {
 export default function Staking() {
   const { account, chainId, library } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
-  const { result: priceResult } = useTokenPrice([HOPE[chainId ?? 1].address])
-  const hopePrice = useMemo(() => {
-    let res = 0
-    if (priceResult && priceResult.length > 0) {
-      res = priceResult[0].price
-    }
-    return res
-  }, [priceResult])
+  const hopePrice = usePrice()
   const gasPrice = useGasPrice()
   const [curType, setStakingType] = useState('stake')
   const { search } = useLocation()
@@ -507,7 +500,7 @@ export default function Staking() {
                   <div className="card-top p-30">
                     <div className="flex jc-between m-b-20">
                       <div className="coin-box flex ai-center">
-                        <div className="hope-icon"></div>
+                        <div className="lt-icon"></div>
                         <div className="currency font-nor text-medium m-l-12">LT Rewards</div>
                       </div>
                       <div className="flex ai-center">

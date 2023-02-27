@@ -8,7 +8,7 @@ import { Decimal } from 'decimal.js'
 import PortfolioApi, { DetailInfo } from 'api/portfolio.api'
 import FeesWithdraw from '../../../../components/ahp/FeesWithdraw'
 import { Token } from '@uniswap/sdk'
-import { HOPE, ST_HOPE, SUBGRAPH } from '../../../../constants'
+import { ST_HOPE, SUBGRAPH } from '../../../../constants'
 import { postQuery } from '../../../../utils/graph'
 import { useActiveWeb3React } from '../../../../hooks'
 import TransactionConfirmationModal, {
@@ -17,21 +17,14 @@ import TransactionConfirmationModal, {
 import { useFeeClaim, useGomFeeClaim, useGomFeeManyClaim } from '../../../../hooks/ahp/usePortfolio'
 import './index.scss'
 import { useDateForLastOccurence } from 'hooks/useDateForLastOccurence'
+import usePrice from 'hooks/usePrice'
 import { useBlockNumber } from '../../../../state/application/hooks'
-import { useTokenPrice } from '../../../../hooks/liquidity/useBasePairs'
 
 export default function VeLTRewards() {
   const { account, chainId } = useActiveWeb3React()
   const blockNumber = useBlockNumber()
   const [curWithType, setCurWithType] = useState<string>('item') // item others all
-  const { result: priceResult } = useTokenPrice([HOPE[chainId ?? 1].address])
-  const hopePrice = useMemo(() => {
-    let res = 0
-    if (priceResult && priceResult.length > 0) {
-      res = priceResult[0].price
-    }
-    return res
-  }, [priceResult])
+  const hopePrice = usePrice()
   const [platformFees, setPlatformFees] = useState('')
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)

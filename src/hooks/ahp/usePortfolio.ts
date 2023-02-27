@@ -154,11 +154,11 @@ export function useGomFeeManyClaim() {
   }
 }
 
-export function toUsdPrice(val: any, price: string | number) {
+export function toUsdPrice(val: any, price: string) {
   let res = ''
   if (val && price) {
     const pr = new Decimal(val).mul(new Decimal(price)).toNumber()
-    res = format.amountFormat(pr, 2)
+    res = pr.toFixed(2)
   }
   return res
 }

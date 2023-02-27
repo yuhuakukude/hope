@@ -412,7 +412,14 @@ $fonts-list: 12,
 .hope-icon {
   width: 24px;
   height: 24px;
-  background: url('../images/hope-logo.png') no-repeat center;
+  background: url('../images/ahp/hope.png') no-repeat center;
+  background-size: contain;
+}
+
+.lt-icon {
+  width: 24px;
+  height: 24px;
+  background: url('../images/ahp/lt.png') no-repeat center;
   background-size: contain;
 }
 
