@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect, useRef, RefObject } from 'react'
+import React, { useState, useMemo, useCallback, useRef, RefObject } from 'react'
 import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
 import LockerEcharts from './component/echarts'
@@ -15,9 +15,9 @@ import TransactionConfirmationModal, { TransactionErrorContent } from '../../com
 import { ethers } from 'ethers'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useActiveWeb3React } from '../../hooks'
-import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS, SUBGRAPH } from '../../constants'
+import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS } from '../../constants'
 import { tryParseAmount } from '../../state/swap/hooks'
-import { Token, TokenAmount, JSBI, Percent } from '@uniswap/sdk'
+import { Token, TokenAmount } from '@uniswap/sdk'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import { useLocker, useToLocker, conFnNameEnum, useToWithdraw } from '../../hooks/ahp/useLocker'
@@ -28,8 +28,6 @@ import LockerBanner from './component/Banner'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useEstimate } from '../../hooks/ahp'
 import { useActionPending } from '../../state/transactions/hooks'
-import { postQuery } from '../../utils/graph'
-import { Decimal } from 'decimal.js'
 import Test3 from '../../assets/images/test3.jpg'
 
 const PageWrapper = styled(AutoColumn)`
@@ -44,13 +42,10 @@ enum ACTION {
 }
 
 export default function DaoLocker() {
+  const [addTabIndex, setAddTabIndex] = useState('amount')
   const [amount, setAmount] = useState('')
-  const [addAmounntModal, setAddAmounntModal] = useState(false)
-  const [addTimeModal, setAddTimeModal] = useState(false)
   const [lockerDate, setLockerDate] = useState<any>('')
   const [dateIndex, setDateIndex] = useState<number | string>()
-  const [unUseRateVal, setUnUseRateVal] = useState<string>('')
-  const [unUseVeltAmount, setUnUseVeltAmount] = useState<string>('')
   const [txHash, setTxHash] = useState<string>('')
   const toggleWalletModal = useWalletModalToggle()
   const [pendingText, setPendingText] = useState('')
@@ -82,12 +77,9 @@ export default function DaoLocker() {
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
   // token
-  const { lockerRes, votePowerAmount } = useLocker()
+  const { lockerRes } = useLocker()
   const { toLocker, getVeLtAmount } = useToLocker()
   const { toWithdraw } = useToWithdraw()
-
-  // price
-  const [ltPrice, setLTPrice] = useState('')
 
   const getLockerTime = (val: number) => {
     const weekDate = moment().day() === 0 ? 7 : moment().day()
@@ -147,7 +139,7 @@ export default function DaoLocker() {
     const maxEndTime = moment(
       moment()
         .utc()
-        .add(52 * 4, 'week')
+        .add(4, 'year')
     )
     const lastEndTime = format.formatDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')
     const todayDiffEnd = moment(maxEndTime).diff(moment(lastEndTime), 'days')
@@ -266,19 +258,6 @@ export default function DaoLocker() {
       })
   }, [account, inputAmount, library, chainId, veLtAmount, lockTimeArg, toLocker, onTxStart, onTxSubmitted, onTxError])
 
-  const lockerAddAction = (type: string) => {
-    if (type === 'amount') {
-      setAddAmounntModal(true)
-    } else if ('time') {
-      setAddTimeModal(true)
-    }
-  }
-
-  const onCloseModel = () => {
-    setAddAmounntModal(false)
-    setAddTimeModal(false)
-  }
-
   const toWithdrawCallback = useCallback(async () => {
     if (!account) return
     setCurToken(LT[chainId ?? 1])
@@ -296,78 +275,9 @@ export default function DaoLocker() {
       })
   }, [account, chainId, lockerRes, onTxError, onTxStart, onTxSubmitted, toWithdraw])
 
-  useEffect(() => {
-    if (votePowerAmount || votePowerAmount === 0) {
-      const total = JSBI.BigInt(10000)
-      const apo = JSBI.BigInt(votePowerAmount)
-      const unUseVal = JSBI.subtract(total, apo)
-      const ra = new Percent(unUseVal, JSBI.BigInt(10000))
-      if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
-        setUnUseRateVal(ra.toFixed(2))
-        if (veltBalance) {
-          setUnUseVeltAmount(
-            veltBalance
-              ?.multiply(unUseVal)
-              .divide(JSBI.BigInt(10000))
-              .toFixed(2, { groupSeparator: ',' } ?? '0.00', 0)
-          )
-        }
-      }
-    }
-  }, [votePowerAmount, veltBalance, account])
-
-  const initPrice = useCallback(async () => {
-    try {
-      const addQuery = `{  
-        tokens(where: {symbol: "LT"}) {    
-          symbol   
-          id 
-        } 
-      }`
-      const address = await postQuery(SUBGRAPH, addQuery)
-      if (address && address.data.tokens[0] && address.data.tokens[0].id) {
-        const add = address.data.tokens[0].id
-        const query = `{  
-          token(id: "${add}") {    
-            symbol   
-            derivedETH  
-          }  
-          bundle(id: 1) {    
-            ethPrice  
-          }
-        }`
-
-        const res = await postQuery(SUBGRAPH, query)
-        if (res && res.data) {
-          const item = res.data
-          const de = item.token?.derivedETH || 0
-          const bu = item.bundle?.ethPrice || 0
-          const pr = new Decimal(de).mul(new Decimal(bu)).toNumber()
-          const num = pr.toFixed(18)
-          if (num && Number(num) > 0) {
-            setLTPrice(num)
-          }
-        }
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }, [])
-
-  function toUsdPrice(val: any, price: string) {
-    let res = ''
-    if (val && price) {
-      const pr = new Decimal(val).mul(new Decimal(price)).toNumber()
-      res = pr.toFixed(2)
-    }
-    return res
-  }
-
-  useEffect(() => {
-    if (account) {
-      initPrice()
-    }
-  }, [account, initPrice])
+  const isWithDraw = useMemo(() => {
+    return lockerRes?.end === '--' && lockerRes?.amount
+  }, [lockerRes])
 
   return (
     <>
@@ -384,202 +294,181 @@ export default function DaoLocker() {
         <div className="dao-locker-page">
           <LockerBanner></LockerBanner>
           <div className="content-box m-t-30" ref={lockerRef as RefObject<HTMLInputElement>}>
-            <h3 className="text-medium font-20">My veLT</h3>
-            <div className="card-box m-t-30 flex jc-between">
-              <div className="item p-30">
-                <p className="font-nor text-normal">My LT Balance</p>
-                <p className="font-20 m-t-20 text-medium">
-                  {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} LT
-                </p>
-                <p className="font-nor text-normal m-t-16">
-                  ≈ $ {toUsdPrice(ltBalance?.toFixed(2), ltPrice) || '0.00'}
-                </p>
-              </div>
-              <div className="item p-30">
-                <p className="font-nor text-normal">My Locked LT Amount</p>
-                <p className="font-20 m-t-20 text-medium">
-                  {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'} LT
-                </p>
-                <p className="font-nor text-normal m-t-16">
-                  ≈ $ {(lockerRes && lockerRes.amount && toUsdPrice(lockerRes?.amount.toFixed(2), ltPrice)) || '0.00'}
-                </p>
-                {account &&
-                  (lockerRes?.end === '--' && lockerRes?.amount && !withdrawPendingText ? (
-                    <div className="link-btn text-medium text-primary font-12 m-t-20" onClick={toWithdrawCallback}>
-                      Withdraw
-                    </div>
-                  ) : (
-                    <div className="link-btn text-medium disabled font-12 m-t-20">Withdraw</div>
-                  ))}
-              </div>
-              <div className="item p-30 flex jc-between">
-                <div className="-l">
-                  <p className="font-nor text-normal">My veLT Amount</p>
-                  <p className="font-20 m-t-20 text-medium">
-                    {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
-                  </p>
-                  <p className="font-nor text-normal m-t-16">unallocated:</p>
-                  <p className="font-nor text-normal m-t-12">
-                    {account ? (
-                      <span>
-                        {unUseVeltAmount} ({unUseRateVal || '0.00'}%)
-                      </span>
-                    ) : (
-                      '0.00'
-                    )}
-                  </p>
-                </div>
-                <div className="-r m-l-20 flex ai-center">
-                  {account && (
-                    <i
-                      onClick={() => lockerRes?.end && lockerRes?.end !== '--' && lockerAddAction('amount')}
-                      className={[
-                        'iconfont',
-                        'font-20',
-                        'cursor-select',
-                        'text-primary',
-                        (!lockerRes?.end || lockerRes?.end === '--') && 'disabled'
-                      ].join(' ')}
-                    >
-                      &#xe621;
-                    </i>
-                  )}
-                </div>
-              </div>
-              <div className="item p-30 flex jc-between">
-                <div className="-l">
-                  <p className="font-nor text-normal">Locked Until (UTC)</p>
-                  <p className="font-20 m-t-20 text-medium">{format.formatUTCDate(Number(`${lockerRes?.end}`))}</p>
-                  <p className="font-nor text-normal m-t-16">Max increase: {maxWeek >= 2 ? maxWeek : '--'} weeks</p>
-                </div>
-                <div className="-r m-l-20 flex ai-center">
-                  {account && (
-                    <i
-                      onClick={() =>
-                        lockerRes?.end && lockerRes?.end !== '--' && maxWeek >= 2 && lockerAddAction('time')
-                      }
-                      className={[
-                        'iconfont',
-                        'font-20',
-                        'cursor-select',
-                        'text-primary',
-                        (!lockerRes?.end || lockerRes?.end === '--' || maxWeek < 2) && 'disabled'
-                      ].join(' ')}
-                    >
-                      &#xe621;
-                    </i>
-                  )}
-                </div>
-              </div>
-            </div>
             <div className="action-box m-t-30 flex jc-between">
               <div className="l flex-3 p-30">
                 <LockerEcharts></LockerEcharts>
               </div>
               <div className="r m-l-30 flex-2 p-30">
                 <h3 className="text-medium font-20">Lock LT get veLT</h3>
-                <div className="amout-box">
-                  <p className="flex jc-between font-nor m-t-40">
-                    <span className="text-normal">Lock</span>
-                    {account && (
-                      <span className="text-normal">
-                        Available: {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'} LT{' '}
-                        <span className="text-primary cursor-select m-l-8" onClick={maxInputFn}>
-                          Max
-                        </span>
-                      </span>
-                    )}
+                <div className="ava-balance m-t-30">
+                  <p className="flex jc-between ai-center font-nor">
+                    <span className="text-normal">My LT Balance</span>
+                    <span className="text-medium">
+                      {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} LT
+                    </span>
                   </p>
-                  <div className="inp-box m-t-12">
-                    <NumericalInput
-                      className={['input-amount', isMaxDisabled && 'error'].join(' ')}
-                      value={amount}
-                      decimals={2}
-                      align={'right'}
-                      disabled={!account || !!lockerRes?.amount}
-                      onUserInput={val => {
-                        setAmount(val)
-                      }}
-                    />
-                    <div className="lt-icon-box">
-                      <img src={Test3} style={{ width: '24px', height: '24px' }} alt="" />
-                      <span className="m-l-12">LT</span>
+                  <p className="flex jc-between ai-center font-nor m-t-16">
+                    <span className="text-normal">My LT Locked</span>
+                    <p className="flex ai-center">
+                      <span className="text-medium">
+                        {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}{' '}
+                        LT
+                      </span>
+                      {isWithDraw && !withdrawPendingText && (
+                        <span className="withdraw text-medium text-primary font-24 m-l-16" onClick={toWithdrawCallback}>
+                          Withdraw
+                        </span>
+                      )}
+                    </p>
+                  </p>
+                </div>
+                {lockerRes?.end && lockerRes?.end !== '--' ? (
+                  <div className="add-action-box m-t-30">
+                    <div className="add-ava">
+                      <p className="flex jc-between font-nor">
+                        <span className="text-normal">Balance in Voting Escrow :</span>
+                        <span className="text-medium">
+                          {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
+                        </span>
+                      </p>
+                      <p className="flex jc-between font-nor m-t-16">
+                        <span className="text-normal">Locked Until :</span>
+                        <span className="text-medium">
+                          {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
+                        </span>
+                      </p>
+                    </div>
+                    <div
+                      className={['add-tab', 'flex', 'm-t-30', addTabIndex === 'time' ? 'time-active' : ''].join(' ')}
+                    >
+                      <div
+                        className={[
+                          'item-tab',
+                          'flex-1',
+                          'font-nor',
+                          'text-medium',
+                          addTabIndex === 'amount' ? 'active' : ''
+                        ].join(' ')}
+                        onClick={() => setAddTabIndex('amount')}
+                      >
+                        Add Lock Amount
+                      </div>
+                      <div
+                        className={[
+                          'item-tab',
+                          'flex-1',
+                          'font-nor',
+                          'text-medium',
+                          addTabIndex === 'time' ? 'active' : ''
+                        ].join(' ')}
+                        onClick={() => setAddTabIndex('time')}
+                      >
+                        Increase Lock Time
+                      </div>
+                    </div>
+                    {addTabIndex === 'amount' && <AddAmount></AddAmount>}
+                    {addTabIndex === 'time' && <AddTime maxWeek={maxWeek}></AddTime>}
+                  </div>
+                ) : (
+                  <div className="locker-box m-t-30">
+                    <div className="amout-box">
+                      <p className="flex jc-between font-nor">
+                        <span className="text-normal">Lock Amount</span>
+                        {account && (
+                          <span className="text-normal">
+                            Available: {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} LT{' '}
+                            <span className="text-primary cursor-select m-l-8" onClick={maxInputFn}>
+                              Max
+                            </span>
+                          </span>
+                        )}
+                      </p>
+                      <div className="inp-box m-t-12">
+                        <NumericalInput
+                          className={['input-amount', isMaxDisabled ? 'error' : ''].join(' ')}
+                          value={amount}
+                          decimals={2}
+                          align={'right'}
+                          disabled={!account || !!lockerRes?.amount}
+                          onUserInput={val => {
+                            setAmount(val)
+                          }}
+                        />
+                        <div className="lt-icon-box flex ai-center">
+                          <img src={Test3} style={{ width: '24px', height: '24px' }} alt="" />
+                          <span className="m-l-12">LT</span>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="date-box">
+                      <p className="font-nor m-t-30 text-normal">Lock Until</p>
+                      <DatePicker
+                        value={lockerDate}
+                        className="date-picker-tem m-t-12"
+                        disabled={!account || !!lockerRes?.amount}
+                        disabledDate={disabledDate}
+                        onChange={onDateChange}
+                        allowClear={false}
+                        format="YYYY-MM-DD"
+                        placeholder={account ? '0000-00-00' : ''}
+                        showToday={false}
+                        getCalendarContainer={(triggerNode: any) => triggerNode.parentNode}
+                      />
+                    </div>
+                    <div className="date-btn flex jc-between m-t-30">
+                      {dateList.map((item, index) => (
+                        <div
+                          className={dateIndex === item.value ? 'active btn-item' : 'btn-item'}
+                          key={index}
+                          onClick={() => changeDateIndex(item.value)}
+                        >
+                          <div className="text-medium">{item.label}</div>
+                        </div>
+                      ))}
+                    </div>
+                    <p className="m-t-30 font-nor flex jc-between">
+                      <span className="text-normal">Your starting voting power will be:</span>
+                      <span className="text-medium">
+                        {veLtAmount ? veLtAmount.toFixed(2, { groupSeparator: ',' }, 0) : '0.00'} veLT
+                      </span>
+                    </p>
+                    <div className="m-t-30">
+                      {!account ? (
+                        <ButtonPrimary className="hp-button-primary text-medium font-nor" onClick={toggleWalletModal}>
+                          Connect Wallet
+                        </ButtonPrimary>
+                      ) : (
+                        <ActionButton
+                          pending={approvalState === ApprovalState.PENDING || !!pendingText || isLockerPending}
+                          pendingText={
+                            isLockerPending || approvalState === ApprovalState.PENDING
+                              ? 'Pending'
+                              : 'Confirm in your wallet'
+                          }
+                          disableAction={
+                            isMaxDisabled ||
+                            !inputAmount ||
+                            !lockerDate ||
+                            !ltBalance ||
+                            lockerRes?.end !== '--' ||
+                            !!lockerRes?.amount ||
+                            approvalState === ApprovalState.UNKNOWN
+                          }
+                          actionText={actionText}
+                          onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : lockerCallback}
+                        />
+                      )}
                     </div>
                   </div>
-                </div>
-                <div className="date-box">
-                  <p className="font-nor m-t-30 text-normal">Lock Until</p>
-                  <DatePicker
-                    value={lockerDate}
-                    className="date-picker-tem m-t-12"
-                    disabled={!account || !!lockerRes?.amount}
-                    disabledDate={disabledDate}
-                    onChange={onDateChange}
-                    allowClear={false}
-                    format="YYYY-MM-DD"
-                    placeholder={account ? '0000-00-00' : ''}
-                    showToday={false}
-                    getCalendarContainer={(triggerNode: any) => triggerNode.parentNode}
-                  />
-                </div>
-                <div className="date-btn flex jc-between m-t-30">
-                  {dateList.map((item, index) => (
-                    <div
-                      className={dateIndex === item.value ? 'active btn-item' : 'btn-item'}
-                      key={index}
-                      onClick={() => changeDateIndex(item.value)}
-                    >
-                      <div>{item.label}</div>
-                    </div>
-                  ))}
-                </div>
-                <p className="m-t-40 font-nor flex jc-between">
-                  <span className="text-normal">Total voting escrow</span>
-                  <span className="text-medium">
-                    {veLtAmount ? veLtAmount.toFixed(2, { groupSeparator: ',' }, 0) : '0.00'} veLT
-                  </span>
-                </p>
-                <div
-                  className={account && (isEthBalanceInsufficient || lockerRes?.end !== '--') ? 'm-t-30' : 'm-t-100'}
-                >
-                  {!account ? (
-                    <ButtonPrimary className="hp-button-primary text-medium font-nor" onClick={toggleWalletModal}>
-                      Connect Wallet
-                    </ButtonPrimary>
-                  ) : (
-                    <ActionButton
-                      pending={approvalState === ApprovalState.PENDING || !!pendingText || isLockerPending}
-                      pendingText={
-                        isLockerPending || approvalState === ApprovalState.PENDING
-                          ? 'Pending'
-                          : 'Confirm in your wallet'
-                      }
-                      disableAction={
-                        isMaxDisabled ||
-                        !inputAmount ||
-                        !lockerDate ||
-                        !ltBalance ||
-                        lockerRes?.end !== '--' ||
-                        !!lockerRes?.amount ||
-                        approvalState === ApprovalState.UNKNOWN
-                      }
-                      actionText={actionText}
-                      onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : lockerCallback}
-                    />
-                  )}
-                </div>
-                {account && lockerRes && (isEthBalanceInsufficient || lockerRes?.end !== '--') && (
+                )}
+                {account && isEthBalanceInsufficient && (
                   <div className="tip flex m-t-30">
                     <div className="icon m-r-15">
                       <i className="iconfont font-28 text-primary font-bold">&#xe614;</i>
                     </div>
                     <p className="text-normal font-nor">
-                      {lockerRes?.end !== '--'
-                        ? `You already have an LT lock. The date of this lock cannot be less than ${format.formatUTCDate(
-                            Number(`${lockerRes?.end}`),
-                            'YYYY-MM-DD'
-                          )}`
-                        : 'Your wallet balance is below 0.001 ETH. The approve action require small transaction fees, so you may have deposit additional funds to complete them.'}
+                      Your wallet balance is below 0.001 ETH. The approve action require small transaction fees, so you
+                      may have deposit additional funds to complete them.
                     </p>
                   </div>
                 )}
@@ -587,8 +476,6 @@ export default function DaoLocker() {
             </div>
           </div>
         </div>
-        {addAmounntModal && <AddAmount isOpen={addAmounntModal} onCloseModel={onCloseModel}></AddAmount>}
-        {addTimeModal && <AddTime isOpen={addTimeModal} maxWeek={maxWeek} onCloseModel={onCloseModel}></AddTime>}
       </PageWrapper>
     </>
   )

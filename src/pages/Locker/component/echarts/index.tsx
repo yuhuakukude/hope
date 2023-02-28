@@ -191,8 +191,6 @@ export default function LockerEcharts() {
           <div>
             <p className="text-normal font-nor m-b-12">10,000 LT locked for 4 years = 1 veLT</p>
             <p className="text-normal font-nor m-b-12">10,000 LT locked for 3 years = 0.75 veLT</p>
-          </div>
-          <div className="m-l-20">
             <p className="text-normal font-nor m-b-12">10,000 LT locked for 2 years = 0.50 veLT</p>
             <p className="text-normal font-nor m-b-12">10,000 LT locked for 1 year = 0.25 veLT</p>
           </div>
