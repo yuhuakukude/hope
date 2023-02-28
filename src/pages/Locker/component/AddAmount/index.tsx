@@ -1,5 +1,4 @@
 import React, { useState, useMemo, useCallback } from 'react'
-import Modal from '../../../../components/Modal'
 import { useLocker, useToLocker, conFnNameEnum } from '../../../../hooks/ahp/useLocker'
 import NumericalInput from '../../../../components/NumericalInput'
 import ActionButton from '../../../../components/Button/ActionButton'
@@ -20,7 +19,7 @@ import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS } from '../../../../const
 import { ApprovalState, useApproveCallback } from '../../../../hooks/useApproveCallback'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../../../permit2/domain'
 
-export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; onCloseModel: () => void }) {
+export default function AddAmount() {
   const [amount, setAmount] = useState('')
   const { account, chainId, library } = useActiveWeb3React()
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
@@ -54,20 +53,6 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
     return flag
   }, [amount, ltBalance, chainId])
 
-  const afterLtAmount = useMemo(() => {
-    if (!amount || !lockerRes?.amount || !chainId) {
-      return undefined
-    }
-    const res = new TokenAmount(
-      LT[chainId ?? 1],
-      JSBI.add(
-        JSBI.BigInt(lockerRes?.amount.raw.toString() ?? '0'),
-        JSBI.BigInt(tryParseAmount(amount, LT[chainId ?? 1])?.raw.toString() ?? '0')
-      )
-    )
-    return res
-  }, [amount, lockerRes, chainId])
-
   const afterVeLtAmount = useMemo(() => {
     if (!lockerRes?.end || lockerRes?.end === '--' || !amount) {
       return undefined
@@ -92,7 +77,7 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
     } else if (!inputAmount) {
       return `Enter LT Amount`
     } else {
-      return approvalState === ApprovalState.NOT_APPROVED ? 'Approve LT' : 'Submit'
+      return approvalState === ApprovalState.NOT_APPROVED ? 'Approve LT' : 'Add'
     }
   }, [isMaxDisabled, inputAmount, approvalState])
 
@@ -199,7 +184,7 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
   ])
 
   return (
-    <Modal isOpen={isOpen} onDismiss={() => onCloseModel()}>
+    <div>
       <TransactionConfirmationModal
         isOpen={showConfirm}
         onDismiss={() => setShowConfirm(false)}
@@ -209,54 +194,9 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
         pendingText={pendingText}
         currencyToAdd={curToken}
       />
-      <div className="locker-add-amount-modal p-y-40 p-l-30 p-r-25 flex-1">
-        <div className="title flex ai-center cursor-select jc-between">
-          <p className="box-title font-18 text-medium">Add LT Locking Amount</p>
-          <i className="iconfont font-20 m-r-12" onClick={() => onCloseModel()}>
-            &#xe612;
-          </i>
-        </div>
-        <div className="desc-info">
-          <div className="item m-t-40">
-            <div className="label text-normal font-nor">Total LT Locked : </div>
-            <div className="value font-nor flex m-t-12 ai-center">
-              <p className="text-medium">
-                {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '--'}
-              </p>
-              <i className="iconfont m-x-12">&#xe619;</i>
-              <p className="text-medium text-primary">
-                {afterLtAmount
-                  ? afterLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
-                  : lockerRes?.amount
-                  ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
-                  : '--'}
-              </p>
-            </div>
-          </div>
-          <div className="item m-t-20">
-            <div className="label text-normal font-nor">Total veLT Amount : </div>
-            <div className="value font-nor flex m-t-12 ai-center">
-              <p className="text-medium">{veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}</p>
-              <i className="iconfont m-x-12">&#xe619;</i>
-              <p className="text-medium text-primary">
-                {afterVeLtAmount
-                  ? afterVeLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
-                  : veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}
-              </p>
-            </div>
-          </div>
-          <div className="item m-t-20">
-            <div className="label text-normal font-nor">Unlock Time : </div>
-            <div className="value font-nor flex m-t-12 ai-center">
-              <p className="text-medium">{format.formatUTCDate(Number(`${lockerRes?.end}`))} (UTC)</p>
-              <i className="iconfont m-x-12">&#xe619;</i>
-              <p className="text-medium">{format.formatUTCDate(Number(`${lockerRes?.end}`))} (UTC)</p>
-            </div>
-          </div>
-        </div>
+      <div className="locker-add-amount-modal p-r-25 flex-1">
         <div className="amout-box">
-          <p className="flex jc-between font-nor m-t-40">
-            <span className="text-normal">Increase Amount</span>
+          <p className="flex jc-end font-nor m-t-40">
             <span className="text-normal">
               Available: {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}
               <span className="text-primary cursor-select m-l-8" onClick={maxInputFn}>
@@ -279,8 +219,17 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
               <div className="currency font-nor text-medium m-l-12">LT</div>
             </div>
           </div>
+          <p className="m-t-30 font-nor flex jc-between">
+            <span className="text-normal">Your starting voting power will be:</span>
+            <span className="text-medium">
+              {afterVeLtAmount
+                ? afterVeLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
+                : veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}{' '}
+              veLT
+            </span>
+          </p>
         </div>
-        <div className="m-t-30">
+        <div className="m-t-50">
           <ActionButton
             pending={approvalState === ApprovalState.PENDING || !!pendingText || isLocerkAmountPending}
             pendingText={
@@ -292,6 +241,6 @@ export default function AddAmount({ isOpen, onCloseModel }: { isOpen: boolean; o
           />
         </div>
       </div>
-    </Modal>
+    </div>
   )
 }
