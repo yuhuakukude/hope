@@ -5,7 +5,7 @@
     position: relative;
     .iconfont{
       position: absolute;
-      color: #E4C989;
+      color: #A8A8AA;
       font-size: 30px;
       z-index: 9;
       cursor: pointer;
@@ -21,8 +21,11 @@
         transform: translate(0, -50%);
       }
       &.disabled{
-        color: #A8A8AA;
+        color: #6A6A6A !important;
         cursor: no-drop;
+      }
+      &:hover{
+        color: #ffffff;
       }
     }
     .ant-input-number{

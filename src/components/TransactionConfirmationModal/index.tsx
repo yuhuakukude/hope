@@ -17,6 +17,7 @@ import { ReactComponent as Commited } from '../../assets/svg/commited.svg'
 import { ReactComponent as Warning } from '../../assets/svg/warning.svg'
 import { ReactComponent as Reject } from '../../assets/svg/reject.svg'
 import { ReactComponent as Wallet } from '../../assets/svg/wallet.svg'
+import { NavLink } from 'react-router-dom'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -73,12 +74,14 @@ function TransactionSubmittedContent({
   onDismiss,
   chainId,
   hash,
-  currencyToAdd
+  currencyToAdd,
+  isToGomboc
 }: {
   onDismiss: () => void
   hash: string | undefined
   chainId: ChainId
   currencyToAdd?: Currency | undefined
+  isToGomboc?: boolean
 }) {
   const theme = useContext(ThemeContext)
 
@@ -113,6 +116,16 @@ function TransactionSubmittedContent({
                 </RowFixed>
               )}
             </ButtonLight>
+          )}
+          {isToGomboc && (
+            <div className="m-t-30">
+              <p className="text-medium font-18">Apply your boost & gömböc voting balance </p>
+              <NavLink to={'/dao/gomboc'}>
+                <Text mt="20px" textAlign={'center'} fontWeight={500} fontSize={16} color={theme.primary1}>
+                  Learn more
+                </Text>
+              </NavLink>
+            </div>
           )}
           {chainId && hash && (
             <ExternalLink href={getEtherscanLink(chainId, hash, 'transaction')}>
@@ -217,6 +230,7 @@ interface ConfirmationModalProps {
   attemptingTxn: boolean
   pendingText: string
   currencyToAdd?: Currency | undefined
+  isToGomboc?: boolean
 }
 
 export default function TransactionConfirmationModal({
@@ -226,7 +240,8 @@ export default function TransactionConfirmationModal({
   hash,
   pendingText,
   content,
-  currencyToAdd
+  currencyToAdd,
+  isToGomboc
 }: ConfirmationModalProps) {
   const { chainId } = useActiveWeb3React()
 
@@ -243,6 +258,7 @@ export default function TransactionConfirmationModal({
           hash={hash}
           onDismiss={onDismiss}
           currencyToAdd={currencyToAdd}
+          isToGomboc={isToGomboc}
         />
       ) : (
         content()

@@ -97,7 +97,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
   }, [errorStatus])
 
   const argTime = useMemo(() => {
-    if (lockerRes?.end && weekNumber) {
+    if (lockerRes?.end !== '--' && weekNumber) {
       const endTime = format.formatDate(Number(`${lockerRes?.end}`))
       const newEndDate = moment(endTime).add(weekNumber, 'week')
       return moment(newEndDate).unix()
@@ -137,10 +137,11 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
         content={confirmationContent}
         pendingText={pendingText}
         currencyToAdd={curToken}
+        isToGomboc={true}
       />
       <div className="locker-add-amount-modal flex-1">
         <div className="time-box m-t-30">
-          <p className="font-nor text-normal text-center">The maximum increase is {maxWeek} weeks</p>
+          <p className="font-nor text-normal text-center">The maximum increase is {maxWeek >= 2 ? maxWeek : 0} weeks</p>
           <div className="week-box flex ai-center jc-center m-t-26">
             <span className="font-nor text-medium">Add</span>
             <div className="week-input-box m-x-20">
@@ -169,7 +170,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
           <ActionButton
             pending={!!pendingText || isLocerkTimePending}
             pendingText={isLocerkTimePending ? 'Pending' : 'Confirm in your wallet'}
-            disableAction={!weekNumber || weekNumber < 2 || !ltBalance}
+            disableAction={!weekNumber || weekNumber < 2 || maxWeek < 2 || !ltBalance}
             actionText="Increase"
             onAction={lockerCallback}
           />
