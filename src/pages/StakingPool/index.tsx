@@ -43,6 +43,7 @@ const PositionTitleWrapper = styled(AutoRow)`
 
 const PositionTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
+  color: ${({ theme }) => theme.text2};
 `
 
 const TopSection = styled(AutoColumn)`

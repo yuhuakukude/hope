@@ -29,7 +29,6 @@ import { useWalletModalToggle } from '../../state/application/hooks'
 import AprApi from '../../api/apr.api'
 import format, { amountFormat, formatUTCDate } from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
-import { darken } from 'polished'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useLineDaysChartsData, useLine24HourChartsData } from '../../hooks/useCharts'
@@ -42,6 +41,7 @@ import { useTokenPrice } from '../../hooks/liquidity/useBasePairs'
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
   align-items: flex-start;
+  color: ${({ theme }) => theme.text2};
 `
 
 const TxItem = styled(TYPE.subHeader)<{ flex?: number }>`
@@ -56,23 +56,23 @@ const TxItemWrapper = styled(AutoRow)`
   }
 `
 
-const StyledTabTitle = styled(TYPE.link)<{ active?: boolean }>`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: center;
-  justify-content: center;
-  height: 3rem;
-  border-radius: 3rem;
-  outline: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: ${({ theme, active }) => (active ? theme.primary1 : theme.text3)};
-  font-size: 20px;
-
-  :hover,
-  :focus {
-    color: ${({ theme }) => darken(0.1, theme.text1)};
-  }
-`
+// const StyledTabTitle = styled(TYPE.link)<{ active?: boolean }>`
+//   ${({ theme }) => theme.flexRowNoWrap}
+//   align-items: center;
+//   justify-content: center;
+//   height: 3rem;
+//   border-radius: 3rem;
+//   outline: none;
+//   cursor: pointer;
+//   text-decoration: none;
+//   color: ${({ theme, active }) => (active ? theme.primary1 : theme.text3)};
+//   font-size: 20px;
+//
+//   :hover,
+//   :focus {
+//     color: ${({ theme }) => darken(0.1, theme.text1)};
+//   }
+// `
 
 dayjs.extend(utc)
 
@@ -87,30 +87,33 @@ const Circular = styled(Box)<{
 `
 
 const TabItem = styled.div<{ isActive?: boolean }>`
-  color: ${({ isActive }) => (isActive ? '#E4C989' : '#a8a8aa')};
-  font-size: 20px;
+  color: ${({ isActive, theme }) => (isActive ? theme.text1 : '#a8a8aa')};
+  width: 118px;
+  height: 38px;
+  border-radius: 8px;
   font-family: Arboria-Medium;
-  margin-right: 40px;
   cursor: pointer;
   user-select: none;
   position: relative;
-  padding-bottom: 12px;
+  background: ${({ isActive, theme }) => (isActive ? theme.bg3 : theme.bg5)};
+  text-align: center;
+  line-height: 38px;
 
   &:hover {
-    color: #e4c989;
+    color: ${({ theme }) => theme.text1};
   }
 
-  &::after {
-    content: '';
-    width: 24px;
-    height: 2px;
-    display: ${({ isActive }) => (isActive ? 'block' : 'none')};
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translate(-50%, 0);
-    background: #e4c989;
-  }
+  // &::after {
+  //   content: '';
+  //   width: 24px;
+  //   height: 2px;
+  //   display: ${({ isActive }) => (isActive ? 'block' : 'none')};
+  //   position: absolute;
+  //   bottom: 0;
+  //   left: 50%;
+  //   transform: translate(-50%, 0);
+  //   background: #e4c989;
+  // }
 `
 
 const TimeItem = styled.div<{ isActive?: boolean }>`
@@ -152,6 +155,13 @@ const GoBackIcon = styled(Link)`
     color: #fff;
   }
 `
+
+const TabWrapper = styled(Row)`
+  padding: 2px;
+  width: fit-content;
+  background-color: ${({ theme }) => theme.bg5};
+  border-radius: 8px;
+`
 export default function StakingPoolDetail({
   match: {
     params: { address }
@@ -165,8 +175,8 @@ export default function StakingPoolDetail({
   const toggleWalletModal = useWalletModalToggle()
   const history = useHistory()
   const addresses = useMemo(() => {
-    return ['0x958d10197567895E37cCCcea0712E37037568279']
-  }, [])
+    return [LT[chainId ?? 1].address]
+  }, [chainId])
   const { result: priceResult } = useTokenPrice(addresses)
 
   const [showClaimModal, setShowClaimModal] = useState(false)
@@ -259,7 +269,7 @@ export default function StakingPoolDetail({
   }
   const TabList = () => {
     return (
-      <Row>
+      <TabWrapper>
         {['Volume', 'TVL', 'Fees'].map((item, index) => {
           return (
             <TabItem key={index} isActive={item === tabIndex} onClick={() => tabChange(item)}>
@@ -267,7 +277,7 @@ export default function StakingPoolDetail({
             </TabItem>
           )
         })}
-      </Row>
+      </TabWrapper>
     )
   }
 
@@ -596,8 +606,8 @@ export default function StakingPoolDetail({
               <div className="charts-tab">
                 <Row justify={'space-between'} align={'flex-start'}>
                   <div>
-                    <TabList></TabList>
-                    <TimeList></TimeList>
+                    <TabList />
+                    <TimeList />
                   </div>
                   {!!yCurrentData && (
                     <div>
@@ -704,19 +714,19 @@ export default function StakingPoolDetail({
       <AutoRow padding={'0 15px'}>
         <LightCard>
           <AutoColumn>
-            <AutoRow gap={'20px'}>
-              <StyledTabTitle onClick={() => setShowTx(false)} active={!showTx}>
+            <TabWrapper>
+              <TabItem onClick={() => setShowTx(false)} isActive={!showTx}>
                 Information
-              </StyledTabTitle>
-              <StyledTabTitle
+              </TabItem>
+              <TabItem
                 onClick={() => {
                   setShowTx(true)
                 }}
-                active={showTx}
+                isActive={showTx}
               >
                 Transaction
-              </StyledTabTitle>
-            </AutoRow>
+              </TabItem>
+            </TabWrapper>
             {showTx ? (
               <>
                 <GreyCard marginTop={30}>
