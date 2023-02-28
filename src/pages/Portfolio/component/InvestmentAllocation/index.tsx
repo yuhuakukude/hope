@@ -9,6 +9,7 @@ import { PortfolioInfo } from 'api/portfolio.api'
 import Tips from 'components/Tips'
 import Modal from 'components/antd/Modal'
 import TitleTips from '../TitleTips'
+import Button from 'components/antd/Button'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
 
@@ -19,7 +20,8 @@ export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) 
         name: 'HOPE Staking',
         value: data.hope,
         formatValue: format.amountFormat(data.hope, 2),
-        tips: 'Total amount of HOPE held'
+        tips:
+          'The total value of tokens currently held in the HOPE Staking contract, including the transferable, unstaking, and withdrawable portions of the address'
       },
       {
         name: 'Liquidity Pools',
@@ -37,7 +39,16 @@ export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) 
         name: 'Locked LT & Profits',
         value: data.hopeOfGovern,
         formatValue: format.amountFormat(data.hopeOfGovern, 2),
-        tips: 'Total value of locked LT'
+        tips: (
+          <>
+            <div>Locked LT: Total value of locked LT </div>
+            <div>
+              Profits: Platform fee income. veLT holders will receive 25% of all agreed fee income as an reward, as well
+              as a portion of the Gömböc fee income during the voting period if they participate in the weighted vote of
+              a Gömböc. Learn more
+            </div>
+          </>
+        )
       }
     ]
   }, [data])
