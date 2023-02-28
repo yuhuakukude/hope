@@ -2,8 +2,8 @@ import React, { useEffect, useState, useCallback } from 'react'
 import PortfolioConnect from './component/Connect'
 import PortfolioHead from './component/Head'
 import InvestmentAllocation from './component/InvestmentAllocation'
-import GombocRewards from './component/GombocRewards'
-import VeLTRewards from './component/VeLTRewards'
+// import GombocRewards from './component/GombocRewards'
+// import VeLTRewards from './component/VeLTRewards'
 // import Govern from './component/Govern'
 
 import './index.scss'
@@ -11,6 +11,9 @@ import { useActiveWeb3React } from 'hooks'
 import styled from 'styled-components'
 import { AutoColumn } from 'components/Column'
 import PortfolioApi, { PortfolioInfo } from 'api/portfolio.api'
+import MyHOPEStaking from './component/MyHOPEStaking'
+import MyLiquidityPools from './component/MyLiquidityPools'
+import MyLockedLTAndProfits from './component/MyLockedLTAndProfits'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -47,8 +50,11 @@ export default function Portfolio() {
         ) : (
           <>
             <InvestmentAllocation data={overViewData} />
-            <GombocRewards data={overViewData.rewards} />
-            <VeLTRewards />
+            {/* <GombocRewards data={overViewData.rewards} /> */}
+            <MyHOPEStaking />
+            <MyLiquidityPools />
+            <MyLockedLTAndProfits />
+            {/* <VeLTRewards /> */}
             {/* <Govern /> */}
           </>
         )}

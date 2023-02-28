@@ -9,6 +9,11 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 
+export enum stakingFnNameEnum {
+  Mint = 'mint',
+  RedeemAll = 'redeemAll'
+}
+
 export function useStaking() {
   const { account, chainId } = useActiveWeb3React()
   const shgContract = useStakingHopeGombocContract()
@@ -131,7 +136,7 @@ export function useToClaim() {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [address]
-      const method = 'mint'
+      const method = stakingFnNameEnum.Mint
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
@@ -139,7 +144,10 @@ export function useToClaim() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Claim ${claRewards?.toFixed(2, { groupSeparator: ',' })} LT`
+            summary: `Claim ${claRewards?.toFixed(2, { groupSeparator: ',' })} LT`,
+            actionTag: {
+              recipient: `${account}-${stakingFnNameEnum.Mint}`
+            }
           })
           return response.hash
         })

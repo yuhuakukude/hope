@@ -13,6 +13,7 @@ import { SUPPORTED_NETWORKS, SUPPORTED_WALLETS } from '../../constants'
 import usePrevious from '../../hooks/usePrevious'
 import { ApplicationModal } from '../../state/application/actions'
 import { useModalOpen, useWalletModalToggle } from '../../state/application/hooks'
+import { setInjectedConnected } from 'utils/isInjectedConnectedPrev'
 // import { ExternalLink } from '../../theme'
 
 import Modal from '../Modal'
@@ -178,13 +179,18 @@ export default function WalletModal() {
     }
 
     connector &&
-      activate(connector, undefined, true).catch(error => {
-        if (error instanceof UnsupportedChainIdError) {
-          activate(connector) // a little janky...can't use setError because the connector isn't set
-        } else {
-          setPendingError(true)
-        }
-      })
+      activate(connector, undefined, true)
+        .then(() => {
+          setInjectedConnected(connector)
+        })
+        .catch(error => {
+          if (error instanceof UnsupportedChainIdError) {
+            activate(connector) // a little janky...can't use setError because the connector isn't set
+          } else {
+            setPendingError(true)
+          }
+          setInjectedConnected()
+        })
   }
 
   // close wallet modal if fortmatic modal is active

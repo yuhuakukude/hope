@@ -1,60 +1,67 @@
-import React, { useEffect, useMemo, useRef } from 'react'
+import React, { useEffect, useMemo, useState } from 'react'
 import * as echarts from 'echarts'
 import { TitleComponentOption } from 'echarts/components'
 import { PieSeriesOption } from 'echarts/charts'
 import format from 'utils/format'
 import './index.scss'
 import Card from '../Card'
-import TitleTips from '../TitleTips'
 import { PortfolioInfo } from 'api/portfolio.api'
 import Tips from 'components/Tips'
+import Modal from 'components/antd/Modal'
+import TitleTips from '../TitleTips'
+// import Button from 'components/antd/Button'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
 
 export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) {
-  const chartRef = useRef<any>()
   const allocations = useMemo(() => {
     return [
       {
-        name: 'HOPE',
+        name: 'HOPE Staking',
         value: data.hope,
         formatValue: format.amountFormat(data.hope, 2),
-        tips: 'Total amount of HOPE held'
+        tips:
+          'The total value of tokens currently held in the HOPE Staking contract, including the transferable, unstaking, and withdrawable portions of the address'
       },
       {
-        name: 'stHOPE',
-        value: data.stHope,
-        formatValue: format.amountFormat(data.stHope, 2),
-        tips: 'Total amount of stHOPE held'
-      },
-      {
-        name: 'Pool',
+        name: 'Liquidity Pools',
         value: data.hopeOfPool,
         formatValue: format.amountFormat(data.hopeOfPool, 2),
         tips: 'Total value of assets withdrawable from liquidity pools'
       },
       {
-        name: 'Farming',
+        name: 'Yield Farming',
         value: data.hopeOfFarming,
         formatValue: format.amountFormat(data.hopeOfFarming, 2),
         tips: 'Total value of LP Tokens staked and pending rewards'
       },
       {
-        name: 'Govern',
+        name: 'Locked LT & Profits',
         value: data.hopeOfGovern,
         formatValue: format.amountFormat(data.hopeOfGovern, 2),
-        tips: 'Total value of locked LT'
-      },
-      {
-        name: 'LT',
-        value: data.hopeOfLt,
-        formatValue: format.amountFormat(data.hopeOfLt, 2),
-        tips: 'Total value of LT held'
+        tips: (
+          <>
+            <div>Locked LT: Total value of locked LT </div>
+            <div>
+              Profits: Platform fee income. veLT holders will receive 25% of all agreed fee income as an reward, as well
+              as a portion of the Gömböc fee income during the voting period if they participate in the weighted vote of
+              a Gömböc. Learn more
+            </div>
+          </>
+        )
       }
     ]
   }, [data])
+  const [visibleMap, setVisibleMap] = useState(false)
   useEffect(() => {
+    if (!visibleMap) {
+      return
+    }
     const option: EChartsOption = {
+      left: 95,
+      top: 40,
+      width: 250,
+      height: 250,
       tooltip: {
         trigger: 'item',
         textStyle: {
@@ -79,8 +86,8 @@ export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) 
           itemGap: 30,
           icon: 'circle',
           orient: 'vertical',
-          right: 'right',
-          top: 'center',
+          left: 'left',
+          top: 'bottom',
           data: allocations.slice(0, (allocations.length / 2) | 0),
           textStyle: {
             color: '#fff',
@@ -93,8 +100,8 @@ export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) 
           itemGap: 30,
           icon: 'circle',
           orient: 'vertical',
-          right: '18%',
-          top: 'center',
+          left: 'right',
+          top: 'bottom',
           data: allocations.slice((allocations.length / 2) | 0),
           textStyle: {
             color: '#fff',
@@ -111,32 +118,47 @@ export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) 
           label: {
             show: false
           },
-          bottom: 0,
+          top: 'top',
           data: allocations as any
         }
       ]
     }
-    const myChart = echarts.init(chartRef.current)
-    myChart.setOption(option)
+
+    let myChart: echarts.ECharts | null = null
+    setTimeout(() => {
+      myChart = echarts.init(document.querySelector('#investment-allocation-map') as HTMLElement)
+      myChart.setOption(option)
+    })
+
     return () => {
-      myChart.dispose()
+      myChart && myChart.dispose()
     }
-  }, [allocations])
+  }, [allocations, visibleMap])
 
   return (
     <div className="investment-allocation">
-      <Card>
+      <Card
+        title={
+          <>
+            My Investment Allocation
+            <i className="iconfont investment-allocation-title" onClick={() => setVisibleMap(true)}>
+              &#xe611;
+            </i>
+          </>
+        }
+      >
         <div className="investment-allocation-top">
           <div className="investment-allocation-head">
-            <div className="investment-allocation-title">My Investment Allocation</div>
             <div className="investment-allocation-total">
               <TitleTips
                 title="Total Value"
                 desc="Total value of holdings, withdrawable liquidity, rewards, staked HOPE, and HOPE held"
               />
             </div>
-            <div className="investment-allocation-total2">{format.amountFormat(data.totalHope, 2)} HOPE </div>
-            <div className="investment-allocation-total3">≈ ${format.amountFormat(data.usdOfTotalHope, 2)}</div>
+            <div className="investment-allocation-total2">
+              {format.amountFormat(data.totalHope, 2)} HOPE ≈
+              <span className="investment-allocation-total3"> ${format.amountFormat(data.usdOfTotalHope, 2)}</span>
+            </div>
           </div>
         </div>
         <div className="investment-allocation-bottom">
@@ -151,13 +173,18 @@ export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) 
                     </span>
                   </div>
                   <div className="investment-allocation-box-amount">≈ {item.formatValue} HOPE</div>
+                  <div className="investment-allocation-box-amount2">≈ $0.00</div>
                 </div>
               )
             })}
           </div>
-          <div className="investment-allocation-map" ref={chartRef}></div>
         </div>
       </Card>
+      <Modal width="500px" visible={visibleMap} onCancel={() => setVisibleMap(false)}>
+        <div className="investment-allocation-wrap">
+          <div className="investment-allocation-map" id="investment-allocation-map"></div>
+        </div>
+      </Modal>
     </div>
   )
 }

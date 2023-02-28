@@ -28,7 +28,6 @@ import LockerBanner from './component/Banner'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useEstimate } from '../../hooks/ahp'
 import { useActionPending } from '../../state/transactions/hooks'
-
 import { postQuery } from '../../utils/graph'
 import { Decimal } from 'decimal.js'
 import Test3 from '../../assets/images/test3.jpg'
@@ -543,7 +542,7 @@ export default function DaoLocker() {
                       </p>
                       <div className="inp-box m-t-12">
                         <NumericalInput
-                          className={['input-amount', isMaxDisabled && 'error'].join(' ')}
+                          className={['input-amount', isMaxDisabled ? 'error' : ''].join(' ')}
                           value={amount}
                           decimals={2}
                           align={'right'}
@@ -552,7 +551,7 @@ export default function DaoLocker() {
                             setAmount(val)
                           }}
                         />
-                        <div className="lt-icon">
+                        <div className="lt-icon-box flex ai-center">
                           <img src={Test3} style={{ width: '24px', height: '24px' }} alt="" />
                           <span className="m-l-12">LT</span>
                         </div>
