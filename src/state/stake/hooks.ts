@@ -340,7 +340,7 @@ export interface PoolInfo {
 
   lpToken: Token
 
-  stakingToken: Token
+  stakingToken: Token | undefined
 
   totalLiquidity: TokenAmount
 
@@ -908,7 +908,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
     )
     const totalStakedAmount = tryParseAmount(pair.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
-    const stakingToken = new Token(11155111, gombocAddress.result, 18, '')
+    const stakingToken = gombocAddress.result ? new Token(11155111, gombocAddress.result, 18, '') : undefined
     const token0Price = pair.token0Price
     const token1Price = pair.token1Price
     return {
@@ -1187,6 +1187,7 @@ export interface TX {
 }
 
 export interface TxResponse {
+  title: string
   transaction: { id: string; timestamp: string }
   pair: {
     token0: {
@@ -1209,18 +1210,28 @@ export async function fetchPairTxs(pairAddress: string, type?: string): Promise<
     const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(type), { allPairs: [pairAddress] })
     let result: TxResponse[] = []
     if (response.data.mints) {
-      result = result.concat(response.data.mints)
+      result = result
+        .map(item => {
+          return { ...item, title: `Add ${item.pair.token0.symbol}-${item.pair.token1.symbol}` }
+        })
+        .concat(response.data.mints)
     }
     if (response.data.burns) {
-      result = result.concat(response.data.burns)
+      result = result
+        .map(item => {
+          return { ...item, title: `Remove ${item.pair.token0.symbol}-${item.pair.token1.symbol}` }
+        })
+        .concat(response.data.burns)
     }
     if (response.data.swaps) {
       result = result.concat(
         response.data.swaps.map((swap: any) => {
           const swapItem = swap
+          const symbolIn = swap.amount0In === '0' ? swap.pair.token1.symbol : swap.pair.token0.symbol
+          const symbolOut = swap.amount0In === '0' ? swap.pair.token0.symbol : swap.pair.token1.symbol
           swap.amount0 = swap.amount0In === '0' ? swap.amount0Out : swap.amount0In
           swap.amount1 = swap.amount1In === '0' ? swap.amount1Out : swap.amount1In
-          return swapItem
+          return { ...swapItem, title: `Swap ${symbolIn} to ${symbolOut}` }
         })
       )
     }

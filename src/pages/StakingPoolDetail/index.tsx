@@ -27,7 +27,7 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import AprApi from '../../api/apr.api'
-import format, {amountFormat, formatUTCDate} from '../../utils/format'
+import format, { amountFormat, formatUTCDate } from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { darken } from 'polished'
 import dayjs from 'dayjs'
@@ -738,7 +738,12 @@ export default function StakingPoolDetail({
                       return (
                         <AutoRow key={tx.transaction.id} style={{ borderBottom: '1px solid #3D3E46' }}>
                           <TxItem>
-                            <TYPE.link>{`${tx.pair.token0.symbol}-${tx.pair.token1.symbol}`}</TYPE.link>
+                            <TYPE.link
+                              as={ExternalLink}
+                              href={getEtherscanLink(chainId ?? 1, tx.transaction.id, 'transaction')}
+                            >
+                              {tx.title}
+                            </TYPE.link>
                           </TxItem>
                           <TxItem>
                             <TYPE.subHeader>{`$${Number(tx.amountUSD).toFixed(2)}`}</TYPE.subHeader>

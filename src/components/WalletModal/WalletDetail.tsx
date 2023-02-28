@@ -20,6 +20,7 @@ import Circle from '../../assets/images/blue-loader.svg'
 import { CustomLightSpinner, ExternalLink } from '../../theme'
 import Copy from '../AccountDetails/Copy'
 import { useWalletModalToggle } from '../../state/application/hooks'
+import { setInjectedConnected } from 'utils/isInjectedConnectedPrev'
 
 export const DivideLine = styled.div`
   border: 0.5px solid ${({ theme }) => theme.bg3};
@@ -111,6 +112,7 @@ export default function WalletDetail({
               </ExternalLink>
               <i
                 onClick={() => {
+                  setInjectedConnected()
                   toggleWalletModal()
                   deactivate()
                 }}
