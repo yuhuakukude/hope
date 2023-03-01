@@ -21,6 +21,7 @@ import TransactionConfirmationModal, {
 } from '../../../../components/TransactionConfirmationModal'
 
 import { useActionPending } from '../../../../state/transactions/hooks'
+import { Decimal } from 'decimal.js'
 
 interface VoteProps {
   votiingData: any
@@ -254,6 +255,24 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
     setCurGomAddress(val)
   }
 
+  function subValueFn() {
+    const newVal = new Decimal(Number(amount)).sub(new Decimal(0.01)).toNumber()
+    if (newVal < 0) {
+      changeAmount(`0`)
+    } else {
+      changeAmount(`${newVal}`)
+    }
+  }
+
+  function addValueFn() {
+    const newVal = new Decimal(Number(amount)).add(new Decimal(0.01)).toNumber()
+    if (Number(newVal) > Number(100)) {
+      changeAmount(`100`)
+    } else {
+      changeAmount(`${newVal}`)
+    }
+  }
+
   const confirmationContent = useCallback(
     () =>
       errorStatus && (
@@ -349,17 +368,26 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
               </p>
             )}
           </div>
-          <div className="hp-amount-box">
+          <div className="hp-amount-box vote-input-con">
             <NumericalInput
               className={['hp-amount', voteInputError && 'error'].join(' ')}
               value={amount}
               decimals={2}
-              align={'right'}
               onUserInput={val => {
                 changeAmount(val)
               }}
             />
-            <span className="input-tip">% of your voting power</span>
+            <div className="vote-input-left">
+              <i className={['iconfont'].join(' ')} onClick={subValueFn}>
+                &#xe622;
+              </i>
+            </div>
+            <div className="vote-input-right flex ai-center">
+              <i className={['iconfont'].join(' ')} onClick={addValueFn}>
+                &#xe623;
+              </i>
+              <span className="input-tip">% of your voting power</span>
+            </div>
           </div>
           <p className="text-normal m-t-10">
             {voteAmount || '--'} of your voting power will be allocated to this gömböc.
