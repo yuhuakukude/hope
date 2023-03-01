@@ -27,7 +27,7 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import AprApi from '../../api/apr.api'
-import format, { formatUTCDate } from '../../utils/format'
+import format, {amountFormat, formatUTCDate} from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { darken } from 'polished'
 import dayjs from 'dayjs'
@@ -37,6 +37,7 @@ import { NavLink } from 'react-router-dom'
 import SelectTips, { TitleTipsProps } from '../Portfolio/component/SelectTips'
 import moment from 'moment'
 import { useTokenBalance } from '../../state/wallet/hooks'
+import { useTokenPrice } from '../../hooks/liquidity/useBasePairs'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -163,6 +164,10 @@ export default function StakingPoolDetail({
   const addTransaction = useTransactionAdder()
   const toggleWalletModal = useWalletModalToggle()
   const history = useHistory()
+  const addresses = useMemo(() => {
+    return ['0x958d10197567895E37cCCcea0712E37037568279']
+  }, [])
+  const { result: priceResult } = useTokenPrice(addresses)
 
   const [showClaimModal, setShowClaimModal] = useState(false)
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -639,7 +644,11 @@ export default function StakingPoolDetail({
                 <TYPE.white fontSize={20} fontWeight={700}>
                   My Rewards
                 </TYPE.white>
-                <TYPE.white fontSize={20}>$--</TYPE.white>
+                <TYPE.white fontSize={20}>
+                  {priceResult[0] && earnedAmount
+                    ? `${amountFormat(Number(earnedAmount.toExact()) * Number(priceResult[0].price))}$`
+                    : '--'}
+                </TYPE.white>
               </RowBetween>
             </CardHeader>
             <AutoColumn style={{ padding: 30 }} gap={'lg'}>

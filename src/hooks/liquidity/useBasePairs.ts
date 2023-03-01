@@ -38,7 +38,7 @@ export default function useBasePairs() {
 }
 
 export interface TokenPrice {
-  id: string
+  address: string
   price: number
 }
 
@@ -52,8 +52,8 @@ export function useTokenPrice(addresses: string[]) {
       setLoading(true)
       if (addresses.length === 0) return
       try {
-        const pairs = await fetchTokensPrice(addresses)
-        setResult(pairs)
+        const tokensPrice = await fetchTokensPrice(addresses)
+        setResult(tokensPrice)
         setLoading(false)
       } catch (error) {
         setResult([])

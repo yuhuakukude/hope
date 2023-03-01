@@ -27,14 +27,15 @@ export async function fetchPairs(chainId: ChainId): Promise<any> {
 
 export async function fetchTokensPrice(addresses: string[]): Promise<any> {
   try {
-    const response = await postQuery(SUBGRAPH, QUERY_TOKENS_PRICE(), { tokens: addresses })
-    console.log('response---', addresses)
+    const response = await postQuery(SUBGRAPH, QUERY_TOKENS_PRICE(), {
+      tokens: addresses.map(address => address.toLowerCase())
+    })
     const tokens = response.data.tokens
     const ethPrice = response.data.bundles[0].ethPrice
     return tokens.map((item: any) => {
       return {
         address: item.id,
-        price: item.derivedETH * ethPrice
+        price: (item.derivedETH * ethPrice).toFixed(16)
       }
     })
   } catch (error) {
