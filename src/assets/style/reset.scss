@@ -454,3 +454,29 @@
   border-color: #E4C989;
   box-shadow: #E4C989;
 }
+
+
+.dapp-select-dropdown {
+  .ant-select-dropdown-menu .ant-select-dropdown-menu-item {
+    height: 48px;
+    line-height: 48px;
+    font-size: 16px;
+    color: #fff;
+    padding-left: 20px;
+
+  }
+
+  .ant-select-dropdown-menu .ant-select-dropdown-menu-item:hover {
+    background-color: rgba(61, 62, 70, 1);
+  }
+
+  .ant-select-dropdown-menu .ant-select-dropdown-menu-item-selected {
+    color: #E4C989;
+    background-color: transparent;
+  }
+
+  .ant-select-dropdown-menu {
+    padding: 10px 0;
+    background-color: rgba(51, 51, 60, 1);
+  }
+}

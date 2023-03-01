@@ -1,0 +1,48 @@
+.dapp-select-wrap {
+  .ant-select {
+    height: 56px;
+  }
+
+  .ant-select .ant-select-selection {
+    border-radius: 10px;
+    border: 1px solid rgba(61, 62, 70, 1);
+  }
+
+  .ant-select .ant-select-selection:hover,
+  .ant-select .ant-select-selection:active,
+    {
+    border: 1px solid rgba(228, 201, 137, 1);
+  }
+
+  .ant-select-focused .ant-select-selection,
+  .ant-select-selection:focus,
+  .ant-select-selection:active {
+    border-color: #E4C989;
+    box-shadow: 0 0 0 2px rgba(228, 201, 137, 0.2);
+  }
+
+  .ant-select-selection__placeholder,
+  .ant-select-search__field__placeholder {
+    color: rgba(90, 90, 91, 1);
+  }
+
+  .ant-select-selection--multiple .ant-select-selection__choice {
+    margin-right: 8px;
+  }
+
+  .ant-select .ant-select-selection--multiple {
+    height: 42px;
+  }
+
+  .ant-select .ant-select-selection--multiple .ant-select-selection__rendered>ul .ant-select-selection__choice {
+    height: 26px;
+    line-height: 28px;
+    border-radius: 5px;
+    background-color: rgba(61, 62, 70, 1);
+    margin-top: 7px;
+  }
+
+  .ant-select-selection--multiple .ant-select-selection__choice__remove svg {
+    color: #F6465D !important;
+  }
+}

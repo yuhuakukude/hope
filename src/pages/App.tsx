@@ -45,6 +45,7 @@ import StakingPool from './StakingPool'
 import StakingPoolDetail from './StakingPoolDetail'
 import LiquidityStake from './LiquidityStake'
 import LiquidityUnStake from './LiquidityUnStake'
+import TestComponent from './TestComponent'
 
 const PageWrapper = styled.div`
   display: flex;
@@ -151,6 +152,7 @@ export default function App() {
                   <Route exact strict path="/dao-gomboc" component={DaoGomboc} />
                   <Route exact strict path="/dao-locker" component={DaoLocker} />
                   <Route exact strict path="/portfolio" component={Portfolio} />
+                  <Route exact strict path="/test" component={TestComponent} />
                   <Route component={RedirectPathToSwapOnly} />
                 </Switch>
               </Web3ReactManager>

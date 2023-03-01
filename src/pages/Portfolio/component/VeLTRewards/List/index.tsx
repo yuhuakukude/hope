@@ -1,5 +1,5 @@
 import React from 'react'
-import Table from 'components/Table'
+import Table from 'components/antd/Table'
 import { Item } from 'api/portfolio.api'
 // import { useActiveWeb3React } from 'hooks'
 import Tips from 'components/Tips'

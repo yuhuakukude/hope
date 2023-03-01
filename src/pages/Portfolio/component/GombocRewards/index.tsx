@@ -1,5 +1,5 @@
 import { PortfolioReward } from 'api/portfolio.api'
-import Table from 'components/Table'
+import Table from 'components/antd/Table'
 import Tips from 'components/Tips'
 import React, { useCallback, useState, useMemo, useEffect } from 'react'
 import Card from '../Card'

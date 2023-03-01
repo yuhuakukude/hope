@@ -1,0 +1,13 @@
+.test-component-wrap {
+
+  .test-component-row {
+    display: flex;
+    margin-bottom: 20px;
+    align-items: stretch;
+    align-content: space-between;
+
+    .test-component-item {
+      margin-right: 20px;
+    }
+  }
+}

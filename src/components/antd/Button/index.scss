@@ -27,6 +27,25 @@
     color: rgba(38, 38, 44, 1);
   }
 
+  .ant-btn-primary-disabled,
+  .ant-btn-primary.disabled,
+  .ant-btn-primary[disabled],
+  .ant-btn-primary-disabled:hover,
+  .ant-btn-primary.disabled:hover,
+  .ant-btn-primary[disabled]:hover,
+  .ant-btn-primary-disabled:focus,
+  .ant-btn-primary.disabled:focus,
+  .ant-btn-primary[disabled]:focus,
+  .ant-btn-primary-disabled:active,
+  .ant-btn-primary.disabled:active,
+  .ant-btn-primary[disabled]:active,
+  .ant-btn-primary-disabled.active,
+  .ant-btn-primary.disabled.active,
+  .ant-btn-primary[disabled].active {
+    background-color: rgba(61, 62, 70, 1);
+    color: rgba(99, 99, 106, 1);
+  }
+
   .ant-btn-dashed {
     background-color: rgba(61, 62, 70, 1);
     color: rgba(99, 99, 106, 1);
@@ -49,5 +68,78 @@
   .ant-btn-ghost:focus {
     border: 1px solid rgba(228, 201, 137, 1);
     color: rgba(228, 201, 137, 1);
+  }
+
+  .ant-btn-ghost-disabled,
+  .ant-btn-ghost.disabled,
+  .ant-btn-ghost[disabled],
+  .ant-btn-ghost-disabled:hover,
+  .ant-btn-ghost.disabled:hover,
+  .ant-btn-ghost[disabled]:hover,
+  .ant-btn-ghost-disabled:focus,
+  .ant-btn-ghost.disabled:focus,
+  .ant-btn-ghost[disabled]:focus,
+  .ant-btn-ghost-disabled:active,
+  .ant-btn-ghost.disabled:active,
+  .ant-btn-ghost[disabled]:active,
+  .ant-btn-ghost-disabled.active,
+  .ant-btn-ghost.disabled.active,
+  .ant-btn-ghost[disabled].active {
+    border: 1px solid rgba(61, 62, 70, 1);
+    color: rgba(61, 62, 70, 1);
+    background-color: transparent;
+  }
+
+  .ant-btn-danger-disabled,
+  .ant-btn-danger.disabled,
+  .ant-btn-danger[disabled],
+  .ant-btn-danger-disabled:hover,
+  .ant-btn-danger.disabled:hover,
+  .ant-btn-danger[disabled]:hover,
+  .ant-btn-danger-disabled:focus,
+  .ant-btn-danger.disabled:focus,
+  .ant-btn-danger[disabled]:focus,
+  .ant-btn-danger-disabled:active,
+  .ant-btn-danger.disabled:active,
+  .ant-btn-danger[disabled]:active,
+  .ant-btn-danger-disabled.active,
+  .ant-btn-danger.disabled.active,
+  .ant-btn-danger[disabled].active {
+    background-color: rgba(104, 54, 60, 1);
+    color: rgba(99, 99, 106, 1);
+  }
+
+  .ant-btn-danger,
+  .ant-btn-danger:hover,
+  .ant-btn-danger:focus {
+    color: rgba(228, 201, 137, 1);
+  }
+
+  .ant-btn-link {
+    padding: 0;
+  }
+
+  .ant-btn-link,
+  .ant-btn-link:hover,
+  .ant-btn-link:focus {
+    color: rgba(228, 201, 137, 1);
+  }
+
+  .ant-btn-link-disabled,
+  .ant-btn-link.disabled,
+  .ant-btn-link[disabled],
+  .ant-btn-link-disabled:hover,
+  .ant-btn-link.disabled:hover,
+  .ant-btn-link[disabled]:hover,
+  .ant-btn-link-disabled:focus,
+  .ant-btn-link.disabled:focus,
+  .ant-btn-link[disabled]:focus,
+  .ant-btn-link-disabled:active,
+  .ant-btn-link.disabled:active,
+  .ant-btn-link[disabled]:active,
+  .ant-btn-link-disabled.active,
+  .ant-btn-link.disabled.active,
+  .ant-btn-link[disabled].active {
+    color: rgba(99, 99, 106, 1);
   }
 }

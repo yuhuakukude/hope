@@ -2,6 +2,15 @@
   padding: 30px;
   box-sizing: border-box;
 
+  .ant-table-pagination.ant-pagination {
+    text-align: center;
+    float: none;
+
+    .ant-select .ant-select-selection-selected-value {
+      color: rgba(134, 135, 144, 1);
+    }
+  }
+
   .ant-table-title {
     font-size: 20px;
     color: #fff;

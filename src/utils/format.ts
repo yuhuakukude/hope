@@ -139,7 +139,7 @@ export const addressDes = (value: string) => {
 
 const weekDays = ['Sun', 'Mon', 'Tue', 'Wed', 'Thurs', 'Fri', 'Sat']
 export function getDateForLastOccurence(strDay: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 'Thurs' | 'Fri' | 'Sat') {
-  const date = new Date()
+  const date = new Date(moment().utc().format('YYYY-MM-DD 00:00:00'))
   const index = weekDays.indexOf(strDay)
   let difference = date.getDay() - index
   if (difference < 0) {

@@ -9,7 +9,14 @@ import './index.scss'
 export default function Button(props: { children: React.ReactNode } & ButtonProps) {
   return (
     <div className="hope-button-wrap">
-      <AButton {...props}>{props.children}</AButton>
+      <AButton {...props}>
+        {props.children}
+        {props.type === 'link' && (
+          <i className="iconfont" style={{ marginLeft: '12px' }}>
+            &#xe619;
+          </i>
+        )}
+      </AButton>
     </div>
   )
 }
