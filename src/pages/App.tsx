@@ -41,11 +41,11 @@ import '../assets/style/index.scss'
 import SideBar from '../components/SideBar'
 import { ModalProvider } from '../context/ModalContext'
 import SettingPage from './Settings'
-import StakingPool from './StakingPool'
 import StakingPoolDetail from './StakingPoolDetail'
 import LiquidityStake from './LiquidityStake'
 import LiquidityUnStake from './LiquidityUnStake'
 import TestComponent from './TestComponent'
+import Pools from './Pools'
 
 const PageWrapper = styled.div`
   display: flex;
@@ -120,7 +120,7 @@ export default function App() {
                   <Route exact strict path="/swap/liquidity" component={Pool} />
                   <Route exact strict path="/swap/mining" component={Earn} />
                   <Route exact strict path="/swap/find" component={PoolFinder} />
-                  <Route exact strict path="/swap/pools" component={StakingPool} />
+                  <Route exact strict path="/swap/pools" component={Pools} />
                   <Route exact strict path="/swap/pool-detail/:address" component={StakingPoolDetail} />
                   <Route exact strict path="/swap/stake/:stakingRewardAddress" component={LiquidityStake} />
                   <Route exact strict path="/swap/withdraw/:stakingRewardAddress" component={LiquidityUnStake} />

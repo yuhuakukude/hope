@@ -166,9 +166,9 @@ export default function SettingPage() {
           </Text>
           <RowBetween>
             <RowFixed>
-              <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
+              <TYPE.white fontWeight={400} fontSize={14} color={theme.text2}>
                 Toggle Expert Mode
-              </TYPE.black>
+              </TYPE.white>
               <QuestionHelper text="Bypasses confirmation modals and allows high slippage trades. Use at your own risk." />
             </RowFixed>
             <Toggle
@@ -189,9 +189,9 @@ export default function SettingPage() {
           </RowBetween>
           <RowBetween>
             <RowFixed>
-              <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
+              <TYPE.white fontWeight={400} fontSize={14} color={theme.text2}>
                 Disable Multihops
-              </TYPE.black>
+              </TYPE.white>
               <QuestionHelper text="Restricts swaps to direct pairs only." />
             </RowFixed>
             <Toggle

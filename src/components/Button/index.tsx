@@ -41,7 +41,6 @@ const Base = styled(RebassButton)<{
 `
 
 export const ButtonPrimary = styled(Base)`
-  font-family: Arboria-Medium;
   background-color: ${({ theme }) => theme.primary1};
   color: ${({ theme }) => theme.text4};
 

@@ -18,7 +18,6 @@ export function filterTokens(tokens: Token[], search: string): Token[] {
   const matchesSearch = (s: string): boolean => {
     return s.toLowerCase().indexOf(search.toLowerCase()) !== -1
   }
-
   return tokens.filter(token => {
     const { symbol, name } = token
     return (symbol && matchesSearch(symbol)) || (name && matchesSearch(name))

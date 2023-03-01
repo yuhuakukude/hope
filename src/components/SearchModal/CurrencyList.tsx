@@ -167,8 +167,9 @@ export default function CurrencyList({
   const itemData: (Currency | undefined)[] = useMemo(() => {
     let formatted: (Currency | undefined)[] = showETH ? [Currency.ETHER, ...currencies] : currencies
     if (breakIndex !== undefined) {
-      formatted = [...formatted.slice(0, breakIndex), undefined, ...formatted.slice(breakIndex, formatted.length)]
+      formatted = [...formatted.slice(0, breakIndex), ...formatted.slice(breakIndex, formatted.length)]
     }
+    console.log('formatted', formatted, breakIndex)
     return formatted
   }, [breakIndex, currencies, showETH])
 
@@ -228,7 +229,6 @@ export default function CurrencyList({
   )
 
   const itemKey = useCallback((index: number, data: any) => currencyKey(data[index]), [])
-
   return (
     <FixedSizeList
       height={height}

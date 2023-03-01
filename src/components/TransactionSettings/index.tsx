@@ -21,11 +21,11 @@ enum DeadlineError {
 const FancyButton = styled.button`
   color: ${({ theme }) => theme.text1};
   align-items: center;
-  height: 3rem;
+  height: 2.5rem;
   border-radius: 10px;
   font-size: 1rem;
   width: auto;
-  min-width: 5.5rem;
+  min-width: 4rem;
   border: 1px solid ${({ theme }) => theme.bg3};
   outline: none;
   background: ${({ theme }) => theme.bg1};
@@ -39,7 +39,7 @@ const FancyButton = styled.button`
 `
 
 const Option = styled(FancyButton)<{ active: boolean }>`
-  margin-right: 8px;
+  margin-right: 36px;
   :hover {
     cursor: pointer;
   }
@@ -61,7 +61,7 @@ const Input = styled.input`
 `
 
 const OptionCustom = styled(FancyButton)<{ active?: boolean; warning?: boolean }>`
-  height: 3rem;
+  height: 2.5rem;
   position: relative;
   padding: 0 0.75rem;
   flex: 1;
@@ -104,7 +104,6 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
   const slippageInputIsValid =
     slippageInput === '' || (rawSlippage / 100).toFixed(2) === Number.parseFloat(slippageInput).toFixed(2)
   const deadlineInputIsValid = deadlineInput === '' || (deadline / 60).toString() === deadlineInput
-  console.log('tag--->', slippageInputIsValid, rawSlippage)
   let slippageError: SlippageError | undefined
   if (slippageInput !== '' && !slippageInputIsValid) {
     slippageError = SlippageError.InvalidInput
@@ -182,7 +181,12 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
           >
             1%
           </Option>
-          <OptionCustom active={![10, 50, 100].includes(rawSlippage)} warning={!slippageInputIsValid} tabIndex={-1}>
+          <OptionCustom
+            style={{ width: '2rem' }}
+            active={![10, 50, 100].includes(rawSlippage)}
+            warning={!slippageInputIsValid}
+            tabIndex={-1}
+          >
             <RowBetween>
               {!!slippageInput &&
               (slippageError === SlippageError.RiskyLow || slippageError === SlippageError.RiskyHigh) ? (
@@ -195,17 +199,17 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
               {/* https://github.com/DefinitelyTyped/DefinitelyTyped/issues/30451 */}
               <Input
                 ref={inputRef as any}
-                placeholder={(rawSlippage / 100).toFixed(2)}
+                placeholder={(rawSlippage / 100).toFixed(1)}
                 value={slippageInput}
                 onBlur={() => {
-                  parseCustomSlippage((rawSlippage / 100).toFixed(2))
+                  parseCustomSlippage((rawSlippage / 100).toFixed(1))
                 }}
                 onChange={e => parseCustomSlippage(e.target.value)}
                 color={!slippageInputIsValid ? 'red' : ''}
               />
-              %
             </RowBetween>
           </OptionCustom>
+          <TYPE.white ml={13}>%</TYPE.white>
         </RowBetween>
         {!!slippageError && (
           <RowBetween
