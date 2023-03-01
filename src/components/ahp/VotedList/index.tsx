@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react'
+import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import './index.scss'
-import { Table, Button } from 'antd'
+import Table from 'components/antd/Table'
 import dayjs from 'dayjs'
 import { Token, JSBI, Percent } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../hooks'
@@ -16,20 +16,24 @@ import { postQuery } from '../../../utils/graph'
 import { useTokenPrice } from '../../../hooks/liquidity/useBasePairs'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 import moment from 'moment'
+import SelectTips, { TitleTipsProps } from 'pages/Portfolio/component/SelectTips'
+import FeesWithdraw from '../FeesWithdraw'
+import { useGomFeeClaim } from '../../../hooks/ahp/usePortfolio'
 
 const VotedList = () => {
   const gomConContract = useGomConContract()
   const gomFeeDisContract = useGomFeeDisContract()
   const { account, chainId } = useActiveWeb3React()
-  const [searchValue, setSearchValue] = useState('')
   const [tableData, setTableData] = useState<any>([])
   const [curTableItem, setCurTableItem] = useState<any>({})
+  const [curItemData, setCurItemData] = useState<any>({})
   const addresses = useMemo(() => {
     return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]]
   }, [chainId])
   const { result: priceResult } = useTokenPrice(addresses)
   const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
   const { toVote } = useToVote()
+  const { toGomFeeClaim } = useGomFeeClaim()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
 
   // modal and loading
@@ -39,39 +43,6 @@ const VotedList = () => {
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [pendingText, setPendingText] = useState('')
-
-  const curGomAddress = useMemo(() => {
-    let res = ''
-    if (curTableItem && curTableItem.gomboc && curTableItem.gomboc.id) {
-      res = curTableItem.gomboc.id
-    }
-    return res
-  }, [curTableItem])
-
-  const toVoteCallback = useCallback(async () => {
-    if (!account || !curGomAddress) return
-    setCurToken(undefined)
-    setShowConfirm(true)
-    setAttemptingTxn(true)
-    setPendingText(`Reset voting power`)
-    const argAmount = 0
-    toVote(curGomAddress, argAmount)
-      .then((hash: any) => {
-        setShowConfirm(true)
-        setAttemptingTxn(false)
-        hash && setTxHash(hash)
-        setPendingText(``)
-        setCurTableItem({})
-      })
-      .catch((error: any) => {
-        setShowConfirm(true)
-        setTxHash('')
-        setPendingText(``)
-        setCurTableItem({})
-        setAttemptingTxn(false)
-        setErrorStatus({ code: error?.code, message: error.message })
-      })
-  }, [account, toVote, curGomAddress])
 
   const argList = useMemo(() => {
     let res: any = []
@@ -134,19 +105,22 @@ const VotedList = () => {
     const res: any = {}
     if (tableData.length > 0 && rewardsData.length > 0 && tableData.length === rewardsData.length) {
       rewardsData.forEach((e: any, index) => {
-        let item = ''
+        let view = ''
         let usdOfValue = ''
+        let value = ''
         if (e.result) {
           const tn = new TokenAmount(ST_HOPE[chainId ?? 1], JSBI.BigInt(Number(e.result)) ?? '0')
-          item = tn.toFixed(2, { groupSeparator: ',' } ?? '0.00')
+          view = tn.toFixed(2, { groupSeparator: ',' } ?? '0.00')
+          value = tn.toFixed(2)
           if (priceResult && priceResult[0] && priceResult[0].price) {
             usdOfValue = toUsdPrice(tn.toFixed(2), priceResult[0].price)
           }
         }
         const addr = tableData[index]?.gomboc.id
         res[addr] = {
-          value: item,
-          usdOfValue: usdOfValue
+          view,
+          value,
+          usdOfValue
         }
       })
     }
@@ -216,76 +190,117 @@ const VotedList = () => {
           const end = dayjs.unix(Number(e.result)).add(10, 'day')
           item = now.isBefore(end)
         }
-        res[tableData[index]?.gomboc.addr] = item
+        const addr = tableData[index]?.gomboc.id
+        res[addr] = item
       })
     }
     return res
   }, [lastVoteData, tableData])
 
-  // function getViewAmount(value: any) {
-  //   let res = ''
-  //   if (value && value !== '0') {
-  //     const ta = new TokenAmount(LT[chainId ?? 1], JSBI.BigInt(value))
-  //     const ra = ta.multiply(JSBI.BigInt(100))
-  //     if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
-  //       res = `${ra.toFixed(2)}`
-  //     }
-  //   }
-  //   return res
-  // }
+  const toVoteCallback = useCallback(
+    async (item: any) => {
+      if (!account) return
+      setCurToken(undefined)
+      setShowConfirm(true)
+      setAttemptingTxn(true)
+      setPendingText(`Refresh Voting Balance`)
+      const argAmount = allocatedView[item.gomboc.id].value
+      const curAdd = item.gomboc.id
+      toVote(curAdd, argAmount)
+        .then((hash: any) => {
+          setShowConfirm(true)
+          setAttemptingTxn(false)
+          hash && setTxHash(hash)
+          setPendingText(``)
+        })
+        .catch((error: any) => {
+          setShowConfirm(true)
+          setTxHash('')
+          setPendingText(``)
+          setAttemptingTxn(false)
+          setErrorStatus({ code: error?.code, message: error.message })
+        })
+    },
+    [account, toVote, allocatedView]
+  )
 
-  function toReset(item: any) {
-    setCurTableItem(item)
+  const onTxStart = useCallback(() => {
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+  }, [])
+
+  const onTxSubmitted = useCallback((hash: string | undefined) => {
+    setShowConfirm(true)
+    setAttemptingTxn(false)
+    hash && setTxHash(hash)
+  }, [])
+
+  const onTxError = useCallback(error => {
+    setShowConfirm(true)
+    setTxHash('')
+    setAttemptingTxn(false)
+    setErrorStatus({ code: error?.code, message: error.message })
+  }, [])
+
+  const gomFeeClaimCallback = useCallback(async () => {
+    if (!account) return
+    setCurToken(ST_HOPE[chainId ?? 1])
+    onTxStart()
+    setPendingText(`Fees Withdraw`)
+    const arg = curTableItem.gomboc.id
+    const amount = curItemData.value
+    toGomFeeClaim(arg, amount)
+      .then(hash => {
+        setPendingText('')
+        onTxSubmitted(hash)
+      })
+      .catch((error: any) => {
+        setPendingText('')
+        onTxError(error)
+      })
+  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toGomFeeClaim, curTableItem, curItemData])
+
+  const withdrawItemFn = (item: any) => {
+    if (tableData && tableData.length > 0) {
+      setCurTableItem(item)
+      setCurItemData({
+        value: rewardsView[item.gomboc.id].view,
+        usdOfValue: rewardsView[item.gomboc.id].usdOfValue
+      })
+    }
     setTxHash('')
     setErrorStatus(undefined)
     setAttemptingTxn(false)
     setShowConfirm(true)
   }
 
-  function toVoteFn(item: any) {
-    const dom = document.getElementById('votepoint')
-    if (dom) {
-      dom.scrollIntoView({ behavior: 'smooth', block: 'end' })
-    }
-  }
+  // function toReset(item: any) {
+  //   setTxHash('')
+  //   setErrorStatus(undefined)
+  //   setAttemptingTxn(false)
+  //   setShowConfirm(true)
+  // }
 
   const confirmationContent = useCallback(
     () =>
       errorStatus ? (
         <TransactionErrorContent
           errorCode={errorStatus.code}
-          message={errorStatus.message}
           onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
         />
       ) : (
-        <div></div>
+        <FeesWithdraw
+          onSubmit={() => {
+            gomFeeClaimCallback()
+          }}
+          onDismiss={() => setShowConfirm(false)}
+          curWithType={'item'}
+          itemData={curItemData}
+        />
       ),
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-    [errorStatus, toVoteCallback, curTableItem]
+    [errorStatus, curItemData, gomFeeClaimCallback]
   )
-
-  const actionNode = (text: any, record: any) => {
-    return (
-      <>
-        {!account ? (
-          <span>--</span>
-        ) : (
-          <div>
-            <Button
-              className="text-primary font-bold"
-              disabled={isTimeDis[record.gomboc]}
-              onClick={() => {
-                toVoteFn(record)
-              }}
-              type="link"
-            >
-              Vote
-            </Button>
-          </div>
-        )}
-      </>
-    )
-  }
 
   const columns = [
     {
@@ -362,17 +377,46 @@ const VotedList = () => {
       render: (text: string, record: any) => {
         return (
           <>
-            <p>≈ {rewardsView[record.gomboc.id].value} stHOPE</p>
+            <p>≈ {rewardsView[record.gomboc.id].view} stHOPE</p>
             <p>≈ ${rewardsView[record.gomboc.id].usdOfValue}</p>
           </>
         )
       }
     },
     {
-      title: 'Vote',
-      dataIndex: 'gomboc',
-      render: actionNode,
-      key: 'gomboc'
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions',
+      width: 150,
+      render: (text: string, record: any) => {
+        const options: TitleTipsProps[] = [
+          {
+            label: 'Pool Details',
+            value: 'Pool',
+            onClick: () => {}
+          }
+        ]
+        const val = rewardsView[record.gomboc.id].value
+        if (val && Number(val) > 0) {
+          options.unshift({
+            label: 'Claim Voting Rewards',
+            value: 'Claim',
+            onClick: () => {
+              withdrawItemFn(record)
+            }
+          })
+        }
+        if (!isTimeDis[record.gomboc.id]) {
+          options.unshift({
+            label: 'Refresh Voting Balance',
+            value: 'Refresh',
+            onClick: () => {
+              toVoteCallback(record)
+            }
+          })
+        }
+        return <SelectTips options={options} />
+      }
     }
   ]
 
@@ -410,21 +454,11 @@ const VotedList = () => {
     }
   }, [account])
 
-  function reset() {
-    setSearchValue('')
-  }
-
   useEffect(() => {
-    reset()
-    init()
-  }, [init, account])
-
-  useEffect(() => {
-    if (!searchValue) {
+    if (account) {
       init()
-      console.log(toReset)
     }
-  }, [searchValue, init])
+  }, [init, account])
 
   return (
     <>

@@ -111,7 +111,7 @@ export function useGomFeeClaim() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Fees Withdraw ${format.amountFormat(amount, 2)} stHOPE`
+            summary: `Fees Withdraw ${amount} stHOPE`
           })
           return response.hash
         })

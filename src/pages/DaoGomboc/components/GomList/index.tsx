@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo, useImperativeHandle, forwardRef } from 'react'
 import './index.scss'
-import { Input, Table, Button } from 'antd'
+import Table from 'components/antd/Table'
+import { Input, Button } from 'antd'
 import dayjs from 'dayjs'
 import { JSBI } from '@uniswap/sdk'
 import { ButtonPrimary } from '../../../../components/Button'
@@ -22,7 +23,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const { account, chainId } = useActiveWeb3React()
   const [searchValue, setSearchValue] = useState('')
   const [tableData, setTableData] = useState<any>([])
-  const [curType, setCurType] = useState('my')
+  const [curType, setCurType] = useState('all')
   const CompositionNode = (text: any) => <span>{text || '--'}</span>
 
   const argList = useMemo(() => {
@@ -196,11 +197,16 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   }
 
   function toSearch() {
-    init()
-  }
-
-  function reset() {
-    setSearchValue('')
+    if (tableData && tableData.length > 0) {
+      const arr: any = []
+      tableData.forEach((e: any) => {
+        const val = `${searchValue}`.toUpperCase()
+        if (`${e.name}`.includes(val)) {
+          arr.push(e)
+        }
+      })
+      setTableData(arr)
+    }
   }
 
   useImperativeHandle(ref, () => ({
@@ -210,7 +216,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   }))
 
   useEffect(() => {
-    reset()
+    setSearchValue('')
     init()
   }, [init, account])
 
@@ -244,30 +250,34 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
               </div>
             </div>
           </div>
-          <div className="flex ai-center">
-            <Input
-              onChange={e => {
-                changeVal(e.target.value)
-              }}
-              allowClear={true}
-              onPressEnter={() => {
-                init()
-              }}
-              prefix={<i className="iconfont text-normal font-16 m-r-12">&#xe61b;</i>}
-              className="search-input"
-              placeholder="Search Token Symbol / Pool Address"
-              value={searchValue}
-              defaultValue="mysite"
-            />
-            <ButtonPrimary
-              className="m-l-20 search-btn "
-              onClick={() => {
-                toSearch()
-              }}
-            >
-              Search
-            </ButtonPrimary>
-          </div>
+          {curType === 'all' ? (
+            <div className="flex ai-center">
+              <Input
+                onChange={e => {
+                  changeVal(e.target.value)
+                }}
+                allowClear={true}
+                onPressEnter={() => {
+                  toSearch()
+                }}
+                prefix={<i className="iconfont text-normal font-16 m-r-12">&#xe61b;</i>}
+                className="search-input"
+                placeholder="Search Token Symbol"
+                value={searchValue}
+                defaultValue="mysite"
+              />
+              <ButtonPrimary
+                className="m-l-20 search-btn "
+                onClick={() => {
+                  toSearch()
+                }}
+              >
+                Search
+              </ButtonPrimary>
+            </div>
+          ) : (
+            <div></div>
+          )}
         </div>
         <div className="m-t-30">
           {curType === 'all' && (
