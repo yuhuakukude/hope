@@ -154,7 +154,7 @@ export function useGomFeeManyClaim() {
   }
 }
 
-export function toUsdPrice(val: any, price: string) {
+export function toUsdPrice(val: any, price: string | number) {
   let res = ''
   if (val && price) {
     const pr = new Decimal(val).mul(new Decimal(price)).toNumber()
