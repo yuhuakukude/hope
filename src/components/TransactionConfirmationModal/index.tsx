@@ -117,22 +117,34 @@ function TransactionSubmittedContent({
               )}
             </ButtonLight>
           )}
-          {isToGomboc && (
-            <div className="m-t-30">
-              <p className="text-medium font-18">Apply your boost & gömböc voting balance </p>
-              <NavLink to={'/dao/gomboc'}>
-                <Text mt="20px" textAlign={'center'} fontWeight={500} fontSize={16} color={theme.primary1}>
-                  Learn more
-                </Text>
-              </NavLink>
-            </div>
-          )}
           {chainId && hash && (
             <ExternalLink href={getEtherscanLink(chainId, hash, 'transaction')}>
               <Text mt="30px" mb="30px" fontWeight={500} fontSize={16} color={theme.primary1}>
                 View on Etherscan
               </Text>
             </ExternalLink>
+          )}
+          {isToGomboc && (
+            <div
+              className="m-b-10 p-20"
+              style={{ borderRadius: '10px', backgroundColor: '#33333C', border: '0.5px solid #5A5A5B' }}
+            >
+              <div className="flex">
+                <div className="icon m-r-15 m-t-5">
+                  <i className="iconfont font-nor text-primary font-bold">&#xe614;</i>
+                </div>
+                <div>
+                  <p className="font-nor" style={{ lineHeight: '24px' }}>
+                    After Locked LT, you need to refresh accordingly to complete the update of boost and voting power.
+                  </p>
+                  <NavLink to={'/dao/gomboc'}>
+                    <Text mt="12px" fontWeight={500} fontSize={16} color={theme.primary1}>
+                      Learn more
+                    </Text>
+                  </NavLink>
+                </div>
+              </div>
+            </div>
           )}
           {/* <ButtonPrimary onClick={onDismiss} style={{ margin: '30px 0' }}>
             <Text fontWeight={500} fontSize={20}>
