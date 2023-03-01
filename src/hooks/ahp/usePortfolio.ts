@@ -6,6 +6,17 @@ import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Decimal } from 'decimal.js'
 import format from 'utils/format'
+import { CurrencyAmount } from '@uniswap/sdk'
+import { useSingleCallResult } from '../../state/multicall/hooks'
+
+export function usePortfolio() {
+  const { account } = useActiveWeb3React()
+  const contract = useFeeDisContract()
+  const claimableFees = useSingleCallResult(contract, 'claimableToken', [account ?? undefined])
+  return {
+    claimableFees: claimableFees?.result ? CurrencyAmount.ether(claimableFees?.result?.[0]) : undefined
+  }
+}
 
 export function useToClaim() {
   const addTransaction = useTransactionAdder()

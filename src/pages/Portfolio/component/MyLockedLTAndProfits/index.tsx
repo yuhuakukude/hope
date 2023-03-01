@@ -6,11 +6,13 @@ import Card from '../Card'
 import Item from '../Item'
 import SelectTips, { TitleTipsProps } from '../SelectTips'
 import { useLocker } from '../../../../hooks/ahp/useLocker'
+import { usePortfolio, toUsdPrice } from '../../../../hooks/ahp/usePortfolio'
 import format from '../../../../utils/format'
 import { useActiveWeb3React } from '../../../../hooks'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
 import { VELT } from '../../../../constants'
 import { JSBI, Percent } from '@uniswap/sdk'
+import usePrice from 'hooks/usePrice'
 
 import './index.scss'
 
@@ -117,6 +119,8 @@ const columns = [
 export default function MyLockedLTAndProfits() {
   const { account, chainId } = useActiveWeb3React()
   const { lockerRes, votePowerAmount } = useLocker()
+  const { claimableFees } = usePortfolio()
+  const hopePrice = usePrice()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
 
   const [unUseRateVal, setUnUseRateVal] = useState<string>('')
@@ -167,8 +171,10 @@ export default function MyLockedLTAndProfits() {
               Claimable veLT Held Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
             </div>
             <div className="my-locked-lt-desc">
-              <span className="my-locked-lt-value">≈ 123,456,789.00 stHOPE</span>
-              <span className="my-locked-lt-value2">≈ $123,456,789.00</span>
+              <span className="my-locked-lt-value">
+                ≈ {claimableFees?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} stHOPE
+              </span>
+              <span className="my-locked-lt-value2">≈ ${toUsdPrice(claimableFees?.toFixed(2), hopePrice) || '--'}</span>
             </div>
             <Button className="my-locked-lt-button" type="ghost">
               Claim All
