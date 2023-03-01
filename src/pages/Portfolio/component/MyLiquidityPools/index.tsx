@@ -90,7 +90,7 @@ const columns = [
     dataIndex: 'ltOfReward',
     key: 'ltOfReward',
     render: (text: string, record: ILiquidityPools) => {
-      return <Item title={toFixed(record.ltOfReward)} desc={toFixed(record.ltTotalReward)} />
+      return <Item title={toFixed(record.ltOfReward)} desc={'≈ $' + toFixed(record.ltTotalReward)} />
     }
   },
   {
