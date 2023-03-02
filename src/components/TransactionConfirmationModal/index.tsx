@@ -104,7 +104,13 @@ function TransactionSubmittedContent({
             Transaction Submitted
           </Text>
           {currencyToAdd && library?.provider?.isMetaMask && (
-            <ButtonLight mt="80px" height="56px" width="440px" color="rgba(38, 38, 44, 1)" onClick={addToken}>
+            <ButtonLight
+              mt={isToGomboc ? '35px' : '80px'}
+              height="56px"
+              width="440px"
+              color="rgba(38, 38, 44, 1)"
+              onClick={addToken}
+            >
               {!success ? (
                 <RowFixed color="rgba(38, 38, 44, 1)">
                   Add {currencyToAdd.symbol} to Metamask <StyledLogo src={MetaMaskLogo} />

@@ -2,6 +2,7 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import './index.scss'
 import Table from 'components/antd/Table'
 import dayjs from 'dayjs'
+import { Pagination } from 'antd'
 import { Token, JSBI, Percent } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../hooks'
 import { TokenAmount } from '@uniswap/sdk'
@@ -19,14 +20,21 @@ import moment from 'moment'
 import SelectTips, { TitleTipsProps } from 'pages/Portfolio/component/SelectTips'
 import FeesWithdraw from '../FeesWithdraw'
 import { useGomFeeClaim } from '../../../hooks/ahp/usePortfolio'
+import Row from '../../../components/Row'
+import { Decimal } from 'decimal.js'
+import format from '../../../utils/format'
 
-const VotedList = () => {
+const VotedList = ({ getVotingRewards }: { getVotingRewards?: (stHope: string, toUsd: string) => void }) => {
   const gomConContract = useGomConContract()
   const gomFeeDisContract = useGomFeeDisContract()
   const { account, chainId } = useActiveWeb3React()
   const [tableData, setTableData] = useState<any>([])
+  const [allTableData, setAllTableData] = useState<any>([])
   const [curTableItem, setCurTableItem] = useState<any>({})
   const [curItemData, setCurItemData] = useState<any>({})
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [pageSize, setPageSize] = useState<number>(5)
+  const [pageTotal, setPageTotal] = useState<number>(0)
   const addresses = useMemo(() => {
     return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]]
   }, [chainId])
@@ -124,7 +132,15 @@ const VotedList = () => {
         }
       })
     }
+    let stHope = 0
+    let toUsd = 0
+    Object.values(res).forEach((item: any) => {
+      stHope = new Decimal(stHope).add(new Decimal(Number(item.value))).toNumber()
+      toUsd = new Decimal(toUsd).add(new Decimal(Number(item.usdOfValue))).toNumber()
+    })
+    getVotingRewards && getVotingRewards(format.amountFormat(stHope, 2), format.amountFormat(toUsd, 2))
     return res
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rewardsData, tableData, priceResult, chainId])
 
   const allocatedView = useMemo(() => {
@@ -447,11 +463,15 @@ const VotedList = () => {
     try {
       const response = await postQuery(SUBGRAPH, query)
       if (response && response.data && response.data.user && response.data.user.voteGombocs) {
-        setTableData(response.data.user.voteGombocs)
+        const listData = response.data.user.voteGombocs
+        setPageTotal(listData.length || 0)
+        setAllTableData(listData)
+        setTableData(listData.slice(0, pageSize))
       }
     } catch (error) {
       console.log(error)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account])
 
   useEffect(() => {
@@ -459,6 +479,17 @@ const VotedList = () => {
       init()
     }
   }, [init, account])
+
+  const setPageSearch = (page: number, pagesize: number) => {
+    const resList = allTableData?.slice((page - 1) * pagesize, Number(pagesize) + (page - 1) * pagesize)
+    setTableData(resList)
+  }
+
+  const onPagesChange = (page: any, pageSize: any) => {
+    setCurrentPage(Number(page))
+    setPageSize(Number(pageSize))
+    setPageSearch(page, pageSize)
+  }
 
   return (
     <>
@@ -474,6 +505,23 @@ const VotedList = () => {
       <div className="my-list-box">
         <Table rowKey={'id'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
       </div>
+      {pageTotal > 0 && (
+        <Row justify="center">
+          <Pagination
+            showQuickJumper
+            total={pageTotal}
+            current={currentPage}
+            pageSize={pageSize}
+            showSizeChanger
+            pageSizeOptions={['5', '10', '20', '30', '40']}
+            onChange={onPagesChange}
+            onShowSizeChange={onPagesChange}
+          />{' '}
+          <span className="m-l-15" style={{ color: '#868790' }}>
+            Total {pageTotal}
+          </span>
+        </Row>
+      )}
     </>
   )
 }
