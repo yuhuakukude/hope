@@ -1,11 +1,10 @@
-import React, { useState, useEffect, useMemo } from 'react'
+import React, { useState, useMemo } from 'react'
 import './index.scss'
 import { CloseIcon } from '../../../theme/components'
 import { ButtonPrimary } from '../../../components/Button'
-import { Decimal } from 'decimal.js'
+// import { Decimal } from 'decimal.js'
 import { Radio } from 'antd'
 import Tips from 'components/Tips'
-import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 import format from 'utils/format'
 import { useEstimate } from 'hooks/ahp'
 import { useActiveWeb3React } from '../../../hooks'
@@ -13,70 +12,38 @@ interface GombocClaimProps {
   onSubmit: any
   onDismiss: () => void
   curWithType: string
-  totalFee: string
-  tableData: any
-  tableItem: any
-  hopePrice: string
+  allData?: any
+  itemData?: any
 }
 
-const GombocClaim = ({
-  onSubmit,
-  onDismiss,
-  curWithType,
-  totalFee,
-  tableData,
-  tableItem,
-  hopePrice
-}: GombocClaimProps) => {
+const GombocClaim = ({ onSubmit, onDismiss, curWithType, allData, itemData }: GombocClaimProps) => {
   const [drapIndex, setDrapIndex] = useState(true)
   const { account } = useActiveWeb3React()
   const isEthBalanceInsufficient = useEstimate()
   const [curClaimType, setCurClaimType] = useState('')
-  const [otherAmount, setOtherAmount] = useState('')
   function changeRadio(item: any) {
     setCurClaimType(item)
   }
   const allAmount = useMemo(() => {
-    let res = 0
-    if (totalFee && otherAmount) {
-      res = new Decimal(totalFee).sub(new Decimal(otherAmount)).toNumber()
-    }
+    const res = 0
     return res
-  }, [totalFee, otherAmount])
+  }, [])
 
-  const curAmount = useMemo(() => {
-    let res = ''
-    if (curClaimType === 'item') {
-      res = tableItem.withdrawable
-    } else if (curClaimType === 'others') {
-      res = otherAmount
-    } else {
-      res = `${allAmount}`
-    }
-    return res
-  }, [curClaimType, tableItem, otherAmount, allAmount])
-
-  function isDis(val: any) {
-    let res = true
-    if (val && Number(val) > 0) {
-      res = false
-    }
-    return res
-  }
+  // const curAmount = useMemo(() => {
+  //   let res = ''
+  //   if (curClaimType === 'item') {
+  //     res = itemData.value
+  //   } else if (curClaimType === 'others') {
+  //     res = itemData.value
+  //   } else {
+  //     res = `${allAmount}`
+  //   }
+  //   return res
+  // }, [curClaimType, itemData, allAmount])
 
   const drapFn = () => {
     setDrapIndex(!drapIndex)
   }
-
-  useEffect(() => {
-    if (tableData && tableData.length > 0) {
-      tableData.forEach((e: any) => {
-        if (e && !e.gomboc) {
-          setOtherAmount(e.withdrawable)
-        }
-      })
-    }
-  }, [tableData])
 
   return (
     <>
@@ -88,12 +55,6 @@ const GombocClaim = ({
           </div>
         </div>
         <div className="claim-con p-30">
-          {curWithType === 'all' && totalFee && (
-            <div className="flex jc-between">
-              <span className="text-white">Total Claimable Fees</span>
-              <span className="text-white">≈ {format.amountFormat(totalFee, 2)} stHOPE</span>
-            </div>
-          )}
           <Radio.Group
             className="m-t-30 w-100"
             onChange={(e: any) => {
@@ -104,56 +65,38 @@ const GombocClaim = ({
             {curWithType === 'item' && (
               <div className="radio-item flex jc-between">
                 <div className="flex ai-center">
-                  <Radio
-                    disabled={tableItem && tableItem.withdrawable && Number(tableItem.withdrawable) <= 0}
-                    value={`item`}
-                  >
+                  <Radio value={`item`}>
                     <span className="text-white">veLT voting dividends</span>
                   </Radio>
                   <Tips title={`Claimable Rewards`} />
                 </div>
                 <div>
-                  <p className="text-white text-right">{format.amountFormat(tableItem.withdrawable, 2)} stHOPE</p>
-                  <p className="text-normal text-right">≈ ${toUsdPrice(tableItem.withdrawable, hopePrice) || '--'}</p>
+                  <p className="text-white text-right">{itemData.value} stHOPE</p>
+                  <p className="text-normal text-right">≈ ${itemData.usdOfValue}</p>
                 </div>
               </div>
             )}
             {curWithType === 'others' && (
               <div className="radio-item flex jc-between">
                 <div className="flex ai-center">
-                  <Radio
-                    disabled={tableItem && tableItem.withdrawable && Number(tableItem.withdrawable) <= 0}
-                    value={`others`}
-                  >
+                  <Radio value={`others`}>
                     <span className="text-white">veLT hold dividends</span>
                   </Radio>
                   <Tips title={`Claimable Rewards`} />
                 </div>
                 <div>
-                  <p className="text-white text-right">{format.amountFormat(tableItem.withdrawable, 2)} stHOPE</p>
-                  <p className="text-normal text-right">≈ ${toUsdPrice(tableItem.withdrawable, hopePrice) || '--'}</p>
+                  <p className="text-white text-right">{format.amountFormat(itemData.withdrawable, 2)} stHOPE</p>
+                  <p className="text-normal text-right">≈ ${}</p>
                 </div>
               </div>
             )}
             {curWithType === 'all' && (
               <div>
-                <div className="radio-item flex jc-between">
-                  <div className="flex ai-center">
-                    <Radio disabled={isDis(otherAmount)} value={`others`}>
-                      <span className="text-white">veLT hold dividends</span>
-                    </Radio>
-                    <Tips title={`Claimable Rewards`} />
-                  </div>
-                  <div>
-                    <p className="text-white text-right">{format.amountFormat(otherAmount, 2)} stHOPE</p>
-                    <p className="text-normal text-right">≈ ${toUsdPrice(otherAmount, hopePrice) || '--'}</p>
-                  </div>
-                </div>
-                {allAmount && (
+                {
                   <div className="m-t-30 radio-item">
                     <div className="radio-box-head flex jc-between">
                       <div className="flex ai-center">
-                        <Radio disabled={isDis(allAmount)} value={`all`}>
+                        <Radio value={`all`}>
                           <span className="text-white">veLT voting dividends</span>
                         </Radio>
                         <Tips title={`Claimable Rewards`} />
@@ -166,9 +109,9 @@ const GombocClaim = ({
                       </div>
                     </div>
                     <div className={drapIndex ? 'radio-box-con hide' : 'radio-box-con'}>
-                      {tableData &&
-                        tableData.length > 0 &&
-                        tableData.map((data: any, index: number) => {
+                      {allData &&
+                        allData.length > 0 &&
+                        allData.map((data: any, index: number) => {
                           return (
                             <>
                               {data && data.gomboc && (
@@ -180,9 +123,7 @@ const GombocClaim = ({
                                     <p className="text-white text-right">
                                       ≈ {format.amountFormat(data.withdrawable, 2)} stHope
                                     </p>
-                                    <p className="text-white text-right">
-                                      ≈ $ {toUsdPrice(data.withdrawable, hopePrice) || '--'}
-                                    </p>
+                                    <p className="text-white text-right">≈ $ {}</p>
                                   </div>
                                 </div>
                               )}
@@ -191,7 +132,7 @@ const GombocClaim = ({
                         })}
                     </div>
                   </div>
-                )}
+                }
               </div>
             )}
           </Radio.Group>
@@ -199,7 +140,7 @@ const GombocClaim = ({
             className="hp-button-primary m-t-30"
             disabled={!curClaimType}
             onClick={() => {
-              onSubmit(curClaimType, curAmount)
+              onSubmit()
             }}
           >
             Claim

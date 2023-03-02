@@ -264,13 +264,11 @@ export default function VeLTRewards() {
           }}
           onDismiss={() => setShowConfirm(false)}
           curWithType={curWithType}
-          totalFee={overviewData?.withdrawable}
-          tableData={tableData}
-          tableItem={curTableItem}
-          hopePrice={hopePrice}
+          allData={tableData}
+          itemData={curTableItem}
         />
       ),
-    [withdrawSubmit, errorStatus, curWithType, overviewData, tableData, curTableItem, hopePrice]
+    [withdrawSubmit, errorStatus, curWithType, tableData, curTableItem]
   )
   return (
     <>
