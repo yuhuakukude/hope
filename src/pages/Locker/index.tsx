@@ -28,7 +28,7 @@ import LockerBanner from './component/Banner'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useEstimate } from '../../hooks/ahp'
 import { useActionPending } from '../../state/transactions/hooks'
-import Test3 from '../../assets/images/test3.jpg'
+import LtIcon from '../../assets/images/ahp/lt.png'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -395,7 +395,7 @@ export default function DaoLocker() {
                           }}
                         />
                         <div className="lt-icon-box flex ai-center">
-                          <img src={Test3} style={{ width: '24px', height: '24px' }} alt="" />
+                          <img src={LtIcon} style={{ width: '24px', height: '24px' }} alt="" />
                           <span className="m-l-12">LT</span>
                         </div>
                       </div>

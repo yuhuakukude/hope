@@ -3,7 +3,7 @@ import { useLocker, useToLocker, conFnNameEnum } from '../../../../hooks/ahp/use
 import NumericalInput from '../../../../components/NumericalInput'
 import ActionButton from '../../../../components/Button/ActionButton'
 import format from '../../../../utils/format'
-import Test3 from '../../../../assets/images/test3.jpg'
+import LtIcon from '../../../../assets/images/ahp/lt.png'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
@@ -217,7 +217,7 @@ export default function AddAmount() {
               }}
             />
             <div className="coin-box flex ai-center cursor-select">
-              <img src={Test3} style={{ width: '24px', height: '24px' }} alt="" />
+              <img src={LtIcon} style={{ width: '24px', height: '24px' }} alt="" />
               <div className="currency font-nor text-medium m-l-12">LT</div>
             </div>
           </div>
