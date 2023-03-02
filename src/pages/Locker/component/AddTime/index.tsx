@@ -26,6 +26,9 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
   const { pending: isLocerkTimePending } = useActionPending(
     account ? `${account}-${conFnNameEnum.IncreaseUnlockTime}` : ''
   )
+  const { pending: isLocerkAmountPending } = useActionPending(
+    account ? `${account}-${conFnNameEnum.IncreaseAmount}` : ''
+  )
 
   // token api
   const [curToken, setCurToken] = useState<Token | undefined>(LT[chainId ?? 1])
@@ -110,12 +113,15 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
     if (!argTime || !lockerRes?.amount) {
       return undefined
     }
-    const velt = getVeLtAmount(lockerRes?.amount.toFixed(3), format.formatDate(Number(`${argTime}`), 'YYYY-MM-DD'))
+    const velt = getVeLtAmount(
+      lockerRes?.amount.toFixed(2) ?? '0',
+      format.formatDate(Number(`${argTime}`), 'YYYY-MM-DD'),
+      format.formatDate(Number(`${lockerRes?.end}`))
+    )
     const res = new TokenAmount(
       VELT[chainId ?? 1],
       JSBI.add(JSBI.BigInt(veltBalance?.raw.toString() ?? '0'), JSBI.BigInt(velt?.raw.toString() ?? '0'))
     )
-    console.log(velt?.toFixed(2))
     return res
   }, [lockerRes, chainId, veltBalance, argTime, getVeLtAmount])
 
@@ -197,8 +203,8 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
         </div>
         <div className="m-t-50">
           <ActionButton
-            pending={!!pendingText || isLocerkTimePending}
-            pendingText={isLocerkTimePending ? 'Pending' : 'Confirm in your wallet'}
+            pending={!!pendingText || isLocerkTimePending || isLocerkAmountPending}
+            pendingText={isLocerkTimePending || isLocerkAmountPending ? 'Pending' : 'Confirm in your wallet'}
             disableAction={!weekNumber || weekNumber < 2 || maxWeek < 2 || !ltBalance}
             actionText="Increase"
             onAction={lockerCallback}

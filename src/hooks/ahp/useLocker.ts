@@ -142,7 +142,6 @@ export function useToLocker() {
     if (!amount || !endDate || !LT || !chainId) {
       return undefined
     }
-    console.log(amount, endDate)
     const year = JSBI.multiply(
       JSBI.multiply(JSBI.multiply(JSBI.BigInt(365), JSBI.BigInt(24)), JSBI.BigInt(60)),
       JSBI.BigInt(60)
