@@ -18,6 +18,7 @@ import { STAKING_HOPE_GOMBOC_ADDRESS, ST_HOPE } from '../../../../constants'
 import ClaimRewards from '../ClaimRewards'
 
 import './index.scss'
+import { ITableItem } from 'components/ahp/GombocClaim'
 
 interface IStaking {
   stHOPE: string
@@ -60,7 +61,7 @@ export default function MyHOPEStaking() {
     boost = (Number(bu?.toExact()) / (Number(i?.toExact()) * 0.4)).toFixed(2)
   }
 
-  const [item, setItem] = useState<IStaking | null>(null)
+  const [item, setItem] = useState<ITableItem | null>(null)
   const data: IStaking = {
     boost,
     stHOPE: formatPrice('stHOPE', stBalance),
@@ -142,7 +143,13 @@ export default function MyHOPEStaking() {
             label: 'Claim Rewards',
             value: 'Claim Rewards',
             onClick: () => {
-              setItem(record)
+              // TODO
+              setItem({
+                ltOfReward: '',
+                rewardSymbol: '',
+                usdOfReward: '',
+                usdOfTotalReward: 0
+              })
             }
           },
           {

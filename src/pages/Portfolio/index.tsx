@@ -11,7 +11,6 @@ import { Decimal } from 'decimal.js'
 import { useActiveWeb3React } from 'hooks'
 import styled from 'styled-components'
 import { AutoColumn } from 'components/Column'
-import PortfolioApi, { PortfolioInfo } from 'api/portfolio.api'
 import MyHOPEStaking from './component/MyHOPEStaking'
 import MyLiquidityPools from './component/MyLiquidityPools'
 import MyLockedLTAndProfits from './component/MyLockedLTAndProfits'
@@ -27,19 +26,18 @@ const PageWrapper = styled(AutoColumn)`
 export default function Portfolio() {
   const { account, chainId } = useActiveWeb3React()
   const stHopeBalance = useTokenBalance(account ?? undefined, ST_HOPE[chainId ?? 1])
-  const [overViewData, setOverViewData] = useState<PortfolioInfo>({} as PortfolioInfo)
   const [stToHope, setStToHope] = useState('0')
   const [ltToHope, setLtToHope] = useState('0')
   const [stHopeProfits, setStHopeProfits] = useState('0')
   const [lockerLt, setLockerLt] = useState('0')
-  console.log(stHopeProfits)
+  const [lpData, setLpData] = useState({ lpTotal: 0, yfTotal: 0 })
 
   const getTokenToHope = (tokenAmount: string, hopeScale: string) => {
     if (!tokenAmount || !hopeScale) return '0'
     return new Decimal(tokenAmount)
       .mul(new Decimal(hopeScale || 0))
       .toNumber()
-      .toFixed(2)
+      .toFixed(3)
   }
 
   const allData = useMemo(() => {
@@ -48,13 +46,23 @@ export default function Portfolio() {
     const profits = new Decimal(getLtHope)
       .add(new Decimal(getSthopeHope))
       .toNumber()
-      .toFixed(2)
+      .toFixed(3)
+    const staking = getTokenToHope(stHopeBalance?.toFixed(3) || '0', stToHope)
+    const lp = lpData.lpTotal.toFixed(3) || '0'
+    const yieldFarming = lpData.yfTotal.toFixed(3) || '0'
     return {
-      staking: getTokenToHope(stHopeBalance?.toFixed(2) || '0', stToHope),
-      profits
+      staking,
+      profits,
+      lp,
+      yieldFarming,
+      totalHope: new Decimal(staking)
+        .add(new Decimal(profits))
+        .add(new Decimal(lp))
+        .add(new Decimal(yieldFarming))
+        .toNumber()
+        .toFixed(3)
     }
-  }, [stHopeBalance, stToHope, ltToHope, lockerLt, stHopeProfits])
-  console.log(allData)
+  }, [stHopeBalance, stToHope, ltToHope, lockerLt, stHopeProfits, lpData])
 
   const getTokenPrice = useCallback(async () => {
     try {
@@ -80,23 +88,15 @@ export default function Portfolio() {
     }
   }, [])
 
-  const init = useCallback(async () => {
-    try {
-      const res = await PortfolioApi.getOverview(`${account}`)
-      if (res.result && res.result) {
-        setOverViewData(res.result)
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }, [account])
+  function setLpTotal(lpTotal: number, yfTotal: number) {
+    setLpData({ lpTotal, yfTotal })
+  }
 
   useEffect(() => {
     if (account) {
       getTokenPrice()
-      init()
     }
-  }, [account, getTokenPrice, init])
+  }, [account, getTokenPrice])
 
   const getAllVoting = (stHope: string, lt: string) => {
     setLockerLt(lt)
@@ -111,10 +111,10 @@ export default function Portfolio() {
           <PortfolioConnect />
         ) : (
           <>
-            <InvestmentAllocation data={overViewData} />
+            <InvestmentAllocation lpData={lpData} data={allData} />
             {/* <GombocRewards data={overViewData.rewards} /> */}
             <MyHOPEStaking />
-            <MyLiquidityPools />
+            <MyLiquidityPools getLpData={setLpTotal} />
             <MyLockedLTAndProfits getAllVoting={getAllVoting} />
             {/* <VeLTRewards /> */}
             {/* <Govern /> */}

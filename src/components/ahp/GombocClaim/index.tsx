@@ -9,13 +9,22 @@ import { STAKING_HOPE_GOMBOC_ADDRESS } from '../../../constants'
 import { useActiveWeb3React } from '../../../hooks'
 import { useEstimate } from 'hooks/ahp'
 
+export type ITableItem = {
+  usdOfTotalReward: string | number
+  ltOfReward: string | number
+  rewardSymbol: string | number
+  usdOfReward: string | number
+  gomboc?: string | number
+  usdOfExtReward?: string | number
+  extRewardList?: { symbol: string | number; amount: string | number; usdOfToken: string | number }[]
+}
 interface GombocClaimProps {
   onSubmit: any
   onDismiss: () => void
-  tableItem: any
+  tableItem: ITableItem
 }
 
-const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
+const GombocClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: GombocClaimProps) => {
   const { account, chainId } = useActiveWeb3React()
   const isEthBalanceInsufficient = useEstimate()
   const [curClaimType, setCurClaimType] = useState('')
@@ -34,7 +43,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
         <div className="claim-con p-30">
           <div className="flex jc-between">
             <span className="text-white">Total Claimable Rewards</span>
-            <span className="text-white">≈ ${format.amountFormat(tableItem?.usdOfTotalReward, 2)}</span>
+            <span className="text-white">≈ ${format.amountFormat(tableItem?.usdOfTotalReward || 0, 2)}</span>
           </div>
           <Radio.Group
             className="m-t-30 w-100"
@@ -46,7 +55,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
             <div className="radio-item flex jc-between">
               <div className="flex ai-center">
                 <Radio
-                  disabled={tableItem && tableItem.ltOfReward && Number(tableItem.ltOfReward) <= 0}
+                  disabled={tableItem && !!tableItem?.ltOfReward && Number(tableItem?.ltOfReward) <= 0}
                   value={`normal`}
                 >
                   <span className="text-white">Claimable Rewards</span>
@@ -55,17 +64,17 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
               </div>
               <div>
                 <p className="text-white text-right">
-                  {format.amountFormat(tableItem?.ltOfReward, 2)} {tableItem?.rewardSymbol}
+                  {format.amountFormat(tableItem?.ltOfReward || 0, 2)} {tableItem?.rewardSymbol}
                 </p>
                 <p className="text-normal text-right">≈ ${format.amountFormat(tableItem?.usdOfReward, 2)}</p>
               </div>
             </div>
-            {!(tableItem && tableItem.gomboc === STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLowerCase()) && (
+            {!(tableItem && tableItem?.gomboc === STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLowerCase()) && (
               <div className="m-t-30 radio-item">
                 <div className="radio-box-head flex jc-between">
                   <div className="flex ai-center">
                     <Radio
-                      disabled={tableItem && tableItem.usdOfExtReward && Number(tableItem.usdOfExtReward) <= 0}
+                      disabled={tableItem && !!tableItem?.usdOfExtReward && Number(tableItem?.usdOfExtReward) <= 0}
                       value={`pool`}
                     >
                       <span className="text-white">Claimable Rewards</span>
@@ -73,12 +82,14 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem }: GombocClaimProps) => {
                     <Tips title={`Claimable Rewards`} />
                   </div>
                   <div>
-                    <p className="text-normal text-right">≈ ${format.amountFormat(tableItem?.usdOfExtReward, 2)}</p>
+                    <p className="text-normal text-right">
+                      ≈ ${format.amountFormat(tableItem?.usdOfExtReward || 0, 2)}
+                    </p>
                   </div>
                 </div>
-                {tableItem && tableItem.extRewardList && tableItem.extRewardList.length > 0 && (
+                {tableItem && tableItem?.extRewardList && tableItem?.extRewardList.length > 0 && (
                   <div className="radio-box-con">
-                    {tableItem.extRewardList.map((data: any, index: number) => {
+                    {tableItem?.extRewardList.map((data, index) => {
                       return (
                         <div key={index} className="flex jc-between">
                           <div className="coin-box flex ai-center cursor-select">
