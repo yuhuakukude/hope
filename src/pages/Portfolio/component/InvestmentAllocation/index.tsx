@@ -39,9 +39,6 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
   const [myChart, setMyChart] = useState<echarts.ECharts | null>(null)
 
   useEffect(() => {
-    if (!visibleMap) {
-      return
-    }
     const listData = [
       {
         name: 'HOPE Staking',
@@ -79,6 +76,10 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
       }
     ]
     setAllocations(listData)
+    if (!visibleMap) {
+      return
+    }
+
     const option: EChartsOption = {
       left: 95,
       top: 40,
