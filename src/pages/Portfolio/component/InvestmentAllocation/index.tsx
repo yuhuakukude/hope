@@ -71,7 +71,42 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
     if (!visibleMap) {
       return
     }
-
+    const listData = [
+      {
+        name: 'HOPE Staking',
+        value: data.staking,
+        formatValue: format.amountFormat(data.staking, 2),
+        tips:
+          'The total value of tokens currently held in the HOPE Staking contract, including the transferable, unstaking, and withdrawable portions of the address'
+      },
+      {
+        name: 'Liquidity Pools',
+        value: data.lp,
+        formatValue: format.amountFormat(data.lp, 2),
+        tips: 'Total value of assets withdrawable from liquidity pools'
+      },
+      {
+        name: 'Yield Farming',
+        value: data.yieldFarming,
+        formatValue: format.amountFormat(data.yieldFarming, 2),
+        tips: 'Total value of LP Tokens staked and pending rewards'
+      },
+      {
+        name: 'Locked LT & Profits',
+        value: data.profits,
+        formatValue: format.amountFormat(data.profits, 2),
+        tips: (
+          <>
+            <div>Locked LT: Total value of locked LT </div>
+            <div>
+              Profits: Platform fee income. veLT holders will receive 25% of all agreed fee income as an reward, as well
+              as a portion of the Gömböc fee income during the voting period if they participate in the weighted vote of
+              a Gömböc. Learn more
+            </div>
+          </>
+        )
+      }
+    ]
     const option: EChartsOption = {
       left: 95,
       top: 40,
@@ -103,7 +138,7 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
           orient: 'vertical',
           left: 'left',
           top: 'bottom',
-          data: allocations.slice(0, (allocations.length / 2) | 0),
+          data: listData.slice(0, (listData.length / 2) | 0),
           textStyle: {
             color: '#fff',
             fontSize: 16
@@ -117,7 +152,7 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
           orient: 'vertical',
           left: 'right',
           top: 'bottom',
-          data: allocations.slice((allocations.length / 2) | 0),
+          data: listData.slice((listData.length / 2) | 0),
           textStyle: {
             color: '#fff',
             fontSize: 16
@@ -134,7 +169,7 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
             show: false
           },
           top: 'top',
-          data: allocations as any
+          data: listData as any
         }
       ]
     }
@@ -143,11 +178,7 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
     } else {
       myChart.setOption(option)
     }
-
-    return () => {
-      myChart && myChart.dispose()
-    }
-  }, [allocations, visibleMap, myChart])
+  }, [visibleMap, myChart, data])
 
   return (
     <div className="investment-allocation">

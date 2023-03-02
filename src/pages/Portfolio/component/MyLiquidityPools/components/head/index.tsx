@@ -18,7 +18,6 @@ export function getCount<T extends object>(list: T[], key: keyof T) {
 }
 
 export default function Head({ data, claimAll }: { data: IHeadItem[]; claimAll: () => void }) {
-  console.log('Head====>', data)
   return (
     <div className="pools-head-wrap">
       <div className="pools-head-top">
