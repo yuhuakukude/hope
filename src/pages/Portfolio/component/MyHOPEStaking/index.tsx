@@ -32,12 +32,18 @@ interface IStaking {
   usdOfUnstaked: string
 }
 
+function toUsdPriceOfHope(hopePrice: string, price?: TokenAmount | CurrencyAmount) {
+  if (!price) {
+    return 0
+  }
+  return toUsdPrice(price.toFixed(2), hopePrice)
+}
+
 function getUsdPrice(hopePrice: string, price?: TokenAmount | CurrencyAmount) {
   if (!price) {
     return '--'
   }
-
-  return '≈$' + toUsdPrice(price.toFixed(2), hopePrice)
+  return '≈$' + toUsdPriceOfHope(hopePrice, price)
 }
 
 function formatPrice(name: string, price?: TokenAmount | CurrencyAmount) {
@@ -143,12 +149,9 @@ export default function MyHOPEStaking() {
             label: 'Claim Rewards',
             value: 'Claim Rewards',
             onClick: () => {
-              // TODO
               setItem({
-                ltOfReward: '',
-                rewardSymbol: '',
-                usdOfReward: '',
-                usdOfTotalReward: 0
+                ltOfReward: claRewards?.toExact() || 0,
+                usdOfReward: toUsdPriceOfHope(hopePrice, claRewards)
               })
             }
           },
