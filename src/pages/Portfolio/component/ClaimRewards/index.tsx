@@ -80,7 +80,6 @@ export default function ClaimRewards({
     setCurToken(LT[chainId ?? 1])
     onTxStart()
     setPendingText(`claim all Rewards`)
-    // TODO
     toClaim(item.map(i => i.gomboc))
       .then(hash => {
         setPendingText('')
