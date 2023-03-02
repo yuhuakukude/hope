@@ -23,11 +23,11 @@ export function useToClaim() {
   const contract = useLtMinterContract()
   const { account } = useActiveWeb3React()
   const toClaim = useCallback(
-    async (address: string| string[]) => {
+    async (address: string | string[]) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       // const args = Array.isArray(address) ? address : [address]
-      const method = Array.isArray(address)? 'mintMany' : 'mint'
+      const method = Array.isArray(address) ? 'mintMany' : 'mint'
       return contract.estimateGas[method](address, { from: account }).then(estimatedGasLimit => {
         return contract[method](address, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
@@ -166,7 +166,7 @@ export function useGomFeeManyClaim() {
 }
 
 export function toUsdPrice(val: any, price: string | number) {
-  let res = ''
+  let res = '0'
   if (val && price) {
     const pr = new Decimal(val).mul(new Decimal(price)).toNumber()
     res = pr.toFixed(2)

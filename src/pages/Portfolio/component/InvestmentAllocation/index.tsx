@@ -5,40 +5,49 @@ import { PieSeriesOption } from 'echarts/charts'
 import format from 'utils/format'
 import './index.scss'
 import Card from '../Card'
-import { PortfolioInfo } from 'api/portfolio.api'
 import Tips from 'components/Tips'
 import Modal from 'components/antd/Modal'
 import TitleTips from '../TitleTips'
+import { STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
+import { useActiveWeb3React } from '../../../../hooks'
+import { useTokenPrice } from '../../../../hooks/liquidity/useBasePairs'
+import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 // import Button from 'components/antd/Button'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
 
-export default function InvestmentAllocation({ data, lpData }: { data: PortfolioInfo; lpData: any }) {
+export default function InvestmentAllocation({ data, lpData }: { data: any; lpData: any }) {
+  const { chainId } = useActiveWeb3React()
+  const addresses = useMemo(() => {
+    return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]]
+  }, [chainId])
+
+  const { result: priceResult } = useTokenPrice(addresses)
   const allocations = useMemo(() => {
     return [
       {
         name: 'HOPE Staking',
-        value: data.hope,
-        formatValue: format.amountFormat(data.hope, 2),
+        value: data.staking,
+        formatValue: format.amountFormat(data.staking, 2),
         tips:
           'The total value of tokens currently held in the HOPE Staking contract, including the transferable, unstaking, and withdrawable portions of the address'
       },
       {
         name: 'Liquidity Pools',
-        value: data.hopeOfPool,
-        formatValue: format.amountFormat(data.hopeOfPool, 2),
+        value: data.lp,
+        formatValue: format.amountFormat(data.lp, 2),
         tips: 'Total value of assets withdrawable from liquidity pools'
       },
       {
         name: 'Yield Farming',
-        value: data.hopeOfFarming,
-        formatValue: format.amountFormat(data.hopeOfFarming, 2),
+        value: data.yieldFarming,
+        formatValue: format.amountFormat(data.yieldFarming, 2),
         tips: 'Total value of LP Tokens staked and pending rewards'
       },
       {
         name: 'Locked LT & Profits',
-        value: data.hopeOfGovern,
-        formatValue: format.amountFormat(data.hopeOfGovern, 2),
+        value: data.profits,
+        formatValue: format.amountFormat(data.profits, 2),
         tips: (
           <>
             <div>Locked LT: Total value of locked LT </div>
@@ -162,7 +171,13 @@ export default function InvestmentAllocation({ data, lpData }: { data: Portfolio
             </div>
             <div className="investment-allocation-total2">
               {format.amountFormat(data.totalHope, 2)} HOPE ≈
-              <span className="investment-allocation-total3"> ${format.amountFormat(data.usdOfTotalHope, 2)}</span>
+              <span className="investment-allocation-total3">
+                {' '}
+                $
+                {priceResult && priceResult[0] && priceResult[0].price
+                  ? format.amountFormat(toUsdPrice(data.totalHope, priceResult[0].price), 2)
+                  : '0.00'}
+              </span>
             </div>
           </div>
         </div>
@@ -178,7 +193,12 @@ export default function InvestmentAllocation({ data, lpData }: { data: Portfolio
                     </span>
                   </div>
                   <div className="investment-allocation-box-amount">≈ {item.formatValue} HOPE</div>
-                  <div className="investment-allocation-box-amount2">≈ $0.00</div>
+                  <div className="investment-allocation-box-amount2">
+                    ≈ $
+                    {priceResult && priceResult[0] && priceResult[0].price
+                      ? format.amountFormat(toUsdPrice(item.value, priceResult[0].price), 2)
+                      : '0.00'}
+                  </div>
                 </div>
               )
             })}
