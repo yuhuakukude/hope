@@ -7,7 +7,7 @@ import { Token, JSBI, Percent } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../hooks'
 import { TokenAmount } from '@uniswap/sdk'
 import { VELT, SUBGRAPH, STAKING_HOPE_GOMBOC_ADDRESS, ST_HOPE } from '../../../constants'
-import { useToVote } from '../../../hooks/ahp/useGomVote'
+import { useToVote, useToVoteAll } from '../../../hooks/ahp/useGomVote'
 // import format from '../../../utils/format'
 import { useSingleContractMultipleData } from '../../../state/multicall/hooks'
 import { useGomConContract, useGomFeeDisContract } from '../../../hooks/useContract'
@@ -26,10 +26,12 @@ import format from '../../../utils/format'
 
 const VotedList = ({
   getVotingRewards,
-  getAllData
+  getAllData,
+  isShowAll
 }: {
   getVotingRewards?: (stHope: string, toUsd: string) => void
   getAllData?: (list: any) => void
+  isShowAll: boolean
 }) => {
   const gomConContract = useGomConContract()
   const gomFeeDisContract = useGomFeeDisContract()
@@ -47,6 +49,7 @@ const VotedList = ({
   const { result: priceResult } = useTokenPrice(addresses)
   const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
   const { toVote } = useToVote()
+  const { toVoteAll } = useToVoteAll()
   const { toGomFeeClaim } = useGomFeeClaim()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
 
@@ -234,6 +237,8 @@ const VotedList = ({
   const isTimeDis = useMemo(() => {
     const res: any = {}
     if (tableData.length > 0 && lastVoteData.length > 0 && tableData.length === lastVoteData.length) {
+      const addArr: any = []
+      const amountArr: any = []
       lastVoteData.forEach((e: any, index) => {
         let item = false
         if (Number(e.result)) {
@@ -242,11 +247,36 @@ const VotedList = ({
           item = now.isBefore(end)
         }
         const addr = tableData[index]?.gomboc.id
+        if (!item && allocatedView[addr].value) {
+          addArr.push(addr)
+          amountArr.push(allocatedView[addr].value)
+        }
         res[addr] = item
+      })
+      if (addArr.length === amountArr.length) {
+        // setAllArgAdd(addArr)
+        // setAllArgAmount(amountArr)
+      }
+    }
+    return res
+  }, [lastVoteData, tableData, allocatedView])
+
+  const allArg = useMemo(() => {
+    const res: any = {
+      add: [],
+      amount: []
+    }
+    if (tableData.length > 0) {
+      tableData.forEach((e: any) => {
+        const arr = e.gomboc.id
+        if (!isTimeDis[arr]) {
+          res.add.push(arr)
+          res.amount.push(allocatedView[arr].value)
+        }
       })
     }
     return res
-  }, [lastVoteData, tableData])
+  }, [isTimeDis, tableData, allocatedView])
 
   const toVoteCallback = useCallback(
     async (item: any) => {
@@ -274,6 +304,30 @@ const VotedList = ({
     },
     [account, toVote, allocatedView]
   )
+
+  const toVoteAllCallback = useCallback(async () => {
+    if (!account) return
+    setCurToken(undefined)
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+    setPendingText(`Refresh All`)
+    const curAdd = allArg.add && allArg.add.length > 0 ? allArg.add : []
+    const argAmount: any = allArg.amount && allArg.amount.length > 0 ? allArg.amount : []
+    toVoteAll(curAdd, argAmount)
+      .then((hash: any) => {
+        setShowConfirm(true)
+        setAttemptingTxn(false)
+        hash && setTxHash(hash)
+        setPendingText(``)
+      })
+      .catch((error: any) => {
+        setShowConfirm(true)
+        setTxHash('')
+        setPendingText(``)
+        setAttemptingTxn(false)
+        setErrorStatus({ code: error?.code, message: error.message })
+      })
+  }, [account, toVoteAll, allArg])
 
   const onTxStart = useCallback(() => {
     setShowConfirm(true)
@@ -402,7 +456,22 @@ const VotedList = ({
       }
     },
     {
-      title: 'veLT Voting Balance',
+      title: (
+        <>
+          veLT Voting Balance{' '}
+          {isShowAll && allArg && allArg.add && allArg.add.length > 0 && (
+            <span
+              className="title-button"
+              onClick={() => {
+                toVoteAllCallback()
+              }}
+            >
+              Refresh All
+            </span>
+          )}
+        </>
+      ),
+      width: 235,
       dataIndex: 'voting',
       key: 'voting',
       render: (text: string, record: any) => {

@@ -283,7 +283,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
           {curType === 'all' && (
             <Table rowKey={'gomboc'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
           )}
-          {curType === 'my' && <VotedList />}
+          {curType === 'my' && <VotedList isShowAll={false} />}
         </div>
       </div>
     </>

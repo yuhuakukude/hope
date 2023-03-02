@@ -283,7 +283,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
             </div>
           </div>
         </div>
-        <VotedList getAllData={getAllData} getVotingRewards={getVotingRewards}></VotedList>
+        <VotedList isShowAll={true} getAllData={getAllData} getVotingRewards={getVotingRewards}></VotedList>
       </Card>
     </>
   )
