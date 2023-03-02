@@ -1,15 +1,29 @@
 import { postQuery } from '../utils/graph'
 import { SUBGRAPH } from '../constants'
 import { QUERY_PAIR_BASE, QUERY_TOKENS_PRICE } from './query'
-import { ChainId, Token } from '@uniswap/sdk'
+import {ChainId, ETHER, Token, TokenAmount} from '@uniswap/sdk'
+import { tryParseAmount } from '../state/swap/hooks'
 
-export async function fetchPairs(chainId: ChainId): Promise<any> {
+export interface BasePair {
+  pairAddress: string
+  stakingAddress: string | undefined
+  tokens: [Token, Token]
+  stakedAmount: TokenAmount | undefined
+  tvl: TokenAmount | undefined
+  feeRate: number
+  feeUSD: TokenAmount | undefined
+}
+
+export async function fetchPairs(chainId: ChainId): Promise<BasePair[]> {
   try {
     const response = await postQuery(SUBGRAPH, QUERY_PAIR_BASE())
     const pairs = response.data.pairs
     const stakings = response.data.poolGombocs
     return pairs.map((item: any) => {
       return {
+        feeRate: item.feeRate,
+        feeUSD: tryParseAmount(item.feeUSD, ETHER),
+        tvl: tryParseAmount(item.reserveUSD, ETHER),
         pairAddress: item.id,
         stakingAddress: stakings.find((staking: any) => {
           return staking.pair.id === item.id

@@ -2,6 +2,9 @@ export function QUERY_PAIR_BASE() {
   return `{
     pairs(first:100,skip:0) {
       id
+      reserveUSD
+      feeRate
+      feeUSD
       token0 {
         id
         symbol

@@ -1,7 +1,6 @@
 import { JSBI, Pair, Percent, Token, TokenAmount } from '@uniswap/sdk'
 import { darken } from 'polished'
 import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
 import { Text } from 'rebass'
 import styled from 'styled-components'
 import { useTotalSupply } from '../../data/TotalSupply'
@@ -9,7 +8,6 @@ import { useTotalSupply } from '../../data/TotalSupply'
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { ExternalLink, TYPE } from '../../theme'
-import { currencyId } from '../../utils/currencyId'
 import { unwrappedToken } from '../../utils/wrappedCurrency'
 
 import { useColor } from '../../hooks/useColor'
@@ -18,9 +16,10 @@ import Card, { LightCard } from '../Card'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed, AutoRow } from '../Row'
-import { BIG_INT_ZERO } from '../../constants'
-import { getEtherscanLink, shortenAddress } from '../../utils'
+import { getEtherscanLink } from '../../utils'
 import { usePair } from '../../data/Reserves'
+import CurrencyLogo from '../CurrencyLogo'
+import TitleTips, { TitleTipsProps } from '../../pages/Portfolio/component/SelectTips'
 
 export const FixedHeightRow = styled(RowBetween)`
   height: 24px;
@@ -33,6 +32,7 @@ export const HoverCard = styled(Card)`
   }
 `
 const StyledPositionCard = styled(LightCard)<{ bgColor: any }>`
+  background-color: transparent;
   border-radius: 0;
   border: none;
   position: relative;
@@ -42,8 +42,13 @@ const StyledPositionCard = styled(LightCard)<{ bgColor: any }>`
   }
 `
 
-const ContentRow = styled(RowFixed)`
-  flex: 1;
+const ContentRow = styled(RowFixed)<{ weight?: number }>`
+  flex: ${({ weight }) => (weight ? weight : 1)};
+`
+
+const DataRow = styled(AutoRow)`
+  flex-wrap: nowrap;
+  width: fit-content;
 `
 
 interface PositionCardProps {
@@ -163,9 +168,10 @@ interface FullCardProps {
   showUnwrapped?: boolean
   border?: string
   stakedBalance?: TokenAmount // optional balance to indicate that liquidity is deposited in mining pool
+  feeRate?: number
 }
 
-export default function FullPositionCard({ pairInfo, border, stakedBalance }: FullCardProps) {
+export default function FullPositionCard({ pairInfo, border, stakedBalance, feeRate }: FullCardProps) {
   const { account, chainId } = useActiveWeb3React()
 
   const currency0 = unwrappedToken(pairInfo.tokens[0])
@@ -196,37 +202,83 @@ export default function FullPositionCard({ pairInfo, border, stakedBalance }: Fu
 
   const backgroundColor = useColor(pair?.token0)
 
+  const actions: TitleTipsProps[] = [
+    {
+      label: 'Manage Positions',
+      value: 'Manage Positions',
+      onClick: data => {}
+    },
+    {
+      label: 'Yield Boost',
+      value: 'Yield Boost',
+      onClick: data => {}
+    },
+    {
+      label: 'Claim Rewards',
+      value: 'Claim Rewards',
+      onClick: data => {}
+    },
+    {
+      label: 'Pool Details',
+      value: 'Pool Details',
+      onClick: data => {}
+    }
+  ]
+
   return (
     <StyledPositionCard border={border} bgColor={backgroundColor}>
       <AutoRow>
         <ContentRow>
-          <DoubleCurrencyLogo margin currency0={currency0} currency1={currency1} size={24} />
-          <TYPE.link
-            as={ExternalLink}
-            href={getEtherscanLink(chainId ?? 1, pairInfo.liquidityToken.address, 'address')}
-            ml={10}
-            fontWeight={500}
-            fontSize={20}
-          >
-            {shortenAddress(pairInfo.liquidityToken.address)}
-          </TYPE.link>
+          <AutoColumn gap={'12px'}>
+            <AutoRow>
+              <DoubleCurrencyLogo margin currency0={currency0} currency1={currency1} size={24} />
+              <TYPE.link
+                as={ExternalLink}
+                href={getEtherscanLink(chainId ?? 1, pairInfo.liquidityToken.address, 'address')}
+                ml={10}
+                fontWeight={500}
+                fontSize={20}
+              >
+                {currency0 && currency1 ? (
+                  <TYPE.white>{`${currency0.symbol} / ${currency1.symbol}`}</TYPE.white>
+                ) : (
+                  '-/-'
+                )}
+              </TYPE.link>
+            </AutoRow>
+            <AutoRow>
+              <TYPE.main>Fee Rate: {feeRate ? `${feeRate * 100}%` : '--'}</TYPE.main>
+            </AutoRow>
+          </AutoColumn>
         </ContentRow>
         <ContentRow>
-          <Text fontSize={16} fontWeight={500}>
-            {`${token0Deposited ? token0Deposited?.toSignificant(4) : '-'} ${currency0 ? currency0.symbol : '-'} / ${
-              token1Deposited ? token1Deposited?.toSignificant(4) : '-'
-            }
-                ${currency1 ? currency1.symbol : '-'}`}
-          </Text>
+          <AutoColumn gap={'12px'}>
+            <DataRow gap={'8px'}>
+              <CurrencyLogo size={'16px'} currency={currency0} />
+              <TYPE.white>{`${token0Deposited ? token0Deposited?.toSignificant(4) : '--'}`}</TYPE.white>
+            </DataRow>
+            <DataRow gap={'8px'}>
+              <CurrencyLogo size={'16px'} currency={currency1} />
+              <TYPE.white>{`${token1Deposited ? token0Deposited?.toSignificant(4) : '--'}`}</TYPE.white>
+            </DataRow>
+          </AutoColumn>
         </ContentRow>
         <ContentRow>
-          <Text fontSize={16} fontWeight={500}>
-            {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}{' '}
-          </Text>
-          <TYPE.main ml={10} alignSelf={'end'} fontSize={12}>
-            Staked(
-            {stakedBalance ? stakedBalance.toSignificant(6) : '--'})
-          </TYPE.main>
+          <AutoColumn gap={'12px'}>
+            <DataRow gap={'8px'}>
+              <TYPE.white>{userPoolBalance ? userPoolBalance.toSignificant(4) : '--'} </TYPE.white>
+            </DataRow>
+            <DataRow gap={'8px'}>
+              <TYPE.main>{stakedBalance ? `${stakedBalance.toSignificant(6)} %Staked` : '--'}</TYPE.main>
+            </DataRow>
+          </AutoColumn>
+          {/*<Text fontSize={16} fontWeight={500}>*/}
+          {/*  {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}{' '}*/}
+          {/*</Text>*/}
+          {/*<TYPE.main ml={10} alignSelf={'end'} fontSize={12}>*/}
+          {/*  Staked(*/}
+          {/*  {stakedBalance ? stakedBalance.toSignificant(6) : '--'})*/}
+          {/*</TYPE.main>*/}
         </ContentRow>
         <ContentRow>
           <Text fontSize={16} fontWeight={500}>
@@ -235,158 +287,12 @@ export default function FullPositionCard({ pairInfo, border, stakedBalance }: Fu
               : '-'}
           </Text>
         </ContentRow>
+        <ContentRow></ContentRow>
 
-        {userDefaultPoolBalance && JSBI.greaterThan(userDefaultPoolBalance.raw, BIG_INT_ZERO) && (
-          <ContentRow marginTop="10px">
-            <Link to={`/swap/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
-              <TYPE.link>Increase</TYPE.link>
-            </Link>
-            <Link to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}>
-              <TYPE.error error padding="8px">
-                Remove
-              </TYPE.error>
-            </Link>
-          </ContentRow>
-        )}
-        <AutoColumn gap="8px">
-          {/*<ButtonSecondary padding="8px" borderRadius="8px">*/}
-          {/*  <ExternalLink style={{ textAlign: 'center' }} href={`https://uniswap.info/account/${account}`}>*/}
-          {/*    View accrued fees and analytics<span style={{ fontSize: '11px' }}>↗</span>*/}
-          {/*  </ExternalLink>*/}
-          {/*</ButtonSecondary>*/}
-        </AutoColumn>
+        <ContentRow weight={0.5}>
+          <TitleTips options={actions} label={'More'} />
+        </ContentRow>
       </AutoRow>
-      {/*<RowFixed gap="8px">*/}
-      {/*  <ButtonEmpty*/}
-      {/*    padding="6px 8px"*/}
-      {/*    borderRadius="12px"*/}
-      {/*    width="fit-content"*/}
-      {/*    onClick={() => setShowMore(!showMore)}*/}
-      {/*  >*/}
-      {/*    {showMore ? (*/}
-      {/*      <>*/}
-      {/*        Manage*/}
-      {/*        <ChevronUp size="20" style={{ marginLeft: '10px' }} />*/}
-      {/*      </>*/}
-      {/*    ) : (*/}
-      {/*      <>*/}
-      {/*        Manage*/}
-      {/*        <ChevronDown size="20" style={{ marginLeft: '10px' }} />*/}
-      {/*      </>*/}
-      {/*    )}*/}
-      {/*  </ButtonEmpty>*/}
-      {/*</RowFixed>*/}
-
-      {/*{showMore && (*/}
-      {/*  <AutoColumn gap="8px">*/}
-      {/*    <FixedHeightRow>*/}
-      {/*      <Text fontSize={16} fontWeight={500}>*/}
-      {/*        Your total pool tokens:*/}
-      {/*      </Text>*/}
-      {/*      <Text fontSize={16} fontWeight={500}>*/}
-      {/*        {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}*/}
-      {/*      </Text>*/}
-      {/*    </FixedHeightRow>*/}
-      {/*    {stakedBalance && (*/}
-      {/*      <FixedHeightRow>*/}
-      {/*        <Text fontSize={16} fontWeight={500}>*/}
-      {/*          Pool tokens in rewards pool:*/}
-      {/*        </Text>*/}
-      {/*        <Text fontSize={16} fontWeight={500}>*/}
-      {/*          {stakedBalance.toSignificant(4)}*/}
-      {/*        </Text>*/}
-      {/*      </FixedHeightRow>*/}
-      {/*    )}*/}
-      {/*    <FixedHeightRow>*/}
-      {/*      <RowFixed>*/}
-      {/*        <Text fontSize={16} fontWeight={500}>*/}
-      {/*          Pooled {currency0.symbol}:*/}
-      {/*        </Text>*/}
-      {/*      </RowFixed>*/}
-      {/*      {token0Deposited ? (*/}
-      {/*        <RowFixed>*/}
-      {/*          <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>*/}
-      {/*            {token0Deposited?.toSignificant(6)}*/}
-      {/*          </Text>*/}
-      {/*          <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency0} />*/}
-      {/*        </RowFixed>*/}
-      {/*      ) : (*/}
-      {/*        '-'*/}
-      {/*      )}*/}
-      {/*    </FixedHeightRow>*/}
-
-      {/*    <FixedHeightRow>*/}
-      {/*      <RowFixed>*/}
-      {/*        <Text fontSize={16} fontWeight={500}>*/}
-      {/*          Pooled {currency1.symbol}:*/}
-      {/*        </Text>*/}
-      {/*      </RowFixed>*/}
-      {/*      {token1Deposited ? (*/}
-      {/*        <RowFixed>*/}
-      {/*          <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>*/}
-      {/*            {token1Deposited?.toSignificant(6)}*/}
-      {/*          </Text>*/}
-      {/*          <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency1} />*/}
-      {/*        </RowFixed>*/}
-      {/*      ) : (*/}
-      {/*        '-'*/}
-      {/*      )}*/}
-      {/*    </FixedHeightRow>*/}
-
-      {/*    <FixedHeightRow>*/}
-      {/*      <Text fontSize={16} fontWeight={500}>*/}
-      {/*        Your pool share:*/}
-      {/*      </Text>*/}
-      {/*      <Text fontSize={16} fontWeight={500}>*/}
-      {/*        {poolTokenPercentage*/}
-      {/*          ? (poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'*/}
-      {/*          : '-'}*/}
-      {/*      </Text>*/}
-      {/*    </FixedHeightRow>*/}
-
-      {/*    <ButtonSecondary padding="8px" borderRadius="8px">*/}
-      {/*      <ExternalLink*/}
-      {/*        style={{ width: '100%', textAlign: 'center' }}*/}
-      {/*        href={`https://uniswap.info/account/${account}`}*/}
-      {/*      >*/}
-      {/*        View accrued fees and analytics<span style={{ fontSize: '11px' }}>↗</span>*/}
-      {/*      </ExternalLink>*/}
-      {/*    </ButtonSecondary>*/}
-      {/*    {userDefaultPoolBalance && JSBI.greaterThan(userDefaultPoolBalance.raw, BIG_INT_ZERO) && (*/}
-      {/*      <RowBetween marginTop="10px">*/}
-      {/*        <ButtonPrimary*/}
-      {/*          padding="8px"*/}
-      {/*          borderRadius="8px"*/}
-      {/*          as={Link}*/}
-      {/*          to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}*/}
-      {/*          width="48%"*/}
-      {/*        >*/}
-      {/*          Add*/}
-      {/*        </ButtonPrimary>*/}
-      {/*        <ButtonPrimary*/}
-      {/*          padding="8px"*/}
-      {/*          borderRadius="8px"*/}
-      {/*          as={Link}*/}
-      {/*          width="48%"*/}
-      {/*          to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}*/}
-      {/*        >*/}
-      {/*          Remove*/}
-      {/*        </ButtonPrimary>*/}
-      {/*      </RowBetween>*/}
-      {/*    )}*/}
-      {/*    {stakedBalance && JSBI.greaterThan(stakedBalance.raw, BIG_INT_ZERO) && (*/}
-      {/*      <ButtonPrimary*/}
-      {/*        padding="8px"*/}
-      {/*        borderRadius="8px"*/}
-      {/*        as={Link}*/}
-      {/*        to={`/uni/${currencyId(currency0)}/${currencyId(currency1)}`}*/}
-      {/*        width="100%"*/}
-      {/*      >*/}
-      {/*        Manage Liquidity in Rewards Pool*/}
-      {/*      </ButtonPrimary>*/}
-      {/*    )}*/}
-      {/*  </AutoColumn>*/}
-      {/*)}*/}
     </StyledPositionCard>
   )
 }

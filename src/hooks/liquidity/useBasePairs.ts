@@ -1,14 +1,6 @@
 import { useEffect, useState } from 'react'
-import { fetchPairs, fetchTokensPrice } from '../../graph/fetch'
+import { BasePair, fetchPairs, fetchTokensPrice } from '../../graph/fetch'
 import { useActiveWeb3React } from '../index'
-import { Token, TokenAmount } from '@uniswap/sdk'
-
-export interface BasePair {
-  pairAddress: string
-  stakingAddress: string | undefined
-  tokens: [Token, Token]
-  stakedAmount: TokenAmount | undefined
-}
 
 export default function useBasePairs() {
   const { chainId } = useActiveWeb3React()
@@ -21,6 +13,7 @@ export default function useBasePairs() {
       setLoading(true)
       try {
         const pairs = await fetchPairs(chainId ?? 1)
+        console.log('pairs', pairs)
         setResult(pairs)
         setLoading(false)
       } catch (error) {

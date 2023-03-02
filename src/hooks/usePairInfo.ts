@@ -7,12 +7,18 @@ import { TokenAmount } from '@uniswap/sdk'
 import { useMultipleContractSingleData } from '../state/multicall/hooks'
 import { STAKING_REWARDS_INTERFACE } from '../constants/abis/staking-rewards'
 
-export default function usePairsInfo() {
+export default function usePairsInfo(isAll = true) {
   const { account } = useActiveWeb3React()
   const allPairs = useBasePairs()
-
+  console.log('allPairs', allPairs)
   const liquidityPairs = useMemo(
-    () => allPairs.result.map(pair => ({ liquidityToken: toV2LiquidityToken(pair.tokens), tokens: pair.tokens })),
+    () =>
+      allPairs.result.map(pair => ({
+        liquidityToken: toV2LiquidityToken(pair.tokens),
+        tokens: pair.tokens,
+        tvl: pair.tvl,
+        feeRate: pair.feeRate
+      })),
     [allPairs]
   )
 
@@ -36,13 +42,15 @@ export default function usePairsInfo() {
         .map((pair, index) => {
           return {
             pair,
+            feeRate: pair.feeRate,
+            tvl: pair.tvl,
             stakedAmount: stakedAmounts[index]?.result
               ? new TokenAmount(pair.liquidityToken, stakedAmounts[index].result?.[0])
               : undefined
           }
         })
-        .filter(pairInfo => pairBalances[pairInfo.pair.liquidityToken.address]?.greaterThan('0')),
-    [liquidityPairs, pairBalances, stakedAmounts]
+        .filter(pairInfo => (isAll ? true : pairBalances[pairInfo.pair.liquidityToken.address]?.greaterThan('0'))),
+    [isAll, liquidityPairs, pairBalances, stakedAmounts]
   )
 
   return {

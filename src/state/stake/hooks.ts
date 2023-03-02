@@ -878,6 +878,8 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const w2Pair = w2Res?.data.pairs[0]
     const m1Pair = m1Res?.data.pairs[0]
     const m2Pair = m2Res?.data.pairs[0]
+    console.log('pair--->', pair)
+
     const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(pair?.reserveUSD, d1Pair?.reserveUSD, d2Pair?.reserveUSD)
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
       pair?.volumeUSD,
@@ -891,7 +893,6 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       w1Pair?.volumeUSD,
       w2Pair?.volumeUSD
     )
-
     const [oneMonthTVLUSD] = get2DayPercentChange(pair.reserveUSD, m1Pair?.reserveUSD, m2Pair?.reserveUSD)
     const [oneMonthVolume] = get2DayPercentChange(pair.totalVolumeUSD, m1Pair?.volumeUSD, m2Pair?.volumeUSD)
 
