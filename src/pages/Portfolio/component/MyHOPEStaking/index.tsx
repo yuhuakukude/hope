@@ -3,7 +3,7 @@ import { useActiveWeb3React } from 'hooks'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 import { useStaking } from 'hooks/ahp/useStaking'
 import usePrice from 'hooks/usePrice'
-import React from 'react'
+import React, { useCallback, useState } from 'react'
 import { useTokenBalance } from 'state/wallet/hooks'
 import Card from '../Card'
 import Item from '../Item'
@@ -15,6 +15,9 @@ import { CurrencyAmount, TokenAmount } from '@uniswap/sdk'
 import { useHistory } from 'react-router-dom'
 
 import { STAKING_HOPE_GOMBOC_ADDRESS, ST_HOPE } from '../../../../constants'
+import ClaimRewards from '../ClaimRewards'
+
+import './index.scss'
 
 interface IStaking {
   stHOPE: string
@@ -57,6 +60,7 @@ export default function MyHOPEStaking() {
     boost = (Number(bu?.toExact()) / (Number(i?.toExact()) * 0.4)).toFixed(2)
   }
 
+  const [item, setItem] = useState<IStaking | null>(null)
   const data: IStaking = {
     boost,
     stHOPE: formatPrice('stHOPE', stBalance),
@@ -138,7 +142,7 @@ export default function MyHOPEStaking() {
             label: 'Claim Rewards',
             value: 'Claim Rewards',
             onClick: () => {
-              // ClaimFn(record)
+              setItem(record)
             }
           },
           {
@@ -154,10 +158,13 @@ export default function MyHOPEStaking() {
     }
   ]
 
+  const clearItem = useCallback(() => setItem(null), [])
+
   return (
     <>
+      <ClaimRewards item={item} clearItem={clearItem} />
       <Card title="My HOPE Staking">
-        <Table columns={columns} dataSource={[data]} pagination={false}></Table>
+        <Table className="my-hope-staking-wrap" columns={columns} dataSource={[data]} pagination={false}></Table>
       </Card>
     </>
   )

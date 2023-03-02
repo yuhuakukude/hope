@@ -2,10 +2,12 @@ import PortfolioApi, { ILiquidityPools } from 'api/portfolio.api'
 import Table from 'components/antd/Table'
 
 import { useActiveWeb3React } from 'hooks'
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
+import { useHistory } from 'react-router-dom'
 import Card from '../Card'
+import ClaimRewards from '../ClaimRewards'
 import Item from '../Item'
-// import SelectTips, { TitleTipsProps } from '../SelectTips'
+import SelectTips, { TitleTipsProps } from '../SelectTips'
 
 function toFixed(val: string | number, length: number = 2) {
   if (isNaN(val as number)) {
@@ -28,7 +30,8 @@ export default function MyLiquidityPools() {
       }
     })
   }, [account])
-
+  const [item, setItem] = useState<ILiquidityPools | null>(null)
+  const history = useHistory()
   const columns = [
     {
       title: 'Pools',
@@ -112,44 +115,39 @@ export default function MyLiquidityPools() {
     {
       title: 'Actions',
       dataIndex: 'actions',
-      key: 'actions'
-      // render: (text: string, record: ILiquidityPools) => {
-      //   const options: TitleTipsProps[] = [
-      //     {
-      //       label: 'Stake',
-      //       value: 'Stake',
-      //       onClick: () => {
-      //         history.push(`/staking`)
-      //       }
-      //     },
-      //     {
-      //       label: 'Unstake',
-      //       value: 'Unstake',
-      //       onClick: () => {
-      //         history.push(`/staking`)
-      //       }
-      //     },
-      //     {
-      //       label: 'Claim Rewards',
-      //       value: 'Claim Rewards',
-      //       onClick: () => {
-      //         ClaimFn(record)
-      //       }
-      //     },
-      //     {
-      //       label: 'Yield Boost',
-      //       value: 'Yield Boost',
-      //       onClick: () => {
-      //         history.push(`/dao/gomboc?gomboc=${record.gomboc}`)
-      //       }
-      //     }
-      //   ]
-      //   return <SelectTips options={options} />
-      // }
+      key: 'actions',
+      render: (text: string, record: ILiquidityPools) => {
+        const options: TitleTipsProps[] = [
+          {
+            label: 'Claim Rewards',
+            value: 'Claim Rewards',
+            onClick: () => {
+              setItem(record)
+            }
+          },
+          {
+            label: 'Yield Boost',
+            value: 'Yield Boost',
+            onClick: () => {
+              history.push(`/staking`) // TODO check url
+            }
+          },
+          {
+            label: 'Pool Details',
+            value: 'Pool Details',
+            onClick: () => {
+              history.push(`/staking`) // TODO check url
+            }
+          }
+        ]
+        return <SelectTips options={options} />
+      }
     }
   ]
+  const clearItem = useCallback(() => setItem(null), [])
   return (
     <>
+      <ClaimRewards item={item} clearItem={clearItem} />
       <Card title="My Liquidity Pools">
         <Table columns={columns} dataSource={dataSource}></Table>
       </Card>

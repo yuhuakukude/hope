@@ -100,10 +100,10 @@ export default function ClaimRewards<T>({ item, clearItem }: { item: T; clearIte
     [claimCallback, claimRewardsCallback]
   )
 
-  const onDismiss = () => {
+  const onDismiss = useCallback(() => {
     setShowConfirm(false)
     clearItem()
-  }
+  }, [clearItem])
 
   const confirmationContent = useCallback(
     () =>
@@ -118,7 +118,7 @@ export default function ClaimRewards<T>({ item, clearItem }: { item: T; clearIte
           tableItem={curTableItem}
         />
       ),
-    [claimSubmit, errorStatus, curTableItem]
+    [claimSubmit, errorStatus, curTableItem, onDismiss]
   )
 
   return (
