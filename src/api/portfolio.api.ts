@@ -74,6 +74,43 @@ interface Params {
   userAddress: any
 }
 
+export interface ILiquidityPools {
+  name: string
+  gomboc: string
+  composition: string
+  feeRate: string
+  token0Balance: number
+  token0Address: string
+  token1Balance: number
+  token1Address: string
+  lpBalance: number
+  hopeOfLpBalance: number
+  stakedLpBalance: number
+  hopeOfStakedLpBalance: number
+  stakedProportion: number
+  currentBoost: number
+  futureBoost: number
+  feesApr: number
+  ltApr: number
+  maxLtApr: number
+  boost: number
+  maxBoost: number
+  rewardSymbol: string
+  ltTotalReward: number
+  usdOfTotalReward: number
+  hopeOfTotalReward: number
+  ltOfReward: number
+  usdOfReward: number
+  usdOfExtReward: number
+  ltOfExtReward: number
+  extRewardList: {
+    symbol: string
+    tokenAddress: string
+    amount: number
+    usdOfToken: number
+  }[]
+}
+
 export default class PortfolioApi {
   // 查询LT锁仓记录
   static getOverview(address: string) {
@@ -84,5 +121,9 @@ export default class PortfolioApi {
   }
   static getRewardsOverview(params: Params) {
     return get<DetailInfo>('/light/dao/veLT/rewards/overview', { params })
+  }
+
+  static getLiquidityPools(address: string) {
+    return get<ILiquidityPools[]>('/light/portfolio/gomboc/liquidity/pools', { params: { address } })
   }
 }

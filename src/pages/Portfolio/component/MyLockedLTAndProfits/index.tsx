@@ -75,14 +75,14 @@ const columns = [
     }
   },
   {
-    title: (
-      <>
-        Voting Rewards
+    title: 'Voting Rewards',
+    filterDropdown: () => {
+      return (
         <i className="iconfont title-button" onClick={() => {}}>
           &#xe60a;
         </i>
-      </>
-    ),
+      )
+    },
     dataIndex: 'unstaked',
     key: 'unstaked',
     render: (text: string, record: any) => {

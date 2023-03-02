@@ -22,7 +22,7 @@ import { useHistory } from 'react-router-dom'
 import { Contract } from '@ethersproject/contracts'
 import { usePairContract } from '../../../../hooks/useContract'
 
-const isNotNull = (val: string | number | null) => {
+export const isNotNull = (val: string | number | null) => {
   return val && Number(val) !== 0
 }
 
