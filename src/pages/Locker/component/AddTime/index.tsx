@@ -9,7 +9,7 @@ import TransactionConfirmationModal, {
 import format from '../../../../utils/format'
 import './index.scss'
 
-import { Token } from '@uniswap/sdk'
+import { JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
 import { useActiveWeb3React } from '../../../../hooks'
 import { LT, VELT } from '../../../../constants'
@@ -22,6 +22,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
   const [txHash, setTxHash] = useState<string>('')
   const [pendingText, setPendingText] = useState('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
+  const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const { pending: isLocerkTimePending } = useActionPending(
     account ? `${account}-${conFnNameEnum.IncreaseUnlockTime}` : ''
   )
@@ -35,7 +36,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
 
   // token
   const { lockerRes } = useLocker()
-  const { toAddTimeLocker } = useToLocker()
+  const { toAddTimeLocker, getVeLtAmount } = useToLocker()
 
   const subWeekFn = () => {
     if (weekNumber > 2) {
@@ -105,6 +106,19 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
     return null
   }, [weekNumber, lockerRes])
 
+  const afterVeLtAmount = useMemo(() => {
+    if (!argTime || !lockerRes?.amount) {
+      return undefined
+    }
+    const velt = getVeLtAmount(lockerRes?.amount.toFixed(3), format.formatDate(Number(`${argTime}`), 'YYYY-MM-DD'))
+    const res = new TokenAmount(
+      VELT[chainId ?? 1],
+      JSBI.add(JSBI.BigInt(veltBalance?.raw.toString() ?? '0'), JSBI.BigInt(velt?.raw.toString() ?? '0'))
+    )
+    console.log(velt?.toFixed(2))
+    return res
+  }, [lockerRes, chainId, veltBalance, argTime, getVeLtAmount])
+
   const lockerCallback = useCallback(async () => {
     if (!account || !chainId) return
     setCurToken(VELT[chainId ?? 1])
@@ -162,9 +176,24 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
             </div>
             <span className="font-nor text-medium">Weeks</span>
           </div>
-          <p className="font-nor text-normal text-center m-t-30">
-            new unlock date is {argTime ? format.formatUTCDate(argTime) : '--'} (UTC)
-          </p>
+          <div className="m-t-25">
+            {/* <p className="font-nor text-normal text-center m-t-30">
+              new unlock date is {argTime ? format.formatUTCDate(argTime) : '--'} (UTC)
+            </p> */}
+            <p className="font-nor flex jc-between ai-center">
+              <span className="text-normal">new unlock date is:</span>
+              <span className="text-medium">{argTime ? format.formatUTCDate(argTime) : '--'} (UTC)</span>
+            </p>
+            <p className="font-nor flex jc-between ai-center m-t-16">
+              <span className="text-normal">Your starting voting power will be:</span>
+              <span className="text-medium">
+                {afterVeLtAmount
+                  ? afterVeLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
+                  : veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}{' '}
+                veLT
+              </span>
+            </p>
+          </div>
         </div>
         <div className="m-t-50">
           <ActionButton
