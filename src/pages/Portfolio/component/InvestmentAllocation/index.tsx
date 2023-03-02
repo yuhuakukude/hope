@@ -16,6 +16,13 @@ import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
 
+type IOptionItem = {
+  name: string
+  value: any
+  formatValue: string
+  tips: JSX.Element | string
+}
+
 export default function InvestmentAllocation({ data, lpData }: { data: any; lpData: any }) {
   const { chainId } = useActiveWeb3React()
   const addresses = useMemo(() => {
@@ -23,44 +30,8 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
   }, [chainId])
 
   const { result: priceResult } = useTokenPrice(addresses)
-  const allocations = useMemo(() => {
-    return [
-      {
-        name: 'HOPE Staking',
-        value: data.staking,
-        formatValue: format.amountFormat(data.staking, 2),
-        tips:
-          'The total value of tokens currently held in the HOPE Staking contract, including the transferable, unstaking, and withdrawable portions of the address'
-      },
-      {
-        name: 'Liquidity Pools',
-        value: data.lp,
-        formatValue: format.amountFormat(data.lp, 2),
-        tips: 'Total value of assets withdrawable from liquidity pools'
-      },
-      {
-        name: 'Yield Farming',
-        value: data.yieldFarming,
-        formatValue: format.amountFormat(data.yieldFarming, 2),
-        tips: 'Total value of LP Tokens staked and pending rewards'
-      },
-      {
-        name: 'Locked LT & Profits',
-        value: data.profits,
-        formatValue: format.amountFormat(data.profits, 2),
-        tips: (
-          <>
-            <div>Locked LT: Total value of locked LT </div>
-            <div>
-              Profits: Platform fee income. veLT holders will receive 25% of all agreed fee income as an reward, as well
-              as a portion of the Gömböc fee income during the voting period if they participate in the weighted vote of
-              a Gömböc. Learn more
-            </div>
-          </>
-        )
-      }
-    ]
-  }, [data])
+  const [allocations, setAllocations] = useState<IOptionItem[]>([])
+
   const [visibleMap, setVisibleMap] = useState(false)
   console.log(lpData)
   const investmentRef = useRef<HTMLInputElement>()
@@ -107,6 +78,7 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
         )
       }
     ]
+    setAllocations(listData)
     const option: EChartsOption = {
       left: 95,
       top: 40,
