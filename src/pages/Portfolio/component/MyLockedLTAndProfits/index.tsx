@@ -11,6 +11,7 @@ import { VELT } from '../../../../constants'
 import { JSBI, Percent } from '@uniswap/sdk'
 import usePrice from 'hooks/usePrice'
 import VotedList from '../../../../components/ahp/VotedList'
+import { NavLink } from 'react-router-dom'
 
 import './index.scss'
 
@@ -63,9 +64,11 @@ export default function MyLockedLTAndProfits() {
               </span>
               <span className="my-locked-lt-value2">{unUseRateVal || '0.00'}% share of total</span>
             </div>
-            <Button className="my-locked-lt-button" type="ghost">
-              Increase veLT
-            </Button>
+            <NavLink to={'/dao/locker'}>
+              <Button className="my-locked-lt-button" type="ghost">
+                Increase veLT
+              </Button>
+            </NavLink>
           </div>
         </div>
         <div className="my-locked-lt-row2">
