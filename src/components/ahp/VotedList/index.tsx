@@ -24,7 +24,13 @@ import Row from '../../../components/Row'
 import { Decimal } from 'decimal.js'
 import format from '../../../utils/format'
 
-const VotedList = ({ getVotingRewards }: { getVotingRewards?: (stHope: string, toUsd: string) => void }) => {
+const VotedList = ({
+  getVotingRewards,
+  getAllData
+}: {
+  getVotingRewards?: (stHope: string, toUsd: string) => void
+  getAllData?: (list: any) => void
+}) => {
   const gomConContract = useGomConContract()
   const gomFeeDisContract = useGomFeeDisContract()
   const { account, chainId } = useActiveWeb3React()
@@ -139,6 +145,35 @@ const VotedList = ({ getVotingRewards }: { getVotingRewards?: (stHope: string, t
       toUsd = new Decimal(toUsd).add(new Decimal(Number(item.usdOfValue))).toNumber()
     })
     getVotingRewards && getVotingRewards(format.amountFormat(stHope, 2), format.amountFormat(toUsd, 2))
+    const arr: any = []
+    tableData.forEach((e: any) => {
+      const addr = e.gomboc.id
+      const item: any = {
+        name: '',
+        value: '',
+        usdOfValue: '',
+        id: ''
+      }
+      if (e.gomboc && e.gomboc.pair) {
+        const pa = e.gomboc.pair
+        let token0 = ''
+        let token1 = ''
+        if (pa.token0 && pa.token1) {
+          token0 = pa.token0.symbol
+          token1 = pa.token1.symbol
+        }
+        item.name = `Pool - ${token0}/${token1}`
+      } else {
+        item.name = `Staking $HOP`
+      }
+      item.value = res[addr].view
+      item.usdOfValue = res[addr].usdOfValue
+      item.id = addr
+      if (res[addr].value && Number(res[addr].value) > 0) {
+        arr.push(item)
+      }
+    })
+    getAllData && getAllData(arr)
     return res
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rewardsData, tableData, priceResult, chainId])
@@ -289,13 +324,6 @@ const VotedList = ({ getVotingRewards }: { getVotingRewards?: (stHope: string, t
     setAttemptingTxn(false)
     setShowConfirm(true)
   }
-
-  // function toReset(item: any) {
-  //   setTxHash('')
-  //   setErrorStatus(undefined)
-  //   setAttemptingTxn(false)
-  //   setShowConfirm(true)
-  // }
 
   const confirmationContent = useCallback(
     () =>

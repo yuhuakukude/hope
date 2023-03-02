@@ -5,7 +5,7 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Decimal } from 'decimal.js'
-import format from 'utils/format'
+// import format from 'utils/format'
 import { CurrencyAmount } from '@uniswap/sdk'
 import { useSingleCallResult } from '../../state/multicall/hooks'
 
@@ -80,7 +80,7 @@ export function useFeeClaim() {
   const contract = useFeeDisContract()
   const { account } = useActiveWeb3React()
   const toFeeClaim = useCallback(
-    async (amount: string) => {
+    async (amount: string | number) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [account]
@@ -92,7 +92,7 @@ export function useFeeClaim() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Fees Withdraw ${format.amountFormat(amount, 2)} stHOPE`
+            summary: `Fees Withdraw ${amount} stHOPE`
           })
           return response.hash
         })
@@ -110,7 +110,7 @@ export function useGomFeeClaim() {
   const contract = useGomFeeDisContract()
   const { account } = useActiveWeb3React()
   const toGomFeeClaim = useCallback(
-    async (address: string, amount: string) => {
+    async (address: string, amount: string | number) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [address, account]
@@ -140,7 +140,7 @@ export function useGomFeeManyClaim() {
   const contract = useGomFeeDisContract()
   const { account } = useActiveWeb3React()
   const toGomFeeManyClaim = useCallback(
-    async (addressArr: any, amount: string) => {
+    async (addressArr: any, amount: string | number) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [addressArr, account]
@@ -152,7 +152,7 @@ export function useGomFeeManyClaim() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Fees Withdraw ${format.amountFormat(amount, 2)} stHOPE`
+            summary: `Fees Withdraw ${amount} stHOPE`
           })
           return response.hash
         })

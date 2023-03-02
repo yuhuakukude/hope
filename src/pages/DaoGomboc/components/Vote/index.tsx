@@ -15,7 +15,7 @@ import { JSBI, Percent, Token } from '@uniswap/sdk'
 import { useSingleCallResult } from '../../../../state/multicall/hooks'
 import ActionButton from '../../../../components/Button/ActionButton'
 import { NavLink, useLocation } from 'react-router-dom'
-
+import { isAddress } from '../../../../utils'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
@@ -234,7 +234,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   }, [updateTable, txHash, isTranPending])
 
   useEffect(() => {
-    if (selList && selList.length > 0 && searchParams.get('gomboc')) {
+    if (selList && selList.length > 0 && searchParams.get('gomboc') && isAddress(searchParams.get('gomboc'))) {
       setCurGomAddress(`${searchParams?.get('gomboc')}`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
