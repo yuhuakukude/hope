@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as echarts from 'echarts'
 import { TitleComponentOption } from 'echarts/components'
 import { PieSeriesOption } from 'echarts/charts'
@@ -54,10 +54,15 @@ export default function InvestmentAllocation({ data, lpData }: { data: Portfolio
   }, [data])
   const [visibleMap, setVisibleMap] = useState(false)
   console.log(lpData)
+  const investmentRef = useRef<HTMLInputElement>()
+
+  const [myChart, setMyChart] = useState<echarts.ECharts | null>(null)
+
   useEffect(() => {
     if (!visibleMap) {
       return
     }
+
     const option: EChartsOption = {
       left: 95,
       top: 40,
@@ -124,17 +129,16 @@ export default function InvestmentAllocation({ data, lpData }: { data: Portfolio
         }
       ]
     }
-
-    let myChart: echarts.ECharts | null = null
-    setTimeout(() => {
-      myChart = echarts.init(document.querySelector('#investment-allocation-map') as HTMLElement)
+    if (!myChart) {
+      setMyChart(echarts.init(investmentRef.current as HTMLElement, option))
+    } else {
       myChart.setOption(option)
-    })
+    }
 
     return () => {
       myChart && myChart.dispose()
     }
-  }, [allocations, visibleMap])
+  }, [allocations, visibleMap, myChart])
 
   return (
     <div className="investment-allocation">
@@ -181,9 +185,9 @@ export default function InvestmentAllocation({ data, lpData }: { data: Portfolio
           </div>
         </div>
       </Card>
-      <Modal width="500px" visible={visibleMap} onCancel={() => setVisibleMap(false)}>
+      <Modal width="500px" visible={visibleMap} onCancel={() => setVisibleMap(false)} forceRender>
         <div className="investment-allocation-wrap">
-          <div className="investment-allocation-map" id="investment-allocation-map"></div>
+          <div className="investment-allocation-map" ref={investmentRef as any}></div>
         </div>
       </Modal>
     </div>
