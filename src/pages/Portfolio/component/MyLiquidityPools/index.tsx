@@ -8,15 +8,16 @@ import Card from '../Card'
 import ClaimRewards from '../ClaimRewards'
 import Item from '../Item'
 import SelectTips, { TitleTipsProps } from '../SelectTips'
+import { Decimal } from 'decimal.js'
 
-function toFixed(val: string | number, length: number = 2) {
+function toFixed(val: string | number, length = 2) {
   if (isNaN(val as number)) {
     return val
   }
   return Number(val).toFixed(length)
 }
 
-export default function MyLiquidityPools() {
+export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: number, yfTotal: number) => void }) {
   const { account } = useActiveWeb3React()
   const [dataSource, setDataSource] = useState<ILiquidityPools[]>([])
   useEffect(() => {
@@ -27,9 +28,25 @@ export default function MyLiquidityPools() {
       console.log('getLiquidityPools;;;;;::>>>>', data)
       if (data.success && data.result) {
         setDataSource(data.result)
+        let lpTotal = 0
+        let yfTotal = 0
+        if (data.result && data.result.length > 0) {
+          data.result.forEach(e => {
+            if (e.hopeOfLpBalance) {
+              lpTotal = new Decimal(lpTotal).add(new Decimal(Number(e.hopeOfLpBalance))).toNumber()
+            }
+            if (e.hopeOfStakedLpBalance && e.hopeOfTotalReward) {
+              yfTotal = new Decimal(yfTotal)
+                .add(new Decimal(Number(e.hopeOfStakedLpBalance)))
+                .add(new Decimal(Number(e.hopeOfTotalReward)))
+                .toNumber()
+            }
+          })
+          getLpData && getLpData(lpTotal, yfTotal)
+        }
       }
     })
-  }, [account])
+  }, [account, getLpData])
   const [item, setItem] = useState<ILiquidityPools | null>(null)
   const history = useHistory()
   const columns = [

@@ -13,7 +13,7 @@ import TitleTips from '../TitleTips'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
 
-export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) {
+export default function InvestmentAllocation({ data, lpData }: { data: PortfolioInfo; lpData: any }) {
   const allocations = useMemo(() => {
     return [
       {
@@ -53,6 +53,7 @@ export default function InvestmentAllocation({ data }: { data: PortfolioInfo }) 
     ]
   }, [data])
   const [visibleMap, setVisibleMap] = useState(false)
+  console.log(lpData)
   useEffect(() => {
     if (!visibleMap) {
       return
