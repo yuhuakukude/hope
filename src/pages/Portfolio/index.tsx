@@ -23,7 +23,7 @@ const PageWrapper = styled(AutoColumn)`
 export default function Portfolio() {
   const { account } = useActiveWeb3React()
   const [overViewData, setOverViewData] = useState<PortfolioInfo>({} as PortfolioInfo)
-
+  const [lpData, setLpData] = useState({})
   const init = useCallback(async () => {
     try {
       const res = await PortfolioApi.getOverview(`${account}`)
@@ -34,6 +34,10 @@ export default function Portfolio() {
       console.log(error)
     }
   }, [account])
+
+  function setLpTotal(lpTotal: number, yfTotal: number) {
+    setLpData({ lpTotal, yfTotal })
+  }
 
   useEffect(() => {
     if (account) {
@@ -49,10 +53,10 @@ export default function Portfolio() {
           <PortfolioConnect />
         ) : (
           <>
-            <InvestmentAllocation data={overViewData} />
+            <InvestmentAllocation lpData={lpData} data={overViewData} />
             {/* <GombocRewards data={overViewData.rewards} /> */}
             <MyHOPEStaking />
-            <MyLiquidityPools />
+            <MyLiquidityPools getLpData={setLpTotal} />
             <MyLockedLTAndProfits />
             {/* <VeLTRewards /> */}
             {/* <Govern /> */}

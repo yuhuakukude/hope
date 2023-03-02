@@ -9,15 +9,16 @@ import ClaimRewards from '../ClaimRewards'
 import Item from '../Item'
 import SelectTips, { TitleTipsProps } from '../SelectTips'
 import Head, { IHeadItem } from './components/head'
+import { Decimal } from 'decimal.js'
 
-function toFixed(val: string | number, length: number = 2) {
+function toFixed(val: string | number, length = 2) {
   if (isNaN(val as number)) {
     return val
   }
   return Number(val).toFixed(length)
 }
 
-export default function MyLiquidityPools() {
+export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: number, yfTotal: number) => void }) {
   const { account } = useActiveWeb3React()
   const [dataSource, setDataSource] = useState<ILiquidityPools[]>([])
   const [headData, setHeadData] = useState<IHeadItem[]>([])
@@ -41,8 +42,25 @@ export default function MyLiquidityPools() {
           }
         })
         setHeadData(headList)
+        let lpTotal = 0
+        let yfTotal = 0
+        if (data.result && data.result.length > 0) {
+          data.result.forEach(e => {
+            if (e.hopeOfLpBalance) {
+              lpTotal = new Decimal(lpTotal).add(new Decimal(Number(e.hopeOfLpBalance))).toNumber()
+            }
+            if (e.hopeOfStakedLpBalance && e.hopeOfTotalReward) {
+              yfTotal = new Decimal(yfTotal)
+                .add(new Decimal(Number(e.hopeOfStakedLpBalance)))
+                .add(new Decimal(Number(e.hopeOfTotalReward)))
+                .toNumber()
+            }
+          })
+          getLpData && getLpData(lpTotal, yfTotal)
+        }
       }
     })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account])
 
   const [item, setItem] = useState<ILiquidityPools | IHeadItem[] | null>(null)

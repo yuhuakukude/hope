@@ -321,6 +321,12 @@ export default function DaoLocker() {
                       )}
                     </p>
                   </p>
+                  <p className="flex jc-between ai-center font-nor m-t-16">
+                    <span className="text-normal">Locked Until :</span>
+                    <span className="text-medium">
+                      {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
+                    </span>
+                  </p>
                 </div>
                 {lockerRes?.end && lockerRes?.end !== '--' ? (
                   <div className="add-action-box m-t-30">
@@ -329,12 +335,6 @@ export default function DaoLocker() {
                         <span className="text-normal">Balance in Voting Escrow :</span>
                         <span className="text-medium">
                           {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
-                        </span>
-                      </p>
-                      <p className="flex jc-between font-nor m-t-16">
-                        <span className="text-normal">Locked Until :</span>
-                        <span className="text-medium">
-                          {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
                         </span>
                       </p>
                     </div>

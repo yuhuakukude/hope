@@ -32,6 +32,9 @@ export default function AddAmount() {
   const { pending: isLocerkAmountPending } = useActionPending(
     account ? `${account}-${conFnNameEnum.IncreaseAmount}` : ''
   )
+  const { pending: isLocerkTimePending } = useActionPending(
+    account ? `${account}-${conFnNameEnum.IncreaseUnlockTime}` : ''
+  )
 
   // token api
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
@@ -233,9 +236,13 @@ export default function AddAmount() {
         </div>
         <div className="m-t-50">
           <ActionButton
-            pending={approvalState === ApprovalState.PENDING || !!pendingText || isLocerkAmountPending}
+            pending={
+              approvalState === ApprovalState.PENDING || !!pendingText || isLocerkAmountPending || isLocerkTimePending
+            }
             pendingText={
-              isLocerkAmountPending || approvalState === ApprovalState.PENDING ? 'Pending' : 'Confirm in your wallet'
+              isLocerkAmountPending || isLocerkTimePending || approvalState === ApprovalState.PENDING
+                ? 'Pending'
+                : 'Confirm in your wallet'
             }
             disableAction={isMaxDisabled || !inputAmount || !ltBalance || approvalState === ApprovalState.UNKNOWN}
             actionText={actionText}
