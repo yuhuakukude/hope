@@ -8,6 +8,7 @@ import Card from '../Card'
 import ClaimRewards from '../ClaimRewards'
 import Item from '../Item'
 import SelectTips, { TitleTipsProps } from '../SelectTips'
+import Head, { IHeadItem } from './components/head'
 
 function toFixed(val: string | number, length: number = 2) {
   if (isNaN(val as number)) {
@@ -19,6 +20,7 @@ function toFixed(val: string | number, length: number = 2) {
 export default function MyLiquidityPools() {
   const { account } = useActiveWeb3React()
   const [dataSource, setDataSource] = useState<ILiquidityPools[]>([])
+  const [headData, setHeadData] = useState<IHeadItem[]>([])
   useEffect(() => {
     if (!account) {
       return
@@ -27,10 +29,23 @@ export default function MyLiquidityPools() {
       console.log('getLiquidityPools;;;;;::>>>>', data)
       if (data.success && data.result) {
         setDataSource(data.result)
+        const headList: IHeadItem[] = []
+        data.result.forEach(item => {
+          if (item.ltOfReward && Number(item.ltOfReward) !== 0) {
+            headList.push({
+              ltOfReward: item.ltOfReward,
+              ltTotalReward: item.ltTotalReward,
+              gomboc: item.gomboc,
+              composition: item.composition
+            })
+          }
+        })
+        setHeadData(headList)
       }
     })
   }, [account])
-  const [item, setItem] = useState<ILiquidityPools | null>(null)
+
+  const [item, setItem] = useState<ILiquidityPools | IHeadItem[] | null>(null)
   const history = useHistory()
   const columns = [
     {
@@ -117,38 +132,44 @@ export default function MyLiquidityPools() {
       dataIndex: 'actions',
       key: 'actions',
       render: (text: string, record: ILiquidityPools) => {
-        const options: TitleTipsProps[] = [
-          {
+        const options: TitleTipsProps[] = []
+        if (record.ltOfReward && Number(record.ltOfReward) > 0) {
+          options.push({
             label: 'Claim Rewards',
             value: 'Claim Rewards',
             onClick: () => {
               setItem(record)
             }
-          },
-          {
-            label: 'Yield Boost',
-            value: 'Yield Boost',
-            onClick: () => {
-              history.push(`/staking`) // TODO check url
-            }
-          },
-          {
-            label: 'Pool Details',
-            value: 'Pool Details',
-            onClick: () => {
-              history.push(`/staking`) // TODO check url
-            }
+          })
+        }
+        options.push({
+          label: 'Yield Boost',
+          value: 'Yield Boost',
+          onClick: () => {
+            history.push(`/staking`) // TODO check url
           }
-        ]
+        })
+        options.push({
+          label: 'Pool Details',
+          value: 'Pool Details',
+          onClick: () => {
+            history.push(`/staking`) // TODO check url
+          }
+        })
         return <SelectTips options={options} />
       }
     }
   ]
   const clearItem = useCallback(() => setItem(null), [])
+  const claimAll = () => {
+    setItem(headData)
+  }
+
   return (
     <>
       <ClaimRewards item={item} clearItem={clearItem} />
       <Card title="My Liquidity Pools">
+        <Head data={headData} claimAll={claimAll}></Head>
         <Table columns={columns} dataSource={dataSource}></Table>
       </Card>
     </>

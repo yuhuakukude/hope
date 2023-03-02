@@ -3,12 +3,20 @@ import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
 import { Token } from '@uniswap/sdk'
-import GombocClaim from '../../../../components/ahp/GombocClaim'
+import GombocClaim, { ITableItem } from '../../../../components/ahp/GombocClaim'
 import { useToClaim, useClaimRewards } from '../../../../hooks/ahp/usePortfolio'
 import { STAKING_HOPE_GOMBOC_ADDRESS, LT, HOPE } from '../../../../constants'
 import { useActiveWeb3React } from 'hooks'
+import GombocClaimAll from 'components/ahp/GombocClaimAll'
+import { getCount, IHeadItem } from '../MyLiquidityPools/components/head'
 
-export default function ClaimRewards<T>({ item, clearItem }: { item: T; clearItem: () => void }) {
+export default function ClaimRewards({
+  item,
+  clearItem
+}: {
+  item: ITableItem | null | IHeadItem[]
+  clearItem: () => void
+}) {
   const { account, chainId } = useActiveWeb3React()
   const [curTableItem, setCurTableItem]: any = useState({})
   const [txHash, setTxHash] = useState<string>('')
@@ -21,7 +29,9 @@ export default function ClaimRewards<T>({ item, clearItem }: { item: T; clearIte
     if (!item) {
       return
     }
-    setCurTableItem(item)
+    if (!Array.isArray(item)) {
+      setCurTableItem(item)
+    }
     setTxHash('')
     setErrorStatus(undefined)
     setAttemptingTxn(false)
@@ -54,7 +64,7 @@ export default function ClaimRewards<T>({ item, clearItem }: { item: T; clearIte
     setCurToken(LT[chainId ?? 1])
     onTxStart()
     setPendingText(`claim Rewards`)
-    toClaim(STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1])
+    toClaim(STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]) // TODO
       .then(hash => {
         setPendingText('')
         onTxSubmitted(hash)
@@ -64,6 +74,23 @@ export default function ClaimRewards<T>({ item, clearItem }: { item: T; clearIte
         onTxError(error)
       })
   }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaim])
+
+  const claimAllCallback = useCallback(async () => {
+    if (!account || !Array.isArray(item)) return
+    setCurToken(LT[chainId ?? 1])
+    onTxStart()
+    setPendingText(`claim all Rewards`)
+    // TODO
+    toClaim(item.map(i => i.gomboc))
+      .then(hash => {
+        setPendingText('')
+        onTxSubmitted(hash)
+      })
+      .catch((error: any) => {
+        setPendingText('')
+        onTxError(error)
+      })
+  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaim, item])
 
   const curAddress = useMemo(() => {
     let res = ''
@@ -105,10 +132,21 @@ export default function ClaimRewards<T>({ item, clearItem }: { item: T; clearIte
     clearItem()
   }, [clearItem])
 
+  const [total, setTotal] = useState(0)
+
+  useEffect(() => {
+    if (!Array.isArray(item)) {
+      return
+    }
+    setTotal(getCount(item, 'ltOfReward'))
+  }, [item])
+
   const confirmationContent = useCallback(
     () =>
       errorStatus ? (
         <TransactionErrorContent errorCode={errorStatus.code} onDismiss={onDismiss} message={errorStatus.message} />
+      ) : Array.isArray(item) ? (
+        <GombocClaimAll total={total} onSubmit={claimAllCallback} onDismiss={onDismiss} list={item} />
       ) : (
         <GombocClaim
           onSubmit={(type: string) => {
@@ -118,7 +156,7 @@ export default function ClaimRewards<T>({ item, clearItem }: { item: T; clearIte
           tableItem={curTableItem}
         />
       ),
-    [claimSubmit, errorStatus, curTableItem, onDismiss]
+    [claimSubmit, errorStatus, curTableItem, onDismiss, item, total, claimAllCallback]
   )
 
   return (
