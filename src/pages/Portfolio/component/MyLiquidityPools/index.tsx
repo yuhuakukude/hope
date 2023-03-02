@@ -46,7 +46,8 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
         }
       }
     })
-  }, [account, getLpData])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account])
   const [item, setItem] = useState<ILiquidityPools | null>(null)
   const history = useHistory()
   const columns = [
