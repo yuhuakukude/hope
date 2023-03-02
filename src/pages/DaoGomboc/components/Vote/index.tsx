@@ -164,11 +164,21 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
     return sub
   }, [unUseRateVal, curPower])
 
+  const curPowerAmount = useMemo(() => {
+    let sub = 0
+    if (curPower.result && curPower.result.power) {
+      const cp = JSBI.BigInt(Number(curPower.result.power))
+      const ra = new Percent(cp, JSBI.BigInt(10000))
+      sub = Number(ra.toFixed(2))
+    }
+    return sub
+  }, [curPower])
+
   const voteInputError = useMemo(() => {
     if (curLastVote) {
       return 'No voting within ten days'
     }
-    if (curGomAddress && amount && (Number(amount) > 100 || Number(amount) === 0)) {
+    if (curGomAddress && amount && Number(amount) > 100) {
       return 'Insufficient Value'
     }
     if (curGomAddress && amount && Number(subAmount) < Number(amount)) {
@@ -251,12 +261,22 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
     }
   }
 
+  useEffect((): any => {
+    console.log(curPowerAmount)
+    if (curPowerAmount && curGomAddress) {
+      changeAmount(`${curPowerAmount}`)
+    } else {
+      changeAmount('')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curGomAddress, curPowerAmount])
+
   function changeSel(val: string) {
     setCurGomAddress(val)
   }
 
   function subValueFn() {
-    const newVal = new Decimal(Number(amount)).sub(new Decimal(0.01)).toNumber()
+    const newVal = new Decimal(Number(amount)).sub(new Decimal(0.1)).toNumber()
     if (newVal < 0) {
       changeAmount(`0`)
     } else {
