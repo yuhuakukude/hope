@@ -13,13 +13,14 @@ import { JSBI, Percent, Token } from '@uniswap/sdk'
 import usePrice from 'hooks/usePrice'
 import VotedList from '../../../../components/ahp/VotedList'
 import { NavLink } from 'react-router-dom'
+import { Decimal } from 'decimal.js'
 import { useFeeClaim, useGomFeeManyClaim } from '../../../../hooks/ahp/usePortfolio'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
 import './index.scss'
 
-export default function MyLockedLTAndProfits() {
+export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (stHope: string, lt: string) => void }) {
   const { account, chainId } = useActiveWeb3React()
   const { lockerRes, votePowerAmount } = useLocker()
   const { claimableFees } = usePortfolio()
@@ -111,6 +112,18 @@ export default function MyLockedLTAndProfits() {
   const getVotingRewards = (stHope: string, toUsd: string) => {
     setVotingFee({ stHope, toUsd })
   }
+
+  useEffect(() => {
+    if (claimableFees) {
+      getAllVoting(
+        new Decimal(claimableFees?.toFixed(2) || 0)
+          .add(new Decimal(votingFee.stHope || 0))
+          .toNumber()
+          .toFixed(2),
+        lockerRes?.amount ? lockerRes?.amount.toFixed(2) : '0'
+      )
+    }
+  }, [votingFee.stHope, claimableFees, getAllVoting, lockerRes])
   const getAllData = (allList: any) => {
     setAllData(allList)
   }
