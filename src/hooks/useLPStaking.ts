@@ -110,7 +110,7 @@ export function useStakingPairPool(address: string) {
     ;(async () => {
       setLoading(true)
       try {
-        const pool = await fetchPairPool(address ?? '')
+        const pool = await fetchPairPool(address.toLowerCase() ?? '')
         setLoading(false)
         setResult(pool)
       } catch (error) {

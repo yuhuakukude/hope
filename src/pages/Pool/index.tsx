@@ -154,7 +154,7 @@ export default function Pool() {
   const { account } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const [showRiskModal, setShowRiskModal] = useState(false)
-  const { pairInfos, loading } = usePairsInfo()
+  const { pairInfos, loading } = usePairsInfo(1, 1)
   const history = useHistory()
 
   console.log('loading:::>>>', loading)

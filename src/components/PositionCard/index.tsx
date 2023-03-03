@@ -169,9 +169,20 @@ interface FullCardProps {
   border?: string
   stakedBalance?: TokenAmount // optional balance to indicate that liquidity is deposited in mining pool
   feeRate?: number
+  futureBoots?: string
+  currentBoots?: string
+  reward?: TokenAmount | undefined
 }
 
-export default function FullPositionCard({ pairInfo, border, stakedBalance, feeRate }: FullCardProps) {
+export default function FullPositionCard({
+  pairInfo,
+  border,
+  stakedBalance,
+  feeRate,
+  futureBoots,
+  currentBoots,
+  reward
+}: FullCardProps) {
   const { account, chainId } = useActiveWeb3React()
 
   const currency0 = unwrappedToken(pairInfo.tokens[0])
@@ -184,10 +195,6 @@ export default function FullPositionCard({ pairInfo, border, stakedBalance, feeR
 
   // if staked balance balance provided, add to standard liquidity amount
   const userPoolBalance = stakedBalance ? userDefaultPoolBalance?.add(stakedBalance) : userDefaultPoolBalance
-  const poolTokenPercentage =
-    !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
-      ? new Percent(userPoolBalance.raw, totalPoolTokens.raw)
-      : undefined
   const [token0Deposited, token1Deposited] =
     !!pair &&
     !!totalPoolTokens &&
@@ -259,7 +266,7 @@ export default function FullPositionCard({ pairInfo, border, stakedBalance, feeR
             </DataRow>
             <DataRow gap={'8px'}>
               <CurrencyLogo size={'16px'} currency={currency1} />
-              <TYPE.white>{`${token1Deposited ? token0Deposited?.toSignificant(4) : '--'}`}</TYPE.white>
+              <TYPE.white>{`${token1Deposited ? token1Deposited?.toSignificant(4) : '--'}`}</TYPE.white>
             </DataRow>
           </AutoColumn>
         </ContentRow>
@@ -272,22 +279,26 @@ export default function FullPositionCard({ pairInfo, border, stakedBalance, feeR
               <TYPE.main>{stakedBalance ? `${stakedBalance.toSignificant(6)} %Staked` : '--'}</TYPE.main>
             </DataRow>
           </AutoColumn>
-          {/*<Text fontSize={16} fontWeight={500}>*/}
-          {/*  {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}{' '}*/}
-          {/*</Text>*/}
-          {/*<TYPE.main ml={10} alignSelf={'end'} fontSize={12}>*/}
-          {/*  Staked(*/}
-          {/*  {stakedBalance ? stakedBalance.toSignificant(6) : '--'})*/}
-          {/*</TYPE.main>*/}
         </ContentRow>
         <ContentRow>
-          <Text fontSize={16} fontWeight={500}>
-            {poolTokenPercentage
-              ? (poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'
-              : '-'}
-          </Text>
+          <AutoColumn gap={'10px'}>
+            <AutoRow>
+              <TYPE.main>Current:&nbsp;</TYPE.main>
+              <TYPE.white>{currentBoots}</TYPE.white>
+            </AutoRow>
+            <AutoRow>
+              <TYPE.main>Future:&nbsp;&nbsp;</TYPE.main>
+              <TYPE.white>{futureBoots}</TYPE.white>
+            </AutoRow>
+          </AutoColumn>
         </ContentRow>
-        <ContentRow></ContentRow>
+        <ContentRow>--</ContentRow>
+        <ContentRow>
+          <AutoColumn gap={'10px'}>
+            <TYPE.white>{reward ? reward.toFixed(4) : '--'}</TYPE.white>
+            <TYPE.main>≈ $</TYPE.main>
+          </AutoColumn>
+        </ContentRow>
 
         <ContentRow weight={0.5}>
           <TitleTips options={actions} label={'More'} />

@@ -1,13 +1,16 @@
-import React, { useState } from 'react'
+import React, { RefObject, useRef, useState } from 'react'
 import styled from 'styled-components'
-import { AutoColumn } from '../../components/Column'
-import { AutoRow, RowBetween } from '../../components/Row'
+import { AutoColumn, ColumnCenter } from '../../components/Column'
+import Row, { AutoRow, RowBetween, RowFixed } from '../../components/Row'
 import { TYPE } from '../../theme'
-import { ButtonPrimary } from '../../components/Button'
+import { ButtonGray, ButtonPrimary } from '../../components/Button'
 import { TabItem, TabWrapper } from '../../components/Tab'
-import usePairsInfo from '../../hooks/usePairInfo'
+import usePairsInfo, { PAIR_SEARCH } from '../../hooks/usePairInfo'
 import PoolCard from '../../components/pool/PoolCard'
 import FullPositionCard from '../../components/PositionCard'
+import { SearchInput } from '../../components/SearchModal/styleds'
+import Toggle from '../../components/Toggle'
+import { Pagination } from 'antd'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
@@ -51,8 +54,24 @@ const positionTitles = [
   { value: 'Actions', weight: 0.5 }
 ]
 export default function Pools() {
-  const [isAll, setIsAll] = useState(true)
-  const { pairInfos } = usePairsInfo()
+  const inputRef = useRef<HTMLInputElement>()
+  const [searchValue, setSearchValue] = useState('')
+  const [searchType, setSearchType] = useState(PAIR_SEARCH.ALL)
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [pageSize, setPageSize] = useState<number>(5)
+
+  const { pairInfos, total } = usePairsInfo(pageSize, currentPage, searchType, searchValue)
+
+  const handleSearchInput = (event: any) => {
+    const input = event.target.value
+    setSearchValue(input)
+  }
+
+  const onPagesChange = (page: any, pageSize: any) => {
+    setCurrentPage(Number(page))
+    setPageSize(Number(pageSize))
+  }
+
   console.log('pairInfos', pairInfos)
   return (
     <PageWrapper>
@@ -64,25 +83,77 @@ export default function Pools() {
       </RowBetween>
       　
       <AutoRow>
-        <TabWrapper>
-          <TabItem onClick={() => setIsAll(true)} isActive={isAll}>
-            All
-          </TabItem>
-          <TabItem onClick={() => setIsAll(false)} isActive={!isAll}>
-            My Positions
-          </TabItem>
-        </TabWrapper>
+        <RowBetween>
+          <TabWrapper>
+            <TabItem
+              onClick={() => {
+                setCurrentPage(1)
+                setSearchType(PAIR_SEARCH.ALL)
+              }}
+              isActive={searchType === PAIR_SEARCH.ALL}
+            >
+              All
+            </TabItem>
+            <TabItem
+              onClick={() => {
+                setCurrentPage(1)
+                setSearchType(PAIR_SEARCH.USER_LIQUIDITY)
+              }}
+              isActive={searchType === PAIR_SEARCH.USER_LIQUIDITY}
+            >
+              My Positions
+            </TabItem>
+          </TabWrapper>
+          <AutoColumn>
+            <RowFixed gap={'md'}>
+              <AutoRow gap={'12px'}>
+                <TYPE.main>My Farms</TYPE.main>
+                <Toggle
+                  id="toggle-expert-mode-button"
+                  isActive={searchType === PAIR_SEARCH.USER_STAKE}
+                  toggle={() => {
+                    setCurrentPage(1)
+                    searchType === PAIR_SEARCH.USER_STAKE
+                      ? setSearchType(PAIR_SEARCH.USER_LIQUIDITY)
+                      : setSearchType(PAIR_SEARCH.USER_STAKE)
+                  }}
+                />
+              </AutoRow>
+              <div style={{ width: '440px', margin: 'auto', marginLeft: 40 }}>
+                <div className="flex">
+                  <div style={{ position: 'relative', width: '440px' }} className="flex m-r-20">
+                    <SearchInput
+                      fontSize={'16px'}
+                      padding={'10px 16px 10px 45px'}
+                      type="text"
+                      id="token-search-input"
+                      placeholder={'Search Token Symbol / Address'}
+                      autoComplete="off"
+                      ref={inputRef as RefObject<HTMLInputElement>}
+                      value={searchValue}
+                      onChange={handleSearchInput}
+                    />
+                    <i className="iconfont search-input-icon">&#xe61b;</i>
+                  </div>
+                  <ButtonGray padding={'12px 24px'} style={{ width: 'max-content' }} onClick={() => {}}>
+                    Search
+                  </ButtonGray>
+                </div>
+              </div>
+            </RowFixed>
+          </AutoColumn>
+        </RowBetween>
       </AutoRow>
       <TableWrapper>
         <TableTitleWrapper>
-          {(isAll ? poolTitles : positionTitles).map(({ value, weight }, index) => (
+          {(searchType === PAIR_SEARCH.ALL ? poolTitles : positionTitles).map(({ value, weight }, index) => (
             <TableTitle key={index} flex={weight ?? 1}>
               {value}
             </TableTitle>
           ))}
         </TableTitleWrapper>
       </TableWrapper>
-      {isAll ? (
+      {searchType === PAIR_SEARCH.ALL ? (
         <>
           {pairInfos.map(amountPair => (
             <PoolCard key={amountPair.pair.liquidityToken.address} tvl={amountPair.tvl} pairInfo={amountPair.pair} />
@@ -93,6 +164,9 @@ export default function Pools() {
           {pairInfos.map(amountPair => (
             <FullPositionCard
               key={amountPair.pair.liquidityToken.address}
+              reward={amountPair.reward}
+              futureBoots={amountPair.futureBoots?.toFixed(2).toString() ?? '-'}
+              currentBoots={amountPair.currentBoots?.toFixed(2).toString() ?? '-'}
               feeRate={amountPair.feeRate}
               pairInfo={amountPair.pair}
               stakedBalance={amountPair.stakedAmount}
@@ -100,6 +174,25 @@ export default function Pools() {
           ))}
         </>
       )}
+      <ColumnCenter style={{ marginTop: 30 }}>
+        {total > 0 && (
+          <Row justify="center">
+            <Pagination
+              showQuickJumper
+              total={total}
+              current={currentPage}
+              pageSize={pageSize}
+              showSizeChanger
+              pageSizeOptions={['5', '10', '20', '30', '40']}
+              onChange={onPagesChange}
+              onShowSizeChange={onPagesChange}
+            />{' '}
+            <span className="m-l-15" style={{ color: '#868790' }}>
+              Total {total}
+            </span>
+          </Row>
+        )}
+      </ColumnCenter>
     </PageWrapper>
   )
 }
