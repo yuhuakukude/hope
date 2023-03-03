@@ -29,15 +29,15 @@ function GombocClaimAll({ onSubmit, onDismiss, total, list }: GombocClaimProps) 
   return (
     <>
       <div className="gomboc-claim-box staking-claim-box w-100">
-        <div className="head">
+        <div className="head text-medium font-18">
           Rewards Claim
           <div className="icon-close">
             <CloseIcon onClick={onDismiss} />
           </div>
         </div>
         <div className="claim-con p-30">
-          <div className="flex jc-between">
-            <span className="text-white">Total Claimable Rewards</span>
+          <div className="flex jc-between font-nor">
+            <span className="text-normal">Total Claimable Rewards</span>
             <span className="text-white">≈ ${total}</span>
           </div>
           <div>

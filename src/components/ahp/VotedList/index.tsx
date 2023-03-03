@@ -136,8 +136,8 @@ const VotedList = ({
         const addr = tableData[index]?.gomboc.id
         res[addr] = {
           view,
-          value,
-          usdOfValue
+          value: format.amountFormat(value, 2),
+          usdOfValue: format.amountFormat(usdOfValue, 2)
         }
       })
     }

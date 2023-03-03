@@ -64,7 +64,7 @@ export default function MyHOPEStaking() {
   const i = _i?.result ? CurrencyAmount.ether(_i?.result?.[0]) : undefined
   let boost = '-'
   if (bu && i) {
-    boost = (Number(bu?.toExact()) / (Number(i?.toExact()) * 0.4)).toFixed(2)
+    boost = bu && i ? (Number(bu?.toExact()) / (Number(i?.toExact()) * 0.4)).toFixed(2) : '0'
   }
 
   const [item, setItem] = useState<ITableItem | null>(null)
@@ -141,6 +141,7 @@ export default function MyHOPEStaking() {
           {
             label: 'Unstake',
             value: 'Unstake',
+            isHide: Number(unstakedVal?.toFixed(2)) <= 0,
             onClick: () => {
               history.push(`/staking`)
             }
@@ -148,6 +149,7 @@ export default function MyHOPEStaking() {
           {
             label: 'Claim Rewards',
             value: 'Claim Rewards',
+            isHide: Number(claRewards?.toFixed(2)) <= 0,
             onClick: () => {
               setItem({
                 ltOfReward: claRewards?.toExact() || 0,

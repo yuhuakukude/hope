@@ -98,14 +98,14 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
               <>
                 <i className="iconfont"></i>
                 {toFixed(record.token0Balance, 8)}
-                &nbsp;USDC
+                &nbsp; {record.composition.split('/')[0]}
               </>
             }
             desc={
               <>
                 <i className="iconfont"></i>
                 {toFixed(record.token1Balance, 8)}
-                &nbsp;BUSD
+                &nbsp;{record.composition.split('/')[1]}
               </>
             }
           />
@@ -117,7 +117,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       dataIndex: 'lpBalance',
       key: 'lpBalance',
       render: (text: string, record: ILiquidityPools) => {
-        return <Item title={toFixed(record.lpBalance)} desc={'≈ $' + toFixed(record.hopeOfLpBalance)} />
+        return <Item title={toFixed(record.lpBalance, 8)} desc={'≈ $' + toFixed(record.hopeOfLpBalance)} />
       }
     },
     {
