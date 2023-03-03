@@ -174,16 +174,15 @@ export default function AddAmount() {
       })
   }, [
     account,
-    amount,
     inputAmount,
     library,
     chainId,
-    lockerRes,
     onTxError,
     onTxSubmitted,
     onTxStart,
-    getVeLtAmount,
-    toAddAmountLocker
+    toAddAmountLocker,
+    afterVeLtAmount,
+    veltBalance
   ])
 
   return (
