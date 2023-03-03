@@ -158,7 +158,7 @@ export default function Earn() {
       if (!account) throw new Error('none account')
       if (!stakingContract) throw new Error('none contract')
       if (amount.equalTo(JSBI.BigInt('0'))) throw new Error('amount is un support')
-      const args = [amount.raw.toString(), NONCE, DEADLINE, sigVal]
+      const args = [amount?.raw.toString(), NONCE, DEADLINE, sigVal]
       const method = 'deposit'
       return stakingContract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return stakingContract[method](...args, {
