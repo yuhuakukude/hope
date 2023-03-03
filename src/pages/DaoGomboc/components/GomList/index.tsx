@@ -24,7 +24,6 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const [searchValue, setSearchValue] = useState('')
   const [tableData, setTableData] = useState<any>([])
   const [curType, setCurType] = useState('all')
-  const CompositionNode = (text: any) => <span>{text || '--'}</span>
 
   const argList = useMemo(() => {
     let res: any = []
@@ -104,7 +103,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const weightNode = (text: any, record: any) => {
     return (
       <>
-        <p>This period: {getViewAmount(text) ? `${getViewAmount(text)} %` : '--'}</p>
+        <p>This Period: {getViewAmount(text) ? `${getViewAmount(text)} %` : '--'}</p>
         <p>Next Period: {getViewAmount(record.nextWeight) ? `${getViewAmount(record.nextWeight)} %` : '--'}</p>
       </>
     )
@@ -145,14 +144,13 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const columns = [
     {
       title: 'Gömböc',
-      dataIndex: 'composition',
-      key: 'composition'
+      dataIndex: 'name',
+      key: 'name'
     },
     {
       title: 'Composition',
-      dataIndex: 'name',
-      render: CompositionNode,
-      key: 'name'
+      dataIndex: 'composition',
+      key: 'composition'
     },
     {
       title: 'Weight',
@@ -209,8 +207,14 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     }
   }
 
+  function reset() {
+    setCurType('all')
+    setSearchValue('')
+  }
+
   useImperativeHandle(ref, () => ({
     initTableData: () => {
+      reset()
       init()
     }
   }))

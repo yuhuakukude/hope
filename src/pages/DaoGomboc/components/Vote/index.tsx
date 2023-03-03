@@ -14,7 +14,7 @@ import { useToVote, conFnNameEnum } from '../../../../hooks/ahp/useGomVote'
 import { JSBI, Percent, Token } from '@uniswap/sdk'
 import { useSingleCallResult } from '../../../../state/multicall/hooks'
 import ActionButton from '../../../../components/Button/ActionButton'
-import { NavLink, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 import { isAddress } from '../../../../utils'
 import TransactionConfirmationModal, {
   TransactionErrorContent
@@ -140,6 +140,15 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
     return res
   }, [lastVoteData, curGomAddress])
 
+  const hasVote = useMemo(() => {
+    let res = false
+    const ld = Number(lastVoteData.result)
+    if (lastVoteData && ld && curGomAddress) {
+      res = true
+    }
+    return res
+  }, [lastVoteData, curGomAddress])
+
   const unUseRateVal = useMemo(() => {
     let res = ''
     if (votePowerAmount && (Number(votePowerAmount.result) || Number(votePowerAmount.result) === 0)) {
@@ -160,10 +169,23 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
       const unNum = Number(unUseRateVal) || 0
       const cp = JSBI.BigInt(Number(curPower.result.power))
       const ra = new Percent(cp, JSBI.BigInt(10000))
+
       sub = new Decimal(Number(ra.toFixed(2))).add(new Decimal(unNum)).toNumber()
     }
     return sub
   }, [unUseRateVal, curPower])
+
+  const viewSubAmount = useMemo(() => {
+    let vsub = subAmount
+    if (amount && subAmount) {
+      const am = Number(amount) || 0
+      const resn = new Decimal(Number(subAmount)).sub(new Decimal(am)).toNumber()
+      if (Number(resn) > 0) {
+        vsub = resn
+      }
+    }
+    return vsub
+  }, [amount, subAmount])
 
   const curPowerAmount = useMemo(() => {
     let sub = 0
@@ -182,11 +204,14 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
     if (curGomAddress && amount && Number(amount) > 100) {
       return 'Insufficient Value'
     }
+    if (!hasVote && Number(amount) === 0) {
+      return 'Insufficient Value'
+    }
     if (curGomAddress && amount && Number(subAmount) < Number(amount)) {
       return 'Surplus deficiency'
     }
     return undefined
-  }, [amount, curLastVote, subAmount, curGomAddress])
+  }, [amount, curLastVote, subAmount, curGomAddress, hasVote])
 
   const getActionText = useMemo(() => {
     if (isNoVelt) {
@@ -276,7 +301,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   }
 
   function subValueFn() {
-    const newVal = new Decimal(Number(amount)).sub(new Decimal(0.1)).toNumber()
+    const newVal = new Decimal(Number(amount)).sub(new Decimal(1)).toNumber()
     if (newVal < 0) {
       changeAmount(`0`)
     } else {
@@ -285,11 +310,17 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   }
 
   function addValueFn() {
-    const newVal = new Decimal(Number(amount)).add(new Decimal(0.1)).toNumber()
+    const newVal = new Decimal(Number(amount)).add(new Decimal(1)).toNumber()
     if (Number(newVal) > Number(100)) {
       changeAmount(`100`)
     } else {
       changeAmount(`${newVal}`)
+    }
+  }
+
+  function toMax() {
+    if (Number(subAmount) > 0 && curGomAddress && !isNoVelt) {
+      changeAmount(`${subAmount}`)
     }
   }
 
@@ -381,10 +412,10 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
             <span className="text-normal">Vote weight:</span>
             {account && (
               <p>
-                unallocated votes : {isNoVelt || !curGomAddress ? '--' : `${subAmount}%`}
-                <NavLink to={'/dao/locker'}>
-                  <span className="text-primary"> Locker </span>
-                </NavLink>
+                unallocated votes : {isNoVelt || !curGomAddress ? '0.00' : `${viewSubAmount}%`}
+                <span onClick={toMax} className="text-primary m-l-5 cursor-select">
+                  Max
+                </span>
               </p>
             )}
           </div>
@@ -410,7 +441,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
             </div>
           </div>
           <p className="text-normal m-t-10">
-            {voteAmount || '--'} of your voting power will be allocated to this gömböc.
+            {voteAmount || '0.00'} of your voting power will be allocated to this gömböc.
           </p>
           <div className="action-box m-t-40">
             {!account ? (

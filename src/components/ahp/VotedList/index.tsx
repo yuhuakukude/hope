@@ -564,6 +564,8 @@ const VotedList = ({
         setPageTotal(listData.length || 0)
         setAllTableData(listData)
         setTableData(listData.slice(0, pageSize))
+      } else {
+        setTableData([])
       }
     } catch (error) {
       console.log(error)
