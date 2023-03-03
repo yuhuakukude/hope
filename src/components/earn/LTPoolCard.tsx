@@ -99,7 +99,7 @@ export default function LTPoolCard({
             <RowBetween>
               <TYPE.main>My Position</TYPE.main>
               <TYPE.white>
-                {userLiquidityUnstaked && stakedAmount && pool.totalLiquidity
+                {userLiquidityUnstaked && stakedAmount && pool.totalLiquidity && pool.totalStakedAmount
                   ? `≈$${pool.totalLiquidity
                       .multiply(
                         new Percent(JSBI.ADD(userLiquidityUnstaked.raw, stakedAmount.raw), pool?.totalStakedAmount.raw)
