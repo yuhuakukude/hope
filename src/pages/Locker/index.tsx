@@ -28,7 +28,7 @@ import LockerBanner from './component/Banner'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useEstimate } from '../../hooks/ahp'
 import { useActionPending } from '../../state/transactions/hooks'
-import Test3 from '../../assets/images/test3.jpg'
+import LtIcon from '../../assets/images/ahp/lt.png'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -300,28 +300,39 @@ export default function DaoLocker() {
               </div>
               <div className="r m-l-30 flex-2 p-30">
                 <h3 className="text-medium font-20">Lock LT get veLT</h3>
-                <div className="ava-balance m-t-30">
-                  <p className="flex jc-between ai-center font-nor">
-                    <span className="text-normal">My LT Balance</span>
-                    <span className="text-medium">
-                      {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} LT
-                    </span>
-                  </p>
-                  <p className="flex jc-between ai-center font-nor m-t-16">
-                    <span className="text-normal">My LT Locked</span>
-                    <p className="flex ai-center">
+                {account && (
+                  <div className="ava-balance m-t-30">
+                    <p className="flex jc-between ai-center font-nor">
+                      <span className="text-normal">My LT Balance</span>
                       <span className="text-medium">
-                        {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}{' '}
-                        LT
+                        {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} LT
                       </span>
-                      {isWithDraw && !withdrawPendingText && (
-                        <span className="withdraw text-medium text-primary font-24 m-l-16" onClick={toWithdrawCallback}>
-                          Withdraw
-                        </span>
-                      )}
                     </p>
-                  </p>
-                </div>
+                    <p className="flex jc-between ai-center font-nor m-t-16">
+                      <span className="text-normal">My LT Locked</span>
+                      <p className="flex ai-center">
+                        <span className="text-medium">
+                          {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}{' '}
+                          LT
+                        </span>
+                        {isWithDraw && !withdrawPendingText && (
+                          <span
+                            className="withdraw text-medium text-primary font-24 m-l-16"
+                            onClick={toWithdrawCallback}
+                          >
+                            Withdraw
+                          </span>
+                        )}
+                      </p>
+                    </p>
+                    <p className="flex jc-between ai-center font-nor m-t-16">
+                      <span className="text-normal">Locked Until :</span>
+                      <span className="text-medium">
+                        {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
+                      </span>
+                    </p>
+                  </div>
+                )}
                 {lockerRes?.end && lockerRes?.end !== '--' ? (
                   <div className="add-action-box m-t-30">
                     <div className="add-ava">
@@ -329,12 +340,6 @@ export default function DaoLocker() {
                         <span className="text-normal">Balance in Voting Escrow :</span>
                         <span className="text-medium">
                           {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
-                        </span>
-                      </p>
-                      <p className="flex jc-between font-nor m-t-16">
-                        <span className="text-normal">Locked Until :</span>
-                        <span className="text-medium">
-                          {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
                         </span>
                       </p>
                     </div>
@@ -395,7 +400,7 @@ export default function DaoLocker() {
                           }}
                         />
                         <div className="lt-icon-box flex ai-center">
-                          <img src={Test3} style={{ width: '24px', height: '24px' }} alt="" />
+                          <img src={LtIcon} style={{ width: '24px', height: '24px' }} alt="" />
                           <span className="m-l-12">LT</span>
                         </div>
                       </div>

@@ -1,0 +1,47 @@
+.pools-head-wrap {
+  border-radius: 8px;
+  background-color: rgba(51, 51, 60, 1);
+  border: 1px solid rgba(61, 62, 70, 1);
+  padding: 20px;
+  margin-bottom: 30px;
+
+  .pools-head-top {
+    color: rgba(168, 168, 170, 1);
+    font-size: 16px;
+    line-height: 20px;
+
+    .cursor-select {
+      vertical-align: middle;
+      margin-left: 4px;
+    }
+
+    .pools-head-top-button {
+      height: 20px;
+      line-height: 20px;
+      padding: 0 16px;
+      font-size: 12px;
+      margin-left: 12px;
+      vertical-align: middle;
+    }
+  }
+
+  .pools-head-bottom {
+    margin-top: 20px;
+    height: 18px;
+    line-height: 18px;
+
+    .pools-head-bottom-value {
+      color: rgba(255, 255, 255, 1);
+      font-size: 18px;
+      display: inline-block;
+      vertical-align: middle;
+    }
+
+    .pools-head-bottom-value2 {
+      color: rgba(168, 168, 170, 1);
+      font-size: 14px;
+      margin-left: 10px;
+      display: inline-block;
+    }
+  }
+}

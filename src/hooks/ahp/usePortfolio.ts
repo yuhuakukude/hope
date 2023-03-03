@@ -5,20 +5,31 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Decimal } from 'decimal.js'
-import format from 'utils/format'
+// import format from 'utils/format'
+import { CurrencyAmount } from '@uniswap/sdk'
+import { useSingleCallResult } from '../../state/multicall/hooks'
+
+export function usePortfolio() {
+  const { account } = useActiveWeb3React()
+  const contract = useFeeDisContract()
+  const claimableFees = useSingleCallResult(contract, 'claimableToken', [account ?? undefined])
+  return {
+    claimableFees: claimableFees?.result ? CurrencyAmount.ether(claimableFees?.result?.[0]) : undefined
+  }
+}
 
 export function useToClaim() {
   const addTransaction = useTransactionAdder()
   const contract = useLtMinterContract()
   const { account } = useActiveWeb3React()
   const toClaim = useCallback(
-    async (address: string) => {
+    async (address: string | string[]) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
-      const args = [address]
-      const method = 'mint'
-      return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
-        return contract[method](...args, {
+      // const args = Array.isArray(address) ? address : [address]
+      const method = Array.isArray(address) ? 'mintMany' : 'mint'
+      return contract.estimateGas[method](address, { from: account }).then(estimatedGasLimit => {
+        return contract[method](address, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
           // gasLimit: '3500000',
           from: account
@@ -69,7 +80,7 @@ export function useFeeClaim() {
   const contract = useFeeDisContract()
   const { account } = useActiveWeb3React()
   const toFeeClaim = useCallback(
-    async (amount: string) => {
+    async (amount: string | number) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [account]
@@ -81,7 +92,7 @@ export function useFeeClaim() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Fees Withdraw ${format.amountFormat(amount, 2)} stHOPE`
+            summary: `Fees Withdraw ${amount} stHOPE`
           })
           return response.hash
         })
@@ -99,7 +110,7 @@ export function useGomFeeClaim() {
   const contract = useGomFeeDisContract()
   const { account } = useActiveWeb3React()
   const toGomFeeClaim = useCallback(
-    async (address: string, amount: string) => {
+    async (address: string, amount: string | number) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [address, account]
@@ -129,7 +140,7 @@ export function useGomFeeManyClaim() {
   const contract = useGomFeeDisContract()
   const { account } = useActiveWeb3React()
   const toGomFeeManyClaim = useCallback(
-    async (addressArr: any, amount: string) => {
+    async (addressArr: any, amount: string | number) => {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [addressArr, account]
@@ -141,7 +152,7 @@ export function useGomFeeManyClaim() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Fees Withdraw ${format.amountFormat(amount, 2)} stHOPE`
+            summary: `Fees Withdraw ${amount} stHOPE`
           })
           return response.hash
         })
@@ -155,7 +166,7 @@ export function useGomFeeManyClaim() {
 }
 
 export function toUsdPrice(val: any, price: string | number) {
-  let res = ''
+  let res = '0'
   if (val && price) {
     const pr = new Decimal(val).mul(new Decimal(price)).toNumber()
     res = pr.toFixed(2)

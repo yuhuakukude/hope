@@ -15,7 +15,7 @@ import { JSBI, Percent, Token } from '@uniswap/sdk'
 import { useSingleCallResult } from '../../../../state/multicall/hooks'
 import ActionButton from '../../../../components/Button/ActionButton'
 import { NavLink, useLocation } from 'react-router-dom'
-
+import { isAddress } from '../../../../utils'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
@@ -156,19 +156,30 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
 
   const subAmount = useMemo(() => {
     let sub = 0
-    if (unUseRateVal && curPower.result && curPower.result.power) {
+    if (curPower.result && curPower.result.power) {
+      const unNum = Number(unUseRateVal) || 0
       const cp = JSBI.BigInt(Number(curPower.result.power))
       const ra = new Percent(cp, JSBI.BigInt(10000))
-      sub = Number(ra.toFixed(2)) + Number(unUseRateVal)
+      sub = new Decimal(Number(ra.toFixed(2))).add(new Decimal(unNum)).toNumber()
     }
     return sub
   }, [unUseRateVal, curPower])
+
+  const curPowerAmount = useMemo(() => {
+    let sub = 0
+    if (curPower.result && curPower.result.power) {
+      const cp = JSBI.BigInt(Number(curPower.result.power))
+      const ra = new Percent(cp, JSBI.BigInt(10000))
+      sub = Number(ra.toFixed(2))
+    }
+    return sub
+  }, [curPower])
 
   const voteInputError = useMemo(() => {
     if (curLastVote) {
       return 'No voting within ten days'
     }
-    if (curGomAddress && amount && (Number(amount) > 100 || Number(amount) === 0)) {
+    if (curGomAddress && amount && Number(amount) > 100) {
       return 'Insufficient Value'
     }
     if (curGomAddress && amount && Number(subAmount) < Number(amount)) {
@@ -234,7 +245,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   }, [updateTable, txHash, isTranPending])
 
   useEffect(() => {
-    if (selList && selList.length > 0 && searchParams.get('gomboc')) {
+    if (selList && selList.length > 0 && searchParams.get('gomboc') && isAddress(searchParams.get('gomboc'))) {
       setCurGomAddress(`${searchParams?.get('gomboc')}`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -251,12 +262,21 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
     }
   }
 
+  useEffect((): any => {
+    if (curPowerAmount && curGomAddress) {
+      changeAmount(`${curPowerAmount}`)
+    } else {
+      changeAmount('')
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curGomAddress, curPowerAmount])
+
   function changeSel(val: string) {
     setCurGomAddress(val)
   }
 
   function subValueFn() {
-    const newVal = new Decimal(Number(amount)).sub(new Decimal(0.01)).toNumber()
+    const newVal = new Decimal(Number(amount)).sub(new Decimal(0.1)).toNumber()
     if (newVal < 0) {
       changeAmount(`0`)
     } else {
@@ -265,7 +285,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   }
 
   function addValueFn() {
-    const newVal = new Decimal(Number(amount)).add(new Decimal(0.01)).toNumber()
+    const newVal = new Decimal(Number(amount)).add(new Decimal(0.1)).toNumber()
     if (Number(newVal) > Number(100)) {
       changeAmount(`100`)
     } else {
@@ -361,7 +381,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
             <span className="text-normal">Vote weight:</span>
             {account && (
               <p>
-                unallocated votes : {isNoVelt ? '--' : `${unUseRateVal}%`}
+                unallocated votes : {isNoVelt || !curGomAddress ? '--' : `${subAmount}%`}
                 <NavLink to={'/dao/locker'}>
                   <span className="text-primary"> Locker </span>
                 </NavLink>

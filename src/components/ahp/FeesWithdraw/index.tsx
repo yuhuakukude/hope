@@ -1,11 +1,11 @@
-import React, { useState, useMemo } from 'react'
+import React, { useState } from 'react'
 import './index.scss'
 import { CloseIcon } from '../../../theme/components'
 import { ButtonPrimary } from '../../../components/Button'
 // import { Decimal } from 'decimal.js'
 import { Radio } from 'antd'
 import Tips from 'components/Tips'
-import format from 'utils/format'
+// import format from 'utils/format'
 import { useEstimate } from 'hooks/ahp'
 import { useActiveWeb3React } from '../../../hooks'
 interface GombocClaimProps {
@@ -24,22 +24,12 @@ const GombocClaim = ({ onSubmit, onDismiss, curWithType, allData, itemData }: Go
   function changeRadio(item: any) {
     setCurClaimType(item)
   }
-  const allAmount = useMemo(() => {
-    const res = 0
-    return res
-  }, [])
-
-  // const curAmount = useMemo(() => {
-  //   let res = ''
-  //   if (curClaimType === 'item') {
-  //     res = itemData.value
-  //   } else if (curClaimType === 'others') {
-  //     res = itemData.value
-  //   } else {
-  //     res = `${allAmount}`
-  //   }
+  // const allAmount = useMemo(() => {
+  //   const res = 0
   //   return res
-  // }, [curClaimType, itemData, allAmount])
+  // }, [])
+
+  console.log(allData)
 
   const drapFn = () => {
     setDrapIndex(!drapIndex)
@@ -85,15 +75,15 @@ const GombocClaim = ({ onSubmit, onDismiss, curWithType, allData, itemData }: Go
                   <Tips title={`Claimable Rewards`} />
                 </div>
                 <div>
-                  <p className="text-white text-right">{format.amountFormat(itemData.withdrawable, 2)} stHOPE</p>
-                  <p className="text-normal text-right">≈ ${}</p>
+                  <p className="text-white text-right">{itemData.value} stHOPE</p>
+                  <p className="text-normal text-right">≈ ${itemData.usdOfValue}</p>
                 </div>
               </div>
             )}
             {curWithType === 'all' && (
               <div>
                 {
-                  <div className="m-t-30 radio-item">
+                  <div className="radio-item">
                     <div className="radio-box-head flex jc-between">
                       <div className="flex ai-center">
                         <Radio value={`all`}>
@@ -102,7 +92,7 @@ const GombocClaim = ({ onSubmit, onDismiss, curWithType, allData, itemData }: Go
                         <Tips title={`Claimable Rewards`} />
                       </div>
                       <div className="flex ai-center">
-                        <p className="text-normal text-right">≈ {format.amountFormat(allAmount, 2)} stHOPE</p>
+                        <p className="text-normal text-right">≈ {itemData.value} stHOPE</p>
                         <i className={drapIndex ? 'iconfont icon-drap ' : 'iconfont icon-drap active'} onClick={drapFn}>
                           &#xe60d;
                         </i>
@@ -114,16 +104,14 @@ const GombocClaim = ({ onSubmit, onDismiss, curWithType, allData, itemData }: Go
                         allData.map((data: any, index: number) => {
                           return (
                             <>
-                              {data && data.gomboc && (
+                              {data && data.id && (
                                 <div key={index} className="flex jc-between">
                                   <div className="">
-                                    <div className="currency text-white text-medium">{data.gomboc.gombocName}</div>
+                                    <div className="currency text-white text-medium">{data.name}</div>
                                   </div>
                                   <div>
-                                    <p className="text-white text-right">
-                                      ≈ {format.amountFormat(data.withdrawable, 2)} stHope
-                                    </p>
-                                    <p className="text-white text-right">≈ $ {}</p>
+                                    <p className="text-white text-right">≈ {data.value} stHope</p>
+                                    <p className="text-white text-right">≈ $ {data.usdOfValue}</p>
                                   </div>
                                 </div>
                               )}

@@ -1,164 +1,290 @@
 import Button from 'components/antd/Button'
-import Table from 'components/antd/Table'
 import Tips from 'components/Tips'
-import React from 'react'
+import React, { useState, useEffect, useMemo, useCallback } from 'react'
 import Card from '../Card'
-import Item from '../Item'
-import SelectTips, { TitleTipsProps } from '../SelectTips'
-
+import FeesWithdraw from '../../../../components/ahp/FeesWithdraw'
+import { useLocker } from '../../../../hooks/ahp/useLocker'
+import { usePortfolio, toUsdPrice } from '../../../../hooks/ahp/usePortfolio'
+import format from '../../../../utils/format'
+import { useActiveWeb3React } from '../../../../hooks'
+import { useTokenBalance } from '../../../../state/wallet/hooks'
+import { VELT, ST_HOPE } from '../../../../constants'
+import { JSBI, Percent, Token } from '@uniswap/sdk'
+import usePrice from 'hooks/usePrice'
+import VotedList from '../../../../components/ahp/VotedList'
+import { NavLink } from 'react-router-dom'
+import { Decimal } from 'decimal.js'
+import { useFeeClaim, useGomFeeManyClaim } from '../../../../hooks/ahp/usePortfolio'
+import TransactionConfirmationModal, {
+  TransactionErrorContent
+} from '../../../../components/TransactionConfirmationModal'
 import './index.scss'
 
-const columns = [
-  {
-    title: 'Gömböc',
-    dataIndex: 'Protocol',
-    key: 'Protocol'
-  },
-  {
-    title: 'Composition',
-    dataIndex: 'boost',
-    key: 'boost',
-    render: (text: string, record: any) => {
-      return record.a ? (
-        <>
-          <i className="iconfont"></i>
-          {record.b}
-        </>
-      ) : (
-        <Item
-          type={2}
-          title={
-            <>
-              <i className="iconfont"></i>
-              {record.b}
-            </>
-          }
-          desc={
-            <>
-              <i className="iconfont"></i>
-              {record.b}
-            </>
-          }
-        />
-      )
-    }
-  },
-  {
-    title: 'Allocated Votes',
-    dataIndex: 'balance',
-    key: 'balance',
-    render: (text: string, record: any) => {
-      return <Item type={2} title={text} desc={record.balance} />
-    }
-  },
-  {
-    title: (
-      <>
-        veLT Voting Balance{' '}
-        <span className="title-button" onClick={() => {}}>
-          Refresh All
-        </span>
-      </>
-    ),
-    dataIndex: 'unstaking',
-    key: 'unstaking',
-    render: (text: string, record: any) => {
-      return <Item type={2} title={text} desc={record.unstaking} />
-    }
-  },
-  {
-    title: 'Voting Rewards',
-    filterDropdown: () => {
-      return (
-        <i className="iconfont title-button" onClick={() => {}}>
-          &#xe60a;
-        </i>
-      )
-    },
-    dataIndex: 'unstaked',
-    key: 'unstaked',
-    render: (text: string, record: any) => {
-      return <Item type={2} title={text} desc={record.unstaked} />
-    }
-  },
+export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (stHope: string, lt: string) => void }) {
+  const { account, chainId } = useActiveWeb3React()
+  const { lockerRes, votePowerAmount } = useLocker()
+  const { claimableFees } = usePortfolio()
+  const hopePrice = usePrice()
+  const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
+  const [curWithType, setCurWithType] = useState<string>('all')
+  // modal and loading
+  const [showConfirm, setShowConfirm] = useState<boolean>(false)
+  const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
-  {
-    title: 'Actions',
-    dataIndex: 'actions',
-    key: 'actions',
-    render: () => {
-      const options: TitleTipsProps[] = [
-        {
-          label: 'Claim Voting Rewards',
-          value: 'Claim Voting Rewards',
-          onClick: () => {}
-        },
-        {
-          label: 'Refresh Voting Balance',
-          value: 'Refresh Voting Balance',
-          onClick: () => {}
-        },
-        {
-          label: 'Pool Details',
-          value: 'Pool Details',
-          onClick: () => {}
-        }
-      ]
-      return <SelectTips options={options} />
+  // txn values
+  const [txHash, setTxHash] = useState<string>('')
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
+  const [claimPendingText, setClaimPendingText] = useState('')
+  const [curToken, setCurToken] = useState<Token | undefined>(ST_HOPE[chainId ?? 1])
+
+  const { toFeeClaim } = useFeeClaim()
+  const { toGomFeeManyClaim } = useGomFeeManyClaim()
+
+  const [unUseRateVal, setUnUseRateVal] = useState<string>('')
+  const [votingFee, setVotingFee] = useState<any>({ stHope: '0.00', toUsd: '0.00' })
+  const [allData, setAllData] = useState([])
+  useEffect(() => {
+    if (votePowerAmount || votePowerAmount === 0) {
+      const total = JSBI.BigInt(10000)
+      const apo = JSBI.BigInt(votePowerAmount)
+      const unUseVal = JSBI.subtract(total, apo)
+      const ra = new Percent(unUseVal, JSBI.BigInt(10000))
+      if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
+        setUnUseRateVal(ra.toFixed(2))
+      }
     }
+  }, [votePowerAmount, veltBalance, account])
+
+  const argList = useMemo(() => {
+    let res = []
+    if (allData && allData.length > 0) {
+      const arr: any = []
+      allData.forEach((e: any) => {
+        if (e && e.id) {
+          arr.push(e.id)
+        }
+      })
+      res = arr
+    }
+    return res
+  }, [allData])
+
+  const curItemData = useMemo(() => {
+    let res = {
+      value: claimableFees?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00',
+      usdOfValue: toUsdPrice(claimableFees?.toFixed(2), hopePrice)
+    }
+    if (curWithType === 'all') {
+      res = {
+        value: votingFee.stHope,
+        usdOfValue: votingFee.toUsd
+      }
+    }
+    return res
+  }, [curWithType, claimableFees, hopePrice, votingFee])
+
+  const withdrawFn = (type: string) => {
+    setCurWithType(type)
+    setTxHash('')
+    setErrorStatus(undefined)
+    setAttemptingTxn(false)
+    setShowConfirm(true)
   }
-]
-export default function MyLockedLTAndProfits() {
+
+  const onTxStart = useCallback(() => {
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+  }, [])
+
+  const onTxSubmitted = useCallback((hash: string | undefined) => {
+    setShowConfirm(true)
+    setAttemptingTxn(false)
+    hash && setTxHash(hash)
+  }, [])
+
+  const onTxError = useCallback(error => {
+    setShowConfirm(true)
+    setTxHash('')
+    setAttemptingTxn(false)
+    setErrorStatus({ code: error?.code, message: error.message })
+  }, [])
+
+  const getVotingRewards = (stHope: string, toUsd: string) => {
+    setVotingFee({ stHope, toUsd })
+  }
+
+  useEffect(() => {
+    if (claimableFees) {
+      getAllVoting(
+        new Decimal(claimableFees?.toFixed(2) || 0)
+          .add(new Decimal(votingFee.stHope || 0))
+          .toNumber()
+          .toFixed(2),
+        lockerRes?.amount ? lockerRes?.amount.toFixed(2) : '0'
+      )
+    }
+  }, [votingFee.stHope, claimableFees, getAllVoting, lockerRes])
+  const getAllData = (allList: any) => {
+    setAllData(allList)
+  }
+
+  const feeClaimCallback = useCallback(
+    async (amount: string) => {
+      if (!account) return
+      setCurToken(ST_HOPE[chainId ?? 1])
+      onTxStart()
+      setClaimPendingText(`Fees Withdraw`)
+      toFeeClaim(amount)
+        .then(hash => {
+          setClaimPendingText('')
+          onTxSubmitted(hash)
+        })
+        .catch((error: any) => {
+          setClaimPendingText('')
+          onTxError(error)
+        })
+    },
+    [account, chainId, onTxError, onTxStart, onTxSubmitted, toFeeClaim]
+  )
+
+  const gomFeeManyClaimCallback = useCallback(
+    async (amount: string) => {
+      if (!account) return
+      setCurToken(ST_HOPE[chainId ?? 1])
+      onTxStart()
+      setClaimPendingText(`Fees Withdraw`)
+      toGomFeeManyClaim(argList, amount)
+        .then(hash => {
+          setClaimPendingText('')
+          onTxSubmitted(hash)
+        })
+        .catch((error: any) => {
+          setClaimPendingText('')
+          onTxError(error)
+        })
+    },
+    [account, chainId, onTxError, onTxStart, onTxSubmitted, toGomFeeManyClaim, argList]
+  )
+
+  const withdrawSubmit = useCallback(() => {
+    if (curWithType === 'all') {
+      const aval = votingFee.stHope
+      gomFeeManyClaimCallback(aval)
+    } else if (curWithType === 'others') {
+      const fval = claimableFees?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'
+      feeClaimCallback(fval)
+    }
+  }, [feeClaimCallback, gomFeeManyClaimCallback, curWithType, votingFee, claimableFees])
+
+  const confirmationContent = useCallback(
+    () =>
+      errorStatus ? (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
+      ) : (
+        <FeesWithdraw
+          onSubmit={() => {
+            withdrawSubmit()
+          }}
+          onDismiss={() => setShowConfirm(false)}
+          curWithType={curWithType}
+          allData={allData}
+          itemData={curItemData}
+        />
+      ),
+    [withdrawSubmit, errorStatus, curWithType, allData, curItemData]
+  )
+
   return (
-    <Card title="My Locked LT & Profits">
-      <div className="my-locked-lt-content">
-        <div className="my-locked-lt-row">
-          <div className="my-locked-lt-col">
-            <div className="my-locked-lt-title">Locked LT Amount</div>
-            <div className="my-locked-lt-desc">
-              <span className="my-locked-lt-value">≈ 123,456,789.00 LT</span>
-              <span className="my-locked-lt-value2">Locked Until: 2023-01-20</span>
+    <>
+      <TransactionConfirmationModal
+        isOpen={showConfirm}
+        onDismiss={() => setShowConfirm(false)}
+        attemptingTxn={attemptingTxn}
+        hash={txHash}
+        content={confirmationContent}
+        pendingText={claimPendingText}
+        currencyToAdd={curToken}
+      />
+      <Card title="My Locked LT & Profits">
+        <div className="my-locked-lt-content">
+          <div className="my-locked-lt-row">
+            <div className="my-locked-lt-col">
+              <div className="my-locked-lt-title">Locked LT Amount</div>
+              <div className="my-locked-lt-desc">
+                <span className="my-locked-lt-value">
+                  ≈ {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}
+                </span>
+                <span className="my-locked-lt-value2">
+                  Locked Until: {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
+                </span>
+              </div>
+            </div>
+            <div className="my-locked-lt-col">
+              <div className="my-locked-lt-title">Balance in Voting Escrow</div>
+              <div className="my-locked-lt-desc">
+                <span className="my-locked-lt-value">
+                  ≈ {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
+                </span>
+                <span className="my-locked-lt-value2">{unUseRateVal || '0.00'}% share of total</span>
+              </div>
+              <NavLink to={'/dao/locker'}>
+                <Button className="my-locked-lt-button" type="ghost">
+                  Increase veLT
+                </Button>
+              </NavLink>
             </div>
           </div>
-          <div className="my-locked-lt-col">
-            <div className="my-locked-lt-title">Balance in Voting Escrow</div>
-            <div className="my-locked-lt-desc">
-              <span className="my-locked-lt-value">≈ 123,456,789.00 veLT</span>
-              <span className="my-locked-lt-value2">12.03% share of total</span>
+          <div className="my-locked-lt-row2">
+            <div className="my-locked-lt-col">
+              <div className="my-locked-lt-title">
+                Claimable veLT Held Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
+              </div>
+              <div className="my-locked-lt-desc">
+                <span className="my-locked-lt-value">
+                  ≈ {claimableFees?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} stHOPE
+                </span>
+                <span className="my-locked-lt-value2">
+                  ≈ ${toUsdPrice(claimableFees?.toFixed(2), hopePrice) || '--'}
+                </span>
+              </div>
+              <Button
+                onClick={() => {
+                  withdrawFn('others')
+                }}
+                disabled={!(claimableFees && Number(claimableFees.toFixed(2)) > 0)}
+                className="my-locked-lt-button"
+                type="ghost"
+              >
+                Claim All
+              </Button>
             </div>
-            <Button className="my-locked-lt-button" type="ghost">
-              Increase veLT
-            </Button>
+            <div className="my-locked-lt-col">
+              <div className="my-locked-lt-title">
+                Claimable veLT voting Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
+              </div>
+              <div className="my-locked-lt-desc">
+                <span className="my-locked-lt-value">≈ {votingFee.stHope} stHOPE</span>
+                <span className="my-locked-lt-value2">≈ ${votingFee.toUsd}</span>
+              </div>
+              <Button
+                onClick={() => {
+                  withdrawFn('all')
+                }}
+                disabled={!(claimableFees && Number(votingFee.stHope) > 0)}
+                className="my-locked-lt-button"
+                type="ghost"
+              >
+                Claim All
+              </Button>
+            </div>
           </div>
         </div>
-        <div className="my-locked-lt-row2">
-          <div className="my-locked-lt-col">
-            <div className="my-locked-lt-title">
-              Claimable veLT Held Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
-            </div>
-            <div className="my-locked-lt-desc">
-              <span className="my-locked-lt-value">≈ 123,456,789.00 stHOPE</span>
-              <span className="my-locked-lt-value2">≈ $123,456,789.00</span>
-            </div>
-            <Button className="my-locked-lt-button" type="ghost">
-              Claim All
-            </Button>
-          </div>
-          <div className="my-locked-lt-col">
-            <div className="my-locked-lt-title">
-              Claimable veLT voting Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
-            </div>
-            <div className="my-locked-lt-desc">
-              <span className="my-locked-lt-value">≈ 123,456,789.00 stHOPE</span>
-              <span className="my-locked-lt-value2">≈ $123,456,789.00</span>
-            </div>
-            <Button className="my-locked-lt-button" type="ghost">
-              Claim All
-            </Button>
-          </div>
-        </div>
-      </div>
-      <Table columns={columns} pagination={{ total: 500 }}></Table>
-    </Card>
+        <VotedList isShowAll={true} getAllData={getAllData} getVotingRewards={getVotingRewards}></VotedList>
+      </Card>
+    </>
   )
 }

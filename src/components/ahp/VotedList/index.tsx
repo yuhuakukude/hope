@@ -2,11 +2,12 @@ import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import './index.scss'
 import Table from 'components/antd/Table'
 import dayjs from 'dayjs'
+import { Pagination } from 'antd'
 import { Token, JSBI, Percent } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../hooks'
 import { TokenAmount } from '@uniswap/sdk'
 import { VELT, SUBGRAPH, STAKING_HOPE_GOMBOC_ADDRESS, ST_HOPE } from '../../../constants'
-import { useToVote } from '../../../hooks/ahp/useGomVote'
+import { useToVote, useToVoteAll } from '../../../hooks/ahp/useGomVote'
 // import format from '../../../utils/format'
 import { useSingleContractMultipleData } from '../../../state/multicall/hooks'
 import { useGomConContract, useGomFeeDisContract } from '../../../hooks/useContract'
@@ -19,20 +20,36 @@ import moment from 'moment'
 import SelectTips, { TitleTipsProps } from 'pages/Portfolio/component/SelectTips'
 import FeesWithdraw from '../FeesWithdraw'
 import { useGomFeeClaim } from '../../../hooks/ahp/usePortfolio'
+import Row from '../../../components/Row'
+import { Decimal } from 'decimal.js'
+import format from '../../../utils/format'
 
-const VotedList = () => {
+const VotedList = ({
+  getVotingRewards,
+  getAllData,
+  isShowAll
+}: {
+  getVotingRewards?: (stHope: string, toUsd: string) => void
+  getAllData?: (list: any) => void
+  isShowAll: boolean
+}) => {
   const gomConContract = useGomConContract()
   const gomFeeDisContract = useGomFeeDisContract()
   const { account, chainId } = useActiveWeb3React()
   const [tableData, setTableData] = useState<any>([])
+  const [allTableData, setAllTableData] = useState<any>([])
   const [curTableItem, setCurTableItem] = useState<any>({})
   const [curItemData, setCurItemData] = useState<any>({})
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [pageSize, setPageSize] = useState<number>(5)
+  const [pageTotal, setPageTotal] = useState<number>(0)
   const addresses = useMemo(() => {
     return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]]
   }, [chainId])
   const { result: priceResult } = useTokenPrice(addresses)
   const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
   const { toVote } = useToVote()
+  const { toVoteAll } = useToVoteAll()
   const { toGomFeeClaim } = useGomFeeClaim()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
 
@@ -124,7 +141,44 @@ const VotedList = () => {
         }
       })
     }
+    let stHope = 0
+    let toUsd = 0
+    Object.values(res).forEach((item: any) => {
+      stHope = new Decimal(stHope).add(new Decimal(Number(item.value))).toNumber()
+      toUsd = new Decimal(toUsd).add(new Decimal(Number(item.usdOfValue))).toNumber()
+    })
+    getVotingRewards && getVotingRewards(format.amountFormat(stHope, 2), format.amountFormat(toUsd, 2))
+    const arr: any = []
+    tableData.forEach((e: any) => {
+      const addr = e.gomboc.id
+      const item: any = {
+        name: '',
+        value: '',
+        usdOfValue: '',
+        id: ''
+      }
+      if (e.gomboc && e.gomboc.pair) {
+        const pa = e.gomboc.pair
+        let token0 = ''
+        let token1 = ''
+        if (pa.token0 && pa.token1) {
+          token0 = pa.token0.symbol
+          token1 = pa.token1.symbol
+        }
+        item.name = `Pool - ${token0}/${token1}`
+      } else {
+        item.name = `Staking $HOP`
+      }
+      item.value = res[addr].view
+      item.usdOfValue = res[addr].usdOfValue
+      item.id = addr
+      if (res[addr].value && Number(res[addr].value) > 0) {
+        arr.push(item)
+      }
+    })
+    getAllData && getAllData(arr)
     return res
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [rewardsData, tableData, priceResult, chainId])
 
   const allocatedView = useMemo(() => {
@@ -183,6 +237,8 @@ const VotedList = () => {
   const isTimeDis = useMemo(() => {
     const res: any = {}
     if (tableData.length > 0 && lastVoteData.length > 0 && tableData.length === lastVoteData.length) {
+      const addArr: any = []
+      const amountArr: any = []
       lastVoteData.forEach((e: any, index) => {
         let item = false
         if (Number(e.result)) {
@@ -191,11 +247,36 @@ const VotedList = () => {
           item = now.isBefore(end)
         }
         const addr = tableData[index]?.gomboc.id
+        if (!item && allocatedView[addr].value) {
+          addArr.push(addr)
+          amountArr.push(allocatedView[addr].value)
+        }
         res[addr] = item
+      })
+      if (addArr.length === amountArr.length) {
+        // setAllArgAdd(addArr)
+        // setAllArgAmount(amountArr)
+      }
+    }
+    return res
+  }, [lastVoteData, tableData, allocatedView])
+
+  const allArg = useMemo(() => {
+    const res: any = {
+      add: [],
+      amount: []
+    }
+    if (tableData.length > 0) {
+      tableData.forEach((e: any) => {
+        const arr = e.gomboc.id
+        if (!isTimeDis[arr]) {
+          res.add.push(arr)
+          res.amount.push(allocatedView[arr].value)
+        }
       })
     }
     return res
-  }, [lastVoteData, tableData])
+  }, [isTimeDis, tableData, allocatedView])
 
   const toVoteCallback = useCallback(
     async (item: any) => {
@@ -223,6 +304,30 @@ const VotedList = () => {
     },
     [account, toVote, allocatedView]
   )
+
+  const toVoteAllCallback = useCallback(async () => {
+    if (!account) return
+    setCurToken(undefined)
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+    setPendingText(`Refresh All`)
+    const curAdd = allArg.add && allArg.add.length > 0 ? allArg.add : []
+    const argAmount: any = allArg.amount && allArg.amount.length > 0 ? allArg.amount : []
+    toVoteAll(curAdd, argAmount)
+      .then((hash: any) => {
+        setShowConfirm(true)
+        setAttemptingTxn(false)
+        hash && setTxHash(hash)
+        setPendingText(``)
+      })
+      .catch((error: any) => {
+        setShowConfirm(true)
+        setTxHash('')
+        setPendingText(``)
+        setAttemptingTxn(false)
+        setErrorStatus({ code: error?.code, message: error.message })
+      })
+  }, [account, toVoteAll, allArg])
 
   const onTxStart = useCallback(() => {
     setShowConfirm(true)
@@ -273,13 +378,6 @@ const VotedList = () => {
     setAttemptingTxn(false)
     setShowConfirm(true)
   }
-
-  // function toReset(item: any) {
-  //   setTxHash('')
-  //   setErrorStatus(undefined)
-  //   setAttemptingTxn(false)
-  //   setShowConfirm(true)
-  // }
 
   const confirmationContent = useCallback(
     () =>
@@ -358,7 +456,22 @@ const VotedList = () => {
       }
     },
     {
-      title: 'veLT Voting Balance',
+      title: (
+        <>
+          veLT Voting Balance{' '}
+          {isShowAll && allArg && allArg.add && allArg.add.length > 0 && (
+            <span
+              className="title-button"
+              onClick={() => {
+                toVoteAllCallback()
+              }}
+            >
+              Refresh All
+            </span>
+          )}
+        </>
+      ),
+      width: 235,
       dataIndex: 'voting',
       key: 'voting',
       render: (text: string, record: any) => {
@@ -447,11 +560,15 @@ const VotedList = () => {
     try {
       const response = await postQuery(SUBGRAPH, query)
       if (response && response.data && response.data.user && response.data.user.voteGombocs) {
-        setTableData(response.data.user.voteGombocs)
+        const listData = response.data.user.voteGombocs
+        setPageTotal(listData.length || 0)
+        setAllTableData(listData)
+        setTableData(listData.slice(0, pageSize))
       }
     } catch (error) {
       console.log(error)
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account])
 
   useEffect(() => {
@@ -459,6 +576,17 @@ const VotedList = () => {
       init()
     }
   }, [init, account])
+
+  const setPageSearch = (page: number, pagesize: number) => {
+    const resList = allTableData?.slice((page - 1) * pagesize, Number(pagesize) + (page - 1) * pagesize)
+    setTableData(resList)
+  }
+
+  const onPagesChange = (page: any, pageSize: any) => {
+    setCurrentPage(Number(page))
+    setPageSize(Number(pageSize))
+    setPageSearch(page, pageSize)
+  }
 
   return (
     <>
@@ -474,6 +602,23 @@ const VotedList = () => {
       <div className="my-list-box">
         <Table rowKey={'id'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
       </div>
+      {pageTotal > 0 && (
+        <Row justify="center">
+          <Pagination
+            showQuickJumper
+            total={pageTotal}
+            current={currentPage}
+            pageSize={pageSize}
+            showSizeChanger
+            pageSizeOptions={['5', '10', '20', '30', '40']}
+            onChange={onPagesChange}
+            onShowSizeChange={onPagesChange}
+          />{' '}
+          <span className="m-l-15" style={{ color: '#868790' }}>
+            Total {pageTotal}
+          </span>
+        </Row>
+      )}
     </>
   )
 }

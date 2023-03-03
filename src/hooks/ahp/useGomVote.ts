@@ -9,7 +9,8 @@ import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 
 export enum conFnNameEnum {
-  VoteForGombocWeights = 'voteForGombocWeights'
+  VoteForGombocWeights = 'voteForGombocWeights',
+  BatchVoteForGombocWeights = 'batchVoteForGombocWeights'
 }
 
 export function useToVote() {
@@ -42,5 +43,38 @@ export function useToVote() {
   )
   return {
     toVote
+  }
+}
+
+export function useToVoteAll() {
+  const addTransaction = useTransactionAdder()
+  const contract = useGomConContract()
+  const { account } = useActiveWeb3React()
+  const toVoteAll = useCallback(
+    async (addressList: any, amountList: any) => {
+      if (!account) throw new Error('none account')
+      if (!contract) throw new Error('none contract')
+      const args = [addressList, amountList]
+      const method = conFnNameEnum.BatchVoteForGombocWeights
+      return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+        return contract[method](...args, {
+          gasLimit: calculateGasMargin(estimatedGasLimit),
+          // gasLimit: '3500000',
+          from: account
+        }).then((response: TransactionResponse) => {
+          addTransaction(response, {
+            summary: `Refresh All`,
+            actionTag: {
+              recipient: `${account}-${conFnNameEnum.BatchVoteForGombocWeights}`
+            }
+          })
+          return response.hash
+        })
+      })
+    },
+    [account, addTransaction, contract]
+  )
+  return {
+    toVoteAll
   }
 }
