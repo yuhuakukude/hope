@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react'
+import React, { useEffect, useMemo, useRef, useState } from 'react'
 import * as echarts from 'echarts'
 import { TitleComponentOption } from 'echarts/components'
 import { PieSeriesOption } from 'echarts/charts'
@@ -16,6 +16,13 @@ import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
 
+type IOptionItem = {
+  name: string
+  value: any
+  formatValue: string
+  tips: JSX.Element | string
+}
+
 export default function InvestmentAllocation({ data, lpData }: { data: any; lpData: any }) {
   const { chainId } = useActiveWeb3React()
   const addresses = useMemo(() => {
@@ -23,8 +30,16 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
   }, [chainId])
 
   const { result: priceResult } = useTokenPrice(addresses)
-  const allocations = useMemo(() => {
-    return [
+  const [allocations, setAllocations] = useState<IOptionItem[]>([])
+
+  const [visibleMap, setVisibleMap] = useState(false)
+  console.log(lpData)
+  const investmentRef = useRef<HTMLInputElement>()
+
+  const [myChart, setMyChart] = useState<echarts.ECharts | null>(null)
+
+  useEffect(() => {
+    const listData = [
       {
         name: 'HOPE Staking',
         value: data.staking,
@@ -60,12 +75,11 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
         )
       }
     ]
-  }, [data])
-  const [visibleMap, setVisibleMap] = useState(false)
-  useEffect(() => {
+    setAllocations(listData)
     if (!visibleMap) {
       return
     }
+
     const option: EChartsOption = {
       left: 95,
       top: 40,
@@ -97,7 +111,7 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
           orient: 'vertical',
           left: 'left',
           top: 'bottom',
-          data: allocations.slice(0, (allocations.length / 2) | 0),
+          data: listData.slice(0, (listData.length / 2) | 0),
           textStyle: {
             color: '#fff',
             fontSize: 16
@@ -111,7 +125,7 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
           orient: 'vertical',
           left: 'right',
           top: 'bottom',
-          data: allocations.slice((allocations.length / 2) | 0),
+          data: listData.slice((listData.length / 2) | 0),
           textStyle: {
             color: '#fff',
             fontSize: 16
@@ -128,21 +142,16 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
             show: false
           },
           top: 'top',
-          data: allocations as any
+          data: listData as any
         }
       ]
     }
-
-    let myChart: echarts.ECharts | null = null
-    setTimeout(() => {
-      myChart = echarts.init(document.querySelector('#investment-allocation-map') as HTMLElement)
+    if (!myChart) {
+      setMyChart(echarts.init(investmentRef.current as HTMLElement, option))
+    } else {
       myChart.setOption(option)
-    })
-
-    return () => {
-      myChart && myChart.dispose()
     }
-  }, [allocations, visibleMap])
+  }, [visibleMap, myChart, data])
 
   return (
     <div className="investment-allocation">
@@ -200,9 +209,9 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
           </div>
         </div>
       </Card>
-      <Modal width="500px" visible={visibleMap} onCancel={() => setVisibleMap(false)}>
+      <Modal width="500px" visible={visibleMap} onCancel={() => setVisibleMap(false)} forceRender>
         <div className="investment-allocation-wrap">
-          <div className="investment-allocation-map" id="investment-allocation-map"></div>
+          <div className="investment-allocation-map" ref={investmentRef as any}></div>
         </div>
       </Modal>
     </div>

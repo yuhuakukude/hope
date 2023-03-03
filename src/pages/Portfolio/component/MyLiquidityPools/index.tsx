@@ -27,7 +27,6 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       return
     }
     PortfolioApi.getLiquidityPools(account).then(data => {
-      console.log('getLiquidityPools;;;;;::>>>>', data)
       if (data.success && data.result) {
         setDataSource(data.result)
         const headList: IHeadItem[] = []
