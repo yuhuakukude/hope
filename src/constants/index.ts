@@ -63,9 +63,9 @@ export const LT: { [chainId in ChainId]: Token } = {
   [ChainId.HOPE]: new Token(ChainId.HOPE, '0x958d10197567895E37cCCcea0712E37037568279', 18, 'LT', 'light')
 }
 export const VELT: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xD8f9C68549Cd84b66eD8Cf80646408dcF8Bd171b', 18, 'VELT', 've light'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xD8f9C68549Cd84b66eD8Cf80646408dcF8Bd171b', 18, 'VELT', 've light'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xD8f9C68549Cd84b66eD8Cf80646408dcF8Bd171b', 18, 'VELT', 've light')
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xD8f9C68549Cd84b66eD8Cf80646408dcF8Bd171b', 18, 'veLT', 've light'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xD8f9C68549Cd84b66eD8Cf80646408dcF8Bd171b', 18, 'veLT', 've light'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xD8f9C68549Cd84b66eD8Cf80646408dcF8Bd171b', 18, 'veLT', 've light')
 }
 export const HOPE: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xE94Cf6a2D6d6FaBbd3fa9134b49f0Eb3C68C773d', 18, 'HOPE', 'hope'),

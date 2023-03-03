@@ -300,34 +300,39 @@ export default function DaoLocker() {
               </div>
               <div className="r m-l-30 flex-2 p-30">
                 <h3 className="text-medium font-20">Lock LT get veLT</h3>
-                <div className="ava-balance m-t-30">
-                  <p className="flex jc-between ai-center font-nor">
-                    <span className="text-normal">My LT Balance</span>
-                    <span className="text-medium">
-                      {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} LT
-                    </span>
-                  </p>
-                  <p className="flex jc-between ai-center font-nor m-t-16">
-                    <span className="text-normal">My LT Locked</span>
-                    <p className="flex ai-center">
+                {account && (
+                  <div className="ava-balance m-t-30">
+                    <p className="flex jc-between ai-center font-nor">
+                      <span className="text-normal">My LT Balance</span>
                       <span className="text-medium">
-                        {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}{' '}
-                        LT
+                        {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} LT
                       </span>
-                      {isWithDraw && !withdrawPendingText && (
-                        <span className="withdraw text-medium text-primary font-24 m-l-16" onClick={toWithdrawCallback}>
-                          Withdraw
-                        </span>
-                      )}
                     </p>
-                  </p>
-                  <p className="flex jc-between ai-center font-nor m-t-16">
-                    <span className="text-normal">Locked Until :</span>
-                    <span className="text-medium">
-                      {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
-                    </span>
-                  </p>
-                </div>
+                    <p className="flex jc-between ai-center font-nor m-t-16">
+                      <span className="text-normal">My LT Locked</span>
+                      <p className="flex ai-center">
+                        <span className="text-medium">
+                          {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}{' '}
+                          LT
+                        </span>
+                        {isWithDraw && !withdrawPendingText && (
+                          <span
+                            className="withdraw text-medium text-primary font-24 m-l-16"
+                            onClick={toWithdrawCallback}
+                          >
+                            Withdraw
+                          </span>
+                        )}
+                      </p>
+                    </p>
+                    <p className="flex jc-between ai-center font-nor m-t-16">
+                      <span className="text-normal">Locked Until :</span>
+                      <span className="text-medium">
+                        {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
+                      </span>
+                    </p>
+                  </div>
+                )}
                 {lockerRes?.end && lockerRes?.end !== '--' ? (
                   <div className="add-action-box m-t-30">
                     <div className="add-ava">
