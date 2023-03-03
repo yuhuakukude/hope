@@ -20,6 +20,7 @@ import { getEtherscanLink } from '../../utils'
 import { usePair } from '../../data/Reserves'
 import CurrencyLogo from '../CurrencyLogo'
 import TitleTips, { TitleTipsProps } from '../../pages/Portfolio/component/SelectTips'
+import { useHistory } from 'react-router-dom'
 
 export const FixedHeightRow = styled(RowBetween)`
   height: 24px;
@@ -184,7 +185,7 @@ export default function FullPositionCard({
   reward
 }: FullCardProps) {
   const { account, chainId } = useActiveWeb3React()
-
+  const history = useHistory()
   const currency0 = unwrappedToken(pairInfo.tokens[0])
   const currency1 = unwrappedToken(pairInfo.tokens[1])
 
@@ -192,7 +193,6 @@ export default function FullPositionCard({
 
   const userDefaultPoolBalance = useTokenBalance(account ?? undefined, pairInfo.liquidityToken)
   const totalPoolTokens = useTotalSupply(pairInfo.liquidityToken)
-
   // if staked balance balance provided, add to standard liquidity amount
   const userPoolBalance = stakedBalance ? userDefaultPoolBalance?.add(stakedBalance) : userDefaultPoolBalance
   const [token0Deposited, token1Deposited] =
@@ -206,7 +206,7 @@ export default function FullPositionCard({
           pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false)
         ]
       : [undefined, undefined]
-
+  console.log('userPoolBalance', currency0.symbol, currency1.symbol, userDefaultPoolBalance, pairInfo.liquidityToken)
   const backgroundColor = useColor(pair?.token0)
 
   const actions: TitleTipsProps[] = [
@@ -228,7 +228,9 @@ export default function FullPositionCard({
     {
       label: 'Pool Details',
       value: 'Pool Details',
-      onClick: data => {}
+      onClick: data => {
+        history.push(`/swap/pool-detail/${pairInfo.liquidityToken.address}`)
+      }
     }
   ]
 

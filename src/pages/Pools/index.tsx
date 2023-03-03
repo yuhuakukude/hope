@@ -82,7 +82,7 @@ export default function Pools() {
         </ButtonPrimary>
       </RowBetween>
       　
-      <AutoRow>
+      <AutoRow mt={30}>
         <RowBetween>
           <TabWrapper>
             <TabItem
