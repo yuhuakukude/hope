@@ -3,14 +3,15 @@ import AddLiquidity from '../AddLiquidity'
 import { RouteComponentProps } from 'react-router-dom'
 import AppBody from '../AppBody'
 import styled from 'styled-components'
-import { AutoColumn, GapColumn } from '../../components/Column'
+import { GapColumn } from '../../components/Column'
 import { AddRemoveTabs, StyledMenuIcon } from '../../components/NavigationTabs'
 import { StyledInternalLink, TYPE } from '../../theme'
 import { RowBetween, RowFixed } from '../../components/Row'
 import { TabItem, TabWrapper } from '../../components/Tab'
 import RemoveLiquidity from '../RemoveLiquidity'
-import { Tooltip } from 'antd'
-import { Info } from 'react-feather'
+import Tips from './component/Tips'
+// import { Tooltip } from 'antd'
+// import { Info } from 'react-feather'
 
 const PageWrapper = styled(GapColumn)`
   width: 100%;
@@ -40,11 +41,12 @@ export default function LiquidityManager({
           <TYPE.white fontSize={18} fontWeight={700}>
             Liquidity Management
           </TYPE.white>
-          <RowFixed align={'center'}>
-            <StyledInternalLink style={{ justifySelf: 'flex-end' }} to={'/swap/settings'}>
+          <RowFixed className="flex ai-center" align={'center'}>
+            <StyledInternalLink style={{ justifySelf: 'flex-center', height: '16px' }} to={'/swap/settings'}>
               <StyledMenuIcon style={{ height: 16 }} size={'18px'} />
             </StyledInternalLink>
-            <Tooltip
+            <Tips />
+            {/* <Tooltip
               style={{ color: '#5A5A5B', marginLeft: 10 }}
               placement="rightBottom"
               title={
@@ -68,7 +70,7 @@ export default function LiquidityManager({
               }
             >
               <Info size={18} />
-            </Tooltip>
+            </Tooltip> */}
           </RowFixed>
         </RowBetween>
         <CustomTabWrapper>
