@@ -17,6 +17,7 @@ import MyLockedLTAndProfits from './component/MyLockedLTAndProfits'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { ST_HOPE, SUBGRAPH } from '../../constants'
 import { postQuery } from '../../utils/graph'
+import { useStaking } from 'hooks/ahp/useStaking'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -26,6 +27,7 @@ const PageWrapper = styled(AutoColumn)`
 export default function Portfolio() {
   const { account, chainId } = useActiveWeb3React()
   const stHopeBalance = useTokenBalance(account ?? undefined, ST_HOPE[chainId ?? 1])
+  const { claRewards } = useStaking()
   const [stToHope, setStToHope] = useState('0')
   const [ltToHope, setLtToHope] = useState('0')
   const [stHopeProfits, setStHopeProfits] = useState('0')
@@ -47,7 +49,9 @@ export default function Portfolio() {
       .add(new Decimal(getSthopeHope))
       .toNumber()
       .toFixed(3)
-    const staking = getTokenToHope(stHopeBalance?.toFixed(3) || '0', stToHope)
+    const stBal = getTokenToHope(stHopeBalance?.toFixed(3) || '0', stToHope)
+    const claRVal = getTokenToHope(claRewards?.toFixed(3) || '0', ltToHope)
+    const staking = new Decimal(stBal).add(new Decimal(claRVal))
     const lp = lpData.lpTotal.toFixed(3) || '0'
     const yieldFarming = lpData.yfTotal.toFixed(3) || '0'
     return {
@@ -62,7 +66,7 @@ export default function Portfolio() {
         .toNumber()
         .toFixed(3)
     }
-  }, [stHopeBalance, stToHope, ltToHope, lockerLt, stHopeProfits, lpData])
+  }, [stHopeBalance, stToHope, ltToHope, lockerLt, stHopeProfits, lpData, claRewards])
 
   const getTokenPrice = useCallback(async () => {
     try {
@@ -111,7 +115,7 @@ export default function Portfolio() {
           <PortfolioConnect />
         ) : (
           <>
-            <InvestmentAllocation lpData={lpData} data={allData} />
+            <InvestmentAllocation data={allData} />
             {/* <GombocRewards data={overViewData.rewards} /> */}
             <MyHOPEStaking />
             <MyLiquidityPools getLpData={setLpTotal} />
