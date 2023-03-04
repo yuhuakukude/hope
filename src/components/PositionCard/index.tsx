@@ -94,7 +94,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
           <AutoColumn gap="12px">
             <FixedHeightRow>
               <RowFixed>
-                <Text fontWeight={500} fontSize={16}>
+                <Text fontWeight={700} fontSize={16}>
                   My position
                 </Text>
               </RowFixed>
@@ -102,14 +102,12 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
             <FixedHeightRow onClick={() => setShowMore(!showMore)}>
               <RowFixed>
                 <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin={true} size={20} />
-                <Text fontWeight={500} fontSize={20}>
+                <Text fontWeight={700}>
                   {currency0.symbol}/{currency1.symbol}
                 </Text>
               </RowFixed>
               <RowFixed>
-                <Text fontWeight={500} fontSize={20}>
-                  {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
-                </Text>
+                <Text fontWeight={700}>{userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}</Text>
               </RowFixed>
             </FixedHeightRow>
             <AutoColumn gap="4px">
@@ -153,12 +151,8 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
           </AutoColumn>
         </LightCard>
       ) : (
-        <LightCard>
-          <TYPE.main style={{ textAlign: 'center' }}>
-            {`By adding liquidity you'll earn 0.3% of all trades on this pair proportional to your share of the pool. Fees
-            are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
-          </TYPE.main>
-        </LightCard>
+        <>
+        </>
       )}
     </>
   )

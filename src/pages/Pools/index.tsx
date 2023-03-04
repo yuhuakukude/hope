@@ -27,13 +27,13 @@ const PageWrapper = styled(AutoColumn)`
 const EmptyProposals = styled.div`
   background-color: ${({ theme }) => theme.bg1};
   border: 1px solid ${({ theme }) => theme.text4};
-  padding: 16px 12px;
+  margin-top: 30px;
+  padding: 30px 12px;
   border-radius: 12px;
   display: flex;
   flex-direction: column;
   justify-content: center;
   align-items: center;
-  margin-top: 30px;
 `
 const EmptyCover = styled.img`
   width: 80%;
@@ -110,14 +110,14 @@ export default function Pools() {
               <ExternalLink
                 style={{ color: 'white', textDecoration: 'underline' }}
                 target="_blank"
-                href="https://uniswap.org/docs/v2/core-concepts/pools/"
+                href=""
               >
                 <TYPE.link fontSize={14}>Read more about providing liquidity</TYPE.link>
               </ExternalLink>
             </RowBetween>
           </AutoColumn>
           <EmptyCover src={empty} />
-          <Card padding="40px">
+          <Card padding="40px 40px 0 40px">
             <TYPE.white textAlign="center">Connect to a wallet to view your liquidity.</TYPE.white>
             <ButtonOutlined onClick={toggleWalletModal} margin={'auto'} width={'400px'} mt={'40px'} primary>
               Connect Wallet

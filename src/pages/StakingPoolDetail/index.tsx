@@ -656,6 +656,14 @@ export default function StakingPoolDetail({
               </AutoColumn>
             </>
           )}
+          {account && currentBoots && futureBoots && !(currentBoots.toFixed(2) === futureBoots.toFixed(2)) && (
+            <AutoRow>
+              <i style={{ color: '#FBDD55', fontSize: 16, fontWeight: 700 }} className="iconfont">
+                &#xe614;
+              </i>
+              <TYPE.main>You can apply future boost by claiming LT</TYPE.main>
+            </AutoRow>
+          )}
         </LightCard>
       </AutoColumn>
     )

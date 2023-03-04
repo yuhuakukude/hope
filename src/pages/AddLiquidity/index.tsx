@@ -6,7 +6,7 @@ import { PlusCircle } from 'react-feather'
 import { Text } from 'rebass'
 import styled, { ThemeContext } from 'styled-components'
 import { ButtonConfirmed, ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
-import { GreyCard, LightCard } from '../../components/Card'
+import { LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter, GapColumn } from '../../components/Column'
 import TransactionConfirmationModal, {
   ConfirmationModalContent,
@@ -17,7 +17,7 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { AutoRow, RowBetween, RowFlat } from '../../components/Row'
 
-import { ONE_BIPS, ROUTER_ADDRESS } from '../../constants'
+import { ROUTER_ADDRESS } from '../../constants'
 import { PairState } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
@@ -367,8 +367,6 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
     [errorStatus, handleDismissConfirmation, modalBottom, modalHeader, noLiquidity]
   )
 
-  //const isCreate = history.location.pathname.includes('/create')
-
   const addIsUnsupported = useIsTransactionUnsupported(currencies?.CURRENCY_A, currencies?.CURRENCY_B)
 
   return (
@@ -446,34 +444,27 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
             />
             {currencies[Field.CURRENCY_A] && currencies[Field.CURRENCY_B] && pairState !== PairState.INVALID && (
               <>
-                <LightCard margin={'20px 0'} padding="0px" borderRadius={'0'}>
-                  <AutoColumn gap={'20px'}>
-                    <RowBetween padding="1rem 0">
-                      <TYPE.subHeader fontWeight={500} fontSize={18}>
-                        {noLiquidity ? 'Initial prices' : 'Prices'} and pool share
-                      </TYPE.subHeader>
-                    </RowBetween>{' '}
-                    <GreyCard padding="1rem" borderRadius={'10px'}>
-                      <PoolPriceBar
-                        currencies={currencies}
-                        poolTokenPercentage={poolTokenPercentage}
-                        noLiquidity={noLiquidity}
-                        price={price}
-                      />
-                    </GreyCard>
-                    <AutoColumn style={{ marginTop: 8 }}>
-                      <TYPE.main>
-                        Share of pool:{' '}
-                        {noLiquidity && price
-                          ? '100'
-                          : (poolTokenPercentage?.lessThan(ONE_BIPS) ? '<0.01' : poolTokenPercentage?.toFixed(2)) ??
-                            '0'}
-                        %
-                      </TYPE.main>
-                    </AutoColumn>
-                  </AutoColumn>
-                </LightCard>
+                <AutoColumn gap={'20px'}>
+                  <PoolPriceBar
+                    currencies={currencies}
+                    poolTokenPercentage={poolTokenPercentage}
+                    noLiquidity={noLiquidity}
+                    price={price}
+                  />
+                </AutoColumn>
               </>
+            )}
+
+            {noLiquidity && (
+              <Row align={'flex-start'}>
+                <i style={{ color: '#FBDD55', fontSize: 12, fontWeight: 700 }} className="iconfont">
+                  &#xe614;
+                </i>
+                <TYPE.gray ml={10} fontWeight={400} color={'text5'}>
+                  You are the first liquidity provider! The token ratio that you choose here will set the price on this
+                  pool.
+                </TYPE.gray>
+              </Row>
             )}
 
             {addIsUnsupported ? (

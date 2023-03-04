@@ -114,17 +114,17 @@ export default function usePairsInfo(
           bu && stake && stake.toString() !== '0'
             ? new Percent(
                 JSBI.multiply(bu, JSBI.BigInt(10)),
-                JSBI.multiply(JSBI.BigInt(stake.toString()), JSBI.BigInt(4))
+                JSBI.multiply(JSBI.BigInt(stake.toString()), JSBI.BigInt(400))
               )
             : undefined
         const currentBoots =
           work && stake && stake.toString() !== '0'
             ? new Percent(
                 JSBI.multiply(JSBI.BigInt(work.toString()), JSBI.BigInt(10)),
-                JSBI.multiply(JSBI.BigInt(stake.toString()), JSBI.BigInt(4))
+                JSBI.multiply(JSBI.BigInt(stake.toString()), JSBI.BigInt(400))
               )
             : undefined
-        console.log('lim--->1', pair, work?.toString(), stake?.toString())
+
         return {
           ...pair,
           pair,
@@ -182,17 +182,24 @@ export function usePairStakeInfo(stakingAddress?: string) {
   }
   const bu =
     balance && lim ? (JSBI.greaterThanOrEqual(JSBI.BigInt(balance), lim) ? lim : JSBI.BigInt(balance)) : undefined
-  const futureBoots =
-    bu && balance && balance.toString() !== '0'
-      ? new Percent(JSBI.multiply(bu, JSBI.BigInt(10)), JSBI.multiply(JSBI.BigInt(balance.toString()), JSBI.BigInt(4)))
-      : undefined
-  const currentBoots =
-    workingBalance && balance && balance.toString() !== '0'
+
+  const futureBoots = useMemo(() => {
+    return bu && balance && balance.toString() !== '0'
       ? new Percent(
-          JSBI.multiply(JSBI.BigInt(workingBalance), JSBI.BigInt(10)),
-          JSBI.multiply(JSBI.BigInt(balance), JSBI.BigInt(4))
+          JSBI.multiply(bu, JSBI.BigInt(10)),
+          JSBI.multiply(JSBI.BigInt(balance.toString()), JSBI.BigInt(400))
         )
       : undefined
+  }, [balance, bu])
+
+  const currentBoots = useMemo(() => {
+    return workingBalance && balance && balance.toString() !== '0'
+      ? new Percent(
+          JSBI.multiply(JSBI.BigInt(workingBalance), JSBI.BigInt(10)),
+          JSBI.multiply(JSBI.BigInt(balance), JSBI.BigInt(400))
+        )
+      : undefined
+  }, [balance, workingBalance])
 
   return {
     currentBoots,
