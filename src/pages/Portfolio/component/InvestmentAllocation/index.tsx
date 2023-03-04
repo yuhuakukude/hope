@@ -33,7 +33,6 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
   const [allocations, setAllocations] = useState<IOptionItem[]>([])
 
   const [visibleMap, setVisibleMap] = useState(false)
-  console.log(lpData)
   const investmentRef = useRef<HTMLInputElement>()
 
   const [myChart, setMyChart] = useState<echarts.ECharts | null>(null)

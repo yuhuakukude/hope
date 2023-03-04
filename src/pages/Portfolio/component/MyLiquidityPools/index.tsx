@@ -10,12 +10,10 @@ import Item from '../Item'
 import SelectTips, { TitleTipsProps } from '../SelectTips'
 import Head, { IHeadItem } from './components/head'
 import { Decimal } from 'decimal.js'
+import format from 'utils/format'
 
 function toFixed(val: string | number, length = 2) {
-  if (isNaN(val as number)) {
-    return val
-  }
-  return Number(val).toFixed(length)
+  return format.amountFormat(val, length)
 }
 
 export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: number, yfTotal: number) => void }) {
@@ -81,7 +79,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
                 <span>{record.composition}</span>
               </>
             }
-            desc={<>Fee Rate: {record.feeRate}%</>}
+            desc={<>Fee Rate: {format.rate(record.feeRate)}</>}
           />
         )
       }
@@ -117,7 +115,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       dataIndex: 'lpBalance',
       key: 'lpBalance',
       render: (text: string, record: ILiquidityPools) => {
-        return <Item title={toFixed(record.lpBalance, 8)} desc={'≈ $' + toFixed(record.hopeOfLpBalance)} />
+        return <Item title={toFixed(record.lpBalance, 8)} desc={`${format.rate(record.stakedProportion)}  Staked`} />
       }
     },
     {
@@ -133,15 +131,21 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       dataIndex: 'feesApr',
       key: 'feesApr',
       render: (text: string, record: ILiquidityPools) => {
-        return <Item type={3} title={`${record.feesApr || 0}%`} desc={`${record.ltApr}% -> ${record.maxLtApr}%`} />
+        return (
+          <Item
+            type={3}
+            title={format.rate(record.feesApr)}
+            desc={`${format.rate(record.ltApr)} -> ${format.rate(record.maxLtApr)}`}
+          />
+        )
       }
     },
     {
       title: 'Claimable Rewards',
-      dataIndex: 'ltOfReward',
-      key: 'ltOfReward',
+      dataIndex: 'ltTotalReward',
+      key: 'ltTotalReward',
       render: (text: string, record: ILiquidityPools) => {
-        return <Item title={toFixed(record.ltOfReward)} desc={'≈ $' + toFixed(record.ltTotalReward)} />
+        return <Item title={toFixed(record.ltTotalReward)} desc={'≈ $' + toFixed(record.usdOfTotalReward)} />
       }
     },
     {
