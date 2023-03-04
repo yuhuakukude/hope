@@ -34,7 +34,8 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
               ltOfReward: item.ltOfReward,
               ltTotalReward: item.ltTotalReward,
               gomboc: item.gomboc,
-              composition: item.composition
+              composition: item.composition,
+              usdOfReward: item.usdOfReward
             })
           }
         })
