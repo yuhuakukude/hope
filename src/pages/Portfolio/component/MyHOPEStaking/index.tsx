@@ -130,6 +130,7 @@ export default function MyHOPEStaking() {
       dataIndex: 'actions',
       key: 'actions',
       render: (text: string, record: IStaking) => {
+        const add = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`
         const options: TitleTipsProps[] = [
           {
             label: 'Stake',
@@ -143,7 +144,7 @@ export default function MyHOPEStaking() {
             value: 'Unstake',
             isHide: Number(unstakedVal?.toFixed(2)) <= 0,
             onClick: () => {
-              history.push(`/staking`)
+              history.push(`/staking?type=unstake`)
             }
           },
           {
@@ -161,7 +162,7 @@ export default function MyHOPEStaking() {
             label: 'Yield Boost',
             value: 'Yield Boost',
             onClick: () => {
-              history.push(`/dao/gomboc?gomboc=${1}`) // TODO Sure
+              history.push(`/dao/gomboc?gomboc=${add.toLocaleLowerCase()}`) // TODO Sure
             }
           }
         ]

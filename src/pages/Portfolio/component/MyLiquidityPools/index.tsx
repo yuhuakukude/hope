@@ -168,7 +168,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
           label: 'Yield Boost',
           value: 'Yield Boost',
           onClick: () => {
-            history.push(`/staking`) // TODO check url
+            history.push(`/dao/gomboc?gomboc=${record.gomboc}`) // TODO check url
           }
         })
         options.push({

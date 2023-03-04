@@ -169,7 +169,6 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
       const unNum = Number(unUseRateVal) || 0
       const cp = JSBI.BigInt(Number(curPower.result.power))
       const ra = new Percent(cp, JSBI.BigInt(10000))
-
       sub = new Decimal(Number(ra.toFixed(2))).add(new Decimal(unNum)).toNumber()
     }
     return sub
@@ -177,15 +176,21 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
 
   const viewSubAmount = useMemo(() => {
     let vsub = subAmount
-    if (amount && subAmount) {
-      const am = Number(amount) || 0
-      const resn = new Decimal(Number(subAmount)).sub(new Decimal(am)).toNumber()
-      if (Number(resn) > 0) {
-        vsub = resn
+    if (curGomAddress) {
+      if (amount && subAmount) {
+        const am = Number(amount) || 0
+        const resn = new Decimal(Number(subAmount)).sub(new Decimal(am)).toNumber()
+        if (Number(resn) > 0) {
+          vsub = resn
+        }
+      }
+    } else {
+      if (unUseRateVal) {
+        vsub = Number(unUseRateVal)
       }
     }
     return vsub
-  }, [amount, subAmount])
+  }, [amount, subAmount, unUseRateVal, curGomAddress])
 
   const curPowerAmount = useMemo(() => {
     let sub = 0
@@ -204,7 +209,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
     if (curGomAddress && amount && Number(amount) > 100) {
       return 'Insufficient Value'
     }
-    if (!hasVote && Number(amount) === 0) {
+    if (curGomAddress && !hasVote && amount && Number(amount) === 0) {
       return 'Insufficient Value'
     }
     if (curGomAddress && amount && Number(subAmount) < Number(amount)) {
@@ -412,7 +417,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
             <span className="text-normal">Vote weight:</span>
             {account && (
               <p>
-                unallocated votes : {isNoVelt || !curGomAddress ? '0.00' : `${viewSubAmount}%`}
+                unallocated votes : {isNoVelt ? '0.00' : `${viewSubAmount}%`}
                 <span onClick={toMax} className="text-primary m-l-5 cursor-select">
                   Max
                 </span>

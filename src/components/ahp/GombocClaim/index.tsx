@@ -5,7 +5,7 @@ import { ButtonPrimary } from '../../../components/Button'
 import format from 'utils/format'
 import { Radio } from 'antd'
 import Tips from 'components/Tips'
-import { STAKING_HOPE_GOMBOC_ADDRESS } from '../../../constants'
+// import { STAKING_HOPE_GOMBOC_ADDRESS } from '../../../constants'
 import { useActiveWeb3React } from '../../../hooks'
 import { useEstimate } from 'hooks/ahp'
 
@@ -25,7 +25,7 @@ interface GombocClaimProps {
 }
 
 const GombocClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: GombocClaimProps) => {
-  const { account, chainId } = useActiveWeb3React()
+  const { account } = useActiveWeb3React()
   const isEthBalanceInsufficient = useEstimate()
   const [curClaimType, setCurClaimType] = useState('')
   function changeRadio(item: any) {
@@ -71,47 +71,46 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: Gomb
                 <p className="text-normal text-right">≈ ${format.amountFormat(tableItem?.usdOfReward, 2)}</p>
               </div>
             </div>
-            {tableItem?.usdOfExtReward &&
-              !(tableItem && tableItem?.gomboc === STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLowerCase()) && (
-                <div className="m-t-30 radio-item">
-                  <div className="radio-box-head flex jc-between">
-                    <div className="flex ai-center">
-                      <Radio
-                        disabled={tableItem && !!tableItem?.usdOfExtReward && Number(tableItem?.usdOfExtReward) <= 0}
-                        value={`pool`}
-                      >
-                        <span className="text-white">Claimable Rewards</span>
-                      </Radio>
-                      <Tips title={`Claimable Rewards`} />
-                    </div>
-                    <div>
-                      <p className="text-normal text-right">
-                        ≈ ${format.amountFormat(tableItem?.usdOfExtReward || 0, 2)}
-                      </p>
-                    </div>
+            {tableItem && tableItem?.extRewardList && tableItem?.extRewardList.length > 0 && (
+              <div className="m-t-30 radio-item">
+                <div className="radio-box-head flex jc-between">
+                  <div className="flex ai-center">
+                    <Radio
+                      disabled={tableItem && !!tableItem?.usdOfExtReward && Number(tableItem?.usdOfExtReward) <= 0}
+                      value={`pool`}
+                    >
+                      <span className="text-white">Claimable Rewards</span>
+                    </Radio>
+                    <Tips title={`Claimable Rewards`} />
                   </div>
-                  {tableItem && tableItem?.extRewardList && tableItem?.extRewardList.length > 0 && (
-                    <div className="radio-box-con">
-                      {tableItem?.extRewardList.map((data, index) => {
-                        return (
-                          <div key={index} className="flex jc-between">
-                            <div className="coin-box flex ai-center cursor-select">
-                              {/* <div className="hope-icon"></div> */}
-                              <div className="currency text-white text-medium m-l-12">{data.symbol}</div>
-                            </div>
-                            <div>
-                              <p className="text-white text-right">
-                                {format.amountFormat(data.amount, 2)} {data.symbol}
-                              </p>
-                              <p className="text-white text-right">≈ ${format.amountFormat(data.usdOfToken, 2)}</p>
-                            </div>
-                          </div>
-                        )
-                      })}
-                    </div>
-                  )}
+                  <div>
+                    <p className="text-normal text-right">
+                      ≈ ${format.amountFormat(tableItem?.usdOfExtReward || 0, 2)}
+                    </p>
+                  </div>
                 </div>
-              )}
+                {tableItem && tableItem?.extRewardList && tableItem?.extRewardList.length > 0 && (
+                  <div className="radio-box-con">
+                    {tableItem?.extRewardList.map((data, index) => {
+                      return (
+                        <div key={index} className="flex jc-between">
+                          <div className="coin-box flex ai-center cursor-select">
+                            {/* <div className="hope-icon"></div> */}
+                            <div className="currency text-white text-medium m-l-12">{data.symbol}</div>
+                          </div>
+                          <div>
+                            <p className="text-white text-right">
+                              {format.amountFormat(data.amount, 2)} {data.symbol}
+                            </p>
+                            <p className="text-white text-right">≈ ${format.amountFormat(data.usdOfToken, 2)}</p>
+                          </div>
+                        </div>
+                      )
+                    })}
+                  </div>
+                )}
+              </div>
+            )}
           </Radio.Group>
           <ButtonPrimary
             className="hp-button-primary m-t-30"
