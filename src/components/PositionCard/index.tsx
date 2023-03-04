@@ -90,12 +90,12 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
   return (
     <>
       {userPoolBalance && JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
-        <LightCard border={border}>
+        <LightCard padding={'0'} border={border}>
           <AutoColumn gap="12px">
             <FixedHeightRow>
               <RowFixed>
                 <Text fontWeight={500} fontSize={16}>
-                  Your position
+                  My position
                 </Text>
               </RowFixed>
             </FixedHeightRow>
@@ -114,17 +114,17 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
             </FixedHeightRow>
             <AutoColumn gap="4px">
               <FixedHeightRow>
-                <Text fontSize={16} fontWeight={500}>
+                <TYPE.main fontSize={16} fontWeight={500}>
                   Your pool share
-                </Text>
+                </TYPE.main>
                 <Text fontSize={16} fontWeight={500}>
                   {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
                 </Text>
               </FixedHeightRow>
               <FixedHeightRow>
-                <Text fontSize={16} fontWeight={500}>
+                <TYPE.main fontSize={16} fontWeight={500}>
                   {currency0.symbol}
-                </Text>
+                </TYPE.main>
                 {token0Deposited ? (
                   <RowFixed>
                     <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
@@ -136,9 +136,9 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
                 )}
               </FixedHeightRow>
               <FixedHeightRow>
-                <Text fontSize={16} fontWeight={500}>
+                <TYPE.main fontSize={16} fontWeight={500}>
                   {currency1.symbol}
-                </Text>
+                </TYPE.main>
                 {token1Deposited ? (
                   <RowFixed>
                     <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
@@ -173,6 +173,7 @@ interface FullCardProps {
   futureBoots?: string
   currentBoots?: string
   reward?: TokenAmount | undefined
+  stakingAddress?: string
 }
 
 export default function FullPositionCard({
@@ -182,7 +183,8 @@ export default function FullPositionCard({
   feeRate,
   futureBoots,
   currentBoots,
-  reward
+  reward,
+  stakingAddress
 }: FullCardProps) {
   const { account, chainId } = useActiveWeb3React()
   const history = useHistory()
@@ -213,23 +215,29 @@ export default function FullPositionCard({
     {
       label: 'Manage Positions',
       value: 'Manage Positions',
-      onClick: data => {}
+      onClick: data => {
+        history.push(`/swap/liquidity/manager/${pairInfo.tokens[0].address}/${pairInfo.tokens[1].address}`)
+      }
     },
     {
       label: 'Yield Boost',
       value: 'Yield Boost',
-      onClick: data => {}
+      onClick: data => {
+        history.push(`/swap/liquidity/mining/${stakingAddress}`)
+      }
     },
     {
       label: 'Claim Rewards',
       value: 'Claim Rewards',
-      onClick: data => {}
+      onClick: data => {
+        history.push(`swap/liquidity/manager/${pairInfo.tokens[0].address}/${pairInfo.tokens[1].address}`)
+      }
     },
     {
       label: 'Pool Details',
       value: 'Pool Details',
       onClick: data => {
-        history.push(`/swap/pool-detail/${pairInfo.liquidityToken.address}`)
+        history.push(`/swap/liquidity/pool-detail/${pairInfo.liquidityToken.address}`)
       }
     }
   ]

@@ -124,7 +124,7 @@ export default function StakingPoolCard({ pair }: { pair: GraphPairInfo }) {
         </ContentRow>
         <ContentRow>
           <Column>
-            <Link to={`/swap/pool-detail/${pair.address}`}>
+            <Link to={`/swap/liquidity/pool-detail/${pair.address}`}>
               <TYPE.link>details</TYPE.link>
             </Link>
           </Column>

@@ -10,8 +10,9 @@ import DoubleCurrencyLogo from '../DoubleLogo'
 import { ExternalLink, TYPE } from '../../theme'
 import { LightCard } from '../Card'
 import { getEtherscanLink } from '../../utils'
-import { ChevronRight } from 'react-feather'
+import { ArrowUpRight, ChevronRight } from 'react-feather'
 import { useHistory } from 'react-router-dom'
+import { BasePair } from '../../graph/fetch'
 
 const StyledPositionCard = styled(LightCard)<{ bgColor: any }>`
   background-color: transparent;
@@ -41,14 +42,23 @@ const ActionIcon = styled(ChevronRight)`
   }
 `
 
+const SmallCard = styled(TYPE.white)`
+  background-color: ${({ theme }) => theme.bg3};
+  border-radius: 2px;
+  font-size: 12px;
+  padding: 4px;
+`
+
 interface PoolCardProps {
+  pairData: BasePair
   pairInfo: { liquidityToken: Token; tokens: [Token, Token] }
   showUnwrapped?: boolean
   border?: string
   tvl: CurrencyAmount | undefined
 }
 
-export default function PoolCard({ pairInfo, border, tvl }: PoolCardProps) {
+export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardProps) {
+  console.log('pairInfo', pairInfo)
   const { chainId } = useActiveWeb3React()
   const history = useHistory()
 
@@ -62,7 +72,7 @@ export default function PoolCard({ pairInfo, border, tvl }: PoolCardProps) {
   return (
     <StyledPositionCard
       onClick={() => {
-        history.push(`/swap/pool-detail/${pairInfo.liquidityToken.address}`)
+        history.push(`/swap/liquidity/pool-detail/${pairInfo.liquidityToken.address}`)
       }}
       border={border}
       bgColor={backgroundColor}
@@ -79,6 +89,7 @@ export default function PoolCard({ pairInfo, border, tvl }: PoolCardProps) {
           >
             {currency0 && currency1 ? <TYPE.white>{`${currency0.symbol} / ${currency1.symbol}`}</TYPE.white> : '-/-'}
           </TYPE.link>
+          {pairData.feeRate && <SmallCard ml={10}>{pairData?.feeRate * 100} %</SmallCard>}
         </ContentRow>
         <ContentRow>
           <TYPE.white>{tvl ? `$${tvl?.toFixed(2)}` : '--'}</TYPE.white>
@@ -87,16 +98,17 @@ export default function PoolCard({ pairInfo, border, tvl }: PoolCardProps) {
           <TYPE.white>--</TYPE.white>
         </ContentRow>
         <ContentRow>
-          <TYPE.white>--</TYPE.white>
+          <TYPE.white>{pairData?.baseApr ? Number(pairData?.baseApr).toFixed(2) : ''}</TYPE.white>
+        </ContentRow>
+        <ContentRow gap={'10px'}>
+          <TYPE.white>{pairData?.ltApr ? Number(pairData?.ltApr).toFixed(2) : ''}</TYPE.white>
+          {pairData.maxApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
+          <TYPE.white>{pairData.maxApr ? Number(pairData.maxApr).toFixed(2) : ''}</TYPE.white>
         </ContentRow>
         <ContentRow>
-          <TYPE.white>--</TYPE.white>
-        </ContentRow>
-        <ContentRow>
-          <TYPE.white>--</TYPE.white>
-        </ContentRow>
-        <ContentRow>
-          <TYPE.white>--</TYPE.white>
+          <TYPE.white>
+            {pairData?.ltAmountPerDay ? `${Number(pairData?.ltAmountPerDay).toFixed(2)} LT/day` : ''}
+          </TYPE.white>
         </ContentRow>
         <ContentRow weight={0.5}>
           <ActionIcon size={8} />

@@ -157,8 +157,6 @@ export default function Pool() {
   const { pairInfos, loading } = usePairsInfo(1, 1)
   const history = useHistory()
 
-  console.log('loading:::>>>', loading)
-
   return (
     <>
       <PageWrapper>

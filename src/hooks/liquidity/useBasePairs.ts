@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { BasePair, fetchPairs, fetchTokensPrice } from '../../graph/fetch'
 import { useActiveWeb3React } from '../index'
 import { PAIR_SEARCH } from '../usePairInfo'
+import AprApi from '../../api/apr.api'
 
 export default function useBasePairs(
   pageSize: number,
@@ -12,6 +13,8 @@ export default function useBasePairs(
 ) {
   const { chainId } = useActiveWeb3React()
   const [result, setResult] = useState<BasePair[]>([])
+  const [apiResult, setApiResult] = useState<any>()
+
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -33,11 +36,26 @@ export default function useBasePairs(
     })()
   }, [account, chainId, currentPage, pageSize, searchType, searchValue])
 
-  return {
-    loading: loading,
-    total,
-    result
-  }
+  useEffect(() => {
+    ;(async () => {
+      if (!result) return
+      try {
+        const res = await AprApi.getHopeAllFeeApr(result.map(item => item.pairAddress).join(','))
+        console.log('AprApi', result.map(item => item.pairAddress).join(','))
+        setApiResult(res.result)
+      } catch (error) {
+        console.warn(error)
+      }
+    })()
+  }, [account, chainId, currentPage, pageSize, result, searchType, searchValue, total])
+
+  return useMemo(() => {
+    return {
+      loading: loading,
+      total,
+      result: result.map((e: BasePair) => ({ ...e, ...apiResult?.[e.pairAddress] }))
+    }
+  }, [apiResult, loading, result, total])
 }
 
 export interface TokenPrice {

@@ -11,13 +11,6 @@ import Web3ReactManager from '../components/Web3ReactManager'
 import { ApplicationModal } from '../state/application/actions'
 import { useModalOpen, useToggleModal } from '../state/application/hooks'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
-import AddLiquidity from './AddLiquidity'
-import {
-  RedirectDuplicateTokenIds,
-  RedirectOldAddLiquidityPathStructure,
-  RedirectToAddLiquidity
-} from './AddLiquidity/redirects'
-import Earn from './Earn'
 import Manage from './Earn/Manage'
 import MigrateV1 from './MigrateV1'
 import MigrateV1Exchange from './MigrateV1/MigrateV1Exchange'
@@ -25,7 +18,6 @@ import RemoveV1Exchange from './MigrateV1/RemoveV1Exchange'
 import Pool from './Pool'
 import PoolFinder from './PoolFinder'
 import RemoveLiquidity from './RemoveLiquidity'
-import { RedirectOldRemoveLiquidityPathStructure } from './RemoveLiquidity/redirects'
 import Swap from './Swap'
 import { OpenClaimAddressModalAndRedirectToSwap, RedirectPathToSwapOnly, RedirectToSwap } from './Swap/redirects'
 import Vote from './Vote'
@@ -43,9 +35,11 @@ import { ModalProvider } from '../context/ModalContext'
 import SettingPage from './Settings'
 import StakingPoolDetail from './StakingPoolDetail'
 import LiquidityStake from './LiquidityStake'
-import LiquidityUnStake from './LiquidityUnStake'
 import TestComponent from './TestComponent'
 import Pools from './Pools'
+import LiquidityManager from './LiquidityManager'
+import { RedirectDuplicateTokenIds, RedirectOldAddLiquidityPathStructure } from './LiquidityManager/redirects'
+import LiquidityMining from './LiquidityMining'
 
 const PageWrapper = styled.div`
   display: flex;
@@ -117,27 +111,35 @@ export default function App() {
               <Web3ReactManager>
                 <Switch>
                   <Route exact strict path="/swap/exchange" component={Swap} />
+                  <Route exact strict path="/swap/liquidity/manager" component={LiquidityManager} />
                   <Route exact strict path="/swap/liquidity" component={Pool} />
-                  <Route exact strict path="/swap/mining" component={Earn} />
                   <Route exact strict path="/swap/find" component={PoolFinder} />
                   <Route exact strict path="/swap/pools" component={Pools} />
-                  <Route exact strict path="/swap/pool-detail/:address" component={StakingPoolDetail} />
+                  <Route exact strict path="/swap/liquidity/pool-detail/:address" component={StakingPoolDetail} />
                   <Route exact strict path="/swap/stake/:stakingRewardAddress" component={LiquidityStake} />
-                  <Route exact strict path="/swap/withdraw/:stakingRewardAddress" component={LiquidityUnStake} />
+                  <Route exact strict path="/swap/liquidity/mining/:stakingRewardAddress" component={LiquidityMining} />
                   <Route exact strict path="/swap/settings" component={SettingPage} />
-                  <Route exact path="/swap/add" component={AddLiquidity} />
-                  <Route exact path="/swap/add/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
-                  <Route exact path="/swap/add/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
+                  {/*<Route exact path="/swap/add" component={AddLiquidity} />*/}
+                  <Route
+                    exact
+                    path="/swap/liquidity/manager/:currencyIdA"
+                    component={RedirectOldAddLiquidityPathStructure}
+                  />
+                  <Route
+                    exact
+                    path="/swap/liquidity/manager/:currencyIdA/:currencyIdB"
+                    component={RedirectDuplicateTokenIds}
+                  />
                   <Route exact strict path="/claim" component={OpenClaimAddressModalAndRedirectToSwap} />
                   <Route exact strict path="/swap/exchange/:outputCurrency" component={RedirectToSwap} />
                   <Route exact strict path="/send" component={RedirectPathToSwapOnly} />
                   <Route exact strict path="/vote" component={Vote} />
-                  <Route exact strict path="/create" component={RedirectToAddLiquidity} />
-                  <Route exact path="/create" component={AddLiquidity} />
-                  <Route exact path="/create/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />
-                  <Route exact path="/create/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />
+                  {/*<Route exact strict path="/create" component={RedirectToAddLiquidity} />*/}
+                  {/*<Route exact path="/create" component={AddLiquidity} />*/}
+                  {/*<Route exact path="/create/:currencyIdA" component={RedirectOldAddLiquidityPathStructure} />*/}
+                  {/*<Route exact path="/create/:currencyIdA/:currencyIdB" component={RedirectDuplicateTokenIds} />*/}
                   <Route exact strict path="/remove/v1/:address" component={RemoveV1Exchange} />
-                  <Route exact strict path="/remove/:tokens" component={RedirectOldRemoveLiquidityPathStructure} />
+                  {/*<Route exact strict path="/remove/:tokens" component={RedirectOldRemoveLiquidityPathStructure} />*/}
                   <Route exact strict path="/remove/:currencyIdA/:currencyIdB" component={RemoveLiquidity} />
                   <Route exact strict path="/migrate/v1" component={MigrateV1} />
                   <Route exact strict path="/migrate/v1/:address" component={MigrateV1Exchange} />

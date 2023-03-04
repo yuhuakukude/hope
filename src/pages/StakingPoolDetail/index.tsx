@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { Link, RouteComponentProps } from 'react-router-dom'
+import { Link, RouteComponentProps, useHistory } from 'react-router-dom'
 import { usePairTxs, useStakingPairPool } from '../../hooks/useLPStaking'
 import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
 import { AutoColumn } from '../../components/Column'
@@ -8,7 +8,7 @@ import { TYPE, ExternalLink } from '../../theme'
 import { GreyCard, LightCard } from '../../components/Card'
 import { LT } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
-import { ButtonGray, ButtonPrimary } from '../../components/Button'
+import { ButtonOutlined, ButtonPrimary } from '../../components/Button'
 import { CardHeader } from '../../components/pool/PoolInfoCard'
 import PieCharts from '../../components/pool/PieCharts'
 import LineCharts from '../../components/pool/LineCharts'
@@ -17,9 +17,7 @@ import styled from 'styled-components'
 import { Decimal } from 'decimal.js'
 import { Box } from 'rebass/styled-components'
 import Overview, { OverviewData } from '../../components/pool/Overview'
-import { useLtMinterContract, useStakingContract } from '../../hooks/useContract'
-import { useSingleCallResult } from '../../state/multicall/hooks'
-import { TokenAmount } from '@uniswap/sdk'
+import { useLtMinterContract } from '../../hooks/useContract'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
 import { calculateGasMargin, shortenAddress, getEtherscanLink } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
@@ -38,6 +36,8 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { usePosition, useStakePosition } from '../../hooks/usePosition'
 import { ArrowRight } from 'react-feather'
 import { useWalletModalToggle } from '../../state/application/hooks'
+import { usePairStakeInfo } from '../../hooks/usePairInfo'
+import { JSBI } from '@uniswap/sdk'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -177,8 +177,8 @@ export default function StakingPoolDetail({
   }
 }: RouteComponentProps<{ address: string }>) {
   const { account, chainId, library } = useActiveWeb3React()
-  const { result: pool } = useStakingPairPool(address)
-  const stakingContract = useStakingContract(pool?.stakingRewardAddress)
+  const { result: pool, pairMore } = useStakingPairPool(address)
+  const { claimAbleRewards, currentBoots, futureBoots } = usePairStakeInfo(pool?.stakingRewardAddress)
   const ltMinterContract = useLtMinterContract()
   const addTransaction = useTransactionAdder()
   const toggleWalletModal = useWalletModalToggle()
@@ -197,9 +197,7 @@ export default function StakingPoolDetail({
   const [showTx, setShowTx] = useState<boolean>(false)
   const [transactionType, setTransactionType] = useState('All')
   const txs = usePairTxs(address, transactionType)
-
-  const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
-  const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
+  const history = useHistory()
   //const stakedAmount = useTokenBalance(account ?? undefined, pool?.stakingToken)
 
   const { token0Deposited, token1Deposited, balance } = usePosition(pool?.pair)
@@ -369,27 +367,27 @@ export default function StakingPoolDetail({
   const viewData: OverviewData[] = [
     {
       title: 'TVL',
-      isRise: !!pool && pool.tvlChangeUSD > 0,
-      rate: pool ? `${pool.tvlChangeUSD.toFixed(2)} %` : `--`,
+      isRise: !!pairMore && pairMore.tvlChangeUSD > 0,
+      rate: pairMore ? `${pairMore.tvlChangeUSD.toFixed(2)} %` : `--`,
       amount: pool ? `$${format.separate(Number(pool.tvl).toFixed(2))}` : `--`
     },
     {
       title: 'Volume(24H)',
-      isRise: !!pool && pool.volumeChangeUSD > 0,
-      rate: pool ? `${pool.volumeChangeUSD.toFixed(2)} %` : `--`,
-      amount: pool ? `$${format.separate(pool.oneDayVolumeUSD.toFixed(2))}` : `--`
+      isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
+      rate: pairMore ? `${pairMore.volumeChangeUSD.toFixed(2)} %` : `--`,
+      amount: pairMore ? `$${format.separate(pairMore.oneDayVolumeUSD.toFixed(2))}` : `--`
     },
     {
       title: 'Fees(24H)',
-      isRise: !!pool && pool.volumeChangeUSD > 0,
-      rate: pool ? `${pool.volumeChangeUSD.toFixed(2)} %` : `--`,
-      amount: pool ? `$${format.separate(pool.dayFees.toFixed(2))}` : `--`
+      isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
+      rate: pairMore ? `${pairMore.volumeChangeUSD.toFixed(2)} %` : `--`,
+      amount: pairMore ? `$${format.separate(pairMore.oneDayVolumeUSD.toFixed(2))}` : `--`
     },
     {
       title: 'Fees(7d)',
-      isRise: !!pool && pool.weeklyVolumeChange > 0,
-      rate: pool ? `${pool.weeklyVolumeChange.toFixed(2)} %` : `--`,
-      amount: pool ? `$${format.separate(pool.weekFees.toFixed(2))}` : `--`
+      isRise: !!pairMore && pairMore.weeklyVolumeChange > 0,
+      rate: pairMore ? `${pairMore.weeklyVolumeChange.toFixed(2)} %` : `--`,
+      amount: pairMore ? `$${format.separate(pairMore.oneWeekVolume.toFixed(2))}` : `--`
     }
   ]
 
@@ -425,16 +423,16 @@ export default function StakingPoolDetail({
         from: account
       }).then((response: TransactionResponse) => {
         addTransaction(response, {
-          summary: `Claim ${earnedAmount?.toFixed(2)} LT`
+          summary: `Claim ${claimAbleRewards?.toFixed(2)} LT`
         })
         return response.hash
       })
     })
-  }, [account, addTransaction, earnedAmount, ltMinterContract, pool])
+  }, [account, addTransaction, claimAbleRewards, ltMinterContract, pool])
 
   const onClaimCallback = useCallback(async () => {
-    if (!account || !library || !chainId || !pool || !earnedAmount) return
-    setPendingText(`Claim ${earnedAmount?.toFixed(2)} LT`)
+    if (!account || !library || !chainId || !pool || !claimAbleRewards) return
+    setPendingText(`Claim ${claimAbleRewards?.toFixed(2)} LT`)
     onTxStart()
     // sign
     onClaim()
@@ -445,7 +443,7 @@ export default function StakingPoolDetail({
         onTxError(error)
         throw error
       })
-  }, [account, library, chainId, pool, earnedAmount, onTxStart, onClaim, onTxSubmitted, onTxError])
+  }, [account, library, chainId, pool, claimAbleRewards, onTxStart, onClaim, onTxSubmitted, onTxError])
 
   const confirmationContent = useCallback(() => {
     return (
@@ -474,28 +472,28 @@ export default function StakingPoolDetail({
   }, [address])
 
   const lineToTal = useMemo(() => {
-    if (!pool) return '0'
+    if (!pairMore) return '0'
     if (timeIndex === '24H') {
-      return pool?.oneDayTVLUSD.toFixed(2)
+      return pairMore?.oneDayTVLUSD.toFixed(2)
     } else if (timeIndex === '1W') {
-      return pool?.oneWeekTVLUSD.toFixed(2)
+      return pairMore?.oneWeekTVLUSD.toFixed(2)
     } else if (timeIndex === '1M') {
-      return pool?.oneMonthTVLUSD.toFixed(2)
+      return pairMore?.oneMonthTVLUSD.toFixed(2)
     }
     return '0'
-  }, [pool, timeIndex])
+  }, [pairMore, timeIndex])
 
   const barToTal = useMemo(() => {
-    if (!pool) return '0'
+    if (!pairMore) return '0'
     if (timeIndex === '24H') {
-      return tabIndex === 'Volume' ? pool?.oneDayVolumeUSD.toFixed(2) : pool?.dayFees.toFixed(2)
+      return tabIndex === 'Volume' ? pairMore?.oneDayVolumeUSD.toFixed(2) : pairMore?.oneDayVolumeUSD.toFixed(2)
     } else if (timeIndex === '1W') {
-      return tabIndex === 'Volume' ? pool?.oneWeekVolume.toFixed(2) : pool?.weekFees.toFixed(2)
+      return tabIndex === 'Volume' ? pairMore?.oneWeekVolume.toFixed(2) : pairMore?.oneWeekVolume.toFixed(2)
     } else if (timeIndex === '1M') {
-      return tabIndex === 'Volume' ? pool?.oneMonthVolume.toFixed(2) : pool?.monthFees.toFixed(2)
+      return tabIndex === 'Volume' ? pairMore?.oneMonthVolume.toFixed(2) : pairMore?.oneMonthVolume.toFixed(2)
     }
     return '0'
-  }, [pool, timeIndex, tabIndex])
+  }, [pairMore, timeIndex, tabIndex])
 
   useEffect(() => {
     initFn()
@@ -549,6 +547,25 @@ export default function StakingPoolDetail({
               <TYPE.main>Staked Position</TYPE.main>
               <TYPE.white>{stakedLpAmount?.toFixed(4) ?? ''}</TYPE.white>
             </RowBetween>
+            <AutoRowBetween gap={'30px'}>
+              <ButtonPrimary
+                onClick={() =>
+                  history.push(`/swap/liquidity/manager/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
+                }
+                height={46}
+              >
+                Deposit
+              </ButtonPrimary>
+              <ButtonOutlined
+                primary
+                onClick={() =>
+                  history.push(`/swap/liquidity/manager/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
+                }
+                height={46}
+              >
+                Withdraw
+              </ButtonOutlined>
+            </AutoRowBetween>
           </AutoColumn>
         </AutoColumn>
       </LightCard>
@@ -586,35 +603,44 @@ export default function StakingPoolDetail({
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Mining Position</TYPE.main>
-                    <TYPE.white>--</TYPE.white>
-                  </RowBetween>
-                  <RowBetween>
-                    <TYPE.main>My Pool Gömböc LT APR</TYPE.main>
-                    <TYPE.white>--</TYPE.white>
+                    <TYPE.white>{stakedLpAmount ? stakedLpAmount.toFixed(4) : '--'}</TYPE.white>
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Current Boost</TYPE.main>
-                    <TYPE.white>--</TYPE.white>
+                    <TYPE.white>{currentBoots ? currentBoots.toFixed(2) : '--'}</TYPE.white>
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Future Boost</TYPE.main>
-                    <TYPE.white>--</TYPE.white>
+                    <TYPE.white>{futureBoots ? futureBoots.toFixed(2) : '--'}</TYPE.white>
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Claimable Rewards</TYPE.main>
                     <RowFixed>
-                      <TYPE.white>{earnedAmount ? earnedAmount?.toFixed(4) : '--'}</TYPE.white>
-                      <TYPE.link style={{ cursor: 'pointer' }} ml={'10px'} onClick={() => setShowClaimModal(true)}>
-                        claim
-                      </TYPE.link>
+                      <TYPE.white>{claimAbleRewards ? claimAbleRewards?.toFixed(4) : '--'}</TYPE.white>
+                      {claimAbleRewards && claimAbleRewards.greaterThan(JSBI.BigInt('0')) && (
+                        <TYPE.link style={{ cursor: 'pointer' }} ml={'10px'} onClick={() => setShowClaimModal(true)}>
+                          claim
+                        </TYPE.link>
+                      )}
                     </RowFixed>
                   </RowBetween>
                 </AutoColumn>
                 {account ? (
                   <>
                     <AutoRowBetween gap={'30px'}>
-                      <ButtonPrimary height={42}>Stake</ButtonPrimary>
-                      <ButtonGray height={42}>Unstake</ButtonGray>
+                      <ButtonPrimary
+                        onClick={() => history.push(`/swap/liquidity/mining/${pool?.stakingRewardAddress}`)}
+                        height={42}
+                      >
+                        Stake
+                      </ButtonPrimary>
+                      <ButtonOutlined
+                        primary
+                        onClick={() => history.push(`/swap/liquidity/mining/${pool?.stakingRewardAddress}`)}
+                        height={42}
+                      >
+                        Unstake
+                      </ButtonOutlined>
                     </AutoRowBetween>
                   </>
                 ) : (
@@ -675,7 +701,7 @@ export default function StakingPoolDetail({
           <ButtonPrimary
             as={Link}
             width={'150px'}
-            to={`/swap/add/${pool?.tokens?.[0].address}/${pool?.tokens?.[1].address}`}
+            to={`/swap/liquidity/manager/${pool?.tokens?.[0].address}/${pool?.tokens?.[1].address}`}
           >
             Add Liquidity
           </ButtonPrimary>
@@ -925,7 +951,7 @@ export default function StakingPoolDetail({
                     <TableTitle>{formatUTCDate(pool?.createAt)}</TableTitle>
                     <TableTitle flex={0.8}>0.30%</TableTitle>
                     <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
-                      <TableTitle>{pool ? `$${pool.totalVolume.toFixed(2)}` : '--'}</TableTitle>
+                      <TableTitle>{pairMore ? `$${pairMore.totalVolume.toFixed(2)}` : '--'}</TableTitle>
                       <AutoRow gap={'5px'}>
                         <CurrencyLogo currency={pool?.tokens[0]} />
                         <TYPE.main>
@@ -939,7 +965,7 @@ export default function StakingPoolDetail({
                         </TYPE.main>
                       </AutoRow>
                     </AutoColumn>
-                    <TableTitle>{pool ? `$${(pool.totalVolume * 0.003).toFixed()}` : '--'}</TableTitle>
+                    <TableTitle>{pairMore ? `$${(pairMore.totalVolume * 0.003).toFixed()}` : '--'}</TableTitle>
                     <TableTitle>{pool ? pool.txCount : '--'}</TableTitle>
                   </AutoRow>
                 </LightCard>

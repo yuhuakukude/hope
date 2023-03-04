@@ -2,8 +2,8 @@ import React, { RefObject, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import Row, { AutoRow, RowBetween, RowFixed } from '../../components/Row'
-import { TYPE } from '../../theme'
-import { ButtonGray, ButtonPrimary } from '../../components/Button'
+import { ExternalLink, TYPE } from '../../theme'
+import { ButtonGray, ButtonOutlined, ButtonPrimary } from '../../components/Button'
 import { TabItem, TabWrapper } from '../../components/Tab'
 import usePairsInfo, { PAIR_SEARCH } from '../../hooks/usePairInfo'
 import PoolCard from '../../components/pool/PoolCard'
@@ -11,11 +11,33 @@ import FullPositionCard from '../../components/PositionCard'
 import { SearchInput } from '../../components/SearchModal/styleds'
 import Toggle from '../../components/Toggle'
 import { Pagination } from 'antd'
+import { useHistory } from 'react-router-dom'
+import { CardSection } from '../../components/earn/styled'
+import empty from '../../assets/images/empty.png'
+import Card from '../../components/Card'
+import { useWalletModalToggle } from '../../state/application/hooks'
+import { useActiveWeb3React } from '../../hooks'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
   width: 100%;
   min-width: 1390px;
+`
+
+const EmptyProposals = styled.div`
+  background-color: ${({ theme }) => theme.bg1};
+  border: 1px solid ${({ theme }) => theme.text4};
+  padding: 16px 12px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+`
+const EmptyCover = styled.img`
+  width: 80%;
+  height: fit-content;
 `
 
 const TableWrapper = styled(AutoColumn)`
@@ -54,12 +76,14 @@ const positionTitles = [
   { value: 'Actions', weight: 0.5 }
 ]
 export default function Pools() {
+  const { account } = useActiveWeb3React()
   const inputRef = useRef<HTMLInputElement>()
   const [searchValue, setSearchValue] = useState('')
   const [searchType, setSearchType] = useState(PAIR_SEARCH.ALL)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(5)
-
+  const toggleWalletModal = useWalletModalToggle()
+  const history = useHistory()
   const { pairInfos, total } = usePairsInfo(pageSize, currentPage, searchType, searchValue)
 
   const handleSearchInput = (event: any) => {
@@ -72,12 +96,71 @@ export default function Pools() {
     setPageSize(Number(pageSize))
   }
 
+  function ConnectView() {
+    return (
+      <EmptyProposals>
+        <CardSection style={{ maxWidth: 580 }} justify={'center'}>
+          <AutoColumn justify={'center'} gap="md">
+            <RowBetween>
+              <TYPE.white fontSize={14}>
+                {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
+              </TYPE.white>
+            </RowBetween>
+            <RowBetween>
+              <ExternalLink
+                style={{ color: 'white', textDecoration: 'underline' }}
+                target="_blank"
+                href="https://uniswap.org/docs/v2/core-concepts/pools/"
+              >
+                <TYPE.link fontSize={14}>Read more about providing liquidity</TYPE.link>
+              </ExternalLink>
+            </RowBetween>
+          </AutoColumn>
+          <EmptyCover src={empty} />
+          <Card padding="40px">
+            <TYPE.white textAlign="center">Connect to a wallet to view your liquidity.</TYPE.white>
+            <ButtonOutlined onClick={toggleWalletModal} margin={'auto'} width={'400px'} mt={'40px'} primary>
+              Connect Wallet
+            </ButtonOutlined>
+          </Card>
+        </CardSection>
+      </EmptyProposals>
+    )
+  }
+
+  function EmptyView() {
+    return (
+      <EmptyProposals>
+        <CardSection style={{ maxWidth: 620 }} justify={'center'}>
+          <AutoColumn justify={'center'} gap="lg">
+            <EmptyCover src={empty} />
+            <RowBetween>
+              <TYPE.white fontSize={14}>
+                {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
+              </TYPE.white>
+            </RowBetween>
+            <a
+              style={{ width: `400px` }}
+              target="_blank"
+              rel="noopener noreferrer"
+              href={`https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/`}
+            >
+              <ButtonOutlined primary mt={20}>
+                <TYPE.link textAlign="center">Learn about providing liquidity</TYPE.link>
+              </ButtonOutlined>
+            </a>
+          </AutoColumn>
+        </CardSection>
+      </EmptyProposals>
+    )
+  }
+
   console.log('pairInfos', pairInfos)
   return (
     <PageWrapper>
       <RowBetween>
         <TYPE.largeHeader>Pools</TYPE.largeHeader>
-        <ButtonPrimary width={'150px'} height={'42px'}>
+        <ButtonPrimary onClick={() => history.push(`/swap/liquidity/manager`)} width={'150px'} height={'42px'}>
           New Position
         </ButtonPrimary>
       </RowBetween>
@@ -144,38 +227,54 @@ export default function Pools() {
           </AutoColumn>
         </RowBetween>
       </AutoRow>
-      <TableWrapper>
-        <TableTitleWrapper>
-          {(searchType === PAIR_SEARCH.ALL ? poolTitles : positionTitles).map(({ value, weight }, index) => (
-            <TableTitle key={index} flex={weight ?? 1}>
-              {value}
-            </TableTitle>
-          ))}
-        </TableTitleWrapper>
-      </TableWrapper>
+      {account && pairInfos.length !== 0 && (
+        <TableWrapper>
+          <TableTitleWrapper>
+            {(searchType === PAIR_SEARCH.ALL ? poolTitles : positionTitles).map(({ value, weight }, index) => (
+              <TableTitle key={index} flex={weight ?? 1}>
+                {value}
+              </TableTitle>
+            ))}
+          </TableTitleWrapper>
+        </TableWrapper>
+      )}
       {searchType === PAIR_SEARCH.ALL ? (
         <>
           {pairInfos.map(amountPair => (
-            <PoolCard key={amountPair.pair.liquidityToken.address} tvl={amountPair.tvl} pairInfo={amountPair.pair} />
+            <PoolCard
+              pairData={amountPair}
+              key={amountPair.pair.liquidityToken.address}
+              tvl={amountPair.tvl}
+              pairInfo={amountPair}
+            />
           ))}
         </>
       ) : (
         <>
-          {pairInfos.map(amountPair => (
-            <FullPositionCard
-              key={amountPair.pair.liquidityToken.address}
-              reward={amountPair.reward}
-              futureBoots={amountPair.futureBoots?.toFixed(2).toString() ?? '-'}
-              currentBoots={amountPair.currentBoots?.toFixed(2).toString() ?? '-'}
-              feeRate={amountPair.feeRate}
-              pairInfo={amountPair.pair}
-              stakedBalance={amountPair.stakedAmount}
-            />
-          ))}
+          {!account ? (
+            <ConnectView />
+          ) : pairInfos.length === 0 ? (
+            <EmptyView />
+          ) : (
+            <>
+              {pairInfos.map(amountPair => (
+                <FullPositionCard
+                  key={amountPair.pair.liquidityToken.address}
+                  stakingAddress={amountPair.stakingAddress}
+                  reward={amountPair.reward}
+                  futureBoots={amountPair.futureBoots?.toFixed(2).toString() ?? '-'}
+                  currentBoots={amountPair.currentBoots?.toFixed(2).toString() ?? '-'}
+                  feeRate={amountPair.feeRate}
+                  pairInfo={amountPair.pair}
+                  stakedBalance={amountPair.stakedAmount}
+                />
+              ))}
+            </>
+          )}
         </>
       )}
       <ColumnCenter style={{ marginTop: 30 }}>
-        {total > 0 && (
+        {(account || (!account && searchType === PAIR_SEARCH.ALL)) && pairInfos.length !== 0 && total > 0 && (
           <Row justify="center">
             <Pagination
               showQuickJumper

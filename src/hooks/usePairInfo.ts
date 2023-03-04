@@ -5,7 +5,7 @@ import { useActiveWeb3React } from './index'
 import { JSBI, Percent, TokenAmount } from '@uniswap/sdk'
 import { useMultipleContractSingleData, useSingleCallResult } from '../state/multicall/hooks'
 import { STAKING_REWARDS_INTERFACE } from '../constants/abis/staking-rewards'
-import { useLockerContract } from './useContract'
+import { useLockerContract, useStakingContract } from './useContract'
 import { LT } from '../constants'
 
 export enum PAIR_SEARCH {
@@ -23,6 +23,7 @@ export default function usePairsInfo(
   const { account, chainId } = useActiveWeb3React()
   const { result: allPairs, total, loading } = useBasePairs(page, currentPage, searchType, searchValue, account ?? '')
   console.log('allPairs info', allPairs)
+
   const veltContract = useLockerContract()
   const veltBalance = useSingleCallResult(
     veltContract,
@@ -37,10 +38,12 @@ export default function usePairsInfo(
   const liquidityPairs = useMemo(
     () =>
       allPairs.map(pair => ({
+        ...pair,
         liquidityToken: toV2LiquidityToken(pair.tokens),
         tokens: pair.tokens,
         tvl: pair.tvl,
-        feeRate: pair.feeRate
+        feeRate: pair.feeRate,
+        stakingAddress: pair.stakingAddress
       })),
     [allPairs]
   )
@@ -89,8 +92,8 @@ export default function usePairsInfo(
     () =>
       liquidityPairs.map((pair, index) => {
         const reward = rewardAmounts[index]?.result
-        const work = workAmounts[index].result
-        const stake = stakedAmounts[index].result
+        const work = workAmounts[index]?.result
+        const stake = stakedAmounts[index]?.result
         const total = totalAmounts[index]?.result
         let lim =
           veltTotal && stake
@@ -123,7 +126,9 @@ export default function usePairsInfo(
             : undefined
         console.log('lim--->1', pair, work?.toString(), stake?.toString())
         return {
+          ...pair,
           pair,
+          stakingAddress: pair.stakingAddress,
           reward: reward ? new TokenAmount(LT[chainId ?? 1], reward?.[0].toString()) : undefined,
           futureBoots,
           currentBoots,
@@ -141,5 +146,59 @@ export default function usePairsInfo(
     loading,
     total,
     pairInfos
+  }
+}
+
+export function usePairStakeInfo(stakingAddress?: string) {
+  const veltContract = useLockerContract()
+  const { account, chainId } = useActiveWeb3React()
+
+  const veltBalance = useSingleCallResult(
+    veltContract,
+    'balanceOfAtTime',
+    account ? [account, Math.floor(Date.now() / 1000).toString()] : [undefined]
+  )?.result?.[0].toString()
+  const veltTotal = useSingleCallResult(veltContract, 'totalSupplyAtTime', [
+    Math.floor(Date.now() / 1000).toString()
+  ])?.result?.[0].toString()
+  const stakingContract = useStakingContract(stakingAddress)
+  const claimAbleRewards = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])?.result
+  const balance = useSingleCallResult(stakingContract, 'lpBalanceOf', [account ?? undefined])?.result?.[0].toString()
+  const workingBalance = useSingleCallResult(stakingContract, 'workingBalances', [
+    account ?? undefined
+  ])?.result?.[0].toString()
+  const totalSupply = useSingleCallResult(stakingContract, 'lpTotalSupply')?.result?.[0].toString()
+
+  let lim =
+    veltTotal && balance ? JSBI.divide(JSBI.multiply(JSBI.BigInt(balance), JSBI.BigInt(4)), JSBI.BigInt(10)) : undefined
+  if (lim && veltTotal && totalSupply && veltBalance && JSBI.greaterThan(JSBI.BigInt(veltTotal), JSBI.BigInt(0))) {
+    lim = JSBI.add(
+      JSBI.divide(
+        JSBI.multiply(JSBI.multiply(JSBI.BigInt(totalSupply), JSBI.BigInt(veltBalance)), JSBI.BigInt(6)),
+        JSBI.multiply(JSBI.BigInt(veltTotal), JSBI.BigInt(10))
+      ),
+      lim
+    )
+  }
+  const bu =
+    balance && lim ? (JSBI.greaterThanOrEqual(JSBI.BigInt(balance), lim) ? lim : JSBI.BigInt(balance)) : undefined
+  const futureBoots =
+    bu && balance && balance.toString() !== '0'
+      ? new Percent(JSBI.multiply(bu, JSBI.BigInt(10)), JSBI.multiply(JSBI.BigInt(balance.toString()), JSBI.BigInt(4)))
+      : undefined
+  const currentBoots =
+    workingBalance && balance && balance.toString() !== '0'
+      ? new Percent(
+          JSBI.multiply(JSBI.BigInt(workingBalance), JSBI.BigInt(10)),
+          JSBI.multiply(JSBI.BigInt(balance), JSBI.BigInt(4))
+        )
+      : undefined
+
+  return {
+    currentBoots,
+    futureBoots,
+    claimAbleRewards: claimAbleRewards?.[0]
+      ? new TokenAmount(LT[chainId ?? 1], claimAbleRewards?.[0].toString())
+      : undefined
   }
 }

@@ -21,6 +21,14 @@ export interface BasePair {
   tvl: TokenAmount | undefined
   feeRate: number
   feeUSD: TokenAmount | undefined
+
+  baseApr?: number
+  maxApr?: number
+  feeApr?: number
+  ltApr?: number
+  ltAmountPerDay?: number
+  rewardRate?: number
+  last7AvgVolume?: number
 }
 
 export async function fetchPairs(

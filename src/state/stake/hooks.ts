@@ -227,7 +227,7 @@ export function useTotalUniEarned(): TokenAmount | undefined {
 // based on typed value
 export function useDerivedStakeInfo(
   typedValue: string,
-  stakingToken: Token,
+  stakingToken: Token | undefined,
   userLiquidityUnstaked: TokenAmount | undefined
 ): {
   parsedAmount?: CurrencyAmount
@@ -389,21 +389,23 @@ export interface PairDetail extends PoolInfo {
   tvl: number
   createAt: number
   txCount: number
-  oneDayTVLUSD: number
-  tvlChangeUSD: number
-  oneDayVolumeUSD: number
-  volumeChangeUSD: number
-  oneWeekVolume: number
-  weeklyVolumeChange: number
-  totalVolume: number
-  dayFees: number
-  weekFees: number
-  oneWeekTVLUSD: number
-  oneMonthTVLUSD: number
-  oneMonthVolume: number
-  monthFees: number
   token0Value: number
   token1Value: number
+}
+
+export interface PairMore {
+  tvlChangeUSD: number
+  volumeChangeUSD: number
+  weeklyVolumeChange: number
+  totalVolume: number
+
+  oneDayTVLUSD: number
+  oneWeekTVLUSD: number
+  oneMonthTVLUSD: number
+
+  oneDayVolumeUSD: number
+  oneWeekVolume: number
+  oneMonthVolume: number
 }
 
 export async function fetchTotalAmount(): Promise<any> {
@@ -842,6 +844,56 @@ export async function fetchPairsList(account: string, sort: 'asc' | 'desc', orde
 
 export async function fetchPairPool(stakingAddress: string): Promise<PairDetail | undefined> {
   try {
+    const res = await postQuery(SUBGRAPH, PAIR_QUERY({ stakingAddress }))
+    const pair = res.data.pairs[0]
+
+    const gombocAddress = await GombocApi.getGombocsAddress({ pairAddress: pair.id })
+    const token0 = new Token(ChainId.SEPOLIA, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol)
+    const token1 = new Token(ChainId.SEPOLIA, pair.token1.id, Number(pair.token1.decimals), pair.token1.symbol)
+    const tokens = [token0, token1]
+    const token0Amount = tryParseAmount(pair.reserve0, tokens[0]) as TokenAmount
+    const token1Amount = tryParseAmount(pair.reserve1, tokens[1]) as TokenAmount
+    const volume0Amount = tryParseAmount(pair.volumeToken0, tokens[0]) as TokenAmount
+    const volume1Amount = tryParseAmount(pair.volumeToken1, tokens[1]) as TokenAmount
+    const dummyPair = new Pair(
+      token0Amount ? (token0Amount as TokenAmount) : new TokenAmount(tokens[0], '0'),
+      token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
+    )
+    const totalStakedAmount = tryParseAmount(pair.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
+    const stakingToken = gombocAddress.result ? new Token(11155111, gombocAddress.result, 18, '') : undefined
+    const token0Price = pair.token0Price
+    const token1Price = pair.token1Price
+    return {
+      id: pair.id,
+      tvl: Number(pair?.reserveUSD),
+      createAt: pair?.createdAtTimestamp,
+      txCount: pair?.txCount,
+      stakingRewardAddress: gombocAddress.result,
+      token0Price: Number(token0Price)?.toFixed(4) || '0.00',
+      token1Price: Number(token1Price)?.toFixed(4) || '0.00',
+      pair: dummyPair,
+      tokens,
+      lpToken: dummyPair.liquidityToken,
+      token0Amount,
+      token0Value: Number(pair.reserve0),
+      token1Value: Number(pair.reserve1),
+      token1Amount,
+      volume0Amount,
+      volume1Amount,
+      totalStakedAmount,
+      stakingToken,
+      totalLiquidity: tryParseAmount(pair.reserveUSD, dummyPair.liquidityToken) as TokenAmount,
+      totalSupply: tryParseAmount(pair.totalSupply, dummyPair.liquidityToken) as TokenAmount,
+      volumeAmount: tryParseAmount(pair.volumeUSD, dummyPair.liquidityToken) as TokenAmount
+    }
+  } catch (error) {
+    console.log('error', error)
+    return undefined
+  }
+}
+
+export async function fetchPairMore(stakingAddress: string): Promise<PairMore | undefined> {
+  try {
     const utcCurrentTime = dayjs()
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
     const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix()
@@ -878,7 +930,6 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const w2Pair = w2Res?.data.pairs[0]
     const m1Pair = m1Res?.data.pairs[0]
     const m2Pair = m2Res?.data.pairs[0]
-    console.log('pair--->', pair)
 
     const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(pair?.reserveUSD, d1Pair?.reserveUSD, d2Pair?.reserveUSD)
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
@@ -896,27 +947,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const [oneMonthTVLUSD] = get2DayPercentChange(pair.reserveUSD, m1Pair?.reserveUSD, m2Pair?.reserveUSD)
     const [oneMonthVolume] = get2DayPercentChange(pair.totalVolumeUSD, m1Pair?.volumeUSD, m2Pair?.volumeUSD)
 
-    const gombocAddress = await GombocApi.getGombocsAddress({ pairAddress: pair.id })
-    const token0 = new Token(ChainId.SEPOLIA, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol)
-    const token1 = new Token(ChainId.SEPOLIA, pair.token1.id, Number(pair.token1.decimals), pair.token1.symbol)
-    const tokens = [token0, token1]
-    const token0Amount = tryParseAmount(pair.reserve0, tokens[0]) as TokenAmount
-    const token1Amount = tryParseAmount(pair.reserve1, tokens[1]) as TokenAmount
-    const volume0Amount = tryParseAmount(pair.volumeToken0, tokens[0]) as TokenAmount
-    const volume1Amount = tryParseAmount(pair.volumeToken1, tokens[1]) as TokenAmount
-    const dummyPair = new Pair(
-      token0Amount ? (token0Amount as TokenAmount) : new TokenAmount(tokens[0], '0'),
-      token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
-    )
-    const totalStakedAmount = tryParseAmount(pair.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
-    const stakingToken = gombocAddress.result ? new Token(11155111, gombocAddress.result, 18, '') : undefined
-    const token0Price = pair.token0Price
-    const token1Price = pair.token1Price
     return {
-      id: pair.id,
-      tvl: Number(pair?.reserveUSD),
-      createAt: pair?.createdAtTimestamp,
-      txCount: pair?.txCount,
       tvlChangeUSD: Number(tvlChangeUSD),
       volumeChangeUSD: Number(volumeChangeUSD),
       weeklyVolumeChange: Number(weeklyVolumeChange),
@@ -928,28 +959,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
 
       oneDayVolumeUSD: Number(oneDayVolumeUSD),
       oneWeekVolume: Number(oneWeekVolume),
-      oneMonthVolume: Number(oneMonthVolume),
-
-      dayFees: oneDayVolumeUSD * 0.003,
-      weekFees: oneWeekVolume * 0.003,
-      monthFees: oneMonthVolume * 0.003,
-      stakingRewardAddress: gombocAddress.result,
-      token0Price: Number(token0Price)?.toFixed(4) || '0.00',
-      token1Price: Number(token1Price)?.toFixed(4) || '0.00',
-      pair: dummyPair,
-      tokens,
-      lpToken: dummyPair.liquidityToken,
-      token0Amount,
-      token0Value: Number(pair.reserve0),
-      token1Value: Number(pair.reserve1),
-      token1Amount,
-      volume0Amount,
-      volume1Amount,
-      totalStakedAmount,
-      stakingToken,
-      totalLiquidity: tryParseAmount(pair.reserveUSD, dummyPair.liquidityToken) as TokenAmount,
-      totalSupply: tryParseAmount(pair.totalSupply, dummyPair.liquidityToken) as TokenAmount,
-      volumeAmount: tryParseAmount(pair.volumeUSD, dummyPair.liquidityToken) as TokenAmount
+      oneMonthVolume: Number(oneMonthVolume)
     }
   } catch (error) {
     console.log('error', error)
