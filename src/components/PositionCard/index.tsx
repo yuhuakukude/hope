@@ -222,7 +222,7 @@ export default function FullPositionCard({
     {
       label: 'Yield Boost',
       value: 'Yield Boost',
-      hide: !stakingAddress,
+      isHide: !stakingAddress,
       onClick: data => {
         history.push(`/swap/liquidity/mining/${stakingAddress}`)
       }
@@ -230,7 +230,7 @@ export default function FullPositionCard({
     {
       label: 'Claim Rewards',
       value: 'Claim Rewards',
-      hide: !reward || !reward.greaterThan('0'),
+      isHide: !reward || !reward.greaterThan('0'),
       onClick: data => {
         setShowClaimModal(true)
       }

@@ -136,8 +136,8 @@ const VotedList = ({
         const addr = tableData[index]?.gomboc.id
         res[addr] = {
           view,
-          value,
-          usdOfValue
+          value: format.amountFormat(value, 2),
+          usdOfValue: format.amountFormat(usdOfValue, 2)
         }
       })
     }
@@ -564,6 +564,8 @@ const VotedList = ({
         setPageTotal(listData.length || 0)
         setAllTableData(listData)
         setTableData(listData.slice(0, pageSize))
+      } else {
+        setTableData([])
       }
     } catch (error) {
       console.log(error)

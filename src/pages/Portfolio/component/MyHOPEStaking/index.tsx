@@ -64,7 +64,7 @@ export default function MyHOPEStaking() {
   const i = _i?.result ? CurrencyAmount.ether(_i?.result?.[0]) : undefined
   let boost = '-'
   if (bu && i) {
-    boost = (Number(bu?.toExact()) / (Number(i?.toExact()) * 0.4)).toFixed(2)
+    boost = bu && i ? (Number(bu?.toExact()) / (Number(i?.toExact()) * 0.4)).toFixed(2) : '0'
   }
 
   const [item, setItem] = useState<ITableItem | null>(null)
@@ -130,6 +130,7 @@ export default function MyHOPEStaking() {
       dataIndex: 'actions',
       key: 'actions',
       render: (text: string, record: IStaking) => {
+        const add = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`
         const options: TitleTipsProps[] = [
           {
             label: 'Stake',
@@ -141,13 +142,15 @@ export default function MyHOPEStaking() {
           {
             label: 'Unstake',
             value: 'Unstake',
+            isHide: Number(unstakedVal?.toFixed(2)) <= 0,
             onClick: () => {
-              history.push(`/staking`)
+              history.push(`/staking?type=unstake`)
             }
           },
           {
             label: 'Claim Rewards',
             value: 'Claim Rewards',
+            isHide: Number(claRewards?.toFixed(2)) <= 0,
             onClick: () => {
               setItem({
                 ltOfReward: claRewards?.toExact() || 0,
@@ -159,7 +162,7 @@ export default function MyHOPEStaking() {
             label: 'Yield Boost',
             value: 'Yield Boost',
             onClick: () => {
-              history.push(`/dao/gomboc?gomboc=${1}`) // TODO Sure
+              history.push(`/dao/gomboc?gomboc=${add.toLocaleLowerCase()}`) // TODO Sure
             }
           }
         ]

@@ -1,12 +1,32 @@
 .gomboc-claim-box {
+  .head{
+    text-align: left !important;
+    padding-left: 30px;
+    border: none !important;
+  }
+  .claim-con{
+    padding: 0 30px 30px !important;
+  }
   .radio-item {
     background: #3D3E46;
     border-radius: 10px;
     padding: 20px;
     .radio-box-con {
-      border-top: 1px solid #A8A8AA;
       margin-top: 20px;
       padding-top: 20px;
+      &.hide{
+        display: none;
+      }
+    }
+    .icon-drap {
+      font-size: 16px;
+      color: #fff;
+      margin-left: 10px;
+      cursor: pointer;
+      transition: transform 0.2s ease-in-out;
+      &.active{
+        transform: rotate(-180deg);
+      }
     }
   }
 }

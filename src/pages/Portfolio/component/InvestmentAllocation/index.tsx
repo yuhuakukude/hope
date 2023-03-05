@@ -23,7 +23,7 @@ type IOptionItem = {
   tips: JSX.Element | string
 }
 
-export default function InvestmentAllocation({ data, lpData }: { data: any; lpData: any }) {
+export default function InvestmentAllocation({ data }: { data: any }) {
   const { chainId } = useActiveWeb3React()
   const addresses = useMemo(() => {
     return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]]
@@ -33,7 +33,6 @@ export default function InvestmentAllocation({ data, lpData }: { data: any; lpDa
   const [allocations, setAllocations] = useState<IOptionItem[]>([])
 
   const [visibleMap, setVisibleMap] = useState(false)
-  console.log(lpData)
   const investmentRef = useRef<HTMLInputElement>()
 
   const [myChart, setMyChart] = useState<echarts.ECharts | null>(null)
