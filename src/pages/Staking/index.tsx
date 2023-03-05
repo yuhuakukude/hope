@@ -15,6 +15,7 @@ import {
   STAKING_HOPE_GOMBOC_ADDRESS
 } from '../../constants'
 import StakingApi from '../../api/staking.api'
+import GombocApi from '../../api/gomboc.api'
 import { Row, Col } from 'antd'
 import HopeCard from '../../components/ahp/card'
 import {
@@ -31,7 +32,7 @@ import { ButtonPrimary, ButtonOutlined } from '../../components/Button'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import ActionButton from '../../components/Button/ActionButton'
-import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
+import { CurrencyAmount, Token, TokenAmount, Percent } from '@uniswap/sdk'
 import './index.scss'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
@@ -44,6 +45,7 @@ import JSBI from 'jsbi'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 import usePrice from 'hooks/usePrice'
 import { useActionPending } from '../../state/transactions/hooks'
+import { usePairStakeInfo } from '../../hooks/usePairInfo'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -85,6 +87,7 @@ export default function Staking() {
   const hopeBal = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
   const [apyVal, setApyVal] = useState('0')
   const [amount, setAmount] = useState('')
+  const [relWeight, setRelWeight] = useState('0.00')
 
   const inputAmount = tryParseAmount(amount, HOPE[chainId ?? 1]) as TokenAmount | undefined
   const { stakedVal, lpTotalSupply, unstakedVal, claRewards, unstakingVal } = useStaking()
@@ -93,7 +96,10 @@ export default function Staking() {
   const { toWithdraw } = useToWithdraw()
   const { toClaim } = useToClaim()
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
-
+  const { currentBoots, futureBoots } = usePairStakeInfo(
+    `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+  )
+  const [newFutureBoots, setNewFutureBoots] = useState<Percent | undefined>(undefined)
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   const gas = useMemo(() => {
     if (!gasPrice) return undefined
@@ -263,6 +269,30 @@ export default function Staking() {
     }
   }
 
+  async function initRelative() {
+    try {
+      const res = await GombocApi.getGombocsVotiing()
+      if (res && res.result && res.result.votingList && res.result.votingList.length > 0) {
+        const list = res.result.votingList
+        let rate = ''
+        list.forEach((e: any) => {
+          if (e.gomboc && e.gaugeController && e.gaugeController.gombocRelativeWeight) {
+            if (e.gomboc === `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()) {
+              const re = new TokenAmount(LT[chainId ?? 1], JSBI.BigInt(e.gaugeController.gombocRelativeWeight))
+              const ra = re.multiply(JSBI.BigInt(100))
+              rate = ra.toFixed(2)
+            }
+          }
+        })
+        if (rate) {
+          setRelWeight(rate)
+        }
+      }
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
   function changeStake(type: string) {
     setAmount('')
     setStakingType(type)
@@ -274,6 +304,8 @@ export default function Staking() {
 
   const init = useCallback(async () => {
     await initApy()
+    await initRelative()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   useEffect(() => {
@@ -285,6 +317,10 @@ export default function Staking() {
       setStakingType('unstake')
     }
   }, [search])
+
+  useEffect(() => {
+    futureBoots && setNewFutureBoots(futureBoots)
+  }, [futureBoots])
 
   const confirmationContent = useCallback(
     () =>
@@ -510,7 +546,19 @@ export default function Staking() {
                         <span className="text-normal m-l-5"> your yield up to 2.5x</span>
                       </div>
                     </div>
-                    <div className="flex jc-between ai-center">
+                    <div className="flex jc-between m-b-20">
+                      <span className="text-normal">Gömböc relative weight</span>
+                      <span className="text-white">{relWeight}%</span>
+                    </div>
+                    <div className="flex jc-between m-b-20">
+                      <span className="text-normal">My Future Boost</span>
+                      <span className="text-white">{newFutureBoots ? newFutureBoots.toFixed(2) : '--'}x</span>
+                    </div>
+                    <div className="flex jc-between m-b-20">
+                      <span className="text-normal">My Current Boost</span>
+                      <span className="text-white">{currentBoots ? currentBoots.toFixed(2) : '--'}x</span>
+                    </div>
+                    <div className="flex jc-between ai-center m-b-20">
                       <span className="text-normal">Claimable</span>
                       <div className="flex ai-center">
                         <span className="text-white">
@@ -527,6 +575,12 @@ export default function Staking() {
                         )}
                       </div>
                     </div>
+                    {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
+                      <div className="flex">
+                        <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
+                        <p className="text-normal lh15">You can apply future boost by claiming LT</p>
+                      </div>
+                    )}
                   </div>
                   <div className="card-bot p-30">
                     <div className="flex jc-between m-b-20">
