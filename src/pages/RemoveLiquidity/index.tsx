@@ -700,17 +700,17 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
               <RowBetween style={{ justifyContent: 'flex-end' }}>
                 {oneCurrencyIsETH ? (
                   <StyledInternalLink
-                    to={`/remove/${currencyA === ETHER ? WETH[chainId].address : currencyIdA}/${
-                      currencyB === ETHER ? WETH[chainId].address : currencyIdB
-                    }`}
+                    to={`/swap/liquidity/manager/withdraw/${
+                      currencyA === ETHER ? WETH[chainId].address : currencyIdA
+                    }/${currencyB === ETHER ? WETH[chainId].address : currencyIdB}`}
                   >
                     Receive WETH
                   </StyledInternalLink>
                 ) : oneCurrencyIsWETH ? (
                   <StyledInternalLink
-                    to={`/remove/${currencyA && currencyEquals(currencyA, WETH[chainId]) ? 'ETH' : currencyIdA}/${
-                      currencyB && currencyEquals(currencyB, WETH[chainId]) ? 'ETH' : currencyIdB
-                    }`}
+                    to={`/swap/liquidity/manager/withdraw/${
+                      currencyA && currencyEquals(currencyA, WETH[chainId]) ? 'ETH' : currencyIdA
+                    }/${currencyB && currencyEquals(currencyB, WETH[chainId]) ? 'ETH' : currencyIdB}`}
                   >
                     Receive ETH
                   </StyledInternalLink>
