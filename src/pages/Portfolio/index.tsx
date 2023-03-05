@@ -77,12 +77,12 @@ export default function Portfolio() {
         }
       }`
       const res = await postQuery(SUBGRAPH, query)
-      const stToHopeVal = new Decimal(res.data.tokens[2].derivedETH)
-        .div(new Decimal(res.data.tokens[0].derivedETH))
+      const stToHopeVal = new Decimal(res.data.tokens[0].derivedETH)
+        .div(new Decimal(res.data.tokens[2].derivedETH))
         .toNumber()
         .toFixed(18)
-      const ltToHopeVal = new Decimal(res.data.tokens[2].derivedETH)
-        .div(new Decimal(res.data.tokens[1].derivedETH))
+      const ltToHopeVal = new Decimal(res.data.tokens[1].derivedETH)
+        .div(new Decimal(res.data.tokens[2].derivedETH))
         .toNumber()
         .toFixed(18)
       setStToHope(stToHopeVal || '0')

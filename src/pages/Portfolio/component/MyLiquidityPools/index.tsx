@@ -11,6 +11,8 @@ import SelectTips, { TitleTipsProps } from '../SelectTips'
 import Head, { IHeadItem } from './components/head'
 import { Decimal } from 'decimal.js'
 import format from 'utils/format'
+import { ButtonPrimary } from '../../../../components/Button'
+import { Link } from 'react-router-dom'
 
 function toFixed(val: string | number, length = 2) {
   return format.amountFormat(val, length)
@@ -168,14 +170,14 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
           label: 'Yield Boost',
           value: 'Yield Boost',
           onClick: () => {
-            history.push(`/dao/gomboc?gomboc=${record.gomboc}`) // TODO check url
+            history.push(`/dao/gomboc?gomboc=${record.gomboc}`)
           }
         })
         options.push({
           label: 'Pool Details',
           value: 'Pool Details',
           onClick: () => {
-            history.push(`/staking`) // TODO check url
+            history.push(`/swap/liquidity/pool-detail/${record.gomboc}`)
           }
         })
         return <SelectTips options={options} />
@@ -191,8 +193,35 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
     <>
       <ClaimRewards item={item} clearItem={clearItem} />
       <Card title="My Liquidity Pools">
-        <Head data={headData} claimAll={claimAll}></Head>
-        <Table columns={columns} dataSource={dataSource}></Table>
+        {dataSource.length > 0 ? (
+          <>
+            <Head data={headData} claimAll={claimAll}></Head>
+            <Table columns={columns} dataSource={dataSource}></Table>
+          </>
+        ) : (
+          <div className="flex jc-center">
+            <div>
+              <p className="text-center font-nor">You have no liquidity on Mainnet</p>
+              <ButtonPrimary
+                padding={'19px 24px'}
+                as={Link}
+                to={'/swap/liquidity/manager'}
+                style={{ width: '400px', marginTop: '20px' }}
+              >
+                Add Liquidity
+              </ButtonPrimary>
+              <a
+                href="https://docs.hope.money/light/lRGc3srjpd2008mDaMdR/light-hyfi-applications-roadmap/roadmap"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-center m-t-20 font-nor text-normal flex ai-center jc-center"
+              >
+                {/* Learn more Url */}
+                Learn more about Liquidity Pool <i className="iconfont m-l-12">&#xe619;</i>
+              </a>
+            </div>
+          </div>
+        )}
       </Card>
     </>
   )

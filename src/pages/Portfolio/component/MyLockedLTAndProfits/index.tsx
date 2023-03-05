@@ -12,13 +12,14 @@ import { VELT, ST_HOPE } from '../../../../constants'
 import { JSBI, Percent, Token } from '@uniswap/sdk'
 import usePrice from 'hooks/usePrice'
 import VotedList from '../../../../components/ahp/VotedList'
-import { NavLink } from 'react-router-dom'
+import { NavLink, Link } from 'react-router-dom'
 import { Decimal } from 'decimal.js'
 import { useFeeClaim, useGomFeeManyClaim } from '../../../../hooks/ahp/usePortfolio'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
 import './index.scss'
+import { ButtonPrimary } from '../../../../components/Button'
 
 export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (stHope: string, lt: string) => void }) {
   const { account, chainId } = useActiveWeb3React()
@@ -210,80 +211,107 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
         currencyToAdd={curToken}
       />
       <Card title="My Locked LT & Profits">
-        <div className="my-locked-lt-content">
-          <div className="my-locked-lt-row">
-            <div className="my-locked-lt-col">
-              <div className="my-locked-lt-title">Locked LT Amount</div>
-              <div className="my-locked-lt-desc">
-                <span className="my-locked-lt-value">
-                  ≈ {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}
-                </span>
-                <span className="my-locked-lt-value2">
-                  Locked Until: {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
-                </span>
+        {lockerRes?.amount ? (
+          <>
+            <div className="my-locked-lt-content">
+              <div className="my-locked-lt-row">
+                <div className="my-locked-lt-col">
+                  <div className="my-locked-lt-title">Locked LT Amount</div>
+                  <div className="my-locked-lt-desc">
+                    <span className="my-locked-lt-value">
+                      ≈ {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}
+                    </span>
+                    <span className="my-locked-lt-value2">
+                      Locked Until: {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
+                    </span>
+                  </div>
+                </div>
+                <div className="my-locked-lt-col">
+                  <div className="my-locked-lt-title">Balance in Voting Escrow</div>
+                  <div className="my-locked-lt-desc">
+                    <span className="my-locked-lt-value">
+                      ≈ {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
+                    </span>
+                    <span className="my-locked-lt-value2">{unUseRateVal || '0.00'}% share of total</span>
+                  </div>
+                  <NavLink to={'/dao/locker'}>
+                    <Button className="my-locked-lt-button" type="ghost">
+                      Increase veLT
+                    </Button>
+                  </NavLink>
+                </div>
+              </div>
+              <div className="my-locked-lt-row2">
+                <div className="my-locked-lt-col">
+                  <div className="my-locked-lt-title">
+                    Claimable veLT Held Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
+                  </div>
+                  <div className="my-locked-lt-desc">
+                    <span className="my-locked-lt-value">
+                      ≈ {claimableFees?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} stHOPE
+                    </span>
+                    <span className="my-locked-lt-value2">
+                      ≈ ${toUsdPrice(claimableFees?.toFixed(2), hopePrice) || '--'}
+                    </span>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      withdrawFn('others')
+                    }}
+                    disabled={!(claimableFees && Number(claimableFees.toFixed(2)) > 0)}
+                    className="my-locked-lt-button"
+                    type="ghost"
+                  >
+                    Claim All
+                  </Button>
+                </div>
+                <div className="my-locked-lt-col">
+                  <div className="my-locked-lt-title">
+                    Claimable veLT voting Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
+                  </div>
+                  <div className="my-locked-lt-desc">
+                    <span className="my-locked-lt-value">≈ {votingFee.stHope} stHOPE</span>
+                    <span className="my-locked-lt-value2">≈ ${votingFee.toUsd}</span>
+                  </div>
+                  <Button
+                    onClick={() => {
+                      withdrawFn('all')
+                    }}
+                    disabled={!(claimableFees && Number(votingFee.stHope) > 0)}
+                    className="my-locked-lt-button"
+                    type="ghost"
+                  >
+                    Claim All
+                  </Button>
+                </div>
               </div>
             </div>
-            <div className="my-locked-lt-col">
-              <div className="my-locked-lt-title">Balance in Voting Escrow</div>
-              <div className="my-locked-lt-desc">
-                <span className="my-locked-lt-value">
-                  ≈ {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
-                </span>
-                <span className="my-locked-lt-value2">{unUseRateVal || '0.00'}% share of total</span>
-              </div>
-              <NavLink to={'/dao/locker'}>
-                <Button className="my-locked-lt-button" type="ghost">
-                  Increase veLT
-                </Button>
-              </NavLink>
+            <VotedList isShowAll={true} getAllData={getAllData} getVotingRewards={getVotingRewards}></VotedList>
+          </>
+        ) : (
+          <div className="flex jc-center">
+            <div>
+              <p className="text-center font-nor">Lock LT to get veLT and gain more investment income</p>
+              <ButtonPrimary
+                padding={'19px 24px'}
+                as={Link}
+                to={'/dao/locker'}
+                style={{ width: '400px', marginTop: '20px' }}
+              >
+                Get veLT
+              </ButtonPrimary>
+              <a
+                href="https://docs.hope.money/light/lRGc3srjpd2008mDaMdR/light-hyfi-applications-roadmap/roadmap"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-center m-t-20 font-nor text-normal flex ai-center jc-center"
+              >
+                {/* Learn more Url */}
+                Learn more about veLT <i className="iconfont m-l-12">&#xe619;</i>
+              </a>
             </div>
           </div>
-          <div className="my-locked-lt-row2">
-            <div className="my-locked-lt-col">
-              <div className="my-locked-lt-title">
-                Claimable veLT Held Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
-              </div>
-              <div className="my-locked-lt-desc">
-                <span className="my-locked-lt-value">
-                  ≈ {claimableFees?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} stHOPE
-                </span>
-                <span className="my-locked-lt-value2">
-                  ≈ ${toUsdPrice(claimableFees?.toFixed(2), hopePrice) || '--'}
-                </span>
-              </div>
-              <Button
-                onClick={() => {
-                  withdrawFn('others')
-                }}
-                disabled={!(claimableFees && Number(claimableFees.toFixed(2)) > 0)}
-                className="my-locked-lt-button"
-                type="ghost"
-              >
-                Claim All
-              </Button>
-            </div>
-            <div className="my-locked-lt-col">
-              <div className="my-locked-lt-title">
-                Claimable veLT voting Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
-              </div>
-              <div className="my-locked-lt-desc">
-                <span className="my-locked-lt-value">≈ {votingFee.stHope} stHOPE</span>
-                <span className="my-locked-lt-value2">≈ ${votingFee.toUsd}</span>
-              </div>
-              <Button
-                onClick={() => {
-                  withdrawFn('all')
-                }}
-                disabled={!(claimableFees && Number(votingFee.stHope) > 0)}
-                className="my-locked-lt-button"
-                type="ghost"
-              >
-                Claim All
-              </Button>
-            </div>
-          </div>
-        </div>
-        <VotedList isShowAll={true} getAllData={getAllData} getVotingRewards={getVotingRewards}></VotedList>
+        )}
       </Card>
     </>
   )
