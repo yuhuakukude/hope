@@ -7,6 +7,7 @@ import { TokenAmount } from '@uniswap/sdk'
 import './index.scss'
 import format from '../../../../utils/format'
 import { useLocker } from '../../../../hooks/ahp/useLocker'
+import moment from 'moment'
 
 export default function LockerEcharts() {
   const { chainId } = useActiveWeb3React()
@@ -21,7 +22,17 @@ export default function LockerEcharts() {
         if (res && res.result) {
           setLockTime(res.result.averageOfLockTime || '--')
           setEarningsAmount(res.result.earningsAmount || '--')
-          const arr = res.result.lockedLtList || []
+          let arr = res.result.lockedLtList || []
+          arr = arr.filter((e: any) => {
+            return moment(e.snapshotDate).isBetween(
+              moment()
+                .subtract(7, 'days')
+                .format('YYYY-MM-DD'),
+              moment().format('YYYY-MM-DD'),
+              null,
+              '[)'
+            )
+          })
           const dateArr: any = []
           const valueArr: any = []
           arr.forEach((e: any) => {
@@ -30,7 +41,7 @@ export default function LockerEcharts() {
             valueArr.unshift(Number(valItem))
           })
           const option = {
-            grid: { top: '6%', bottom: '10%' },
+            grid: { top: '6%', bottom: '10%', right: '2%' },
             visualMap: {
               show: false,
               type: 'continuous',
@@ -50,18 +61,19 @@ export default function LockerEcharts() {
               backgroundColor: 'rgba(51, 51, 60, 1)',
               borderColor: 'rgba(51, 51, 60, 1)',
               padding: 20,
+              className: 'locker-line-charts',
               textStyle: {
                 color: '#FFFFFF'
               },
               formatter: (params: any) => {
                 return `
-                <p style="font-family: 'Arboria-Book'; font-size: 16px;">${params[0].name}</p>
-                <p style="font-family: 'Arboria-Medium'; font-size: 20px; margin-top: 12px;">
-                  <span style="display: inline-block; margin-right: 8px;background-color: #33333C;width:10px;height:10px;border-radius: 50%;border:3px solid ${
-                    params[0].color
-                  };"></span>
-                  ${format.amountFormat(params[0].value, 2)}
-                </p>
+                  <p style="font-family: 'Arboria-Book'; font-size: 16px;">${params[0].name}</p>
+                  <p style="font-family: 'Arboria-Medium'; font-size: 20px; margin-top: 12px;">
+                    <span style="display: inline-block; margin-right: 8px;background-color: #33333C;width:10px;height:10px;border-radius: 50%;border:3px solid ${
+                      params[0].color
+                    };"></span>
+                    ${format.amountFormat(params[0].value, 2)}
+                  </p>
                 `
               }
             },
@@ -74,14 +86,15 @@ export default function LockerEcharts() {
               },
               axisLabel: {
                 color: '#FFFFFF',
-                margin: 10
+                margin: 10,
+                fontSize: 12
               }
             },
             yAxis: {
               type: 'value',
               splitLine: {
                 show: true,
-                lineStyle: { color: ['#303133'], width: 1, type: 'solid' }
+                lineStyle: { color: ['#606266'], width: 1, type: 'solid' }
               },
               axisLine: {
                 lineStyle: {
@@ -90,6 +103,7 @@ export default function LockerEcharts() {
               },
               axisLabel: {
                 color: '#FFFFFF',
+                fontSize: 12,
                 formatter: (value: any) => {
                   return format.numFormat(Number(value), 2)
                 }
