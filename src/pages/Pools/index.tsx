@@ -2,7 +2,7 @@ import React, { RefObject, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import Row, { AutoRow, RowBetween, RowFixed } from '../../components/Row'
-import { ExternalLink, TYPE } from '../../theme'
+import { CustomLightSpinner, ExternalLink, TYPE } from '../../theme'
 import { ButtonGray, ButtonOutlined, ButtonPrimary } from '../../components/Button'
 import { TabItem, TabWrapper } from '../../components/Tab'
 import usePairsInfo, { PAIR_SEARCH } from '../../hooks/usePairInfo'
@@ -17,6 +17,7 @@ import empty from '../../assets/images/empty.png'
 import Card from '../../components/Card'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useActiveWeb3React } from '../../hooks'
+import Circle from '../../assets/images/blue-loader.svg'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
@@ -84,7 +85,7 @@ export default function Pools() {
   const [pageSize, setPageSize] = useState<number>(5)
   const toggleWalletModal = useWalletModalToggle()
   const history = useHistory()
-  const { pairInfos, total } = usePairsInfo(pageSize, currentPage, searchType, searchValue)
+  const { pairInfos, total, loading } = usePairsInfo(pageSize, currentPage, searchType, searchValue)
 
   const handleSearchInput = (event: any) => {
     const input = event.target.value
@@ -107,11 +108,7 @@ export default function Pools() {
               </TYPE.white>
             </RowBetween>
             <RowBetween>
-              <ExternalLink
-                style={{ color: 'white', textDecoration: 'underline' }}
-                target="_blank"
-                href=""
-              >
+              <ExternalLink style={{ color: 'white', textDecoration: 'underline' }} target="_blank" href="">
                 <TYPE.link fontSize={14}>Read more about providing liquidity</TYPE.link>
               </ExternalLink>
             </RowBetween>
@@ -182,7 +179,7 @@ export default function Pools() {
                 setCurrentPage(1)
                 setSearchType(PAIR_SEARCH.USER_LIQUIDITY)
               }}
-              isActive={searchType === PAIR_SEARCH.USER_LIQUIDITY}
+              isActive={searchType === PAIR_SEARCH.USER_LIQUIDITY || searchType === PAIR_SEARCH.USER_STAKE}
             >
               My Positions
             </TabItem>
@@ -238,7 +235,14 @@ export default function Pools() {
           </TableTitleWrapper>
         </TableWrapper>
       )}
-      {searchType === PAIR_SEARCH.ALL ? (
+      {loading ? (
+        <ColumnCenter
+          style={{ height: '100%', width: '100%', alignItems: 'center', justifyContent: 'center', marginTop: 50 }}
+        >
+          <CustomLightSpinner src={Circle} alt="loader" size={'30px'} />
+          <TYPE.main mt={20}>Loading</TYPE.main>
+        </ColumnCenter>
+      ) : searchType === PAIR_SEARCH.ALL ? (
         <>
           {pairInfos.map(amountPair => (
             <PoolCard
@@ -257,7 +261,7 @@ export default function Pools() {
             <EmptyView />
           ) : (
             <>
-              {pairInfos.map(amountPair => (
+              {pairInfos.map((amountPair, index) => (
                 <FullPositionCard
                   key={amountPair.pair.liquidityToken.address}
                   stakingAddress={amountPair.stakingAddress}
@@ -274,7 +278,7 @@ export default function Pools() {
         </>
       )}
       <ColumnCenter style={{ marginTop: 30 }}>
-        {(account || (!account && searchType === PAIR_SEARCH.ALL)) && pairInfos.length !== 0 && total > 0 && (
+        {(account || (!account && searchType === PAIR_SEARCH.ALL)) && !loading && pairInfos.length !== 0 && total > 0 && (
           <Row justify="center">
             <Pagination
               showQuickJumper

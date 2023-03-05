@@ -5,7 +5,6 @@ import styled from 'styled-components'
 import { AutoRow, RowBetween, RowFixed } from '../Row'
 import { TYPE, CloseIcon } from '../../theme'
 import { ButtonError } from '../Button'
-import { PoolInfo } from '../../state/stake/hooks'
 import { useStakingContract } from '../../hooks/useContract'
 import { useActiveWeb3React } from '../../hooks'
 import { useSingleCallResult } from '../../state/multicall/hooks'
@@ -23,13 +22,13 @@ interface StakingModalProps {
   isOpen: boolean
   onDismiss: () => void
   onClaim: () => void
-  stakingInfo: PoolInfo
+  stakingAddress: string
 }
 
-export default function ClaimRewardModal({ isOpen, onDismiss, stakingInfo, onClaim }: StakingModalProps) {
+export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress, onClaim }: StakingModalProps) {
   const { account, chainId } = useActiveWeb3React()
 
-  const stakingContract = useStakingContract(stakingInfo.stakingRewardAddress)
+  const stakingContract = useStakingContract(stakingAddress)
 
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
@@ -58,7 +57,7 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingInfo, onCla
             <GreyCard padding={'0'} borderRadius={'10px'}>
               <AutoRow padding={'16px'} height={48} style={{ borderBottom: '1px solid #494949' }}>
                 <CheckCircle size={16} />
-                <TYPE.main ml={8}>Mining Rewards</TYPE.main>
+                <TYPE.main ml={'8px'}>Mining Rewards</TYPE.main>
               </AutoRow>
               <RowBetween padding={'16px'} height={48}>
                 <RowFixed>

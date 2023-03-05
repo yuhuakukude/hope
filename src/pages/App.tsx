@@ -130,6 +130,16 @@ export default function App() {
                     path="/swap/liquidity/manager/:currencyIdA/:currencyIdB"
                     component={RedirectDuplicateTokenIds}
                   />
+                  <Route
+                    exact
+                    path="/swap/liquidity/manager/deposit/:currencyIdA/:currencyIdB"
+                    component={RedirectDuplicateTokenIds}
+                  />
+                  <Route
+                    exact
+                    path="/swap/liquidity/manager/withdraw/:currencyIdA/:currencyIdB"
+                    component={RedirectDuplicateTokenIds}
+                  />
                   <Route exact strict path="/claim" component={OpenClaimAddressModalAndRedirectToSwap} />
                   <Route exact strict path="/swap/exchange/:outputCurrency" component={RedirectToSwap} />
                   <Route exact strict path="/send" component={RedirectPathToSwapOnly} />

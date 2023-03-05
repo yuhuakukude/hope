@@ -37,7 +37,7 @@ import { usePosition, useStakePosition } from '../../hooks/usePosition'
 import { ArrowRight } from 'react-feather'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { usePairStakeInfo } from '../../hooks/usePairInfo'
-import { JSBI } from '@uniswap/sdk'
+import { JSBI, Percent } from '@uniswap/sdk'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -179,6 +179,7 @@ export default function StakingPoolDetail({
   const { account, chainId, library } = useActiveWeb3React()
   const { result: pool, pairMore } = useStakingPairPool(address)
   const { claimAbleRewards, currentBoots, futureBoots } = usePairStakeInfo(pool?.stakingRewardAddress)
+  const [newFutureBoots, setNewFutureBoots] = useState<Percent | undefined>(undefined)
   const ltMinterContract = useLtMinterContract()
   const addTransaction = useTransactionAdder()
   const toggleWalletModal = useWalletModalToggle()
@@ -499,6 +500,10 @@ export default function StakingPoolDetail({
     initFn()
   }, [initFn])
 
+  useEffect(() => {
+    futureBoots && setNewFutureBoots(futureBoots)
+  }, [futureBoots])
+
   function LiquidityCard() {
     return (
       <LightCard padding={'0'} height={'fit-content'}>
@@ -550,7 +555,7 @@ export default function StakingPoolDetail({
             <AutoRowBetween gap={'30px'}>
               <ButtonPrimary
                 onClick={() =>
-                  history.push(`/swap/liquidity/manager/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
+                  history.push(`/swap/liquidity/manager/deposit/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
                 }
                 height={46}
               >
@@ -559,7 +564,7 @@ export default function StakingPoolDetail({
               <ButtonOutlined
                 primary
                 onClick={() =>
-                  history.push(`/swap/liquidity/manager/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
+                  history.push(`/swap/liquidity/manager/withdraw/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
                 }
                 height={46}
               >
@@ -611,7 +616,7 @@ export default function StakingPoolDetail({
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Future Boost</TYPE.main>
-                    <TYPE.white>{futureBoots ? futureBoots.toFixed(2) : '--'}</TYPE.white>
+                    <TYPE.white>{newFutureBoots ? newFutureBoots.toFixed(2) : '--'}</TYPE.white>
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Claimable Rewards</TYPE.main>
@@ -656,7 +661,7 @@ export default function StakingPoolDetail({
               </AutoColumn>
             </>
           )}
-          {account && currentBoots && futureBoots && !(currentBoots.toFixed(2) === futureBoots.toFixed(2)) && (
+          {account && currentBoots && newFutureBoots && !(currentBoots.toFixed(2) === newFutureBoots.toFixed(2)) && (
             <AutoRow>
               <i style={{ color: '#FBDD55', fontSize: 16, fontWeight: 700 }} className="iconfont">
                 &#xe614;
@@ -676,7 +681,7 @@ export default function StakingPoolDetail({
           isOpen={showClaimModal}
           onDismiss={() => setShowClaimModal(false)}
           onClaim={onClaimCallback}
-          stakingInfo={pool}
+          stakingAddress={pool.stakingRewardAddress}
         />
       )}
       <TransactionConfirmationModal

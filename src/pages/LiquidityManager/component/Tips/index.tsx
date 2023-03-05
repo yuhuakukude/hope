@@ -32,3 +32,26 @@ export default function Tips() {
     </Tooltip>
   )
 }
+
+export function StakingTips() {
+  const titleNode = () => {
+    return (
+      <div>
+        <h3 className="font-white font-bold m-b-10 font-14">About Stake</h3>
+        <p className="font-white lh15 m-b-10 font-12">
+          Stake your liquidity tokens to receive incentive rewards on top of your pool fee rewards.
+        </p>
+        <h3 className="font-white font-bold m-b-10 font-14">About Unstake</h3>
+        <p className="font-white lh15 font-12">
+          If you withdraw all staked pool tokens you will no longer receive mint rewards
+        </p>
+      </div>
+    )
+  }
+  return (
+    <Tooltip placement="rightTop" overlayClassName="tips-liq" title={titleNode}>
+      <Info className="font-16 cursor-select tips-circle m-l-10 font-bold" size={18} />
+      {/* <i className="iconfont font-16 cursor-select tips-circle m-l-10 font-bold">&#xe620;</i> */}
+    </Tooltip>
+  )
+}

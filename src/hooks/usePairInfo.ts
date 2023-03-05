@@ -22,7 +22,6 @@ export default function usePairsInfo(
 ) {
   const { account, chainId } = useActiveWeb3React()
   const { result: allPairs, total, loading } = useBasePairs(page, currentPage, searchType, searchValue, account ?? '')
-  console.log('allPairs info', allPairs)
 
   const veltContract = useLockerContract()
   const veltBalance = useSingleCallResult(
@@ -34,7 +33,6 @@ export default function usePairsInfo(
     Math.floor(Date.now() / 1000).toString()
   ])?.result?.[0].toString()
 
-  console.log('velt', veltBalance, veltTotal)
   const liquidityPairs = useMemo(
     () =>
       allPairs.map(pair => ({
@@ -152,6 +150,7 @@ export default function usePairsInfo(
 export function usePairStakeInfo(stakingAddress?: string) {
   const veltContract = useLockerContract()
   const { account, chainId } = useActiveWeb3React()
+  const stakingContract = useStakingContract(stakingAddress)
 
   const veltBalance = useSingleCallResult(
     veltContract,
@@ -161,7 +160,6 @@ export function usePairStakeInfo(stakingAddress?: string) {
   const veltTotal = useSingleCallResult(veltContract, 'totalSupplyAtTime', [
     Math.floor(Date.now() / 1000).toString()
   ])?.result?.[0].toString()
-  const stakingContract = useStakingContract(stakingAddress)
   const claimAbleRewards = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])?.result
   const balance = useSingleCallResult(stakingContract, 'lpBalanceOf', [account ?? undefined])?.result?.[0].toString()
   const workingBalance = useSingleCallResult(stakingContract, 'workingBalances', [

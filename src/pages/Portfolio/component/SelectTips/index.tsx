@@ -6,6 +6,7 @@ import './index.scss'
 export interface TitleTipsProps {
   label: string
   value: any
+  hide?: boolean
   onClick: (data: TitleTipsProps) => void
 }
 
@@ -14,7 +15,7 @@ export default function TitleTips({ options, label }: { options: TitleTipsProps[
     () => (
       <div className="select-tips-list">
         {options.map((item, index) => {
-          return (
+          return item.hide ? null : (
             <div
               key={index}
               onClick={() => {

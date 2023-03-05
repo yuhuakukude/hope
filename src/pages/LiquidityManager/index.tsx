@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React from 'react'
 import AddLiquidity from '../AddLiquidity'
-import { RouteComponentProps } from 'react-router-dom'
+import { RouteComponentProps, useHistory } from 'react-router-dom'
 import AppBody from '../AppBody'
 import styled from 'styled-components'
 import { GapColumn } from '../../components/Column'
@@ -32,7 +32,8 @@ export default function LiquidityManager({
     params: { currencyIdA, currencyIdB }
   }
 }: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string }>) {
-  const [adding, setAdding] = useState(true)
+  const history = useHistory()
+  const isRemove = history.location.pathname.includes('/withdraw')
   return (
     <PageWrapper gap={'50px'}>
       <AddRemoveTabs />
@@ -74,19 +75,22 @@ export default function LiquidityManager({
           </RowFixed>
         </RowBetween>
         <CustomTabWrapper>
-          <CustomTab onClick={() => setAdding(true)} isActive={adding}>
+          <CustomTab
+            onClick={() => history.push(`/swap/liquidity/manager/deposit/${currencyIdA}/${currencyIdB}`)}
+            isActive={!isRemove}
+          >
             Deposit
           </CustomTab>
           <CustomTab
             onClick={() => {
-              setAdding(false)
+              history.push(`/swap/liquidity/manager/withdraw/${currencyIdA}/${currencyIdB}`)
             }}
-            isActive={!adding}
+            isActive={isRemove}
           >
             Withdraw
           </CustomTab>
         </CustomTabWrapper>
-        {adding ? (
+        {!isRemove ? (
           <AddLiquidity currencyIdA={currencyIdA} currencyIdB={currencyIdB} />
         ) : (
           <RemoveLiquidity currencyIdA={currencyIdA} currencyIdB={currencyIdB} />

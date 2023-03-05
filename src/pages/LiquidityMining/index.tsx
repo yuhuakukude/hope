@@ -1,4 +1,4 @@
-import { RouteComponentProps } from 'react-router-dom'
+import { Link, RouteComponentProps, useHistory } from 'react-router-dom'
 import { useStakingPool } from '../../hooks/useLPStaking'
 import styled from 'styled-components'
 import { TabItem, TabWrapper } from '../../components/Tab'
@@ -6,7 +6,6 @@ import { AutoColumn, GapColumn } from '../../components/Column'
 import AppBody from '../AppBody'
 import { TYPE } from '../../theme'
 import { AutoRow, RowBetween } from '../../components/Row'
-import QuestionHelper from '../../components/QuestionHelper'
 import React, { useCallback, useState } from 'react'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import { useTokenBalance } from '../../state/wallet/hooks'
@@ -26,6 +25,7 @@ import TransactionConfirmationModal, { TransactionErrorContent } from '../../com
 import { useStakingContract } from '../../hooks/useContract'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { StakeTabs } from '../../components/NavigationTabs'
+import { StakingTips } from '../LiquidityManager/component/Tips'
 
 const CustomTabWrapper = styled(TabWrapper)`
   width: auto;
@@ -48,6 +48,7 @@ export default function LiquidityMining({
 }: RouteComponentProps<{ stakingRewardAddress?: string }>) {
   const { account, library, chainId } = useActiveWeb3React()
   const addTransaction = useTransactionAdder()
+  const history = useHistory()
   const { result: pool } = useStakingPool(stakingRewardAddress ?? '')
   const [staking, setStaking] = useState(true)
   const [typedValue, setTypedValue] = useState('')
@@ -219,9 +220,7 @@ export default function LiquidityMining({
             <TYPE.white fontSize={18} fontWeight={700}>
               Liquidity Mining
             </TYPE.white>
-            <QuestionHelper
-              text={`About Deposit When you add liquidity, you will receive pool tokens representing your position. These tokens automatically earn fees proportional to your share of the pool, and can be redeemed at any time. By adding liquidity you'll earn 0.3% of all trades on this pair proportional to your share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
-            />
+            <StakingTips />
           </RowBetween>
           <CustomTabWrapper>
             <CustomTab onClick={() => setStaking(true)} isActive={staking}>
@@ -236,24 +235,46 @@ export default function LiquidityMining({
               Unstake
             </CustomTab>
           </CustomTabWrapper>
+          {!staking || (staking && balance && balance.greaterThan(JSBI.BigInt(0))) ? (
+            <AutoColumn gap={'20px'} style={{ padding: 20 }}>
+              <AutoRow>
+                <CurrencyLogo currency={pool?.tokens[0]} />
+                <CurrencyLogo currency={pool?.tokens[1]} />
+                <TYPE.white ml={20} fontWeight={700}>
+                  {pool?.tokens[0].symbol}/{pool?.tokens[1].symbol}
+                </TYPE.white>
+              </AutoRow>
+              <RowBetween>
+                <TYPE.main>Available</TYPE.main>
+                <TYPE.white>
+                  {staking ? (balance ? balance.toFixed(4) : '--') : stakedAmount ? stakedAmount.toFixed(4) : '--'}
+                </TYPE.white>
+              </RowBetween>
+              <RowBetween>
+                <TYPE.main>Staked</TYPE.main>
+                <TYPE.white>{stakedAmount ? stakedAmount.toFixed(4) : '--'}</TYPE.white>
+              </RowBetween>
+            </AutoColumn>
+          ) : (
+            <AutoColumn justify={'center'}>
+              <AutoRow p={'20px'}>
+                <i style={{ color: '#FBDD55', fontSize: 16, fontWeight: 700 }} className="iconfont">
+                  &#xe614;
+                </i>
+                <TYPE.main ml={'10px'}>No liquidity tokens found, you should add liquidity first.</TYPE.main>
+              </AutoRow>
+              <TYPE.link
+                onClick={() =>
+                  history.push(`/swap/liquidity/manager/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
+                }
+                as={Link}
+                m={'auto'}
+              >
+                Become a Liquidity Provider
+              </TYPE.link>
+            </AutoColumn>
+          )}
           <AutoColumn style={{ padding: 20 }} gap={'20px'}>
-            <AutoRow>
-              <CurrencyLogo currency={pool?.tokens[0]} />
-              <CurrencyLogo currency={pool?.tokens[1]} />
-              <TYPE.white ml={20} fontWeight={700}>
-                {pool?.tokens[0].symbol}/{pool?.tokens[1].symbol}
-              </TYPE.white>
-            </AutoRow>
-            <RowBetween>
-              <TYPE.main>Available</TYPE.main>
-              <TYPE.white>
-                {staking ? (balance ? balance.toFixed(4) : '--') : stakedAmount ? stakedAmount.toFixed(4) : '--'}
-              </TYPE.white>
-            </RowBetween>
-            <RowBetween>
-              <TYPE.main>Staked</TYPE.main>
-              <TYPE.white>{stakedAmount ? stakedAmount.toFixed(4) : '--'}</TYPE.white>
-            </RowBetween>
             <CurrencyInputPanel
               hideCurrency
               value={typedValue}
