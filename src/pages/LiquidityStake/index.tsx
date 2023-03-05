@@ -450,8 +450,6 @@ export default function LiquidityStake({
     setTxHash('')
   }, [onFieldAInput, txHash])
 
-  const isCreate = history.location.pathname.includes('/create')
-
   const confirmationContent = useCallback(
     () =>
       errorStatus ? (
@@ -482,7 +480,7 @@ export default function LiquidityStake({
         pendingText={pendingText}
         currencyToAdd={pair?.liquidityToken}
       />
-      <AddRemoveTabs title={'Stake Liquidity'} creating={isCreate} adding={true} />
+      <AddRemoveTabs />
       <AutoRowBetween align={'flex-start'} gap={'30px'} padding={'30px'}>
         <LightCard flex={4} padding={'20px'}>
           <AutoColumn gap={'30px'}>

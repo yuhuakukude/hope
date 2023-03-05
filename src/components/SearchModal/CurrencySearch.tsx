@@ -93,7 +93,7 @@ export function CurrencySearch({
 
   const showETH: boolean = useMemo(() => {
     const s = debouncedQuery.toLowerCase().trim()
-    return s === '' || s === 'e' || s === 'et' || s === 'eth'
+    return s === '' || s === 'e' || s === 'et' || s === 'h' || s === 'th' || s === 'eth'
   }, [debouncedQuery])
 
   const tokenComparator = useTokenComparator(invertSearchOrder)
@@ -101,13 +101,11 @@ export function CurrencySearch({
   const filteredTokens: Token[] = useMemo(() => {
     return filterTokens(Object.values(allTokens), debouncedQuery)
   }, [allTokens, debouncedQuery])
-
   const sortedTokens: Token[] = useMemo(() => {
     return filteredTokens.sort(tokenComparator)
   }, [filteredTokens, tokenComparator])
 
   const filteredSortedTokens = useSortedTokensByQuery(sortedTokens, debouncedQuery)
-
   const handleCurrencySelect = useCallback(
     (currency: Currency) => {
       onCurrencySelect(currency)

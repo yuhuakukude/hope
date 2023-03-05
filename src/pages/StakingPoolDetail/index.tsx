@@ -8,8 +8,8 @@ import { TYPE, ExternalLink } from '../../theme'
 import { GreyCard, LightCard } from '../../components/Card'
 import { LT } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
-import { ButtonPrimary } from '../../components/Button'
-import BasePoolInfoCard, { CardHeader } from '../../components/pool/PoolInfoCard'
+import { ButtonOutlined, ButtonPrimary } from '../../components/Button'
+import { CardHeader } from '../../components/pool/PoolInfoCard'
 import PieCharts from '../../components/pool/PieCharts'
 import LineCharts from '../../components/pool/LineCharts'
 import BarCharts from '../../components/pool/BarCharts'
@@ -17,31 +17,32 @@ import styled from 'styled-components'
 import { Decimal } from 'decimal.js'
 import { Box } from 'rebass/styled-components'
 import Overview, { OverviewData } from '../../components/pool/Overview'
-import { useLtMinterContract, useStakingContract } from '../../hooks/useContract'
-import { useSingleCallResult } from '../../state/multicall/hooks'
-import { JSBI, TokenAmount } from '@uniswap/sdk'
+import { useLtMinterContract } from '../../hooks/useContract'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
 import { calculateGasMargin, shortenAddress, getEtherscanLink } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
-import { useWalletModalToggle } from '../../state/application/hooks'
 import AprApi from '../../api/apr.api'
-import format, { amountFormat, formatUTCDate } from '../../utils/format'
+import format, { formatUTCDate } from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
-import { darken } from 'polished'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useLineDaysChartsData, useLine24HourChartsData } from '../../hooks/useCharts'
 import { NavLink } from 'react-router-dom'
 import SelectTips, { TitleTipsProps } from '../Portfolio/component/SelectTips'
 import moment from 'moment'
-import { useTokenBalance } from '../../state/wallet/hooks'
-import { useTokenPrice } from '../../hooks/liquidity/useBasePairs'
+import DoubleCurrencyLogo from '../../components/DoubleLogo'
+import { usePosition, useStakePosition } from '../../hooks/usePosition'
+import { ArrowRight } from 'react-feather'
+import { useWalletModalToggle } from '../../state/application/hooks'
+import { usePairStakeInfo } from '../../hooks/usePairInfo'
+import { JSBI, Percent } from '@uniswap/sdk'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
   align-items: flex-start;
+  color: ${({ theme }) => theme.text2};
 `
 
 const TxItem = styled(TYPE.subHeader)<{ flex?: number }>`
@@ -56,23 +57,23 @@ const TxItemWrapper = styled(AutoRow)`
   }
 `
 
-const StyledTabTitle = styled(TYPE.link)<{ active?: boolean }>`
-  ${({ theme }) => theme.flexRowNoWrap}
-  align-items: center;
-  justify-content: center;
-  height: 3rem;
-  border-radius: 3rem;
-  outline: none;
-  cursor: pointer;
-  text-decoration: none;
-  color: ${({ theme, active }) => (active ? theme.primary1 : theme.text3)};
-  font-size: 20px;
-
-  :hover,
-  :focus {
-    color: ${({ theme }) => darken(0.1, theme.text1)};
-  }
-`
+// const StyledTabTitle = styled(TYPE.link)<{ active?: boolean }>`
+//   ${({ theme }) => theme.flexRowNoWrap}
+//   align-items: center;
+//   justify-content: center;
+//   height: 3rem;
+//   border-radius: 3rem;
+//   outline: none;
+//   cursor: pointer;
+//   text-decoration: none;
+//   color: ${({ theme, active }) => (active ? theme.primary1 : theme.text3)};
+//   font-size: 20px;
+//
+//   :hover,
+//   :focus {
+//     color: ${({ theme }) => darken(0.1, theme.text1)};
+//   }
+// `
 
 dayjs.extend(utc)
 
@@ -87,30 +88,33 @@ const Circular = styled(Box)<{
 `
 
 const TabItem = styled.div<{ isActive?: boolean }>`
-  color: ${({ isActive }) => (isActive ? '#E4C989' : '#a8a8aa')};
-  font-size: 20px;
+  color: ${({ isActive, theme }) => (isActive ? theme.text1 : '#a8a8aa')};
+  width: 118px;
+  height: 38px;
+  border-radius: 8px;
   font-family: Arboria-Medium;
-  margin-right: 40px;
   cursor: pointer;
   user-select: none;
   position: relative;
-  padding-bottom: 12px;
+  background: ${({ isActive, theme }) => (isActive ? theme.bg3 : theme.bg5)};
+  text-align: center;
+  line-height: 38px;
 
   &:hover {
-    color: #e4c989;
+    color: ${({ theme }) => theme.text1};
   }
 
-  &::after {
-    content: '';
-    width: 24px;
-    height: 2px;
-    display: ${({ isActive }) => (isActive ? 'block' : 'none')};
-    position: absolute;
-    bottom: 0;
-    left: 50%;
-    transform: translate(-50%, 0);
-    background: #e4c989;
-  }
+  // &::after {
+  //   content: '';
+  //   width: 24px;
+  //   height: 2px;
+  //   display: ${({ isActive }) => (isActive ? 'block' : 'none')};
+  //   position: absolute;
+  //   bottom: 0;
+  //   left: 50%;
+  //   transform: translate(-50%, 0);
+  //   background: #e4c989;
+  // }
 `
 
 const TimeItem = styled.div<{ isActive?: boolean }>`
@@ -152,22 +156,38 @@ const GoBackIcon = styled(Link)`
     color: #fff;
   }
 `
+
+const TabWrapper = styled(Row)`
+  padding: 2px;
+  width: fit-content;
+  background-color: ${({ theme }) => theme.bg5};
+  border-radius: 8px;
+`
+
+const NoStakingWrapper = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`
+
 export default function StakingPoolDetail({
   match: {
     params: { address }
   }
 }: RouteComponentProps<{ address: string }>) {
   const { account, chainId, library } = useActiveWeb3React()
-  const { result: pool } = useStakingPairPool(address)
-  const stakingContract = useStakingContract(pool?.stakingRewardAddress)
+  const { result: pool, pairMore } = useStakingPairPool(address)
+  const { claimAbleRewards, currentBoots, futureBoots } = usePairStakeInfo(pool?.stakingRewardAddress)
+  const [newFutureBoots, setNewFutureBoots] = useState<Percent | undefined>(undefined)
   const ltMinterContract = useLtMinterContract()
   const addTransaction = useTransactionAdder()
   const toggleWalletModal = useWalletModalToggle()
-  const history = useHistory()
-  const addresses = useMemo(() => {
-    return ['0x958d10197567895E37cCCcea0712E37037568279']
-  }, [])
-  const { result: priceResult } = useTokenPrice(addresses)
+  //const history = useHistory()
+  // const addresses = useMemo(() => {
+  //   return [LT[chainId ?? 1].address]
+  // }, [chainId])
+  //const { result: priceResult } = useTokenPrice(addresses)
 
   const [showClaimModal, setShowClaimModal] = useState(false)
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -178,10 +198,15 @@ export default function StakingPoolDetail({
   const [showTx, setShowTx] = useState<boolean>(false)
   const [transactionType, setTransactionType] = useState('All')
   const txs = usePairTxs(address, transactionType)
+  const history = useHistory()
+  //const stakedAmount = useTokenBalance(account ?? undefined, pool?.stakingToken)
 
-  const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
-  const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
-  const stakedAmount = useTokenBalance(account ?? undefined, pool?.stakingToken)
+  const { token0Deposited, token1Deposited, balance } = usePosition(pool?.pair)
+  const { token0Staked, token1Staked, stakedLpAmount } = useStakePosition(pool)
+
+  const userTotalBalance = stakedLpAmount && balance ? stakedLpAmount?.add(balance) : balance
+  const userToken0 = token0Deposited && token0Staked ? token0Deposited.add(token0Staked) : token0Deposited
+  const userToken1 = token1Deposited && token1Staked ? token1Deposited.add(token1Staked) : token1Deposited
 
   // charts
   const [tabIndex, setTabIndex] = useState('Volume')
@@ -259,7 +284,7 @@ export default function StakingPoolDetail({
   }
   const TabList = () => {
     return (
-      <Row>
+      <TabWrapper>
         {['Volume', 'TVL', 'Fees'].map((item, index) => {
           return (
             <TabItem key={index} isActive={item === tabIndex} onClick={() => tabChange(item)}>
@@ -267,7 +292,7 @@ export default function StakingPoolDetail({
             </TabItem>
           )
         })}
-      </Row>
+      </TabWrapper>
     )
   }
 
@@ -343,27 +368,27 @@ export default function StakingPoolDetail({
   const viewData: OverviewData[] = [
     {
       title: 'TVL',
-      isRise: !!pool && pool.tvlChangeUSD > 0,
-      rate: pool ? `${pool.tvlChangeUSD.toFixed(2)} %` : `--`,
+      isRise: !!pairMore && pairMore.tvlChangeUSD > 0,
+      rate: pairMore ? `${pairMore.tvlChangeUSD.toFixed(2)} %` : `--`,
       amount: pool ? `$${format.separate(Number(pool.tvl).toFixed(2))}` : `--`
     },
     {
       title: 'Volume(24H)',
-      isRise: !!pool && pool.volumeChangeUSD > 0,
-      rate: pool ? `${pool.volumeChangeUSD.toFixed(2)} %` : `--`,
-      amount: pool ? `$${format.separate(pool.oneDayVolumeUSD.toFixed(2))}` : `--`
+      isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
+      rate: pairMore ? `${pairMore.volumeChangeUSD.toFixed(2)} %` : `--`,
+      amount: pairMore ? `$${format.separate(pairMore.oneDayVolumeUSD.toFixed(2))}` : `--`
     },
     {
       title: 'Fees(24H)',
-      isRise: !!pool && pool.volumeChangeUSD > 0,
-      rate: pool ? `${pool.volumeChangeUSD.toFixed(2)} %` : `--`,
-      amount: pool ? `$${format.separate(pool.dayFees.toFixed(2))}` : `--`
+      isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
+      rate: pairMore ? `${pairMore.volumeChangeUSD.toFixed(2)} %` : `--`,
+      amount: pairMore ? `$${format.separate(pairMore.oneDayVolumeUSD.toFixed(2))}` : `--`
     },
     {
       title: 'Fees(7d)',
-      isRise: !!pool && pool.weeklyVolumeChange > 0,
-      rate: pool ? `${pool.weeklyVolumeChange.toFixed(2)} %` : `--`,
-      amount: pool ? `$${format.separate(pool.weekFees.toFixed(2))}` : `--`
+      isRise: !!pairMore && pairMore.weeklyVolumeChange > 0,
+      rate: pairMore ? `${pairMore.weeklyVolumeChange.toFixed(2)} %` : `--`,
+      amount: pairMore ? `$${format.separate(pairMore.oneWeekVolume.toFixed(2))}` : `--`
     }
   ]
 
@@ -399,16 +424,16 @@ export default function StakingPoolDetail({
         from: account
       }).then((response: TransactionResponse) => {
         addTransaction(response, {
-          summary: `Claim ${earnedAmount?.toFixed(2)} LT`
+          summary: `Claim ${claimAbleRewards?.toFixed(2)} LT`
         })
         return response.hash
       })
     })
-  }, [account, addTransaction, earnedAmount, ltMinterContract, pool])
+  }, [account, addTransaction, claimAbleRewards, ltMinterContract, pool])
 
   const onClaimCallback = useCallback(async () => {
-    if (!account || !library || !chainId || !pool || !earnedAmount) return
-    setPendingText(`Claim ${earnedAmount?.toFixed(2)} LT`)
+    if (!account || !library || !chainId || !pool || !claimAbleRewards) return
+    setPendingText(`Claim ${claimAbleRewards?.toFixed(2)} LT`)
     onTxStart()
     // sign
     onClaim()
@@ -419,7 +444,7 @@ export default function StakingPoolDetail({
         onTxError(error)
         throw error
       })
-  }, [account, library, chainId, pool, earnedAmount, onTxStart, onClaim, onTxSubmitted, onTxError])
+  }, [account, library, chainId, pool, claimAbleRewards, onTxStart, onClaim, onTxSubmitted, onTxError])
 
   const confirmationContent = useCallback(() => {
     return (
@@ -448,32 +473,206 @@ export default function StakingPoolDetail({
   }, [address])
 
   const lineToTal = useMemo(() => {
-    if (!pool) return '0'
+    if (!pairMore) return '0'
     if (timeIndex === '24H') {
-      return pool?.oneDayTVLUSD.toFixed(2)
+      return pairMore?.oneDayTVLUSD.toFixed(2)
     } else if (timeIndex === '1W') {
-      return pool?.oneWeekTVLUSD.toFixed(2)
+      return pairMore?.oneWeekTVLUSD.toFixed(2)
     } else if (timeIndex === '1M') {
-      return pool?.oneMonthTVLUSD.toFixed(2)
+      return pairMore?.oneMonthTVLUSD.toFixed(2)
     }
     return '0'
-  }, [pool, timeIndex])
+  }, [pairMore, timeIndex])
 
   const barToTal = useMemo(() => {
-    if (!pool) return '0'
+    if (!pairMore) return '0'
     if (timeIndex === '24H') {
-      return tabIndex === 'Volume' ? pool?.oneDayVolumeUSD.toFixed(2) : pool?.dayFees.toFixed(2)
+      return tabIndex === 'Volume' ? pairMore?.oneDayVolumeUSD.toFixed(2) : pairMore?.oneDayVolumeUSD.toFixed(2)
     } else if (timeIndex === '1W') {
-      return tabIndex === 'Volume' ? pool?.oneWeekVolume.toFixed(2) : pool?.weekFees.toFixed(2)
+      return tabIndex === 'Volume' ? pairMore?.oneWeekVolume.toFixed(2) : pairMore?.oneWeekVolume.toFixed(2)
     } else if (timeIndex === '1M') {
-      return tabIndex === 'Volume' ? pool?.oneMonthVolume.toFixed(2) : pool?.monthFees.toFixed(2)
+      return tabIndex === 'Volume' ? pairMore?.oneMonthVolume.toFixed(2) : pairMore?.oneMonthVolume.toFixed(2)
     }
     return '0'
-  }, [pool, timeIndex, tabIndex])
+  }, [pairMore, timeIndex, tabIndex])
 
   useEffect(() => {
     initFn()
   }, [initFn])
+
+  useEffect(() => {
+    futureBoots && setNewFutureBoots(futureBoots)
+  }, [futureBoots])
+
+  function LiquidityCard() {
+    return (
+      <LightCard padding={'0'} height={'fit-content'}>
+        <CardHeader>
+          <RowBetween>
+            <TYPE.white fontSize={18} fontWeight={700}>
+              My Liquidity Position
+            </TYPE.white>
+          </RowBetween>
+        </CardHeader>
+        <AutoColumn gap={'30px'} style={{ padding: 30 }}>
+          <AutoRowBetween>
+            <AutoRow gap={'10px'}>
+              <DoubleCurrencyLogo over size={24} currency0={pool?.pair.token0} currency1={pool?.pair.token1} />
+              <TYPE.white fontWeight={700} fontSize={18}>{`${pool?.tokens[0].symbol || '-'}/${pool?.tokens[1].symbol ||
+                '-'} Pool Token`}</TYPE.white>
+            </AutoRow>
+            <TYPE.main>{userTotalBalance?.toFixed(4)}</TYPE.main>
+          </AutoRowBetween>
+          <AutoColumn gap={'20px'}>
+            <RowBetween>
+              <AutoRow gap={'10px'}>
+                <CurrencyLogo size={'20px'} currency={pool?.pair.token0} />
+                <TYPE.white>
+                  {userToken0 ? userToken0.toFixed(4) : ''} {pool?.pair.token0.symbol ?? ''}
+                </TYPE.white>
+              </AutoRow>
+              <TYPE.main>≈$</TYPE.main>
+            </RowBetween>
+            <RowBetween>
+              <AutoRow gap={'10px'}>
+                <CurrencyLogo size={'20px'} currency={pool?.pair.token1} />
+                <TYPE.white>
+                  {userToken1 ? userToken1.toFixed(4) : ''} {pool?.pair.token1.symbol ?? ''}
+                </TYPE.white>
+              </AutoRow>
+              <TYPE.main>≈$</TYPE.main>
+            </RowBetween>
+          </AutoColumn>
+          <AutoColumn gap={'20px'}>
+            <RowBetween>
+              <TYPE.main>Unstaked Position</TYPE.main>
+              <TYPE.white>{balance?.toFixed(4) ?? ''}</TYPE.white>
+            </RowBetween>
+            <RowBetween>
+              <TYPE.main>Staked Position</TYPE.main>
+              <TYPE.white>{stakedLpAmount?.toFixed(4) ?? ''}</TYPE.white>
+            </RowBetween>
+            <AutoRowBetween gap={'30px'}>
+              <ButtonPrimary
+                onClick={() =>
+                  history.push(`/swap/liquidity/manager/deposit/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
+                }
+                height={46}
+              >
+                Deposit
+              </ButtonPrimary>
+              <ButtonOutlined
+                primary
+                onClick={() =>
+                  history.push(`/swap/liquidity/manager/withdraw/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
+                }
+                height={46}
+              >
+                Withdraw
+              </ButtonOutlined>
+            </AutoRowBetween>
+          </AutoColumn>
+        </AutoColumn>
+      </LightCard>
+    )
+  }
+
+  function StakeCard() {
+    return (
+      <AutoColumn style={{ marginTop: 30, flex: 1 }}>
+        <LightCard padding={'0'}>
+          <CardHeader>
+            <TYPE.white fontSize={18} fontWeight={700}>
+              Liquidity Gömböc
+            </TYPE.white>
+          </CardHeader>
+          {!pool?.stakingRewardAddress ? (
+            <AutoColumn style={{ justifyContent: 'center', padding: '93px 30px' }}>
+              <TYPE.white lineHeight={'20px'} textAlign={'center'}>
+                The Pool has not yet been added to the liquidity mining list, you can start the add process via the
+                governance specification.
+              </TYPE.white>
+              <ButtonPrimary mt={50}>Create Proposal</ButtonPrimary>
+              <AutoRow mt={30} justify={'center'}>
+                <TYPE.main>Learn more about Liquidity Mining</TYPE.main>
+                <ArrowRight style={{ marginLeft: 20 }} size={12} color={'#A8A8AA'} />
+              </AutoRow>
+            </AutoColumn>
+          ) : (
+            <>
+              <AutoColumn style={{ padding: 30 }} gap={'30px'}>
+                <AutoColumn gap={'20px'}>
+                  <RowBetween>
+                    <TYPE.main>Gömböc Relative Weight</TYPE.main>
+                    <TYPE.white>--</TYPE.white>
+                  </RowBetween>
+                  <RowBetween>
+                    <TYPE.main>My Mining Position</TYPE.main>
+                    <TYPE.white>{stakedLpAmount ? stakedLpAmount.toFixed(4) : '--'}</TYPE.white>
+                  </RowBetween>
+                  <RowBetween>
+                    <TYPE.main>My Current Boost</TYPE.main>
+                    <TYPE.white>{currentBoots ? currentBoots.toFixed(2) : '--'}</TYPE.white>
+                  </RowBetween>
+                  <RowBetween>
+                    <TYPE.main>My Future Boost</TYPE.main>
+                    <TYPE.white>{newFutureBoots ? newFutureBoots.toFixed(2) : '--'}</TYPE.white>
+                  </RowBetween>
+                  <RowBetween>
+                    <TYPE.main>My Claimable Rewards</TYPE.main>
+                    <RowFixed>
+                      <TYPE.white>{claimAbleRewards ? claimAbleRewards?.toFixed(4) : '--'}</TYPE.white>
+                      {claimAbleRewards && claimAbleRewards.greaterThan(JSBI.BigInt('0')) && (
+                        <TYPE.link style={{ cursor: 'pointer' }} ml={'10px'} onClick={() => setShowClaimModal(true)}>
+                          claim
+                        </TYPE.link>
+                      )}
+                    </RowFixed>
+                  </RowBetween>
+                </AutoColumn>
+                {account ? (
+                  <>
+                    <AutoRowBetween gap={'30px'}>
+                      <ButtonPrimary
+                        onClick={() => history.push(`/swap/liquidity/mining/${pool?.stakingRewardAddress}`)}
+                        height={42}
+                      >
+                        Stake
+                      </ButtonPrimary>
+                      <ButtonOutlined
+                        primary
+                        onClick={() => history.push(`/swap/liquidity/mining/${pool?.stakingRewardAddress}`)}
+                        height={42}
+                      >
+                        Unstake
+                      </ButtonOutlined>
+                    </AutoRowBetween>
+                  </>
+                ) : (
+                  <>
+                    <GreyCard borderRadius={'10px'} padding={'28px'}>
+                      <AutoRow m={'auto'}>
+                        <TYPE.main>Connect your wallet to view more information</TYPE.main>
+                      </AutoRow>
+                    </GreyCard>
+                    <ButtonPrimary onClick={toggleWalletModal}>Connect Wallet</ButtonPrimary>
+                  </>
+                )}
+              </AutoColumn>
+            </>
+          )}
+          {account && currentBoots && newFutureBoots && !(currentBoots.toFixed(2) === newFutureBoots.toFixed(2)) && (
+            <AutoRow>
+              <i style={{ color: '#FBDD55', fontSize: 16, fontWeight: 700 }} className="iconfont">
+                &#xe614;
+              </i>
+              <TYPE.main>You can apply future boost by claiming LT</TYPE.main>
+            </AutoRow>
+          )}
+        </LightCard>
+      </AutoColumn>
+    )
+  }
 
   return (
     <AutoColumn style={{ width: '100%', padding: '0 30px', maxWidth: '1440px' }}>
@@ -482,7 +681,7 @@ export default function StakingPoolDetail({
           isOpen={showClaimModal}
           onDismiss={() => setShowClaimModal(false)}
           onClaim={onClaimCallback}
-          stakingInfo={pool}
+          stakingAddress={pool.stakingRewardAddress}
         />
       )}
       <TransactionConfirmationModal
@@ -515,7 +714,7 @@ export default function StakingPoolDetail({
           <ButtonPrimary
             as={Link}
             width={'150px'}
-            to={`/swap/add/${pool?.tokens?.[0].address}/${pool?.tokens?.[1].address}`}
+            to={`/swap/liquidity/manager/${pool?.tokens?.[0].address}/${pool?.tokens?.[1].address}`}
           >
             Add Liquidity
           </ButtonPrimary>
@@ -596,8 +795,8 @@ export default function StakingPoolDetail({
               <div className="charts-tab">
                 <Row justify={'space-between'} align={'flex-start'}>
                   <div>
-                    <TabList></TabList>
-                    <TimeList></TimeList>
+                    <TabList />
+                    <TimeList />
                   </div>
                   {!!yCurrentData && (
                     <div>
@@ -637,86 +836,52 @@ export default function StakingPoolDetail({
             </div>
           </LightCard>
         </AutoColumn>
-        <AutoColumn gap={'30px'} style={{ flex: 3 }}>
-          <LightCard padding={'0'}>
-            <CardHeader>
-              <RowBetween>
-                <TYPE.white fontSize={20} fontWeight={700}>
-                  My Rewards
-                </TYPE.white>
-                <TYPE.white fontSize={20}>
-                  {priceResult[0] && earnedAmount
-                    ? `${amountFormat(Number(earnedAmount.toExact()) * Number(priceResult[0].price))}$`
-                    : '--'}
-                </TYPE.white>
-              </RowBetween>
-            </CardHeader>
-            <AutoColumn style={{ padding: 30 }} gap={'lg'}>
-              <RowBetween>
-                <RowFixed>
-                  <CurrencyLogo currency={LT[chainId ?? 1]} />
-                  <TYPE.white ml={'10px'}>LT</TYPE.white>
-                </RowFixed>
-                <RowFixed gap={'10px'}>
-                  <TYPE.main>{earnedAmount ? earnedAmount.toFixed(2) : '--'}</TYPE.main>
-                  {earnedAmount && earnedAmount.greaterThan(JSBI.BigInt(0)) && (
-                    <TYPE.link ml={'10px'} style={{ cursor: 'pointer' }} onClick={() => setShowClaimModal(true)}>
-                      claim
-                    </TYPE.link>
-                  )}
-                </RowFixed>
-              </RowBetween>
-              {account ? (
-                <ButtonPrimary as={Link} to={`/dao/gomboc?gomboc=${pool?.stakingRewardAddress}`}>
-                  Yield Boost
-                </ButtonPrimary>
-              ) : (
-                <ButtonPrimary onClick={toggleWalletModal} fontSize={20}>
-                  {'Connect to wallet'}
-                </ButtonPrimary>
-              )}
-            </AutoColumn>
-          </LightCard>
-          <LightCard>
-            <CardHeader>
-              <TYPE.white fontSize={20} fontWeight={700}>
-                My Position
-              </TYPE.white>
-              <TYPE.white fontSize={20}>{''}</TYPE.white>
-            </CardHeader>
-            <BasePoolInfoCard pool={pool} />
-            {pool?.stakingRewardAddress && (
-              <AutoRowBetween gap={'30px'}>
-                <ButtonPrimary
-                  onClick={() => history.push(`/swap/withdraw/${pool?.stakingRewardAddress}`)}
-                  disabled={!stakedAmount || (stakedAmount && !stakedAmount.greaterThan(JSBI.BigInt(0)))}
-                >
-                  Unstaking
-                </ButtonPrimary>
-                <ButtonPrimary as={Link} to={`/swap/stake/${pool?.stakingRewardAddress}`}>
-                  Staking
-                </ButtonPrimary>
-              </AutoRowBetween>
-            )}
-          </LightCard>
+        <AutoColumn style={{ flex: 3 }}>
+          {/*Liquidity Card*/}
+          <NoStakingWrapper>
+            <LiquidityCard />
+            <StakeCard />
+          </NoStakingWrapper>
+          {/*<LightCard>*/}
+          {/*  <CardHeader>*/}
+          {/*    <TYPE.white fontSize={20} fontWeight={700}>*/}
+          {/*      My Position*/}
+          {/*    </TYPE.white>*/}
+          {/*    <TYPE.white fontSize={20}>{''}</TYPE.white>*/}
+          {/*  </CardHeader>*/}
+          {/*  <BasePoolInfoCard pool={pool} />*/}
+          {/*  {pool?.stakingRewardAddress && (*/}
+          {/*    <AutoRowBetween gap={'30px'}>*/}
+          {/*      <ButtonPrimary*/}
+          {/*        onClick={() => history.push(`/swap/withdraw/${pool?.stakingRewardAddress}`)}*/}
+          {/*        disabled={!stakedAmount || (stakedAmount && !stakedAmount.greaterThan(JSBI.BigInt(0)))}*/}
+          {/*      >*/}
+          {/*        Unstaking*/}
+          {/*      </ButtonPrimary>*/}
+          {/*      <ButtonPrimary as={Link} to={`/swap/stake/${pool?.stakingRewardAddress}`}>*/}
+          {/*        Staking*/}
+          {/*      </ButtonPrimary>*/}
+          {/*    </AutoRowBetween>*/}
+          {/*  )}*/}
+          {/*</LightCard>*/}
         </AutoColumn>
       </AutoRow>
       <AutoRow padding={'0 15px'}>
         <LightCard>
           <AutoColumn>
-            <AutoRow gap={'20px'}>
-              <StyledTabTitle onClick={() => setShowTx(false)} active={!showTx}>
+            <TabWrapper>
+              <TabItem onClick={() => setShowTx(false)} isActive={!showTx}>
                 Information
-              </StyledTabTitle>
-              <StyledTabTitle
+              </TabItem>
+              <TabItem
                 onClick={() => {
                   setShowTx(true)
                 }}
-                active={showTx}
+                isActive={showTx}
               >
                 Transaction
-              </StyledTabTitle>
-            </AutoRow>
+              </TabItem>
+            </TabWrapper>
             {showTx ? (
               <>
                 <GreyCard marginTop={30}>
@@ -799,7 +964,7 @@ export default function StakingPoolDetail({
                     <TableTitle>{formatUTCDate(pool?.createAt)}</TableTitle>
                     <TableTitle flex={0.8}>0.30%</TableTitle>
                     <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
-                      <TableTitle>{pool ? `$${pool.totalVolume.toFixed(2)}` : '--'}</TableTitle>
+                      <TableTitle>{pairMore ? `$${pairMore.totalVolume.toFixed(2)}` : '--'}</TableTitle>
                       <AutoRow gap={'5px'}>
                         <CurrencyLogo currency={pool?.tokens[0]} />
                         <TYPE.main>
@@ -813,7 +978,7 @@ export default function StakingPoolDetail({
                         </TYPE.main>
                       </AutoRow>
                     </AutoColumn>
-                    <TableTitle>{pool ? `$${(pool.totalVolume * 0.003).toFixed()}` : '--'}</TableTitle>
+                    <TableTitle>{pairMore ? `$${(pairMore.totalVolume * 0.003).toFixed()}` : '--'}</TableTitle>
                     <TableTitle>{pool ? pool.txCount : '--'}</TableTitle>
                   </AutoRow>
                 </LightCard>

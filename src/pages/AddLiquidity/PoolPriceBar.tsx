@@ -1,11 +1,10 @@
+import React from 'react'
 import { Currency, Percent, Price } from '@uniswap/sdk'
-import React, { useContext } from 'react'
-import { Text } from 'rebass'
-import { ThemeContext } from 'styled-components'
 import { AutoColumn } from '../../components/Column'
-import { AutoRow } from '../../components/Row'
+import { RowBetween } from '../../components/Row'
 import { Field } from '../../state/mint/actions'
 import { TYPE } from '../../theme'
+import { ONE_BIPS } from '../../constants'
 
 export function PoolPriceBar({
   currencies,
@@ -18,23 +17,33 @@ export function PoolPriceBar({
   poolTokenPercentage?: Percent
   price?: Price
 }) {
-  const theme = useContext(ThemeContext)
   return (
     <AutoColumn gap="md">
-      <AutoRow justify="space-around" gap="20px">
-        <AutoColumn justify="center">
-          <TYPE.black fontSize={20}>{price?.toSignificant(6) ?? '-'}</TYPE.black>
-          <Text fontWeight={500} fontSize={14} color={theme.text2} pt={1}>
-            {currencies[Field.CURRENCY_B]?.symbol} per {currencies[Field.CURRENCY_A]?.symbol}
-          </Text>
-        </AutoColumn>
-        <AutoColumn justify="center">
-          <TYPE.black fontSize={20}>{price?.invert()?.toSignificant(6) ?? '-'}</TYPE.black>
-          <Text fontWeight={500} fontSize={14} color={theme.text2} pt={1}>
-            {currencies[Field.CURRENCY_A]?.symbol} per {currencies[Field.CURRENCY_B]?.symbol}
-          </Text>
-        </AutoColumn>
-      </AutoRow>
+      <RowBetween justify="center">
+        <TYPE.main fontWeight={500} pt={1}>
+          {currencies[Field.CURRENCY_A]?.symbol} Swap Rate
+        </TYPE.main>
+        <TYPE.white>{`1 ${currencies[Field.CURRENCY_A]?.symbol} ≈ ${price?.toSignificant(6) ?? '-'} ${
+          currencies[Field.CURRENCY_B]?.symbol
+        }`}</TYPE.white>
+      </RowBetween>
+      <RowBetween justify="center">
+        <TYPE.main fontWeight={500} pt={1}>
+          {currencies[Field.CURRENCY_B]?.symbol} Swap Rate
+        </TYPE.main>
+        <TYPE.white>{`1 ${currencies[Field.CURRENCY_B]?.symbol} ≈ ${price?.invert()?.toSignificant(6) ?? '-'} ${
+          currencies[Field.CURRENCY_A]?.symbol
+        }`}</TYPE.white>
+      </RowBetween>
+      <RowBetween justify="center">
+        <TYPE.main>Pool Share</TYPE.main>
+        <TYPE.white fontWeight={500} pt={1}>
+          {noLiquidity && price
+            ? '100'
+            : (poolTokenPercentage?.lessThan(ONE_BIPS) ? '<0.01' : poolTokenPercentage?.toFixed(2)) ?? '0'}
+          %
+        </TYPE.white>
+      </RowBetween>
     </AutoColumn>
   )
 }

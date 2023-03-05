@@ -24,7 +24,7 @@ const StyledRangeInput = styled.input<{ size: number }>`
     border: none;
     transform: translateY(-50%);
     color: ${({ theme }) => theme.bg1};
-
+    margin-top: 2px;
     &:hover,
     &:focus {
       box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.1), 0px 4px 8px rgba(0, 0, 0, 0.08), 0px 16px 24px rgba(0, 0, 0, 0.06),
@@ -53,7 +53,6 @@ const StyledRangeInput = styled.input<{ size: number }>`
     background-color: ${({ theme }) => theme.primary1};
     border-radius: 100%;
     color: ${({ theme }) => theme.bg1};
-
     &:hover,
     &:focus {
       box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.1), 0px 4px 8px rgba(0, 0, 0, 0.08), 0px 16px 24px rgba(0, 0, 0, 0.06),
@@ -63,12 +62,14 @@ const StyledRangeInput = styled.input<{ size: number }>`
 
   &::-webkit-slider-runnable-track {
     background: ${({ theme }) => theme.bg3};
-    height: 2px;
+    height: 6px;
+    border-radius: 3px;
   }
 
   &::-moz-range-track {
     background: ${({ theme }) => theme.bg3};
-    height: 2px;
+    height: 6px;
+    border-radius: 3px;
   }
 
   &::-ms-track {
@@ -77,7 +78,8 @@ const StyledRangeInput = styled.input<{ size: number }>`
     color: transparent;
 
     background: ${({ theme }) => theme.primary1};
-    height: 2px;
+    height: 6px;
+    border-radius: 3px;
   }
   &::-ms-fill-lower {
     background: ${({ theme }) => theme.primary1};

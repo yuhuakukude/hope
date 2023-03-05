@@ -1,7 +1,6 @@
 import { JSBI, Pair, Percent, Token, TokenAmount } from '@uniswap/sdk'
 import { darken } from 'polished'
-import React, { useState } from 'react'
-import { Link } from 'react-router-dom'
+import React, { useCallback, useEffect, useState } from 'react'
 import { Text } from 'rebass'
 import styled from 'styled-components'
 import { useTotalSupply } from '../../data/TotalSupply'
@@ -9,7 +8,6 @@ import { useTotalSupply } from '../../data/TotalSupply'
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { ExternalLink, TYPE } from '../../theme'
-import { currencyId } from '../../utils/currencyId'
 import { unwrappedToken } from '../../utils/wrappedCurrency'
 
 import { useColor } from '../../hooks/useColor'
@@ -18,9 +16,16 @@ import Card, { LightCard } from '../Card'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed, AutoRow } from '../Row'
-import { BIG_INT_ZERO } from '../../constants'
-import { getEtherscanLink, shortenAddress } from '../../utils'
+import { calculateGasMargin, getEtherscanLink } from '../../utils'
 import { usePair } from '../../data/Reserves'
+import CurrencyLogo from '../CurrencyLogo'
+import TitleTips, { TitleTipsProps } from '../../pages/Portfolio/component/SelectTips'
+import { useHistory } from 'react-router-dom'
+import ClaimRewardModal from '../earn/ClaimRewardModal'
+import { TransactionResponse } from '@ethersproject/providers'
+import { useLtMinterContract } from '../../hooks/useContract'
+import { useTransactionAdder } from '../../state/transactions/hooks'
+import TransactionConfirmationModal, { TransactionErrorContent } from '../TransactionConfirmationModal'
 
 export const FixedHeightRow = styled(RowBetween)`
   height: 24px;
@@ -33,6 +38,7 @@ export const HoverCard = styled(Card)`
   }
 `
 const StyledPositionCard = styled(LightCard)<{ bgColor: any }>`
+  background-color: transparent;
   border-radius: 0;
   border: none;
   position: relative;
@@ -42,8 +48,13 @@ const StyledPositionCard = styled(LightCard)<{ bgColor: any }>`
   }
 `
 
-const ContentRow = styled(RowFixed)`
-  flex: 1;
+const ContentRow = styled(RowFixed)<{ weight?: number }>`
+  flex: ${({ weight }) => (weight ? weight : 1)};
+`
+
+const DataRow = styled(AutoRow)`
+  flex-wrap: nowrap;
+  width: fit-content;
 `
 
 interface PositionCardProps {
@@ -84,75 +95,58 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
   return (
     <>
       {userPoolBalance && JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
-        <LightCard border={border}>
-          <AutoColumn gap="12px">
+        <AutoColumn gap="12px">
+          <FixedHeightRow>
+            <RowFixed>
+              <Text fontWeight={700} fontSize={16}>
+                My position
+              </Text>
+            </RowFixed>
+          </FixedHeightRow>
+          <FixedHeightRow onClick={() => setShowMore(!showMore)}>
+            <RowFixed>
+              <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin={true} size={20} />
+              <Text fontWeight={700}>
+                {currency0.symbol}/{currency1.symbol}
+              </Text>
+            </RowFixed>
+            <RowFixed>
+              <Text fontWeight={700}>{userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}</Text>
+            </RowFixed>
+          </FixedHeightRow>
+          <AutoColumn gap="4px">
             <FixedHeightRow>
-              <RowFixed>
-                <Text fontWeight={500} fontSize={16}>
-                  Your position
-                </Text>
-              </RowFixed>
+              <TYPE.main fontWeight={500}>Your pool share</TYPE.main>
+              <Text fontWeight={500}>{poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}</Text>
             </FixedHeightRow>
-            <FixedHeightRow onClick={() => setShowMore(!showMore)}>
-              <RowFixed>
-                <DoubleCurrencyLogo currency0={currency0} currency1={currency1} margin={true} size={20} />
-                <Text fontWeight={500} fontSize={20}>
-                  {currency0.symbol}/{currency1.symbol}
-                </Text>
-              </RowFixed>
-              <RowFixed>
-                <Text fontWeight={500} fontSize={20}>
-                  {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}
-                </Text>
-              </RowFixed>
+            <FixedHeightRow>
+              <TYPE.main fontWeight={500}>{currency0.symbol}</TYPE.main>
+              {token0Deposited ? (
+                <RowFixed>
+                  <Text fontWeight={500} marginLeft={'6px'}>
+                    {token0Deposited?.toSignificant(6)}
+                  </Text>
+                </RowFixed>
+              ) : (
+                '-'
+              )}
             </FixedHeightRow>
-            <AutoColumn gap="4px">
-              <FixedHeightRow>
-                <Text fontSize={16} fontWeight={500}>
-                  Your pool share
-                </Text>
-                <Text fontSize={16} fontWeight={500}>
-                  {poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}
-                </Text>
-              </FixedHeightRow>
-              <FixedHeightRow>
-                <Text fontSize={16} fontWeight={500}>
-                  {currency0.symbol}
-                </Text>
-                {token0Deposited ? (
-                  <RowFixed>
-                    <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
-                      {token0Deposited?.toSignificant(6)}
-                    </Text>
-                  </RowFixed>
-                ) : (
-                  '-'
-                )}
-              </FixedHeightRow>
-              <FixedHeightRow>
-                <Text fontSize={16} fontWeight={500}>
-                  {currency1.symbol}
-                </Text>
-                {token1Deposited ? (
-                  <RowFixed>
-                    <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>
-                      {token1Deposited?.toSignificant(6)}
-                    </Text>
-                  </RowFixed>
-                ) : (
-                  '-'
-                )}
-              </FixedHeightRow>
-            </AutoColumn>
+            <FixedHeightRow>
+              <TYPE.main fontWeight={500}>{currency1.symbol}</TYPE.main>
+              {token1Deposited ? (
+                <RowFixed>
+                  <Text fontWeight={500} marginLeft={'6px'}>
+                    {token1Deposited?.toSignificant(6)}
+                  </Text>
+                </RowFixed>
+              ) : (
+                '-'
+              )}
+            </FixedHeightRow>
           </AutoColumn>
-        </LightCard>
+        </AutoColumn>
       ) : (
-        <LightCard>
-          <TYPE.main style={{ textAlign: 'center' }}>
-            {`By adding liquidity you'll earn 0.3% of all trades on this pair proportional to your share of the pool. Fees
-            are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
-          </TYPE.main>
-        </LightCard>
+        <></>
       )}
     </>
   )
@@ -163,25 +157,46 @@ interface FullCardProps {
   showUnwrapped?: boolean
   border?: string
   stakedBalance?: TokenAmount // optional balance to indicate that liquidity is deposited in mining pool
+  feeRate?: number
+  futureBoots?: string
+  currentBoots?: string
+  reward?: TokenAmount | undefined
+  stakingAddress?: string
 }
 
-export default function FullPositionCard({ pairInfo, border, stakedBalance }: FullCardProps) {
-  const { account, chainId } = useActiveWeb3React()
-
+export default function FullPositionCard({
+  pairInfo,
+  border,
+  stakedBalance,
+  feeRate,
+  futureBoots,
+  currentBoots,
+  reward,
+  stakingAddress
+}: FullCardProps) {
+  const { account, chainId, library } = useActiveWeb3React()
+  const history = useHistory()
   const currency0 = unwrappedToken(pairInfo.tokens[0])
   const currency1 = unwrappedToken(pairInfo.tokens[1])
 
+  const ltMinterContract = useLtMinterContract()
+  const addTransaction = useTransactionAdder()
+
+  const [showClaimModal, setShowClaimModal] = useState(false)
+  const [showConfirm, setShowConfirm] = useState<boolean>(false)
+  const [pendingText, setPendingText] = useState('')
+  const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
+  const [txHash, setTxHash] = useState<string>('')
+  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
+
   const [, pair] = usePair(currency0, currency1)
+
+  const [newFutureBoots, setNewFutureBoots] = useState<string | undefined>(undefined)
 
   const userDefaultPoolBalance = useTokenBalance(account ?? undefined, pairInfo.liquidityToken)
   const totalPoolTokens = useTotalSupply(pairInfo.liquidityToken)
-
   // if staked balance balance provided, add to standard liquidity amount
   const userPoolBalance = stakedBalance ? userDefaultPoolBalance?.add(stakedBalance) : userDefaultPoolBalance
-  const poolTokenPercentage =
-    !!userPoolBalance && !!totalPoolTokens && JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
-      ? new Percent(userPoolBalance.raw, totalPoolTokens.raw)
-      : undefined
   const [token0Deposited, token1Deposited] =
     !!pair &&
     !!totalPoolTokens &&
@@ -196,197 +211,198 @@ export default function FullPositionCard({ pairInfo, border, stakedBalance }: Fu
 
   const backgroundColor = useColor(pair?.token0)
 
+  const actions: TitleTipsProps[] = [
+    {
+      label: 'Manage Positions',
+      value: 'Manage Positions',
+      onClick: data => {
+        history.push(`/swap/liquidity/manager/${pairInfo.tokens[0].address}/${pairInfo.tokens[1].address}`)
+      }
+    },
+    {
+      label: 'Yield Boost',
+      value: 'Yield Boost',
+      isHide: !stakingAddress,
+      onClick: data => {
+        history.push(`/swap/liquidity/mining/${stakingAddress}`)
+      }
+    },
+    {
+      label: 'Claim Rewards',
+      value: 'Claim Rewards',
+      isHide: !reward || !reward.greaterThan('0'),
+      onClick: data => {
+        setShowClaimModal(true)
+      }
+    },
+    {
+      label: 'Pool Details',
+      value: 'Pool Details',
+      onClick: data => {
+        history.push(`/swap/liquidity/pool-detail/${pairInfo.liquidityToken.address}`)
+      }
+    }
+  ]
+
+  useEffect(() => {
+    futureBoots && futureBoots !== '-' && setNewFutureBoots(futureBoots)
+  }, [futureBoots])
+
+  const onClaim = useCallback(async () => {
+    if (!account) throw new Error('none account')
+    if (!ltMinterContract) throw new Error('none contract')
+    const method = 'mint'
+    const args = [stakingAddress]
+    return ltMinterContract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
+      return ltMinterContract[method](...args, {
+        gasLimit: calculateGasMargin(estimatedGasLimit),
+        // gasLimit: '3500000',
+        from: account
+      }).then((response: TransactionResponse) => {
+        addTransaction(response, {
+          summary: `Claim ${reward?.toSignificant(6)} LT`
+        })
+        return response.hash
+      })
+    })
+  }, [account, addTransaction, ltMinterContract, reward, stakingAddress])
+
+  const onTxStart = useCallback(() => {
+    setShowConfirm(true)
+    setAttemptingTxn(true)
+  }, [])
+
+  const onTxSubmitted = useCallback((hash: string | undefined) => {
+    setShowConfirm(true)
+    setPendingText(``)
+    setAttemptingTxn(false)
+    setShowClaimModal(false)
+    hash && setTxHash(hash)
+  }, [])
+
+  const onTxError = useCallback(error => {
+    setShowConfirm(true)
+    setTxHash('')
+    setPendingText(``)
+    setAttemptingTxn(false)
+    setErrorStatus({ code: error?.code, message: error.message })
+  }, [])
+
+  const onClaimCallback = useCallback(async () => {
+    if (!account || !library || !chainId || !reward) return
+    setPendingText(`Claim ${reward?.toSignificant(6)} LT`)
+    onTxStart()
+    // sign
+    onClaim()
+      .then(hash => {
+        onTxSubmitted(hash)
+      })
+      .catch((error: any) => {
+        onTxError(error)
+        throw error
+      })
+  }, [account, library, chainId, reward, onTxStart, onClaim, onTxSubmitted, onTxError])
+
+  const confirmationContent = useCallback(() => {
+    return (
+      errorStatus && (
+        <TransactionErrorContent
+          errorCode={errorStatus.code}
+          onDismiss={() => setShowConfirm(false)}
+          message={errorStatus.message}
+        />
+      )
+    )
+  }, [errorStatus])
+
   return (
     <StyledPositionCard border={border} bgColor={backgroundColor}>
+      {stakingAddress && (
+        <ClaimRewardModal
+          isOpen={showClaimModal}
+          onDismiss={() => setShowClaimModal(false)}
+          onClaim={onClaimCallback}
+          stakingAddress={stakingAddress}
+        />
+      )}
+      <TransactionConfirmationModal
+        isOpen={showConfirm}
+        onDismiss={() => setShowConfirm(false)}
+        attemptingTxn={attemptingTxn}
+        hash={txHash}
+        content={confirmationContent}
+        pendingText={pendingText}
+      />
       <AutoRow>
         <ContentRow>
-          <DoubleCurrencyLogo margin currency0={currency0} currency1={currency1} size={24} />
-          <TYPE.link
-            as={ExternalLink}
-            href={getEtherscanLink(chainId ?? 1, pairInfo.liquidityToken.address, 'address')}
-            ml={10}
-            fontWeight={500}
-            fontSize={20}
-          >
-            {shortenAddress(pairInfo.liquidityToken.address)}
-          </TYPE.link>
+          <AutoColumn gap={'12px'}>
+            <AutoRow>
+              <DoubleCurrencyLogo margin currency0={currency0} currency1={currency1} size={24} />
+              <TYPE.link
+                as={ExternalLink}
+                href={getEtherscanLink(chainId ?? 1, pairInfo.liquidityToken.address, 'address')}
+                ml={10}
+                fontWeight={500}
+                fontSize={20}
+              >
+                {currency0 && currency1 ? (
+                  <TYPE.white>{`${currency0.symbol} / ${currency1.symbol}`}</TYPE.white>
+                ) : (
+                  '-/-'
+                )}
+              </TYPE.link>
+            </AutoRow>
+            <AutoRow>
+              <TYPE.main>Fee Rate: {feeRate ? `${feeRate * 100}%` : '--'}</TYPE.main>
+            </AutoRow>
+          </AutoColumn>
         </ContentRow>
         <ContentRow>
-          <Text fontSize={16} fontWeight={500}>
-            {`${token0Deposited ? token0Deposited?.toSignificant(4) : '-'} ${currency0 ? currency0.symbol : '-'} / ${
-              token1Deposited ? token1Deposited?.toSignificant(4) : '-'
-            }
-                ${currency1 ? currency1.symbol : '-'}`}
-          </Text>
+          <AutoColumn gap={'12px'}>
+            <DataRow gap={'8px'}>
+              <CurrencyLogo size={'16px'} currency={currency0} />
+              <TYPE.white>{`${token0Deposited ? token0Deposited?.toSignificant(4) : '--'}`}</TYPE.white>
+            </DataRow>
+            <DataRow gap={'8px'}>
+              <CurrencyLogo size={'16px'} currency={currency1} />
+              <TYPE.white>{`${token1Deposited ? token1Deposited?.toSignificant(4) : '--'}`}</TYPE.white>
+            </DataRow>
+          </AutoColumn>
         </ContentRow>
         <ContentRow>
-          <Text fontSize={16} fontWeight={500}>
-            {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}{' '}
-          </Text>
-          <TYPE.main ml={10} alignSelf={'end'} fontSize={12}>
-            Staked(
-            {stakedBalance ? stakedBalance.toSignificant(6) : '--'})
-          </TYPE.main>
+          <AutoColumn gap={'12px'}>
+            <DataRow gap={'8px'}>
+              <TYPE.white>{userPoolBalance ? userPoolBalance.toSignificant(4) : '--'} </TYPE.white>
+            </DataRow>
+            <DataRow gap={'8px'}>
+              <TYPE.main>{stakedBalance ? `${stakedBalance.toSignificant(6)} %Staked` : '--'}</TYPE.main>
+            </DataRow>
+          </AutoColumn>
         </ContentRow>
         <ContentRow>
-          <Text fontSize={16} fontWeight={500}>
-            {poolTokenPercentage
-              ? (poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'
-              : '-'}
-          </Text>
+          <AutoColumn gap={'10px'}>
+            <AutoRow>
+              <TYPE.main>Current:&nbsp;</TYPE.main>
+              <TYPE.white>{currentBoots}</TYPE.white>
+            </AutoRow>
+            <AutoRow>
+              <TYPE.main>Future:&nbsp;&nbsp;</TYPE.main>
+              <TYPE.white>{newFutureBoots}</TYPE.white>
+            </AutoRow>
+          </AutoColumn>
+        </ContentRow>
+        <ContentRow>--</ContentRow>
+        <ContentRow>
+          <AutoColumn gap={'10px'}>
+            <TYPE.white>{reward ? reward.toFixed(4) : '--'}</TYPE.white>
+            <TYPE.main>≈ $</TYPE.main>
+          </AutoColumn>
         </ContentRow>
 
-        {userDefaultPoolBalance && JSBI.greaterThan(userDefaultPoolBalance.raw, BIG_INT_ZERO) && (
-          <ContentRow marginTop="10px">
-            <Link to={`/swap/add/${currencyId(currency0)}/${currencyId(currency1)}`}>
-              <TYPE.link>Increase</TYPE.link>
-            </Link>
-            <Link to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}>
-              <TYPE.error error padding="8px">
-                Remove
-              </TYPE.error>
-            </Link>
-          </ContentRow>
-        )}
-        <AutoColumn gap="8px">
-          {/*<ButtonSecondary padding="8px" borderRadius="8px">*/}
-          {/*  <ExternalLink style={{ textAlign: 'center' }} href={`https://uniswap.info/account/${account}`}>*/}
-          {/*    View accrued fees and analytics<span style={{ fontSize: '11px' }}>↗</span>*/}
-          {/*  </ExternalLink>*/}
-          {/*</ButtonSecondary>*/}
-        </AutoColumn>
+        <ContentRow weight={0.5}>
+          <TitleTips options={actions} label={'More'} />
+        </ContentRow>
       </AutoRow>
-      {/*<RowFixed gap="8px">*/}
-      {/*  <ButtonEmpty*/}
-      {/*    padding="6px 8px"*/}
-      {/*    borderRadius="12px"*/}
-      {/*    width="fit-content"*/}
-      {/*    onClick={() => setShowMore(!showMore)}*/}
-      {/*  >*/}
-      {/*    {showMore ? (*/}
-      {/*      <>*/}
-      {/*        Manage*/}
-      {/*        <ChevronUp size="20" style={{ marginLeft: '10px' }} />*/}
-      {/*      </>*/}
-      {/*    ) : (*/}
-      {/*      <>*/}
-      {/*        Manage*/}
-      {/*        <ChevronDown size="20" style={{ marginLeft: '10px' }} />*/}
-      {/*      </>*/}
-      {/*    )}*/}
-      {/*  </ButtonEmpty>*/}
-      {/*</RowFixed>*/}
-
-      {/*{showMore && (*/}
-      {/*  <AutoColumn gap="8px">*/}
-      {/*    <FixedHeightRow>*/}
-      {/*      <Text fontSize={16} fontWeight={500}>*/}
-      {/*        Your total pool tokens:*/}
-      {/*      </Text>*/}
-      {/*      <Text fontSize={16} fontWeight={500}>*/}
-      {/*        {userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}*/}
-      {/*      </Text>*/}
-      {/*    </FixedHeightRow>*/}
-      {/*    {stakedBalance && (*/}
-      {/*      <FixedHeightRow>*/}
-      {/*        <Text fontSize={16} fontWeight={500}>*/}
-      {/*          Pool tokens in rewards pool:*/}
-      {/*        </Text>*/}
-      {/*        <Text fontSize={16} fontWeight={500}>*/}
-      {/*          {stakedBalance.toSignificant(4)}*/}
-      {/*        </Text>*/}
-      {/*      </FixedHeightRow>*/}
-      {/*    )}*/}
-      {/*    <FixedHeightRow>*/}
-      {/*      <RowFixed>*/}
-      {/*        <Text fontSize={16} fontWeight={500}>*/}
-      {/*          Pooled {currency0.symbol}:*/}
-      {/*        </Text>*/}
-      {/*      </RowFixed>*/}
-      {/*      {token0Deposited ? (*/}
-      {/*        <RowFixed>*/}
-      {/*          <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>*/}
-      {/*            {token0Deposited?.toSignificant(6)}*/}
-      {/*          </Text>*/}
-      {/*          <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency0} />*/}
-      {/*        </RowFixed>*/}
-      {/*      ) : (*/}
-      {/*        '-'*/}
-      {/*      )}*/}
-      {/*    </FixedHeightRow>*/}
-
-      {/*    <FixedHeightRow>*/}
-      {/*      <RowFixed>*/}
-      {/*        <Text fontSize={16} fontWeight={500}>*/}
-      {/*          Pooled {currency1.symbol}:*/}
-      {/*        </Text>*/}
-      {/*      </RowFixed>*/}
-      {/*      {token1Deposited ? (*/}
-      {/*        <RowFixed>*/}
-      {/*          <Text fontSize={16} fontWeight={500} marginLeft={'6px'}>*/}
-      {/*            {token1Deposited?.toSignificant(6)}*/}
-      {/*          </Text>*/}
-      {/*          <CurrencyLogo size="20px" style={{ marginLeft: '8px' }} currency={currency1} />*/}
-      {/*        </RowFixed>*/}
-      {/*      ) : (*/}
-      {/*        '-'*/}
-      {/*      )}*/}
-      {/*    </FixedHeightRow>*/}
-
-      {/*    <FixedHeightRow>*/}
-      {/*      <Text fontSize={16} fontWeight={500}>*/}
-      {/*        Your pool share:*/}
-      {/*      </Text>*/}
-      {/*      <Text fontSize={16} fontWeight={500}>*/}
-      {/*        {poolTokenPercentage*/}
-      {/*          ? (poolTokenPercentage.toFixed(2) === '0.00' ? '<0.01' : poolTokenPercentage.toFixed(2)) + '%'*/}
-      {/*          : '-'}*/}
-      {/*      </Text>*/}
-      {/*    </FixedHeightRow>*/}
-
-      {/*    <ButtonSecondary padding="8px" borderRadius="8px">*/}
-      {/*      <ExternalLink*/}
-      {/*        style={{ width: '100%', textAlign: 'center' }}*/}
-      {/*        href={`https://uniswap.info/account/${account}`}*/}
-      {/*      >*/}
-      {/*        View accrued fees and analytics<span style={{ fontSize: '11px' }}>↗</span>*/}
-      {/*      </ExternalLink>*/}
-      {/*    </ButtonSecondary>*/}
-      {/*    {userDefaultPoolBalance && JSBI.greaterThan(userDefaultPoolBalance.raw, BIG_INT_ZERO) && (*/}
-      {/*      <RowBetween marginTop="10px">*/}
-      {/*        <ButtonPrimary*/}
-      {/*          padding="8px"*/}
-      {/*          borderRadius="8px"*/}
-      {/*          as={Link}*/}
-      {/*          to={`/add/${currencyId(currency0)}/${currencyId(currency1)}`}*/}
-      {/*          width="48%"*/}
-      {/*        >*/}
-      {/*          Add*/}
-      {/*        </ButtonPrimary>*/}
-      {/*        <ButtonPrimary*/}
-      {/*          padding="8px"*/}
-      {/*          borderRadius="8px"*/}
-      {/*          as={Link}*/}
-      {/*          width="48%"*/}
-      {/*          to={`/remove/${currencyId(currency0)}/${currencyId(currency1)}`}*/}
-      {/*        >*/}
-      {/*          Remove*/}
-      {/*        </ButtonPrimary>*/}
-      {/*      </RowBetween>*/}
-      {/*    )}*/}
-      {/*    {stakedBalance && JSBI.greaterThan(stakedBalance.raw, BIG_INT_ZERO) && (*/}
-      {/*      <ButtonPrimary*/}
-      {/*        padding="8px"*/}
-      {/*        borderRadius="8px"*/}
-      {/*        as={Link}*/}
-      {/*        to={`/uni/${currencyId(currency0)}/${currencyId(currency1)}`}*/}
-      {/*        width="100%"*/}
-      {/*      >*/}
-      {/*        Manage Liquidity in Rewards Pool*/}
-      {/*      </ButtonPrimary>*/}
-      {/*    )}*/}
-      {/*  </AutoColumn>*/}
-      {/*)}*/}
     </StyledPositionCard>
   )
 }

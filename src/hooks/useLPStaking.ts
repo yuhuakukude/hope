@@ -10,7 +10,7 @@ import {
   GraphPairInfo,
   PairDetail,
   fetchPairTxs,
-  TxResponse
+  TxResponse, PairMore, fetchPairMore
 } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
 import AprApi from '../api/apr.api'
@@ -102,6 +102,7 @@ export function useLPStakingPairsInfos(sort: 'asc' | 'desc') {
 export function useStakingPairPool(address: string) {
   const { account } = useActiveWeb3React()
   const [result, setResult] = useState<PairDetail | undefined>(undefined)
+  const [pairMore, setPairMore] = useState<PairMore | undefined>(undefined)
 
   const [loading, setLoading] = useState<boolean>(false)
   // const [total, setTotal] = useState<number>(0)
@@ -110,7 +111,7 @@ export function useStakingPairPool(address: string) {
     ;(async () => {
       setLoading(true)
       try {
-        const pool = await fetchPairPool(address ?? '')
+        const pool = await fetchPairPool(address.toLowerCase() ?? '')
         setLoading(false)
         setResult(pool)
       } catch (error) {
@@ -120,9 +121,22 @@ export function useStakingPairPool(address: string) {
     })()
   }, [account, address])
 
+  useEffect(() => {
+    ;(async () => {
+      try {
+        const more = await fetchPairMore(address.toLowerCase() ?? '')
+        setLoading(false)
+        setPairMore(more)
+      } catch (error) {
+        setResult(undefined)
+      }
+    })()
+  }, [account, address])
+
   return {
     loading: loading,
-    result
+    result,
+    pairMore
   }
 }
 

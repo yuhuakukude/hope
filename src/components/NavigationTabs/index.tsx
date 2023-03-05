@@ -8,9 +8,6 @@ import { ArrowLeft } from 'react-feather'
 import { RowFixed } from '../Row'
 // import QuestionHelper from '../QuestionHelper'
 import { Settings } from 'react-feather'
-import { useDispatch } from 'react-redux'
-import { AppDispatch } from 'state'
-import { resetMintState } from 'state/mint/actions'
 
 export const Tabs = styled.div`
   width: 100%;
@@ -101,9 +98,8 @@ export function FindPoolTabs() {
   )
 }
 
-export function AddRemoveTabs({ adding, creating, title }: { adding: boolean; creating: boolean; title?: string }) {
+export function AddRemoveTabs() {
   // reset states on back
-  const dispatch = useDispatch<AppDispatch>()
   const history = useHistory()
 
   return (
@@ -111,15 +107,32 @@ export function AddRemoveTabs({ adding, creating, title }: { adding: boolean; cr
       <RowFixed gap={'20px'} style={{ padding: '1rem 1rem 0 1rem' }}>
         <div
           onClick={() => {
-            adding && dispatch(resetMintState())
             history.goBack()
           }}
         >
           <StyledArrowLeft />
         </div>
-        <ActiveText style={{ marginLeft: 20 }}>
-          {title ? title : creating ? 'Create a pair' : adding ? 'Add Liquidity' : 'Remove Liquidity'}
-        </ActiveText>
+        <ActiveText style={{ marginLeft: 20 }}>Liquidity Management</ActiveText>
+      </RowFixed>
+    </Tabs>
+  )
+}
+
+export function StakeTabs() {
+  // reset states on back
+  const history = useHistory()
+
+  return (
+    <Tabs>
+      <RowFixed gap={'20px'} style={{ padding: '1rem 1rem 0 1rem' }}>
+        <div
+          onClick={() => {
+            history.goBack()
+          }}
+        >
+          <StyledArrowLeft />
+        </div>
+        <ActiveText style={{ marginLeft: 20 }}>Liquidity Mining</ActiveText>
       </RowFixed>
     </Tabs>
   )

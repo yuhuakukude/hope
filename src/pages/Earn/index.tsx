@@ -401,7 +401,7 @@ export default function Earn() {
             isOpen={showClaimModal}
             onDismiss={() => setShowClaimModal(false)}
             onClaim={onClaimCallback}
-            stakingInfo={poolInfo}
+            stakingAddress={poolInfo.stakingRewardAddress}
           />
         )}
 

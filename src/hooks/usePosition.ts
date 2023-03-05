@@ -46,6 +46,7 @@ export function useStakePosition(pool?: PoolInfo) {
     !!pool?.pair &&
     !!totalStakedAmount &&
     !!stakedLpAmount &&
+    stakedLpAmount.greaterThan('0') &&
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
     JSBI.greaterThanOrEqual(totalStakedAmount.raw, stakedLpAmount.raw)
       ? [
