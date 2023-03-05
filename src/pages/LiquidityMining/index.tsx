@@ -26,6 +26,7 @@ import { useStakingContract } from '../../hooks/useContract'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { StakeTabs } from '../../components/NavigationTabs'
 import { StakingTips } from '../LiquidityManager/component/Tips'
+import Loader from '../../components/Loader'
 
 const CustomTabWrapper = styled(TabWrapper)`
   width: auto;
@@ -290,10 +291,16 @@ export default function LiquidityMining({
             />
             <ButtonError
               onClick={staking ? onStakeCallback : onUnstakeCallback}
-              disabled={!!error && error !== 'Connect Wallet'}
+              disabled={(!!error && error !== 'Connect Wallet') || !!pendingText}
               error={!!error && !!parsedAmount}
             >
-              {error ?? `${staking ? 'Stake' : 'Unstake'}`}
+              {pendingText ? (
+                <AutoRow gap="6px" justify="center">
+                  Confirm in your wallet <Loader stroke="white" />
+                </AutoRow>
+              ) : (
+                error ?? `${staking ? 'Stake' : 'Unstake'}`
+              )}
             </ButtonError>
           </AutoColumn>
         </AutoColumn>

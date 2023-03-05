@@ -246,6 +246,9 @@ export function useDerivedStakeInfo(
   if (!account) {
     error = 'Connect Wallet'
   }
+  if (!typedValue) {
+    error = 'Enter Amount'
+  }
   if (!parsedAmount) {
     error = error ?? 'Insufficient Liquidity'
   }
