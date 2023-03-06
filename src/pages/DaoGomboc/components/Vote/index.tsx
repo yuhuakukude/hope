@@ -177,7 +177,6 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   const viewSubAmount = useMemo(() => {
     let vsub = subAmount
     if (curGomAddress) {
-      console.log(amount, subAmount)
       if (amount && subAmount) {
         const am = Number(amount) || 0
         const resn = new Decimal(Number(subAmount)).sub(new Decimal(am)).toNumber()

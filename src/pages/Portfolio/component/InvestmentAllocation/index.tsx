@@ -8,7 +8,7 @@ import Card from '../Card'
 import Tips from 'components/Tips'
 import Modal from 'components/antd/Modal'
 import TitleTips from '../TitleTips'
-import { STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
+import { HOPE } from '../../../../constants'
 import { useActiveWeb3React } from '../../../../hooks'
 import { useTokenPrice } from '../../../../hooks/liquidity/useBasePairs'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
@@ -26,9 +26,8 @@ type IOptionItem = {
 export default function InvestmentAllocation({ data }: { data: any }) {
   const { chainId } = useActiveWeb3React()
   const addresses = useMemo(() => {
-    return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]]
+    return [HOPE[chainId ?? 1].address]
   }, [chainId])
-
   const { result: priceResult } = useTokenPrice(addresses)
   const [allocations, setAllocations] = useState<IOptionItem[]>([])
 

@@ -3,7 +3,7 @@ import './index.scss'
 import * as echarts from 'echarts'
 import { TitleComponentOption } from 'echarts/components'
 import { PieSeriesOption } from 'echarts/charts'
-import { VELT } from '../../../../constants'
+import { VELT, STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
 import { TokenAmount } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../../hooks'
 import { JSBI } from '@uniswap/sdk'
@@ -36,12 +36,13 @@ const GomChart = ({ votiingData }: GomChartProps) => {
               const item = {
                 name: e.name as string,
                 value: num.toFixed(2),
-                ravPercent: rav
+                ravPercent: rav,
+                gomboc: e.gomboc
               }
               arr.push(item)
             }
           })
-
+          const addr = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
           const option: EChartsOption = {
             tooltip: {
               trigger: 'item',
@@ -54,7 +55,9 @@ const GomChart = ({ votiingData }: GomChartProps) => {
                     <div style="font-size: 14px;">
                     Gömböc Relative Weight
                     </div>
-                    <div style="font-size: 14px;margin-top: 16px">${params.name}: </div>
+                    <div style="font-size: 14px;margin-top: 16px">${params.name}: ${
+                  addr === params.data.gomboc ? '(stHOPE)' : ''
+                }</div>
                     <div style="font-size: 18px;margin-top: 8px">${params.value}(${params.data.ravPercent}%)</div>
                   </div>`
               },
