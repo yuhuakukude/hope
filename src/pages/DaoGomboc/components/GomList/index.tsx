@@ -8,7 +8,7 @@ import { ButtonPrimary } from '../../../../components/Button'
 import GombocApi from '../../../../api/gomboc.api'
 import { useActiveWeb3React } from '../../../../hooks'
 import { TokenAmount } from '@uniswap/sdk'
-import { LT, ST_HOPE } from '../../../../constants'
+import { LT, ST_HOPE, STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
 
 import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
 import { useGomConContract } from '../../../../hooks/useContract'
@@ -24,7 +24,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const [searchValue, setSearchValue] = useState('')
   const [tableData, setTableData] = useState<any>([])
   const [curType, setCurType] = useState('all')
-
+  const stakingAddress = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
   const argList = useMemo(() => {
     let res: any = []
     const arr: any = []
@@ -145,12 +145,32 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     {
       title: 'Gömböc',
       dataIndex: 'name',
-      key: 'name'
+      key: 'name',
+      render: (text: string, record: any) => {
+        if (record.gomboc && stakingAddress === record.gomboc) {
+          return <span>Staking $HOPE</span>
+        } else {
+          return <span>{`pool - ${text}`}</span>
+        }
+      }
     },
     {
       title: 'Composition',
       dataIndex: 'composition',
-      key: 'composition'
+      key: 'composition',
+      render: (text: string, record: any) => {
+        if (record.gomboc && stakingAddress === record.gomboc) {
+          return <span>HOPE</span>
+        } else {
+          const [token0, token1] = text.split('/')
+          return (
+            <>
+              <p>{token0}</p>
+              <p>{token1}</p>
+            </>
+          )
+        }
+      }
     },
     {
       title: 'Weight',
