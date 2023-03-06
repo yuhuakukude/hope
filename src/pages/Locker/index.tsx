@@ -236,7 +236,7 @@ export default function DaoLocker() {
       ._signTypedData(domain, types, values)
       .then(signature => {
         setPendingText(
-          `Locker ${veLtAmount
+          `Lock ${veLtAmount
             ?.toFixed(2, { groupSeparator: ',' })
             .toString()} VELT with ${inputAmount.toSignificant()} LT`
         )
@@ -444,6 +444,7 @@ export default function DaoLocker() {
                         </ButtonPrimary>
                       ) : (
                         <ActionButton
+                          error={isMaxDisabled ? 'Insufficient LT balance' : undefined}
                           pending={approvalState === ApprovalState.PENDING || !!pendingText || isLockerPending}
                           pendingText={
                             isLockerPending || approvalState === ApprovalState.PENDING
