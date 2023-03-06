@@ -17,11 +17,7 @@ import { ButtonPrimary } from '../../../../components/Button'
 import { Link } from 'react-router-dom'
 import { CustomLightSpinner, TYPE } from '../../../../theme'
 
-function toFixed(val: string | number, length = 2, deleteZero?: boolean) {
-  if (deleteZero) {
-    const res = format.amountFormat(val, length)
-    return res.replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
-  }
+function toFixed(val: string | number, length = 2) {
   return format.amountFormat(val, length)
 }
 
@@ -129,9 +125,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       dataIndex: 'lpBalance',
       key: 'lpBalance',
       render: (text: string, record: ILiquidityPools) => {
-        return (
-          <Item title={toFixed(record.lpBalance, 8, true)} desc={`${format.rate(record.stakedProportion)}  Staked`} />
-        )
+        return <Item title={toFixed(record.lpBalance, 8)} desc={`${format.rate(record.stakedProportion)}  Staked`} />
       }
     },
     {
