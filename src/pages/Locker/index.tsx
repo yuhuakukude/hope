@@ -238,7 +238,7 @@ export default function DaoLocker() {
         setPendingText(
           `Lock ${veLtAmount
             ?.toFixed(2, { groupSeparator: ',' })
-            .toString()} VELT with ${inputAmount.toSignificant()} LT`
+            .toString()} veLT with ${inputAmount.toSignificant()} LT`
         )
         toLocker(inputAmount, lockTimeArg, nonce, deadline, signature, veLtAmount)
           .then(hash => {
@@ -330,12 +330,14 @@ export default function DaoLocker() {
                         )}
                       </p>
                     </p>
-                    <p className="flex jc-between ai-center font-nor m-t-16">
-                      <span className="text-normal">Locked Until :</span>
-                      <span className="text-medium">
-                        {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
-                      </span>
-                    </p>
+                    {lockerRes?.end && lockerRes?.end !== '--' && (
+                      <p className="flex jc-between ai-center font-nor m-t-16">
+                        <span className="text-normal">Locked Until :</span>
+                        <span className="text-medium">
+                          {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
+                        </span>
+                      </p>
+                    )}
                   </div>
                 )}
                 {lockerRes?.end && lockerRes?.end !== '--' ? (
