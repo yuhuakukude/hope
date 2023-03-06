@@ -27,6 +27,7 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import { StakeTabs } from '../../components/NavigationTabs'
 import { StakingTips } from '../LiquidityManager/component/Tips'
 import Loader from '../../components/Loader'
+import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 
 const CustomTabWrapper = styled(TabWrapper)`
   width: auto;
@@ -66,7 +67,7 @@ export default function LiquidityMining({
   const onUserInput = useCallback((typedValue: string) => {
     setTypedValue(typedValue)
   }, [])
-
+  console.log('dummyPair', pool?.lpToken, dummyPair)
   const balance = useTokenBalance(account ?? undefined, pool?.lpToken)
   const stakedAmount = useTokenBalance(account ?? undefined, pool?.stakingToken)
 
@@ -77,6 +78,11 @@ export default function LiquidityMining({
   const handleMax = useCallback(() => {
     maxAmountInput && onUserInput(maxAmountInput.toExact())
   }, [maxAmountInput, onUserInput])
+
+  const [approvalState, approveCallback] = useApproveCallback(
+    staking ? parsedAmount : undefined,
+    PERMIT2_ADDRESS[chainId ?? 1]
+  )
 
   const stakingContract = useStakingContract(stakingRewardAddress, true)
 
@@ -99,6 +105,18 @@ export default function LiquidityMining({
     setAttemptingTxn(false)
     setErrorStatus({ code: error?.code, message: error.message })
   }, [])
+
+  const onApprove = useCallback(() => {
+    onTxStart()
+    setPendingText(`Approve ${pool?.lpToken.symbol}`)
+    approveCallback()
+      .then((response: TransactionResponse | undefined) => {
+        onTxSubmitted(response?.hash)
+      })
+      .catch(error => {
+        onTxError(error)
+      })
+  }, [approveCallback, onTxError, onTxStart, onTxSubmitted, pool])
 
   const onStake = useCallback(
     async (amount: CurrencyAmount, NONCE, DEADLINE, sigVal) => {
@@ -290,16 +308,32 @@ export default function LiquidityMining({
               id="stake-liquidity-token"
             />
             <ButtonError
-              onClick={staking ? onStakeCallback : onUnstakeCallback}
-              disabled={(!!error && error !== 'Connect Wallet') || !!pendingText}
+              onClick={
+                staking
+                  ? approvalState === ApprovalState.NOT_APPROVED
+                    ? onApprove
+                    : onStakeCallback
+                  : onUnstakeCallback
+              }
+              disabled={
+                (!!error && error !== 'Connect Wallet') || !!pendingText || approvalState === ApprovalState.PENDING
+              }
               error={!!error && !!parsedAmount}
             >
-              {pendingText ? (
+              {pendingText || (approvalState === ApprovalState.PENDING && staking) ? (
                 <AutoRow gap="6px" justify="center">
-                  Confirm in your wallet <Loader stroke="white" />
+                  {approvalState === ApprovalState.PENDING && staking ? `Approving` : `Confirm in your wallet`}{' '}
+                  <Loader stroke="white" />
                 </AutoRow>
               ) : (
-                error ?? `${staking ? 'Stake' : 'Unstake'}`
+                error ??
+                `${
+                  staking
+                    ? approvalState === ApprovalState.NOT_APPROVED
+                      ? `Approve ${pool?.lpToken.symbol}`
+                      : 'Stake'
+                    : 'Unstake'
+                }`
               )}
             </ButtonError>
           </AutoColumn>
