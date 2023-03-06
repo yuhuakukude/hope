@@ -10,7 +10,9 @@ import {
   GraphPairInfo,
   PairDetail,
   fetchPairTxs,
-  TxResponse, PairMore, fetchPairMore
+  TxResponse,
+  PairMore,
+  fetchPairMore
 } from '../state/stake/hooks'
 import { useActiveWeb3React } from './index'
 import AprApi from '../api/apr.api'
@@ -125,6 +127,7 @@ export function useStakingPairPool(address: string) {
     ;(async () => {
       try {
         const more = await fetchPairMore(address.toLowerCase() ?? '')
+        console.warn(more)
         setLoading(false)
         setPairMore(more)
       } catch (error) {
