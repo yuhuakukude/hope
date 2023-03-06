@@ -166,6 +166,9 @@ export function useGomFeeManyClaim() {
 }
 
 export function toUsdPrice(val: any, price: string | number) {
+  if(isNaN(val)) {
+    return val
+  }
   let res = '0'
   if (val && price) {
     const pr = new Decimal(val).mul(new Decimal(price)).toNumber()

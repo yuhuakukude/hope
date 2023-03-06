@@ -41,6 +41,8 @@ import LiquidityManager from './LiquidityManager'
 import { RedirectDuplicateTokenIds, RedirectOldAddLiquidityPathStructure } from './LiquidityManager/redirects'
 import LiquidityMining from './LiquidityMining'
 
+import '../utils/resetCurrencyAmount'
+
 const PageWrapper = styled.div`
   display: flex;
   flex-direction: row;
