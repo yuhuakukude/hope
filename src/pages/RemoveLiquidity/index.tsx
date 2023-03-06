@@ -152,6 +152,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
       return handleApprove()
     }
 
+    setErrorStatus(undefined)
     setShowConfirm(true)
     setAttemptingTxn(true)
     setPendingText(`Approve ${pair.liquidityToken.symbol}`)
