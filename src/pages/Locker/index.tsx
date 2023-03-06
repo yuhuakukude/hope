@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef, RefObject } from 'react'
+import React, { useState, useMemo, useCallback, useEffect, useRef, RefObject } from 'react'
 import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
 import LockerEcharts from './component/echarts'
@@ -278,6 +278,11 @@ export default function DaoLocker() {
   const isWithDraw = useMemo(() => {
     return lockerRes?.end === '--' && lockerRes?.amount
   }, [lockerRes])
+
+  useEffect(() => {
+    changeDateIndex(2)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <>

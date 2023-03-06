@@ -65,9 +65,14 @@
   }
 
   .apy-box {
-    width: 110px;
+    width: 135px;
     margin-right: auto;
     flex: 1;
+    h3 {
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+    }
   }
 
   .hp-amount-box {

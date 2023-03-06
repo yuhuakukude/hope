@@ -177,10 +177,11 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   const viewSubAmount = useMemo(() => {
     let vsub = subAmount
     if (curGomAddress) {
+      console.log(amount, subAmount)
       if (amount && subAmount) {
         const am = Number(amount) || 0
         const resn = new Decimal(Number(subAmount)).sub(new Decimal(am)).toNumber()
-        if (Number(resn) > 0) {
+        if (Number(resn) >= 0) {
           vsub = resn
         }
       }
@@ -270,6 +271,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   useEffect(() => {
     if (txHash && isTranPending === false) {
       setTxHash('')
+      setShowConfirm(false)
       updateTable()
     }
   }, [updateTable, txHash, isTranPending])

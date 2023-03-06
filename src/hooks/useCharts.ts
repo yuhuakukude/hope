@@ -55,6 +55,7 @@ export function useLine24HourChartsData(address: string) {
             )
           }
           const list = await getPairChart24HourData(address ?? '')
+          console.warn(list)
           const resList = tiemList.map(e => {
             const itemObj = list.find(item => item.hourStartUnix === e)
             if (itemObj) {

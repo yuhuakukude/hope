@@ -371,7 +371,7 @@ export default function Staking() {
               </Col>
               <Col className="gutter-row" span={10}>
                 <div className="flex ai-center p-l-60">
-                  <div className="flex">
+                  <div className="flex ai-center">
                     <div className="apy-box">
                       <div className="text-white font-nor flex ai-center">
                         APY
@@ -519,7 +519,7 @@ export default function Staking() {
                             Note that you do not receive the $LT bonus when you confirm your submission. You can also
                             try{' '}
                             <NavLink to={'/swap/exchange'}>
-                              <div className="text-primary">LightSwap</div>{' '}
+                              <div className="text-primary">HopeSwap</div>{' '}
                             </NavLink>
                             to convert $stHOPE to $HOPE or other assets quickly.
                           </p>
