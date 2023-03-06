@@ -116,7 +116,7 @@ export default function LiquidityMining({
       .catch(error => {
         onTxError(error)
       })
-  }, [approveCallback, onTxError, onTxStart, onTxSubmitted, pool?.lpToken.symbol])
+  }, [approveCallback, onTxError, onTxStart, onTxSubmitted, pool])
 
   const onStake = useCallback(
     async (amount: CurrencyAmount, NONCE, DEADLINE, sigVal) => {
