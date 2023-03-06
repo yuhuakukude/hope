@@ -128,7 +128,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
   const lockerCallback = useCallback(async () => {
     if (!account || !chainId) return
     setCurToken(VELT[chainId ?? 1])
-    setPendingText(`Locker LT`)
+    setPendingText(`Lock LT`)
     setShowConfirm(true)
     setAttemptingTxn(true)
 

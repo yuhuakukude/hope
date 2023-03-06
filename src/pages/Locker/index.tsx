@@ -214,7 +214,7 @@ export default function DaoLocker() {
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId || !lockTimeArg) return
     setCurToken(VELT[chainId ?? 1])
-    setPendingText(`Locker LT`)
+    setPendingText(`Lock LT`)
     onTxStart()
     setActionType(ACTION.LOCKER)
 
