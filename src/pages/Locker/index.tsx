@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useRef, RefObject } from 'react'
+import React, { useState, useMemo, useCallback, useEffect, useRef, RefObject } from 'react'
 import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
 import LockerEcharts from './component/echarts'
@@ -214,7 +214,7 @@ export default function DaoLocker() {
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId || !lockTimeArg) return
     setCurToken(VELT[chainId ?? 1])
-    setPendingText(`Locker LT`)
+    setPendingText(`Lock LT`)
     onTxStart()
     setActionType(ACTION.LOCKER)
 
@@ -236,9 +236,9 @@ export default function DaoLocker() {
       ._signTypedData(domain, types, values)
       .then(signature => {
         setPendingText(
-          `Locker ${veLtAmount
+          `Lock ${veLtAmount
             ?.toFixed(2, { groupSeparator: ',' })
-            .toString()} VELT with ${inputAmount.toSignificant()} LT`
+            .toString()} veLT with ${inputAmount.toSignificant()} LT`
         )
         toLocker(inputAmount, lockTimeArg, nonce, deadline, signature, veLtAmount)
           .then(hash => {
@@ -278,6 +278,11 @@ export default function DaoLocker() {
   const isWithDraw = useMemo(() => {
     return lockerRes?.end === '--' && lockerRes?.amount
   }, [lockerRes])
+
+  useEffect(() => {
+    changeDateIndex(2)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   return (
     <>
@@ -325,12 +330,14 @@ export default function DaoLocker() {
                         )}
                       </p>
                     </p>
-                    <p className="flex jc-between ai-center font-nor m-t-16">
-                      <span className="text-normal">Locked Until :</span>
-                      <span className="text-medium">
-                        {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
-                      </span>
-                    </p>
+                    {lockerRes?.end && lockerRes?.end !== '--' && (
+                      <p className="flex jc-between ai-center font-nor m-t-16">
+                        <span className="text-normal">Locked Until :</span>
+                        <span className="text-medium">
+                          {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
+                        </span>
+                      </p>
+                    )}
                   </div>
                 )}
                 {lockerRes?.end && lockerRes?.end !== '--' ? (
@@ -444,6 +451,7 @@ export default function DaoLocker() {
                         </ButtonPrimary>
                       ) : (
                         <ActionButton
+                          error={isMaxDisabled ? 'Insufficient LT balance' : undefined}
                           pending={approvalState === ApprovalState.PENDING || !!pendingText || isLockerPending}
                           pendingText={
                             isLockerPending || approvalState === ApprovalState.PENDING

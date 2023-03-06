@@ -8,16 +8,21 @@ import { STAKING_HOPE_GOMBOC_ADDRESS } from '../../constants'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
+import { useGomConContract } from '../useContract'
+import moment from 'moment'
 
 export enum stakingFnNameEnum {
   Mint = 'mint',
   RedeemAll = 'redeemAll'
 }
 
+const cutTime = moment().unix()
+
 export function useStaking() {
   const { account, chainId } = useActiveWeb3React()
   const shgContract = useStakingHopeGombocContract()
   const ltMinterContract = useLtMinterContract()
+  const gomContract = useGomConContract()
   const stakedVal = useSingleCallResult(shgContract, 'lpBalanceOf', [account ?? undefined])
   const unstakedVal = useSingleCallResult(shgContract, 'unstakedBalanceOf', [account ?? undefined])
   const unstakingVal = useSingleCallResult(shgContract, 'unstakingBalanceOf', [account ?? undefined])
@@ -27,6 +32,10 @@ export function useStaking() {
     account ?? undefined,
     STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]
   ])
+  const gomRelativeWeigh = useSingleCallResult(gomContract, 'gombocRelativeWeight', [
+    STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1],
+    cutTime
+  ])
 
   return {
     stakedVal: stakedVal?.result ? CurrencyAmount.ether(stakedVal?.result?.[0]) : undefined,
@@ -34,7 +43,8 @@ export function useStaking() {
     unstakedVal: unstakedVal?.result ? CurrencyAmount.ether(unstakedVal?.result?.[0]) : undefined,
     unstakingVal: unstakingVal?.result ? CurrencyAmount.ether(unstakingVal?.result?.[0]) : undefined,
     claRewards: claRewards?.result ? CurrencyAmount.ether(claRewards?.result?.[0]) : undefined,
-    mintedVal: mintedVal?.result ? CurrencyAmount.ether(mintedVal?.result?.[0]) : undefined
+    mintedVal: mintedVal?.result ? CurrencyAmount.ether(mintedVal?.result?.[0]) : undefined,
+    gomRelativeWeigh: gomRelativeWeigh?.result ? gomRelativeWeigh?.result?.[0] : undefined
   }
 }
 
@@ -144,7 +154,7 @@ export function useToClaim() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Claim ${claRewards?.toFixed(2, { groupSeparator: ',' })} LT`,
+            summary: `Claim To Reward`,
             actionTag: {
               recipient: `${account}-${stakingFnNameEnum.Mint}`
             }

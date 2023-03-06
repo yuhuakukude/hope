@@ -135,7 +135,7 @@ export default function AddAmount() {
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
     setCurToken(VELT[chainId ?? 1])
-    setPendingText(`Locker LT`)
+    setPendingText(`Lock LT`)
     onTxStart()
 
     const deadline = toDeadline(PERMIT_EXPIRATION)
@@ -158,7 +158,7 @@ export default function AddAmount() {
         const getVeLtArg = new Decimal(afterVeLtAmount?.toFixed(2) || '0')
           .sub(new Decimal(veltBalance?.toFixed(2) || '0'))
           .toNumber()
-        setPendingText(`Locker ${format.amountFormat(getVeLtArg, 2)} veLT with ${inputAmount.toSignificant()} LT`)
+        setPendingText(`Lock ${format.amountFormat(getVeLtArg, 2)} veLT with ${inputAmount.toSignificant()} LT`)
         toAddAmountLocker(inputAmount, nonce, deadline, signature, getVeLtArg)
           .then(hash => {
             onTxSubmitted(hash)
@@ -234,6 +234,7 @@ export default function AddAmount() {
         </div>
         <div className="m-t-50">
           <ActionButton
+            error={isMaxDisabled ? 'Insufficient LT balance' : undefined}
             pending={
               approvalState === ApprovalState.PENDING || !!pendingText || isLocerkAmountPending || isLocerkTimePending
             }

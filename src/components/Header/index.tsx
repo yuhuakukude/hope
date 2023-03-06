@@ -237,7 +237,7 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
     if (location?.pathname?.startsWith('/swap')) {
       return [
         { id: 'swap-nav-link', title: 'Swap', router: '/swap/exchange' },
-        { id: 'pool-nav-link', title: 'Pools', router: '/swap/pools' }
+        { id: 'pool-nav-link', title: 'Pools', router: '/swap/liquidity' }
       ]
     }
     if (location?.pathname?.startsWith('/hope')) {

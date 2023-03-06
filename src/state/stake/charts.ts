@@ -92,10 +92,10 @@ export async function getPairChart24HourData(pairAddress: string): Promise<any[]
     .subtract(25, 'hour')
     .endOf('hour')
     .unix()
-
+  console.log(startTime, endTime)
   const getQuery = () => {
     return `{
-      pairHourDatas(orderBy: hourStartUnix, orderDirection: desc, where: {pair: "${pairAddress}", hourStartUnix_gte: ${startTime} hourStartUnix_lte: ${endTime}}) {
+      pairHourDatas(orderBy: hourStartUnix, orderDirection: desc, where: {pair: "${pairAddress.toLocaleLowerCase()}", hourStartUnix_gte: ${startTime} hourStartUnix_lte: ${endTime}}) {
         hourStartUnix
         hourlyVolumeUSD
         reserveUSD

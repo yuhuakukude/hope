@@ -15,7 +15,6 @@ import Manage from './Earn/Manage'
 import MigrateV1 from './MigrateV1'
 import MigrateV1Exchange from './MigrateV1/MigrateV1Exchange'
 import RemoveV1Exchange from './MigrateV1/RemoveV1Exchange'
-import Pool from './Pool'
 import PoolFinder from './PoolFinder'
 import RemoveLiquidity from './RemoveLiquidity'
 import Swap from './Swap'
@@ -72,7 +71,7 @@ const BodyWrapper = styled.div`
   align-items: center;
   flex: 1;
   overflow-y: auto;
-  overflow-x: hidden;
+  overflow-x: scroll;
   z-index: 10;
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
@@ -114,9 +113,8 @@ export default function App() {
                 <Switch>
                   <Route exact strict path="/swap/exchange" component={Swap} />
                   <Route exact strict path="/swap/liquidity/manager" component={LiquidityManager} />
-                  <Route exact strict path="/swap/liquidity" component={Pool} />
+                  <Route exact strict path="/swap/liquidity" component={Pools} />
                   <Route exact strict path="/swap/find" component={PoolFinder} />
-                  <Route exact strict path="/swap/pools" component={Pools} />
                   <Route exact strict path="/swap/liquidity/pool-detail/:address" component={StakingPoolDetail} />
                   <Route exact strict path="/swap/stake/:stakingRewardAddress" component={LiquidityStake} />
                   <Route exact strict path="/swap/liquidity/mining/:stakingRewardAddress" component={LiquidityMining} />

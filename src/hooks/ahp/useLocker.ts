@@ -69,9 +69,9 @@ export function useToLocker() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Locker ${veLtAmount
+            summary: `Lock ${veLtAmount
               ?.toFixed(2, { groupSeparator: ',' })
-              .toString()} VELT with ${amount.toSignificant()} LT`,
+              .toString()} veLT with ${amount.toSignificant()} LT`,
             actionTag: {
               recipient: `${account}-${conFnNameEnum.CreateLock}`
             }
@@ -97,9 +97,9 @@ export function useToLocker() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Locker ${getVeLtArg
+            summary: `Lock ${getVeLtArg
               ?.toFixed(2, { groupSeparator: ',' })
-              .toString()} VELT with ${amount.toSignificant()} LT`,
+              .toString()} veLT with ${amount.toSignificant()} LT`,
             actionTag: {
               recipient: `${account}-${conFnNameEnum.IncreaseAmount}`
             }

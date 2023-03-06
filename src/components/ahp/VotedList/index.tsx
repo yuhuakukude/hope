@@ -23,6 +23,7 @@ import { useGomFeeClaim } from '../../../hooks/ahp/usePortfolio'
 import Row from '../../../components/Row'
 import { Decimal } from 'decimal.js'
 import format from '../../../utils/format'
+import { useHistory } from 'react-router-dom'
 
 const VotedList = ({
   getVotingRewards,
@@ -43,6 +44,7 @@ const VotedList = ({
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(5)
   const [pageTotal, setPageTotal] = useState<number>(0)
+  const history = useHistory()
   const addresses = useMemo(() => {
     return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]]
   }, [chainId])
@@ -506,7 +508,9 @@ const VotedList = ({
           {
             label: 'Pool Details',
             value: 'Pool',
-            onClick: () => {}
+            onClick: () => {
+              history.push(`/swap/liquidity/pool-detail/${record.gomboc.pair.id}`)
+            }
           }
         ]
         const val = rewardsView[record.gomboc.id].value

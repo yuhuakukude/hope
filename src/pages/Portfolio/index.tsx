@@ -77,16 +77,27 @@ export default function Portfolio() {
         }
       }`
       const res = await postQuery(SUBGRAPH, query)
-      const stToHopeVal = new Decimal(res.data.tokens[2].derivedETH)
-        .div(new Decimal(res.data.tokens[0].derivedETH))
-        .toNumber()
-        .toFixed(18)
-      const ltToHopeVal = new Decimal(res.data.tokens[2].derivedETH)
-        .div(new Decimal(res.data.tokens[1].derivedETH))
-        .toNumber()
-        .toFixed(18)
-      setStToHope(stToHopeVal || '0')
-      setLtToHope(ltToHopeVal || '0')
+      if (res.data.tokens && res.data.tokens.length > 0) {
+        const list = res.data.tokens
+        const price: any = {}
+        list.forEach((e: any) => {
+          if (e.symbol && e.derivedETH) {
+            price[e.symbol] = e.derivedETH
+          }
+        })
+        if (price['stHOPE'] && price['LT'] && price['HOPE']) {
+          const stToHopeVal = new Decimal(price['stHOPE'])
+            .div(new Decimal(price['HOPE']))
+            .toNumber()
+            .toFixed(18)
+          const ltToHopeVal = new Decimal(price['LT'])
+            .div(new Decimal(price['HOPE']))
+            .toNumber()
+            .toFixed(18)
+          setStToHope(stToHopeVal || '0')
+          setLtToHope(ltToHopeVal || '0')
+        }
+      }
     } catch (error) {
       console.log(error)
     }

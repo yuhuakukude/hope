@@ -11,6 +11,8 @@ import SelectTips, { TitleTipsProps } from '../SelectTips'
 import { usePoolGomContract } from 'hooks/useContract'
 import { useSingleCallResult } from 'state/multicall/hooks'
 import { CurrencyAmount, TokenAmount } from '@uniswap/sdk'
+import { ButtonPrimary } from '../../../../components/Button'
+import { Link } from 'react-router-dom'
 
 import { useHistory } from 'react-router-dom'
 
@@ -177,7 +179,32 @@ export default function MyHOPEStaking() {
     <>
       <ClaimRewards item={item} clearItem={clearItem} />
       <Card title="My HOPE Staking">
-        <Table className="my-hope-staking-wrap" columns={columns} dataSource={[data]} pagination={false}></Table>
+        {data.stHOPE !== '--' ? (
+          <Table className="my-hope-staking-wrap" columns={columns} dataSource={[data]} pagination={false}></Table>
+        ) : (
+          <div className="flex jc-center">
+            <div>
+              <p className="text-center font-nor">You have no Staked HOPE on Mainnet</p>
+              <ButtonPrimary
+                padding={'19px 24px'}
+                as={Link}
+                to={'/hope/staking'}
+                style={{ width: '400px', marginTop: '20px' }}
+              >
+                Staking HOPE
+              </ButtonPrimary>
+              <a
+                href="https://docs.hope.money/light/lRGc3srjpd2008mDaMdR/light-hyfi-applications-roadmap/roadmap"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-center m-t-20 font-nor text-normal flex ai-center jc-center"
+              >
+                {/* Learn more Url */}
+                Learn more about Staking HOPE <i className="iconfont m-l-12">&#xe619;</i>
+              </a>
+            </div>
+          </div>
+        )}
       </Card>
     </>
   )
