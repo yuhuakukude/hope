@@ -151,7 +151,7 @@ export function useSocksController(): Contract | null {
 // staking dao
 export function useStakingHopeGombocContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId && STAKING_HOPE_GOMBOC_ADDRESS[chainId], STAKING_HOPE_GOMBOC_ABI.abi, true)
+  return useContract(chainId && STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1], STAKING_HOPE_GOMBOC_ABI.abi, true)
 }
 
 export function useLtMinterContract(): Contract | null {

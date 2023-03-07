@@ -161,7 +161,7 @@ export default function MyHOPEStaking() {
           {
             label: 'Unstake',
             value: 'Unstake',
-            isHide: Number(unstakedVal?.toFixed(2)) <= 0,
+            isHide: Number(stakedVal?.toFixed(2)) <= 0,
             onClick: () => {
               history.push(`/staking?type=unstake`)
             }
