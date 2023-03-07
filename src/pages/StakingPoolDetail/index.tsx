@@ -17,12 +17,8 @@ import styled from 'styled-components'
 import { Decimal } from 'decimal.js'
 import { Box } from 'rebass/styled-components'
 import Overview, { OverviewData } from '../../components/pool/Overview'
-import { useLtMinterContract } from '../../hooks/useContract'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
-import { calculateGasMargin, shortenAddress, getEtherscanLink } from '../../utils'
-import { TransactionResponse } from '@ethersproject/providers'
-import { useTransactionAdder } from '../../state/transactions/hooks'
-import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
+import { shortenAddress, getEtherscanLink } from '../../utils'
 import AprApi from '../../api/apr.api'
 import format, { amountFormat, formatUTCDate } from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
@@ -167,13 +163,11 @@ export default function StakingPoolDetail({
     params: { address }
   }
 }: RouteComponentProps<{ address: string }>) {
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const history = useHistory()
   const chainWETH = WETH[chainId ?? 1]
   const { result: pool, pairMore } = useStakingPairPool(address)
   const { claimAbleRewards, currentBoots, futureBoots } = usePairStakeInfo(pool?.stakingRewardAddress)
-  const ltMinterContract = useLtMinterContract()
-  const addTransaction = useTransactionAdder()
   const toggleWalletModal = useWalletModalToggle()
   const addresses = useMemo(() => {
     return [pool?.tokens[0].address ?? '', pool?.tokens[1].address ?? '']
@@ -183,11 +177,6 @@ export default function StakingPoolDetail({
   const token1Symbol = tokenSymbol(chainWETH, pool?.tokens[1])
 
   const [showClaimModal, setShowClaimModal] = useState(false)
-  const [showConfirm, setShowConfirm] = useState<boolean>(false)
-  const [pendingText, setPendingText] = useState('')
-  const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
-  const [txHash, setTxHash] = useState<string>('')
-  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [showTx, setShowTx] = useState<boolean>(false)
   const [transactionType, setTransactionType] = useState('All')
   const txs = usePairTxs(address, transactionType)
@@ -354,71 +343,6 @@ export default function StakingPoolDetail({
     }
   ]
 
-  const onTxStart = useCallback(() => {
-    setShowConfirm(true)
-    setAttemptingTxn(true)
-  }, [])
-
-  const onTxSubmitted = useCallback((hash: string | undefined) => {
-    setShowConfirm(true)
-    setPendingText(``)
-    setAttemptingTxn(false)
-    hash && setTxHash(hash)
-  }, [])
-
-  const onTxError = useCallback(error => {
-    setShowConfirm(true)
-    setTxHash('')
-    setPendingText(``)
-    setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
-  }, [])
-
-  const onClaim = useCallback(async () => {
-    if (!account) throw new Error('none account')
-    if (!ltMinterContract) throw new Error('none contract')
-    const method = 'mint'
-    const args = [pool?.stakingRewardAddress]
-    return ltMinterContract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
-      return ltMinterContract[method](...args, {
-        gasLimit: calculateGasMargin(estimatedGasLimit),
-        // gasLimit: '3500000',
-        from: account
-      }).then((response: TransactionResponse) => {
-        addTransaction(response, {
-          summary: `Claim ${claimAbleRewards?.toFixed(2)} LT`
-        })
-        return response.hash
-      })
-    })
-  }, [account, addTransaction, claimAbleRewards, ltMinterContract, pool])
-
-  const onClaimCallback = useCallback(async () => {
-    if (!account || !library || !chainId || !pool || !claimAbleRewards) return
-    setPendingText(`Claim ${claimAbleRewards?.toFixed(2)} LT`)
-    onTxStart()
-    // sign
-    onClaim()
-      .then(hash => {
-        onTxSubmitted(hash)
-      })
-      .catch((error: any) => {
-        onTxError(error)
-        throw error
-      })
-  }, [account, library, chainId, pool, claimAbleRewards, onTxStart, onClaim, onTxSubmitted, onTxError])
-
-  const confirmationContent = useCallback(() => {
-    return (
-      errorStatus && (
-        <TransactionErrorContent
-          errorCode={errorStatus.code}
-          onDismiss={() => setShowConfirm(false)}
-          message={errorStatus.message}
-        />
-      )
-    )
-  }, [errorStatus])
   const [aprInfo, setAprInfo] = useState<any>({})
 
   const initFn = useCallback(async () => {
@@ -639,22 +563,13 @@ export default function StakingPoolDetail({
 
   return (
     <AutoColumn style={{ width: '100%', padding: '0 30px', maxWidth: '1340px' }}>
-      {pool && (
+      {pool && showClaimModal && (
         <ClaimRewardModal
           isOpen={showClaimModal}
           onDismiss={() => setShowClaimModal(false)}
-          onClaim={onClaimCallback}
           stakingAddress={pool.stakingRewardAddress}
         />
       )}
-      <TransactionConfirmationModal
-        isOpen={showConfirm}
-        onDismiss={() => setShowConfirm(false)}
-        attemptingTxn={attemptingTxn}
-        hash={txHash}
-        content={confirmationContent}
-        pendingText={pendingText}
-      />
       <AutoRow justify={'space-between'} padding={'0 30px'}>
         <div className="flex ai-center">
           <TYPE.white fontSize={28} fontWeight={700}>
@@ -720,7 +635,10 @@ export default function StakingPoolDetail({
                 {aprInfo.ltAmountPerDay && (
                   <p className="m-t-12 text-normal">
                     Daily Reward:{' '}
-                    {tryParseAmount(aprInfo?.ltAmountPerDay, LT[chainId ?? 1])?.toFixed(2, { groupSeparator: ',' })} LT
+                    {aprInfo?.ltAmountPerDay
+                      ? tryParseAmount(aprInfo?.ltAmountPerDay, LT[chainId ?? 1])?.toFixed(2, { groupSeparator: ',' })
+                      : '--'}{' '}
+                    LT
                   </p>
                 )}
               </div>

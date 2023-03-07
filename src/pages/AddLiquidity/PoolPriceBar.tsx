@@ -1,5 +1,5 @@
 import React from 'react'
-import { Currency, Percent, Price } from '@uniswap/sdk'
+import { Currency, Percent, Price, TokenAmount } from '@uniswap/sdk'
 import { AutoColumn } from '../../components/Column'
 import { RowBetween } from '../../components/Row'
 import { Field } from '../../state/mint/actions'
@@ -10,12 +10,14 @@ export function PoolPriceBar({
   currencies,
   noLiquidity,
   poolTokenPercentage,
-  price
+  price,
+  liquidityMinted
 }: {
   currencies: { [field in Field]?: Currency }
   noLiquidity?: boolean
   poolTokenPercentage?: Percent
   price?: Price
+  liquidityMinted: TokenAmount | undefined
 }) {
   return (
     <AutoColumn gap="md">
@@ -42,6 +44,12 @@ export function PoolPriceBar({
             ? '100'
             : (poolTokenPercentage?.lessThan(ONE_BIPS) ? '<0.01' : poolTokenPercentage?.toFixed(2)) ?? '0'}
           %
+        </TYPE.white>
+      </RowBetween>
+      <RowBetween justify="center">
+        <TYPE.main>Receive LP Token (min)</TYPE.main>
+        <TYPE.white fontWeight={500} pt={1}>
+          {liquidityMinted ? liquidityMinted.toSignificant(6) : '--'}
         </TYPE.white>
       </RowBetween>
     </AutoColumn>

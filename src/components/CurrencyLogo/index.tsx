@@ -54,3 +54,20 @@ export default function CurrencyLogo({
 
   return <StyledLogo size={size} srcs={srcs} alt={`${currency?.symbol ?? 'token'} logo`} style={style} />
 }
+
+export function AddressLogo({
+  address,
+  size = '24px',
+  style
+}: {
+  address?: string
+  size?: string
+  style?: React.CSSProperties
+}) {
+  const srcs: string[] = useMemo(() => {
+    if (!address) return []
+    return [getTokenLogoURL(address)]
+  }, [address])
+
+  return <StyledLogo size={size} srcs={srcs} alt={`${address ?? 'token'} logo`} style={style} />
+}

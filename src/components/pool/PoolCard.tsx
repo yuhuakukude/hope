@@ -106,7 +106,9 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
           <TYPE.white>{pairData.maxApr ? `${amountFormat(pairData.maxApr, 2)}%` : ''}</TYPE.white>
         </ContentRow>
         <ContentRow>
-          <TYPE.white>{pairData?.ltAmountPerDay ? `${amountFormat(pairData?.ltAmountPerDay, 2)} LT/day` : ''}</TYPE.white>
+          <TYPE.white>
+            {pairData?.ltAmountPerDay ? `${amountFormat(pairData?.ltAmountPerDay, 2)} LT/day` : ''}
+          </TYPE.white>
         </ContentRow>
         <ContentRow weight={0.5}>
           <ActionIcon size={8} />

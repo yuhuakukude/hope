@@ -1,6 +1,6 @@
 import { JSBI, Pair, Percent, Token, TokenAmount } from '@uniswap/sdk'
 import { darken } from 'polished'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import { Text } from 'rebass'
 import styled from 'styled-components'
 import { useTotalSupply } from '../../data/TotalSupply'
@@ -16,16 +16,12 @@ import Card, { LightCard } from '../Card'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed, AutoRow } from '../Row'
-import { calculateGasMargin, getEtherscanLink } from '../../utils'
+import { getEtherscanLink } from '../../utils'
 import { usePair } from '../../data/Reserves'
 import CurrencyLogo from '../CurrencyLogo'
 import TitleTips, { TitleTipsProps } from '../../pages/Portfolio/component/SelectTips'
 import { useHistory } from 'react-router-dom'
 import ClaimRewardModal from '../earn/ClaimRewardModal'
-import { TransactionResponse } from '@ethersproject/providers'
-import { useLtMinterContract } from '../../hooks/useContract'
-import { useTransactionAdder } from '../../state/transactions/hooks'
-import TransactionConfirmationModal, { TransactionErrorContent } from '../TransactionConfirmationModal'
 import { amountFormat } from '../../utils/format'
 
 export const FixedHeightRow = styled(RowBetween)`
@@ -95,7 +91,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
 
   return (
     <>
-      {userPoolBalance && JSBI.greaterThan(userPoolBalance.raw, JSBI.BigInt(0)) ? (
+      {userPoolBalance ? (
         <AutoColumn gap="12px">
           <FixedHeightRow>
             <RowFixed>
@@ -118,7 +114,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
           <AutoColumn gap="4px">
             <FixedHeightRow>
               <TYPE.main fontWeight={500}>Your pool share</TYPE.main>
-              <Text fontWeight={500}>{poolTokenPercentage ? poolTokenPercentage.toFixed(6) + '%' : '-'}</Text>
+              <Text fontWeight={500}>{poolTokenPercentage ? poolTokenPercentage.toSignificant(2) + '%' : '-'}</Text>
             </FixedHeightRow>
             <FixedHeightRow>
               <TYPE.main fontWeight={500}>{currency0.symbol}</TYPE.main>
@@ -177,29 +173,21 @@ export default function FullPositionCard({
   stakingAddress,
   ltPrice
 }: FullCardProps) {
-  const { account, chainId, library } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const history = useHistory()
   const currency0 = unwrappedToken(pairInfo.tokens[0])
   const currency1 = unwrappedToken(pairInfo.tokens[1])
 
-  const ltMinterContract = useLtMinterContract()
-  const addTransaction = useTransactionAdder()
-
   const [showClaimModal, setShowClaimModal] = useState(false)
-  const [showConfirm, setShowConfirm] = useState<boolean>(false)
-  const [pendingText, setPendingText] = useState('')
-  const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
-  const [txHash, setTxHash] = useState<string>('')
-  const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
   const [, pair] = usePair(currency0, currency1)
-
-  const [newFutureBoots, setNewFutureBoots] = useState<Percent | undefined>(undefined)
 
   const userDefaultPoolBalance = useTokenBalance(account ?? undefined, pairInfo.liquidityToken)
   const totalPoolTokens = useTotalSupply(pairInfo.liquidityToken)
   // if staked balance balance provided, add to standard liquidity amount
   const userPoolBalance = stakedBalance ? userDefaultPoolBalance?.add(stakedBalance) : userDefaultPoolBalance
+  const stakePercent =
+    stakedBalance && userPoolBalance ? new Percent(stakedBalance?.raw, userPoolBalance?.raw) : undefined
   const [token0Deposited, token1Deposited] =
     !!pair &&
     !!totalPoolTokens &&
@@ -255,95 +243,15 @@ export default function FullPositionCard({
     }
   ]
 
-  useEffect(() => {
-    futureBoots && setNewFutureBoots(futureBoots)
-  }, [futureBoots])
-
-  const onClaim = useCallback(async () => {
-    if (!account) throw new Error('none account')
-    if (!ltMinterContract) throw new Error('none contract')
-    const method = 'mint'
-    const args = [stakingAddress]
-    return ltMinterContract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
-      return ltMinterContract[method](...args, {
-        gasLimit: calculateGasMargin(estimatedGasLimit),
-        // gasLimit: '3500000',
-        from: account
-      }).then((response: TransactionResponse) => {
-        addTransaction(response, {
-          summary: `Claim ${reward?.toSignificant(6)} LT`
-        })
-        return response.hash
-      })
-    })
-  }, [account, addTransaction, ltMinterContract, reward, stakingAddress])
-
-  const onTxStart = useCallback(() => {
-    setShowConfirm(true)
-    setAttemptingTxn(true)
-  }, [])
-
-  const onTxSubmitted = useCallback((hash: string | undefined) => {
-    setShowConfirm(true)
-    setPendingText(``)
-    setAttemptingTxn(false)
-    setShowClaimModal(false)
-    hash && setTxHash(hash)
-  }, [])
-
-  const onTxError = useCallback(error => {
-    setShowConfirm(true)
-    setTxHash('')
-    setPendingText(``)
-    setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
-  }, [])
-
-  const onClaimCallback = useCallback(async () => {
-    if (!account || !library || !chainId || !reward) return
-    setPendingText(`Claim ${reward?.toSignificant(6)} LT`)
-    onTxStart()
-    // sign
-    onClaim()
-      .then(hash => {
-        onTxSubmitted(hash)
-      })
-      .catch((error: any) => {
-        onTxError(error)
-        throw error
-      })
-  }, [account, library, chainId, reward, onTxStart, onClaim, onTxSubmitted, onTxError])
-
-  const confirmationContent = useCallback(() => {
-    return (
-      errorStatus && (
-        <TransactionErrorContent
-          errorCode={errorStatus.code}
-          onDismiss={() => setShowConfirm(false)}
-          message={errorStatus.message}
-        />
-      )
-    )
-  }, [errorStatus])
-
   return (
     <StyledPositionCard border={border} bgColor={backgroundColor}>
       {stakingAddress && (
         <ClaimRewardModal
           isOpen={showClaimModal}
           onDismiss={() => setShowClaimModal(false)}
-          onClaim={onClaimCallback}
           stakingAddress={stakingAddress}
         />
       )}
-      <TransactionConfirmationModal
-        isOpen={showConfirm}
-        onDismiss={() => setShowConfirm(false)}
-        attemptingTxn={attemptingTxn}
-        hash={txHash}
-        content={confirmationContent}
-        pendingText={pendingText}
-      />
       <AutoRow>
         <ContentRow>
           <AutoColumn gap={'12px'}>
@@ -386,7 +294,7 @@ export default function FullPositionCard({
               <TYPE.white>{userPoolBalance ? userPoolBalance.toSignificant(4) : '--'} </TYPE.white>
             </DataRow>
             <DataRow gap={'8px'}>
-              <TYPE.main>{stakedBalance ? `${stakedBalance.toSignificant(6)} Staked` : '--'}</TYPE.main>
+              <TYPE.main>{stakePercent ? `${stakePercent.toFixed(2)}% Staked` : '--'}</TYPE.main>
             </DataRow>
           </AutoColumn>
         </ContentRow>
@@ -398,16 +306,16 @@ export default function FullPositionCard({
             </AutoRow>
             <AutoRow>
               <TYPE.main>Future:&nbsp;&nbsp;</TYPE.main>
-              <TYPE.white>{newFutureBoots ? `${newFutureBoots.toFixed(2)}x` : '--'}</TYPE.white>
+              <TYPE.white>{futureBoots ? `${futureBoots.toFixed(2)}x` : '--'}</TYPE.white>
             </AutoRow>
           </AutoColumn>
         </ContentRow>
         <ContentRow>--</ContentRow>
         <ContentRow>
           <AutoColumn gap={'10px'}>
-            <TYPE.white>{reward ? reward.toFixed(4) : '--'}</TYPE.white>
+            <TYPE.white>{reward ? `${reward.toFixed(4)} LT` : '--'}</TYPE.white>
             <TYPE.main>
-              ≈ ${reward && ltPrice ? amountFormat(Number(reward?.toExact().toString()) * Number(ltPrice)) : '--'}
+              ≈ ${reward && ltPrice ? amountFormat(Number(reward?.toExact().toString()) * Number(ltPrice), 2) : '--'}
             </TYPE.main>
           </AutoColumn>
         </ContentRow>

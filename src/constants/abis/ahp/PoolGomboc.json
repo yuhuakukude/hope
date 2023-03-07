@@ -297,11 +297,7 @@
     },
     {
       "inputs": [
-        {
-          "internalType": "address",
-          "name": "_addr",
-          "type": "address"
-        }
+
       ],
       "name": "claimRewards",
       "outputs": [],
