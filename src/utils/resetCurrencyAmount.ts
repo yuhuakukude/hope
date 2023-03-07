@@ -10,7 +10,7 @@ CurrencyAmount.prototype.toFixed = function(
   const baseNum = 1 / Math.pow(10, decimalPlaces || 0)
   const num = Number(this.toExact())
   if (num > 0 && num < baseNum && format) {
-    return `<${baseNum}`
+    return `< ${baseNum.toFixed(decimalPlaces)}`
   }
 
   return toFixed.call(this, decimalPlaces, format, rounding)
