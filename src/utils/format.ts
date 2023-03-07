@@ -56,8 +56,9 @@ export const numeral = (context: string | number, formatString = 2) => {
 
 // separate
 export const separate = (value: number | string, formatString?: number) => {
-  if (Number(value) > 0 && Number(value) < 0.01) {
-    return '< 0.01'
+  const baseNum = 1 / Math.pow(10, formatString || 0)
+  if (Number(value) > 0 && Number(value) < baseNum) {
+    return `<${baseNum.toFixed(formatString)}`
   }
   let decimalPart = ''
   if (formatString) {
@@ -85,8 +86,9 @@ export const separate = (value: number | string, formatString?: number) => {
 
 // amountFormat
 export const amountFormat = (value: number | string, formatString?: number) => {
-  if (Number(value) > 0 && Number(value) < 0.01) {
-    return '< 0.01'
+  const baseNum = 1 / Math.pow(10, formatString || 0)
+  if (Number(value) > 0 && Number(value) < baseNum) {
+    return `<${baseNum.toFixed(formatString)}`
   }
   const result = separate(numeral(value, formatString), formatString)
   return result
