@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef } from 'react'
 // import Row from '../Row'
 import * as echarts from 'echarts'
 import format from '../../utils/format'
@@ -11,9 +11,7 @@ export default function BarCharts({
   bottom,
   right,
   height,
-  total,
-  is24Hour,
-  getCurrentData
+  is24Hour
 }: {
   xData: any
   yData: any
@@ -24,10 +22,8 @@ export default function BarCharts({
   height?: number
   total?: string
   is24Hour?: boolean
-  getCurrentData: (xCurrent: string, yCurrent: string) => void
 }) {
   const chartRef: any = useRef()
-  const [indexFlag, setIndexFlag] = useState('')
   const handleResizeChart = (myChart: any) => {
     myChart && myChart.resize()
   }
@@ -53,12 +49,14 @@ export default function BarCharts({
           type: 'shadow'
         },
         formatter: (params: any) => {
-          if (indexFlag !== params[0].dataIndex) {
-            setIndexFlag(params[0].dataIndex)
-            const formatStr = is24Hour ? 'DD MMM YYYY HH:mm' : 'DD MMM YYYY'
-            getCurrentData(format.formatDate(params[0].name, formatStr), params[0].value)
-          }
-          return
+          const formatStr = is24Hour ? 'DD MMM YYYY HH:mm' : 'DD MMM YYYY'
+          return `
+            <p style="font-family: 'Arboria-Book'; font-size: 16px;">${format.formatDate(params[0].name, formatStr)}</p>
+            <p style="font-family: 'Arboria-Medium'; font-size: 20px; margin-top: 12px;">
+              <span style="display: inline-block; margin-right: 8px;background-color: #33333C;width:10px;height:10px;border-radius: 50%;border:3px solid #E4C989;"></span>
+              ${format.amountFormat(params[0].value, 2)}
+            </p>
+          `
         }
       },
       dataZoom: [{ type: 'inside' }],
@@ -110,13 +108,8 @@ export default function BarCharts({
     }
     myChart.setOption(option)
     if (xData && yData) {
-      getCurrentData('total', total ? total : 'total')
       myChart.hideLoading()
     }
-    myChart.getZr().on('mouseout', () => {
-      setIndexFlag('')
-      getCurrentData('total', total ? total : 'total')
-    })
     window.addEventListener('resize', () => handleResizeChart(myChart))
     return () => {
       window.removeEventListener('resize', () => handleResizeChart(myChart))

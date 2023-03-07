@@ -203,17 +203,18 @@ export const ButtonUNIGradient = styled(ButtonPrimary)`
 `
 
 export const ButtonOutlined = styled(Base)<{ primary?: any }>`
-  border: 1px solid ${({ primary, theme }) => (primary ? theme.primary1 : theme.bg3)};
-  background-color: transparent;
   color: ${({ primary, theme }) => (primary ? theme.primary1 : theme.text1)};
-
+  font-family: Arboria-Medium;
+  border-radius: 10px;
+  background-color: rgba(61, 62, 70, 1);
+  border: 0.5px solid rgba(90, 90, 91, 1);
   &:focus {
     box-shadow: 0 0 0 1px ${({ theme }) => theme.bg4};
   }
 
   &:hover {
-    border: 1px solid ${({ primary, theme }) => (primary ? theme.primary1 : theme.primary1)};
     box-shadow: 0 0 0 1px ${({ theme }) => theme.bg4};
+    background-color: #33333c;
   }
 
   &:active {

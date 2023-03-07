@@ -64,9 +64,9 @@ export default function MyHOPEStaking() {
   const _i = useSingleCallResult(poolGomContract, 'lpBalanceOf', [account ?? undefined])
   const bu = _bu?.result ? CurrencyAmount.ether(_bu?.result?.[0]) : undefined
   const i = _i?.result ? CurrencyAmount.ether(_i?.result?.[0]) : undefined
-  let boost = '-'
-  if (bu && i) {
-    boost = bu && i ? (Number(bu?.toExact()) / (Number(i?.toExact()) * 0.4)).toFixed(2) : '0'
+  let boost = '0'
+  if (Number(bu?.toExact()) > 0 && Number(i?.toExact()) > 0) {
+    boost = (Number(bu?.toExact()) / (Number(i?.toExact()) * 0.4)).toFixed(2)
   }
 
   const [item, setItem] = useState<ITableItem | null>(null)

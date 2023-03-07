@@ -207,7 +207,7 @@ export default function LockerEcharts() {
             </p>
             <p className="flex jc-between m-t-20">
               <span className="text-normal font-nor">Yearly fee earnings per 1 veLT : </span>
-              <span className="text-medium font-nor">{Number(earningsAmount).toFixed(2)}$</span>
+              <span className="text-medium font-nor">{Number(earningsAmount).toFixed(4)}$</span>
             </p>
           </div>
         </div>

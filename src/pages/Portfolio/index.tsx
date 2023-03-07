@@ -20,7 +20,7 @@ import { postQuery } from '../../utils/graph'
 import { useStaking } from 'hooks/ahp/useStaking'
 
 const PageWrapper = styled(AutoColumn)`
-  max-width: 1280px;
+  max-width: 1340px;
   width: 100%;
 `
 
