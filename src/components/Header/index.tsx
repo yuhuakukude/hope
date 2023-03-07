@@ -9,7 +9,6 @@ import { useActiveWeb3React } from '../../hooks'
 
 import Row, { RowFixed } from '../Row'
 import Web3Status from '../Web3Status'
-import ClaimModal from '../claim/ClaimModal'
 import Modal from '../Modal'
 import UniBalanceContent from './UniBalanceContent'
 import useTheme from '../../hooks/useTheme'
@@ -261,7 +260,6 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
 
   return (
     <HeaderFrame>
-      <ClaimModal />
       <Modal isOpen={showUniBalanceModal} onDismiss={() => setShowUniBalanceModal(false)}>
         <UniBalanceContent setShowUniBalanceModal={setShowUniBalanceModal} />
       </Modal>
