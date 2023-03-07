@@ -9,10 +9,9 @@ import SelectTips, { TitleTipsProps } from '../SelectTips'
 import { CurrencyAmount, TokenAmount } from '@uniswap/sdk'
 import { ButtonPrimary } from '../../../../components/Button'
 import { Link } from 'react-router-dom'
-
 import { useHistory } from 'react-router-dom'
 
-import { STAKING_HOPE_GOMBOC_ADDRESS, LT_TOKEN_ADDRESS } from '../../../../constants'
+import { STAKING_HOPE_GOMBOC_ADDRESS, LT_TOKEN_ADDRESS, HOPE_TOKEN_ADDRESS } from '../../../../constants'
 import ClaimRewards from '../ClaimRewards'
 import { usePairStakeInfo } from 'hooks/usePairInfo'
 import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
@@ -60,10 +59,21 @@ export default function MyHOPEStaking() {
   }, [chainId])
   const { currentBoots } = usePairStakeInfo(stakingAddr)
   const addresses = useMemo(() => {
-    return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] ?? '', LT_TOKEN_ADDRESS[chainId ?? 1] ?? '']
+    return [
+      STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] ?? '',
+      LT_TOKEN_ADDRESS[chainId ?? 1] ?? '',
+      HOPE_TOKEN_ADDRESS[chainId ?? 1] ?? ''
+    ]
   }, [chainId])
   const { result: priceResult } = useTokenPriceObject(addresses)
   const hopePrice = useMemo(() => {
+    let pr = '0'
+    if (HOPE_TOKEN_ADDRESS[chainId ?? 1] && priceResult) {
+      pr = priceResult[`${HOPE_TOKEN_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()]
+    }
+    return pr
+  }, [chainId, priceResult])
+  const stHopePrice = useMemo(() => {
     let pr = '0'
     if (STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] && priceResult) {
       pr = priceResult[STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
@@ -80,9 +90,9 @@ export default function MyHOPEStaking() {
   const data: IStaking = {
     boost: currentBoots ? currentBoots.toFixed(2) : '--',
     stHOPE: formatPrice('stHOPE', stakedVal),
-    usdOfStHOPE: getUsdPrice(hopePrice, stakedVal),
+    usdOfStHOPE: getUsdPrice(stHopePrice, stakedVal),
     unstaking: formatPrice('stHOPE', unstakingVal),
-    usdOfUnstaking: getUsdPrice(hopePrice, unstakingVal),
+    usdOfUnstaking: getUsdPrice(stHopePrice, unstakingVal),
     claRewards: formatPrice('LT', claRewards),
     usdOfClaRewards: getUsdPrice(lpPrice, claRewards),
     unstaked: formatPrice('HOPE', unstakedVal),

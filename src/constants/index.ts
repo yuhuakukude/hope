@@ -120,6 +120,11 @@ export const LT_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.SEPOLIA]: '0x8ef95c5B74292FB7CEBE51EE79Fee7843B4Fd214',
   [ChainId.HOPE]: '0x8ef95c5B74292FB7CEBE51EE79Fee7843B4Fd214'
 }
+export const HOPE_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
+  [ChainId.MAINNET]: '0xE94Cf6a2D6d6FaBbd3fa9134b49f0Eb3C68C773d',
+  [ChainId.SEPOLIA]: '0xE94Cf6a2D6d6FaBbd3fa9134b49f0Eb3C68C773d',
+  [ChainId.HOPE]: '0xE94Cf6a2D6d6FaBbd3fa9134b49f0Eb3C68C773d'
+}
 
 export const FEE_DIS_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0xF73183C2357CDEF5AfA0256aEEF5293b2173465e',
