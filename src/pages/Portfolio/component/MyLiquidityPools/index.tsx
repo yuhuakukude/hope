@@ -1,5 +1,7 @@
 import PortfolioApi, { ILiquidityPools } from 'api/portfolio.api'
 import Table from 'components/antd/Table'
+import { ColumnCenter } from '../../../../components/Column'
+import Circle from '../../../../assets/images/blue-loader.svg'
 
 import { useActiveWeb3React } from 'hooks'
 import React, { useCallback, useEffect, useState } from 'react'
@@ -13,6 +15,7 @@ import { Decimal } from 'decimal.js'
 import format from 'utils/format'
 import { ButtonPrimary } from '../../../../components/Button'
 import { Link } from 'react-router-dom'
+import { CustomLightSpinner, TYPE } from '../../../../theme'
 
 function toFixed(val: string | number, length = 2) {
   return format.amountFormat(val, length)
@@ -21,11 +24,13 @@ function toFixed(val: string | number, length = 2) {
 export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: number, yfTotal: number) => void }) {
   const { account } = useActiveWeb3React()
   const [dataSource, setDataSource] = useState<ILiquidityPools[]>([])
+  const [listLoading, setListLoading] = useState<boolean>(false)
   const [headData, setHeadData] = useState<IHeadItem[]>([])
   useEffect(() => {
     if (!account) {
       return
     }
+    setListLoading(true)
     PortfolioApi.getLiquidityPools(account).then(data => {
       if (data.success && data.result) {
         setDataSource(data.result)
@@ -58,6 +63,8 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
           })
           getLpData && getLpData(lpTotal, yfTotal)
         }
+
+        setListLoading(false)
       }
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -122,13 +129,27 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       }
     },
     {
-      title: 'Staked LP Tokens',
-      dataIndex: 'stakedLpBalance',
-      key: 'stakedLpBalance',
+      title: 'Boost',
+      dataIndex: 'currentBoost',
+      key: 'currentBoost',
       render: (text: string, record: ILiquidityPools) => {
-        return <Item title={toFixed(record.stakedLpBalance)} desc={'≈ $' + toFixed(record.hopeOfStakedLpBalance)} />
+        return (
+          <Item
+            type={2}
+            title={<>Currrent: {record.currentBoost || '--'}</>}
+            desc={<>Future: {record.futureBoost || '--'}</>}
+          />
+        )
       }
     },
+    // {
+    //   title: 'Staked LP Tokens',
+    //   dataIndex: 'stakedLpBalance',
+    //   key: 'stakedLpBalance',
+    //   render: (text: string, record: ILiquidityPools) => {
+    //     return <Item title={toFixed(record.stakedLpBalance)} desc={'≈ $' + toFixed(record.hopeOfStakedLpBalance)} />
+    //   }
+    // },
     {
       title: 'APR',
       dataIndex: 'feesApr',
@@ -177,7 +198,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
           label: 'Pool Details',
           value: 'Pool Details',
           onClick: () => {
-            history.push(`/swap/liquidity/pool-detail/${record.gomboc}`)
+            history.push(`/swap/liquidity/pool-detail/${record.pair}`)
           }
         })
         return <SelectTips options={options} />
@@ -193,7 +214,14 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
     <>
       <ClaimRewards item={item} clearItem={clearItem} />
       <Card title="My Liquidity Pools">
-        {dataSource.length > 0 ? (
+        {listLoading ? (
+          <ColumnCenter
+            style={{ height: '100%', width: '100%', alignItems: 'center', justifyContent: 'center', marginTop: 50 }}
+          >
+            <CustomLightSpinner src={Circle} alt="loader" size={'30px'} />
+            <TYPE.main mt={20}>Loading</TYPE.main>
+          </ColumnCenter>
+        ) : dataSource.length > 0 ? (
           <>
             <Head data={headData} claimAll={claimAll}></Head>
             <Table columns={columns} dataSource={dataSource}></Table>

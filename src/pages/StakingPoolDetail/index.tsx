@@ -285,33 +285,6 @@ export default function StakingPoolDetail({
     }
     return utcStartTime
   }
-  const TabList = () => {
-    return (
-      <TabWrapper>
-        {['Volume', 'TVL', 'Fees'].map((item, index) => {
-          return (
-            <TabItem key={index} isActive={item === tabIndex} onClick={() => tabChange(item)}>
-              {item}
-            </TabItem>
-          )
-        })}
-      </TabWrapper>
-    )
-  }
-
-  const TimeList = () => {
-    return (
-      <Row justify={'flex-start'} marginTop={20}>
-        {['24H', '1W', '1M'].map((item, index) => {
-          return (
-            <TimeItem key={index} isActive={item === timeIndex} onClick={() => timeChange(item)}>
-              {item}
-            </TimeItem>
-          )
-        })}
-      </Row>
-    )
-  }
 
   useEffect(() => {
     const utcStartTime = getTimeframe(timeIndex)
@@ -822,8 +795,28 @@ export default function StakingPoolDetail({
               <div className="charts-tab">
                 <Row justify={'space-between'} align={'flex-start'}>
                   <div>
-                    <TabList />
-                    <TimeList />
+                    <TabWrapper>
+                      <TabItem isActive={tabIndex === 'Volume'} onClick={() => tabChange('Volume')}>
+                        Volume
+                      </TabItem>
+                      <TabItem isActive={tabIndex === 'TVL'} onClick={() => tabChange('TVL')}>
+                        TVL
+                      </TabItem>
+                      <TabItem isActive={tabIndex === 'Fees'} onClick={() => tabChange('Fees')}>
+                        Fees
+                      </TabItem>
+                    </TabWrapper>
+                    <Row justify={'flex-start'} marginTop={20}>
+                      <TimeItem isActive={timeIndex === '24H'} onClick={() => timeChange('24H')}>
+                        24H
+                      </TimeItem>
+                      <TimeItem isActive={timeIndex === '1W'} onClick={() => timeChange('1W')}>
+                        1W
+                      </TimeItem>
+                      <TimeItem isActive={timeIndex === '1M'} onClick={() => timeChange('1M')}>
+                        1M
+                      </TimeItem>
+                    </Row>
                   </div>
                   {!!yCurrentData && (
                     <div>

@@ -135,7 +135,7 @@ export default function AddAmount() {
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
     setCurToken(VELT[chainId ?? 1])
-    setPendingText(`Locker LT`)
+    setPendingText(`Lock LT`)
     onTxStart()
 
     const deadline = toDeadline(PERMIT_EXPIRATION)

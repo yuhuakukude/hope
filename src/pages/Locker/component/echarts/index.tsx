@@ -35,6 +35,11 @@ export default function LockerEcharts() {
           })
           const dateArr: any = []
           const valueArr: any = []
+          const defaultDate: any = [7, 6, 5, 4, 3, 2, 1].map((e: number) =>
+            moment()
+              .subtract(e, 'days')
+              .format('YYYY-MM-DD')
+          )
           arr.forEach((e: any) => {
             dateArr.unshift(e.snapshotDate)
             const valItem = new TokenAmount(LT[chainId ?? 1], e.lightLockedTotal).toFixed(2)
@@ -59,7 +64,7 @@ export default function LockerEcharts() {
             tooltip: {
               trigger: 'axis',
               backgroundColor: 'rgba(51, 51, 60, 1)',
-              borderColor: 'rgba(51, 51, 60, 1)',
+              borderColor: 'rgba(90, 90, 91, 1)',
               padding: 20,
               className: 'locker-line-charts',
               textStyle: {
@@ -67,7 +72,9 @@ export default function LockerEcharts() {
               },
               formatter: (params: any) => {
                 return `
-                  <p style="font-family: 'Arboria-Book'; font-size: 16px;">${params[0].name}</p>
+                  <p style="font-family: 'Arboria-Book'; font-size: 16px;">${moment(params[0].name).format(
+                    'DD MMM YYYY'
+                  )}</p>
                   <p style="font-family: 'Arboria-Medium'; font-size: 20px; margin-top: 12px;">
                     <span style="display: inline-block; margin-right: 8px;background-color: #33333C;width:10px;height:10px;border-radius: 50%;border:3px solid ${
                       params[0].color
@@ -78,7 +85,7 @@ export default function LockerEcharts() {
               }
             },
             xAxis: {
-              data: dateArr,
+              data: dateArr.length <= 0 ? defaultDate : dateArr,
               axisLine: {
                 lineStyle: {
                   color: '#AEAEAE'
@@ -87,7 +94,10 @@ export default function LockerEcharts() {
               axisLabel: {
                 color: '#FFFFFF',
                 margin: 10,
-                fontSize: 12
+                fontSize: 12,
+                formatter: (value: any) => {
+                  return moment(value).format('DD MMM')
+                }
               }
             },
             yAxis: {
@@ -114,7 +124,7 @@ export default function LockerEcharts() {
                 type: 'line',
                 showSymbol: false,
                 symbolSize: 10,
-                data: valueArr,
+                data: valueArr.length <= 0 ? [0, 0, 0, 0, 0, 0, 0] : valueArr,
                 lineStyle: {
                   width: 3
                 },

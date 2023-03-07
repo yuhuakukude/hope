@@ -77,6 +77,7 @@ interface Params {
 export interface ILiquidityPools {
   name: string
   gomboc: string
+  pair: string
   composition: string
   feeRate: string
   token0Balance: number
