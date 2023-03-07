@@ -79,7 +79,7 @@ export default function LockerEcharts() {
                     <span style="display: inline-block; margin-right: 8px;background-color: #33333C;width:10px;height:10px;border-radius: 50%;border:3px solid ${
                       params[0].color
                     };"></span>
-                    ${format.amountFormat(params[0].value, 2)}
+                    $ ${format.amountFormat(params[0].value, 2)}
                   </p>
                 `
               }

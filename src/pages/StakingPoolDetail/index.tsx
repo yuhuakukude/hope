@@ -98,7 +98,8 @@ const TabItem = styled.div<{ isActive?: boolean }>`
   cursor: pointer;
   user-select: none;
   position: relative;
-  background: ${({ isActive, theme }) => (isActive ? theme.bg3 : theme.bg5)};
+  z-index: 2;
+  // background: ${({ isActive, theme }) => (isActive ? theme.bg3 : theme.bg5)};
   text-align: center;
   line-height: 38px;
 
@@ -119,7 +120,6 @@ const TimeItem = styled.div<{ isActive?: boolean }>`
   user-select: none;
   margin-right: 16px;
   background-color: ${({ isActive }) => (isActive ? '#434343' : 'none')};
-
   &:hover {
     background-color: #434343;
   }
@@ -148,11 +148,25 @@ const GoBackIcon = styled.span`
   }
 `
 
-const TabWrapper = styled(Row)`
+const TabWrapper = styled(Row)<{ flexW?: number; left: number }>`
   padding: 2px;
   width: fit-content;
   background-color: ${({ theme }) => theme.bg5};
   border-radius: 8px;
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: ${({ left }) => (left ? `${left}%` : '0')};
+    height: 100%;
+    width: ${({ flexW }) => (flexW ? `${flexW}%` : '50%')};
+    border-radius: 8px;
+    background-color: #3d3e46;
+    box-sizing: border-box;
+    transition: all ease 0.25s;
+    border: 2px solid #1b1b1f;
+  }
 `
 
 const NoStakingWrapper = styled.div`
@@ -272,11 +286,44 @@ export default function StakingPoolDetail({
     return utcStartTime
   }
 
+  const dayResList = (dayRes: any, dayNum: number) => {
+    const tiemList = [
+      dayjs
+        .utc()
+        .subtract(1, 'day')
+        .startOf('day')
+        .unix()
+    ]
+    for (let i = 1; i < dayNum; i++) {
+      tiemList.unshift(
+        dayjs
+          .utc()
+          .subtract(i + 1, 'day')
+          .startOf('day')
+          .unix()
+      )
+    }
+    return tiemList.map(e => {
+      const itemObj = dayRes.find((item: any) => item.date === e)
+      if (itemObj) {
+        return { ...itemObj }
+      }
+      return { date: e, hourlyVolumeUSD: 0, reserveUSD: 0 }
+    })
+  }
+
   useEffect(() => {
     const utcStartTime = getTimeframe(timeIndex)
     const xArr: string[] = []
     const yArr: string[] = []
-    const result = timeIndex === '24H' ? hourChartResult : dayChartResult
+    let dayRes = dayChartResult
+    if (timeIndex === '1W') {
+      dayRes = dayResList(dayChartResult, 7)
+    }
+    if (timeIndex === '1M') {
+      dayRes = dayResList(dayChartResult, 30)
+    }
+    const result = timeIndex === '24H' ? hourChartResult : dayRes
     result?.forEach((item: any) => {
       if (timeIndex === '24H') {
         if (tabIndex === 'Volume') {
@@ -629,7 +676,7 @@ export default function StakingPoolDetail({
               <i style={{ color: '#FBDD55', fontSize: 16, fontWeight: 700 }} className="iconfont">
                 &#xe614;
               </i>
-              <TYPE.main>You can apply future boost by claiming LT</TYPE.main>
+              <TYPE.main marginLeft={30}>You can apply future boost by claiming LT</TYPE.main>
             </AutoRow>
           )}
         </LightCard>
@@ -745,7 +792,7 @@ export default function StakingPoolDetail({
               <div className="charts-tab">
                 <Row justify={'space-between'} align={'flex-start'}>
                   <div>
-                    <TabWrapper>
+                    <TabWrapper flexW={33.333} left={tabIndex === 'Volume' ? 0 : tabIndex === 'TVL' ? 33.333 : 66.666}>
                       <TabItem isActive={tabIndex === 'Volume'} onClick={() => tabChange('Volume')}>
                         Volume
                       </TabItem>
@@ -817,7 +864,7 @@ export default function StakingPoolDetail({
       <AutoRow padding={'0 15px'}>
         <LightCard>
           <AutoColumn>
-            <TabWrapper>
+            <TabWrapper left={showTx ? 50 : 0}>
               <TabItem onClick={() => setShowTx(false)} isActive={!showTx}>
                 Information
               </TabItem>

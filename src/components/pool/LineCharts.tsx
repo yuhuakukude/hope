@@ -51,7 +51,7 @@ export default function LineCharts({
             <p style="font-family: 'Arboria-Book'; font-size: 16px;">${format.formatDate(params[0].name, formatStr)}</p>
             <p style="font-family: 'Arboria-Medium'; font-size: 20px; margin-top: 12px;">
               <span style="display: inline-block; margin-right: 8px;background-color: #33333C;width:10px;height:10px;border-radius: 50%;border:3px solid #E4C989;"></span>
-              ${format.amountFormat(params[0].value, 2)}
+              $ ${format.amountFormat(params[0].value, 2)}
             </p>
           `
         }

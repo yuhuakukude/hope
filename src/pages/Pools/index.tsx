@@ -66,7 +66,7 @@ const poolTitles = [
   { value: 'Base APR' },
   { value: 'Rewards APR' },
   { value: 'Mining Rewards' },
-  { value: ' ', weight: 0.5 }
+  { value: ' ', weight: 0.1 }
 ]
 
 const positionTitles = [

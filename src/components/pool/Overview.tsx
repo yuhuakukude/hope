@@ -58,11 +58,11 @@ export default function PieCharts({ smallSize, viewData }: { smallSize?: boolean
       return (
         <>
           {data.isRise ? (
-            <RateText style={{ color: theme.red1, fontSize: `${smallSize ? '14px' : '16px'}` }}>{data.rate} ↑</RateText>
-          ) : (
             <RateText style={{ color: theme.green1, fontSize: `${smallSize ? '14px' : '16px'}` }}>
-              {data.rate} ↓
+              {data.rate} ↑
             </RateText>
+          ) : (
+            <RateText style={{ color: theme.red1, fontSize: `${smallSize ? '14px' : '16px'}` }}>{data.rate} ↓</RateText>
           )}
         </>
       )
