@@ -13,6 +13,7 @@ export default function LockerEcharts() {
   const { chainId } = useActiveWeb3React()
   const chartRef: any = useRef()
   const [lockTime, setLockTime] = useState<any>('0')
+  const [isHasData, setIsHasData] = useState<boolean>(false)
   const [earningsAmount, setEarningsAmount] = useState<any>('0')
   const { ltTotalAmounnt, veltTotalAmounnt } = useLocker()
   const initFn = useCallback(
@@ -45,6 +46,7 @@ export default function LockerEcharts() {
             const valItem = new TokenAmount(LT[chainId ?? 1], e.lightLockedTotal).toFixed(2)
             valueArr.unshift(Number(valItem))
           })
+          setIsHasData(valueArr.length <= 0)
           const option = {
             grid: { top: '6%', bottom: '10%', right: '2%' },
             visualMap: {
@@ -102,8 +104,10 @@ export default function LockerEcharts() {
             },
             yAxis: {
               type: 'value',
+              min: valueArr.length > 0 ? null : 0,
+              max: valueArr.length > 0 ? null : 1000,
               splitLine: {
-                show: true,
+                show: valueArr.length > 0,
                 lineStyle: { color: ['#606266'], width: 1, type: 'solid' }
               },
               axisLine: {
@@ -124,7 +128,7 @@ export default function LockerEcharts() {
                 type: 'line',
                 showSymbol: false,
                 symbolSize: 10,
-                data: valueArr.length <= 0 ? [0, 0, 0, 0, 0, 0, 0] : valueArr,
+                data: valueArr,
                 lineStyle: {
                   width: 3
                 },
@@ -184,6 +188,12 @@ export default function LockerEcharts() {
         <p className="font-nor text-normal m-t-40">Weekly $LT lock ration</p>
         <div className="charts-box m-t-20">
           <div style={{ width: '100%', height: '100%' }} ref={chartRef} />
+          {isHasData && (
+            <div className="no-data-box">
+              <div className="img"></div>
+              <p>No data</p>
+            </div>
+          )}
         </div>
         <div className="total-box flex jc-between m-t-40">
           <div className="p-r-20 border-line flex-1">
