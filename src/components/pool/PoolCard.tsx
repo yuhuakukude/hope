@@ -95,18 +95,18 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
           <TYPE.white>{tvl ? `$${tvl?.toFixed(2)}` : '--'}</TYPE.white>
         </ContentRow>
         <ContentRow>
-          <TYPE.white>{pairData?.dayVolume ? `$${amountFormat(pairData.dayVolume)}` : '--'}</TYPE.white>
+          <TYPE.white>{pairData?.dayVolume ? `$${amountFormat(pairData.dayVolume, 2)}` : '--'}</TYPE.white>
         </ContentRow>
         <ContentRow>
-          <TYPE.white>{pairData?.baseApr ? `${amountFormat(pairData?.baseApr)}%` : '--'}</TYPE.white>
+          <TYPE.white>{pairData?.feeApr ? `${amountFormat(pairData?.feeApr, 2)}%` : '--'}</TYPE.white>
         </ContentRow>
         <ContentRow gap={'10px'}>
-          <TYPE.white>{pairData?.ltApr ? `${amountFormat(pairData?.ltApr)}%` : ''}</TYPE.white>
+          <TYPE.white>{pairData?.ltApr ? `${amountFormat(pairData?.ltApr, 2)}%` : ''}</TYPE.white>
           {pairData.maxApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
-          <TYPE.white>{pairData.maxApr ? `${amountFormat(pairData.maxApr)}%` : ''}</TYPE.white>
+          <TYPE.white>{pairData.maxApr ? `${amountFormat(pairData.maxApr, 2)}%` : ''}</TYPE.white>
         </ContentRow>
         <ContentRow>
-          <TYPE.white>{pairData?.ltAmountPerDay ? `${amountFormat(pairData?.ltAmountPerDay)} LT/day` : ''}</TYPE.white>
+          <TYPE.white>{pairData?.ltAmountPerDay ? `${amountFormat(pairData?.ltAmountPerDay, 2)} LT/day` : ''}</TYPE.white>
         </ContentRow>
         <ContentRow weight={0.5}>
           <ActionIcon size={8} />
