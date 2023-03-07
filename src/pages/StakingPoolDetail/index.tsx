@@ -216,21 +216,21 @@ export default function StakingPoolDetail({
       }
     },
     {
-      label: 'Swaps',
+      label: 'Swap',
       value: 'Swaps',
       onClick: data => {
         setTransactionType(data.label)
       }
     },
     {
-      label: 'Adds',
+      label: 'Deposit',
       value: 'Adds',
       onClick: data => {
         setTransactionType(data.label)
       }
     },
     {
-      label: 'Removes',
+      label: 'Withdraw',
       value: 'Removes',
       onClick: data => {
         setTransactionType(data.label)
