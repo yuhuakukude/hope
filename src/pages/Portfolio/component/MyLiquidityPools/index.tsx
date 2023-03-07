@@ -169,7 +169,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       dataIndex: 'ltTotalReward',
       key: 'ltTotalReward',
       render: (text: string, record: ILiquidityPools) => {
-        return <Item title={toFixed(record.ltTotalReward)} desc={'≈ $' + toFixed(record.usdOfTotalReward)} />
+        return <Item title={toFixed(record.ltTotalReward) + ' LT'} desc={'≈ $' + toFixed(record.usdOfTotalReward)} />
       }
     },
     {

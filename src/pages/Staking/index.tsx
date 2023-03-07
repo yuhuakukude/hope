@@ -15,7 +15,6 @@ import {
   STAKING_HOPE_GOMBOC_ADDRESS
 } from '../../constants'
 import StakingApi from '../../api/staking.api'
-import GombocApi from '../../api/gomboc.api'
 import { Row, Col } from 'antd'
 import HopeCard from '../../components/ahp/card'
 import {
@@ -87,10 +86,9 @@ export default function Staking() {
   const hopeBal = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
   const [apyVal, setApyVal] = useState('0')
   const [amount, setAmount] = useState('')
-  const [relWeight, setRelWeight] = useState('0.00')
 
   const inputAmount = tryParseAmount(amount, HOPE[chainId ?? 1]) as TokenAmount | undefined
-  const { stakedVal, lpTotalSupply, unstakedVal, claRewards, unstakingVal } = useStaking()
+  const { stakedVal, lpTotalSupply, unstakedVal, claRewards, unstakingVal, gomRelativeWeigh } = useStaking()
   const { toStaked } = useToStaked()
   const { toUnStaked } = useToUnStaked()
   const { toWithdraw } = useToWithdraw()
@@ -121,6 +119,14 @@ export default function Staking() {
     }
     return undefined
   }, [stakedVal, inputAmount])
+
+  const relWeight = useMemo(() => {
+    const res = '0'
+    if (gomRelativeWeigh) {
+      return gomRelativeWeigh.toFixed(4)
+    }
+    return res
+  }, [gomRelativeWeigh])
 
   const onTxStart = useCallback(() => {
     setShowConfirm(true)
@@ -269,30 +275,6 @@ export default function Staking() {
     }
   }
 
-  async function initRelative() {
-    try {
-      const res = await GombocApi.getGombocsVotiing()
-      if (res && res.result && res.result.votingList && res.result.votingList.length > 0) {
-        const list = res.result.votingList
-        let rate = ''
-        list.forEach((e: any) => {
-          if (e.gomboc && e.gaugeController && e.gaugeController.gombocRelativeWeight) {
-            if (e.gomboc === `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()) {
-              const re = new TokenAmount(LT[chainId ?? 1], JSBI.BigInt(e.gaugeController.gombocRelativeWeight))
-              const ra = re.multiply(JSBI.BigInt(100))
-              rate = ra.toFixed(2)
-            }
-          }
-        })
-        if (rate) {
-          setRelWeight(rate)
-        }
-      }
-    } catch (error) {
-      console.log(error)
-    }
-  }
-
   function changeStake(type: string) {
     setAmount('')
     setStakingType(type)
@@ -304,7 +286,6 @@ export default function Staking() {
 
   const init = useCallback(async () => {
     await initApy()
-    await initRelative()
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
@@ -550,7 +531,7 @@ export default function Staking() {
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-normal">Gömböc relative weight</span>
-                      <span className="text-white">{relWeight}%</span>
+                      <span className="text-white">{format.rate(relWeight)}</span>
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-normal">My Future Boost</span>
