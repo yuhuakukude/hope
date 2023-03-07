@@ -501,7 +501,7 @@ export default function StakingPoolDetail({
           </AutoRowBetween>
           <AutoColumn gap={'20px'}>
             <RowBetween>
-              <AutoRow gap={'10px'}>
+              <AutoRow gap={'10px'} style={{ width: '50%' }}>
                 <CurrencyLogo size={'20px'} currency={pool?.pair.token0} />
                 <TYPE.white>
                   {userToken0 ? userToken0.toFixed(4) : ''} {token0Symbol ?? ''}
@@ -517,7 +517,7 @@ export default function StakingPoolDetail({
               </TYPE.main>
             </RowBetween>
             <RowBetween>
-              <AutoRow gap={'10px'}>
+              <AutoRow gap={'10px'} style={{ width: '50%' }}>
                 <CurrencyLogo size={'20px'} currency={pool?.pair.token1} />
                 <TYPE.white>
                   {userToken1 ? userToken1.toFixed(4) : ''} {token1Symbol ?? ''}
@@ -672,11 +672,11 @@ export default function StakingPoolDetail({
             </>
           )}
           {account && currentBoots && futureBoots && !(currentBoots.toFixed(2) === futureBoots.toFixed(2)) && (
-            <AutoRow>
+            <AutoRow marginLeft={30}>
               <i style={{ color: '#FBDD55', fontSize: 16, fontWeight: 700 }} className="iconfont">
                 &#xe614;
               </i>
-              <TYPE.main marginLeft={30}>You can apply future boost by claiming LT</TYPE.main>
+              <TYPE.main>You can apply future boost by claiming LT</TYPE.main>
             </AutoRow>
           )}
         </LightCard>
@@ -730,7 +730,7 @@ export default function StakingPoolDetail({
           </ButtonPrimary>
         </RowFlat> */}
       </AutoRow>
-      <AutoRow style={{ margin: 0 }} padding={'20px 0px 30px'} gap={'15px'} align={''}>
+      <AutoRow style={{ margin: 0 }} padding={'20px 0px'} gap={'15px'} align={''}>
         <AutoColumn style={{ flex: 4 }}>
           <LightCard padding={'30px'}>
             <RowBetween>

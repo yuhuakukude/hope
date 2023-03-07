@@ -44,7 +44,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: Gomb
           {tableItem?.usdOfTotalReward && (
             <div className="flex jc-between">
               <span className="text-white">Total Claimable Rewards</span>
-              <span className="text-white">≈ ${format.amountFormat(tableItem?.usdOfTotalReward || 0, 2)}</span>
+              <span className="text-white">≈ ${format.amountFormat(tableItem?.usdOfTotalReward, 2)}</span>
             </div>
           )}
           <Radio.Group
@@ -66,7 +66,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: Gomb
               </div>
               <div>
                 <p className="text-white text-right">
-                  {format.amountFormat(tableItem?.ltOfReward || 0, 2)} {tableItem?.rewardSymbol}
+                  {format.amountFormat(tableItem?.ltOfReward, 2)} {tableItem?.rewardSymbol}
                 </p>
                 <p className="text-normal text-right">≈ ${format.amountFormat(tableItem?.usdOfReward, 2)}</p>
               </div>
@@ -84,9 +84,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: Gomb
                     <Tips title={`Claimable Rewards`} />
                   </div>
                   <div>
-                    <p className="text-normal text-right">
-                      ≈ ${format.amountFormat(tableItem?.usdOfExtReward || 0, 2)}
-                    </p>
+                    <p className="text-normal text-right">≈ ${format.amountFormat(tableItem?.usdOfExtReward, 2)}</p>
                   </div>
                 </div>
                 {tableItem && tableItem?.extRewardList && tableItem?.extRewardList.length > 0 && (

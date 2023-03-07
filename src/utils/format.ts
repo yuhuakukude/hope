@@ -14,7 +14,7 @@ export const rate = (value: string | number, decimal?: number, isNull?: boolean)
 }
 
 // decomal
-export const numeral = (context: string | number, formatString = 2) => {
+export const numeral = (context: string | number | undefined, formatString = 2) => {
   // let value = context;
   if (context) {
     let star = ''
@@ -85,7 +85,7 @@ export const separate = (value: number | string, formatString?: number) => {
 }
 
 // amountFormat
-export const amountFormat = (value: number | string, formatString?: number) => {
+export const amountFormat = (value: number | string | undefined, formatString?: number) => {
   const baseNum = 1 / Math.pow(10, formatString || 0)
   if (Number(value) > 0 && Number(value) < baseNum) {
     return `< ${baseNum.toFixed(formatString)}`
