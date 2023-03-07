@@ -63,7 +63,7 @@ const poolTitles = [
   { value: 'Pools', weight: 1.5 },
   { value: 'TVL' },
   { value: 'Volume (24h)' },
-  { value: 'Base APR' },
+  { value: 'Fees APR' },
   { value: 'Rewards APR' },
   { value: 'Mining Rewards' },
   { value: ' ', weight: 0.1 }
@@ -158,7 +158,6 @@ export default function Pools() {
     )
   }
 
-  console.log('pairInfos', pairInfos)
   return (
     <PageWrapper>
       <RowBetween>

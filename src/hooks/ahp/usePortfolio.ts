@@ -166,7 +166,7 @@ export function useGomFeeManyClaim() {
 }
 
 export function toUsdPrice(val: any, price: string | number) {
-  if(isNaN(val)) {
+  if (isNaN(val)) {
     return val
   }
   let res = '0'
