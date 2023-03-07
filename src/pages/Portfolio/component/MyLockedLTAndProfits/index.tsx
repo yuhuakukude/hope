@@ -259,7 +259,10 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                       withdrawFn('others')
                     }}
                     disabled={!(claimableFees && Number(claimableFees.toFixed(2)) > 0)}
-                    className="my-locked-lt-button"
+                    className={[
+                      'my-locked-lt-button',
+                      !(claimableFees && Number(claimableFees.toFixed(2)) > 0) ? 'disabled' : ''
+                    ].join(' ')}
                     type="ghost"
                   >
                     Claim All
@@ -278,7 +281,10 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                       withdrawFn('all')
                     }}
                     disabled={!(claimableFees && Number(votingFee.stHope) > 0)}
-                    className="my-locked-lt-button"
+                    className={[
+                      'my-locked-lt-button',
+                      !(claimableFees && Number(votingFee.stHope) > 0) ? 'disabled' : ''
+                    ].join(' ')}
                     type="ghost"
                   >
                     Claim All

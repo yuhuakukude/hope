@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
-import { Link, RouteComponentProps, useHistory } from 'react-router-dom'
+import { RouteComponentProps, useHistory } from 'react-router-dom'
 import { usePairTxs, useStakingPairPool } from '../../hooks/useLPStaking'
-import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
+import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed } from '../../components/Row'
 import { AutoColumn } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import { TYPE, ExternalLink } from '../../theme'
@@ -29,7 +29,6 @@ import { tryParseAmount } from '../../state/swap/hooks'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useLineDaysChartsData, useLine24HourChartsData } from '../../hooks/useCharts'
-import { NavLink } from 'react-router-dom'
 import SelectTips, { TitleTipsProps } from '../Portfolio/component/SelectTips'
 import moment from 'moment'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
@@ -675,7 +674,7 @@ export default function StakingPoolDetail({
   }
 
   return (
-    <AutoColumn style={{ width: '100%', padding: '0 30px', maxWidth: '1440px' }}>
+    <AutoColumn style={{ width: '100%', padding: '0 30px', maxWidth: '1340px' }}>
       {pool && (
         <ClaimRewardModal
           isOpen={showClaimModal}
@@ -702,7 +701,7 @@ export default function StakingPoolDetail({
           </TYPE.white>
           {pool && <RateTag>0.3%</RateTag>}
         </div>
-        <RowFlat>
+        {/* <RowFlat>
           <ButtonPrimary
             as={Link}
             width={'100px'}
@@ -718,9 +717,9 @@ export default function StakingPoolDetail({
           >
             Add Liquidity
           </ButtonPrimary>
-        </RowFlat>
+        </RowFlat> */}
       </AutoRow>
-      <AutoRow style={{ margin: 0 }} padding={'30px 0px'} gap={'15px'} align={''}>
+      <AutoRow style={{ margin: 0 }} padding={'20px 0px 30px'} gap={'15px'} align={''}>
         <AutoColumn style={{ flex: 4 }}>
           <LightCard padding={'30px'}>
             <RowBetween>
@@ -745,32 +744,19 @@ export default function StakingPoolDetail({
                   </Row>
                 </div>
               </Row>
-              <div style={{ width: '286px' }}>
+              <div style={{ width: '345px' }}>
                 <Row>
-                  <div>
-                    <TYPE.body>Base APR</TYPE.body>
-                    <TYPE.white fontSize={30} marginTop={12} fontFamily={'Arboria-Medium'}>
-                      {format.rate(aprInfo.ltApr)}
-                    </TYPE.white>
-                  </div>
-                  <div className="m-l-30">
-                    <TYPE.body>
-                      After
-                      <NavLink to={'/dao/locker'}>
-                        <span className="text-primary"> Locker </span>
-                      </NavLink>
-                    </TYPE.body>
-                    <TYPE.green fontSize={30} marginTop={12} fontFamily={'Arboria-Medium'}>
-                      {format.rate(aprInfo.baseApr)}{' '}
-                    </TYPE.green>
-                  </div>
+                  <TYPE.body>APR</TYPE.body>
+                  <TYPE.green fontSize={30} marginLeft={12} fontFamily={'Arboria-Medium'}>
+                    {format.rate(aprInfo.ltApr)}
+                  </TYPE.green>
                 </Row>
-                <p className="m-t-15 text-normal">Fees: {format.rate(aprInfo.feeApr)} </p>
-                {aprInfo.rewardRate && (
-                  <p className="m-t-10 text-normal">
-                    Rewards: {format.rate(aprInfo.ltApr)} (
+                <p className="m-t-15 text-normal">Fees APR: {format.rate(aprInfo.feeApr)} </p>
+                {aprInfo.ltApr && <p className="m-t-12 text-normal">Rewards APR: {format.rate(aprInfo.ltApr)}</p>}
+                {aprInfo.ltAmountPerDay && (
+                  <p className="m-t-12 text-normal">
+                    Daily Reward:{' '}
                     {tryParseAmount(aprInfo?.ltAmountPerDay, LT[chainId ?? 1])?.toFixed(2, { groupSeparator: ',' })} LT
-                    per day){' '}
                   </p>
                 )}
               </div>

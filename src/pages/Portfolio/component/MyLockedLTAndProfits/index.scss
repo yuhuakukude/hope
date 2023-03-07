@@ -49,6 +49,11 @@
       &:hover{
         background-color: #33333C;
       }
+      &.disabled{
+        border: 1px solid rgb(61, 62, 70);
+        color: rgb(61, 62, 70);
+        background-color: transparent;
+      }
     }
   }
 

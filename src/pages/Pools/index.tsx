@@ -24,7 +24,7 @@ import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
   width: 100%;
-  min-width: 1390px;
+  max-width: 1340px;
 `
 
 const EmptyProposals = styled.div`
@@ -163,7 +163,12 @@ export default function Pools() {
     <PageWrapper>
       <RowBetween>
         <TYPE.largeHeader>Pools</TYPE.largeHeader>
-        <ButtonPrimary onClick={() => history.push(`/swap/liquidity/manager`)} width={'150px'} height={'42px'}>
+        <ButtonPrimary
+          onClick={() => history.push(`/swap/liquidity/manager`)}
+          width={'150px'}
+          height={'42px'}
+          className="text-medium"
+        >
           New Position
         </ButtonPrimary>
       </RowBetween>
