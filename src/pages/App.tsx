@@ -70,6 +70,9 @@ const BodyWrapper = styled.div`
   overflow-y: auto;
   overflow-x: scroll;
   z-index: 10;
+  &::-webkit-scrollbar {
+    display: none;
+  }
 
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding: 16px;

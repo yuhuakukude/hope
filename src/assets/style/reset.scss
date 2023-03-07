@@ -484,8 +484,23 @@
     background-color: transparent;
   }
 
+  .ant-select-dropdown{
+    overflow: hidden;
+  }
   .ant-select-dropdown-menu {
     padding: 10px 0;
+    border-radius: 6px;
     background-color: rgba(51, 51, 60, 1);
+  }
+}
+
+.pool-switch{
+  background-color: #3D3E46;
+  height: 28px;
+  width: 50px;
+  &.ant-switch::after{
+    width: 24px;
+    height: 24px;
+    background-color: #5A5A5B;
   }
 }

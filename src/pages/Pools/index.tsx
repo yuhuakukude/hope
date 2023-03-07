@@ -9,7 +9,6 @@ import usePairsInfo, { PAIR_SEARCH } from '../../hooks/usePairInfo'
 import PoolCard from '../../components/pool/PoolCard'
 import FullPositionCard from '../../components/PositionCard'
 import { SearchInput } from '../../components/SearchModal/styleds'
-import Toggle from '../../components/Toggle'
 import { Pagination } from 'antd'
 import { useHistory } from 'react-router-dom'
 import { CardSection } from '../../components/earn/styled'
@@ -19,6 +18,7 @@ import { useWalletModalToggle } from '../../state/application/hooks'
 import { useActiveWeb3React } from '../../hooks'
 import Circle from '../../assets/images/blue-loader.svg'
 import { LT } from '../../constants'
+import { Switch } from 'antd'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 
 const PageWrapper = styled(AutoColumn)`
@@ -66,7 +66,7 @@ const poolTitles = [
   { value: 'Fees APR' },
   { value: 'Rewards APR' },
   { value: 'Mining Rewards' },
-  { value: ' ', weight: 0.5 }
+  { value: ' ', weight: 0.1 }
 ]
 
 const positionTitles = [
@@ -198,10 +198,9 @@ export default function Pools() {
             <RowFixed gap={'md'}>
               <AutoRow gap={'12px'}>
                 <TYPE.main>My Farms</TYPE.main>
-                <Toggle
-                  id="toggle-expert-mode-button"
-                  isActive={searchType === PAIR_SEARCH.USER_STAKE}
-                  toggle={() => {
+                <Switch
+                  className="pool-switch"
+                  onChange={() => {
                     setCurrentPage(1)
                     searchType === PAIR_SEARCH.USER_STAKE
                       ? setSearchType(PAIR_SEARCH.USER_LIQUIDITY)

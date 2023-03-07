@@ -8,6 +8,9 @@ import { STAKING_HOPE_GOMBOC_ADDRESS } from '../../constants'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
+import { useBlockNumber } from '../../state/application/hooks'
+import { useTimestampFromBlock } from 'hooks/useTimestampFromBlock'
+import { useGomConContract } from '../useContract'
 
 export enum stakingFnNameEnum {
   Mint = 'mint',
@@ -18,6 +21,9 @@ export function useStaking() {
   const { account, chainId } = useActiveWeb3React()
   const shgContract = useStakingHopeGombocContract()
   const ltMinterContract = useLtMinterContract()
+  const gomContract = useGomConContract()
+  const blockNumber = useBlockNumber()
+  const time = useTimestampFromBlock(blockNumber)
   const stakedVal = useSingleCallResult(shgContract, 'lpBalanceOf', [account ?? undefined])
   const unstakedVal = useSingleCallResult(shgContract, 'unstakedBalanceOf', [account ?? undefined])
   const unstakingVal = useSingleCallResult(shgContract, 'unstakingBalanceOf', [account ?? undefined])
@@ -27,6 +33,10 @@ export function useStaking() {
     account ?? undefined,
     STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]
   ])
+  const gomRelativeWeigh = useSingleCallResult(gomContract, 'gombocRelativeWeight', [
+    STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1],
+    time
+  ])
 
   return {
     stakedVal: stakedVal?.result ? CurrencyAmount.ether(stakedVal?.result?.[0]) : undefined,
@@ -34,7 +44,8 @@ export function useStaking() {
     unstakedVal: unstakedVal?.result ? CurrencyAmount.ether(unstakedVal?.result?.[0]) : undefined,
     unstakingVal: unstakingVal?.result ? CurrencyAmount.ether(unstakingVal?.result?.[0]) : undefined,
     claRewards: claRewards?.result ? CurrencyAmount.ether(claRewards?.result?.[0]) : undefined,
-    mintedVal: mintedVal?.result ? CurrencyAmount.ether(mintedVal?.result?.[0]) : undefined
+    mintedVal: mintedVal?.result ? CurrencyAmount.ether(mintedVal?.result?.[0]) : undefined,
+    gomRelativeWeigh: gomRelativeWeigh?.result ? CurrencyAmount.ether(gomRelativeWeigh?.result?.[0]) : undefined
   }
 }
 

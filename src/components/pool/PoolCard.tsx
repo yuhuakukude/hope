@@ -110,7 +110,7 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
             {pairData?.ltAmountPerDay ? `${amountFormat(pairData?.ltAmountPerDay, 2)} LT/day` : ''}
           </TYPE.white>
         </ContentRow>
-        <ContentRow weight={0.5}>
+        <ContentRow weight={0.1}>
           <ActionIcon size={8} />
         </ContentRow>
       </AutoRow>

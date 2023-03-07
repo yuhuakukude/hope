@@ -9,7 +9,7 @@ import format from '../../../../utils/format'
 import { useActiveWeb3React } from '../../../../hooks'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
 import { VELT, ST_HOPE } from '../../../../constants'
-import { JSBI, Percent, Token } from '@uniswap/sdk'
+import { Percent, Token } from '@uniswap/sdk'
 import usePrice from 'hooks/usePrice'
 import VotedList from '../../../../components/ahp/VotedList'
 import { NavLink, Link } from 'react-router-dom'
@@ -23,7 +23,7 @@ import { ButtonPrimary } from '../../../../components/Button'
 
 export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (stHope: string, lt: string) => void }) {
   const { account, chainId } = useActiveWeb3React()
-  const { lockerRes, votePowerAmount } = useLocker()
+  const { lockerRes, veltTotalAmounnt } = useLocker()
   const { claimableFees } = usePortfolio()
   const hopePrice = usePrice()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
@@ -45,16 +45,13 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
   const [votingFee, setVotingFee] = useState<any>({ stHope: '0.00', toUsd: '0.00' })
   const [allData, setAllData] = useState([])
   useEffect(() => {
-    if (votePowerAmount || votePowerAmount === 0) {
-      const total = JSBI.BigInt(10000)
-      const apo = JSBI.BigInt(votePowerAmount)
-      const unUseVal = JSBI.subtract(total, apo)
-      const ra = new Percent(unUseVal, JSBI.BigInt(10000))
+    if (veltTotalAmounnt && veltBalance) {
+      const ra = new Percent(veltBalance?.raw, veltTotalAmounnt?.raw)
       if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
         setUnUseRateVal(ra.toFixed(2))
       }
     }
-  }, [votePowerAmount, veltBalance, account])
+  }, [veltTotalAmounnt, veltBalance, account])
 
   const argList = useMemo(() => {
     let res = []
