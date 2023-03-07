@@ -7,6 +7,7 @@ import { useMultipleContractSingleData, useSingleCallResult } from '../state/mul
 import { STAKING_REWARDS_INTERFACE } from '../constants/abis/staking-rewards'
 import { useLockerContract, useStakingContract } from './useContract'
 import { LT } from '../constants'
+import useCurrentBlockTimestamp from './useCurrentBlockTimestamp'
 
 export enum PAIR_SEARCH {
   ALL,
@@ -22,7 +23,7 @@ export default function usePairsInfo(
 ) {
   const { account, chainId } = useActiveWeb3React()
   const { result: allPairs, total, loading } = useBasePairs(page, currentPage, searchType, searchValue, account ?? '')
-
+  console.log('allPairs', allPairs)
   const veltContract = useLockerContract()
   const veltBalance = useSingleCallResult(
     veltContract,
@@ -149,16 +150,17 @@ export default function usePairsInfo(
 
 export function usePairStakeInfo(stakingAddress?: string) {
   const veltContract = useLockerContract()
+  const timestamp = useCurrentBlockTimestamp()
   const { account, chainId } = useActiveWeb3React()
   const stakingContract = useStakingContract(stakingAddress)
 
   const veltBalance = useSingleCallResult(
     veltContract,
     'balanceOfAtTime',
-    account ? [account, Math.floor(Date.now() / 1000).toString()] : [undefined]
+    account ? [account, timestamp?.toString()] : [undefined]
   )?.result?.[0].toString()
   const veltTotal = useSingleCallResult(veltContract, 'totalSupplyAtTime', [
-    Math.floor(Date.now() / 1000).toString()
+    timestamp?.toString()
   ])?.result?.[0].toString()
   const claimAbleRewards = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])?.result
   const balance = useSingleCallResult(stakingContract, 'lpBalanceOf', [account ?? undefined])?.result?.[0].toString()

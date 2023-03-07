@@ -13,6 +13,7 @@ import { getEtherscanLink } from '../../utils'
 import { ArrowUpRight, ChevronRight } from 'react-feather'
 import { useHistory } from 'react-router-dom'
 import { BasePair } from '../../graph/fetch'
+import { amountFormat } from '../../utils/format'
 
 const StyledPositionCard = styled(LightCard)<{ bgColor: any }>`
   background-color: transparent;
@@ -58,7 +59,6 @@ interface PoolCardProps {
 }
 
 export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardProps) {
-  console.log('pairInfo', pairInfo)
   const { chainId } = useActiveWeb3React()
   const history = useHistory()
 
@@ -95,15 +95,15 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
           <TYPE.white>{tvl ? `$${tvl?.toFixed(2)}` : '--'}</TYPE.white>
         </ContentRow>
         <ContentRow>
-          <TYPE.white>--</TYPE.white>
+          <TYPE.white>{pairData?.dayVolume ? `$${amountFormat(pairData.dayVolume)}` : '--'}</TYPE.white>
         </ContentRow>
         <ContentRow>
-          <TYPE.white>{pairData?.baseApr ? Number(pairData?.baseApr).toFixed(2) : ''}</TYPE.white>
+          <TYPE.white>{pairData?.baseApr ? `${Number(pairData?.baseApr).toFixed(2)}%` : '--'}</TYPE.white>
         </ContentRow>
         <ContentRow gap={'10px'}>
-          <TYPE.white>{pairData?.ltApr ? Number(pairData?.ltApr).toFixed(2) : ''}</TYPE.white>
+          <TYPE.white>{pairData?.ltApr ? `${Number(pairData?.ltApr).toFixed(2)}%` : ''}</TYPE.white>
           {pairData.maxApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
-          <TYPE.white>{pairData.maxApr ? Number(pairData.maxApr).toFixed(2) : ''}</TYPE.white>
+          <TYPE.white>{pairData.maxApr ? `${Number(pairData.maxApr).toFixed(2)}%` : ''}</TYPE.white>
         </ContentRow>
         <ContentRow>
           <TYPE.white>

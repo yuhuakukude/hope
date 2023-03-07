@@ -29,6 +29,7 @@ export interface BasePair {
   ltAmountPerDay?: number
   rewardRate?: number
   last7AvgVolume?: number
+  dayVolume?: number
 }
 
 export async function fetchPairs(
@@ -41,26 +42,20 @@ export async function fetchPairs(
 ): Promise<{ pairs: BasePair[]; total: number }> {
   try {
     let pairList = []
-    console.log('searchType', searchType)
     if (searchType === PAIR_SEARCH.ALL) {
       const allPair = await postQuery(SUBGRAPH, QUERY_ALL_PAIR())
-      console.log('allPair', allPair)
       pairList = allPair.data.pairs
     }
     if (searchType === PAIR_SEARCH.USER_LIQUIDITY) {
       const userLiquidity = await postQuery(SUBGRAPH, QUERY_USER_LIQUIDITY(account))
-      console.log('userLiquidity', userLiquidity)
       pairList = userLiquidity.data.liquidityPositions.map((item: any) => item.pair)
     }
     if (searchType === PAIR_SEARCH.USER_STAKE) {
       const userStaking = await postQuery(SUBGRAPH, QUERY_USER_STAKING(account))
-      console.log('userStaking', userStaking)
       pairList = userStaking.data.stakedPoolPositions.map((item: any) => item.pool.pair)
     }
-    console.log('pairList1', pairList)
 
     pairList = pairList.filter((pair: any) => {
-      console.log('pairList', searchValue, pair)
       if (!searchValue) return pair
       const lowSearchValue = searchValue.toLowerCase()
       const pairAddress = pair.id.toLowerCase()
@@ -73,16 +68,14 @@ export async function fetchPairs(
 
       return isAddress(searchValue)
         ? pairAddress === lowSearchValue || token0Address === lowSearchValue || token1Address === lowSearchValue
-        : token0Name.indexOf(searchValue) !== -1 ||
-            token1Name.indexOf(searchValue) !== -1 ||
-            token0Symbol.indexOf(searchValue) !== -1 ||
-            token1Symbol.indexOf(searchValue) !== -1
+        : token0Name.toLowerCase().indexOf(lowSearchValue) !== -1 ||
+            token1Name.toLowerCase().indexOf(lowSearchValue) !== -1 ||
+            token0Symbol.toLowerCase().indexOf(lowSearchValue) !== -1 ||
+            token1Symbol.toLowerCase().indexOf(lowSearchValue) !== -1
     })
-    console.log('pairs array', pairList, currentPage - 1, pageSize)
     const pairsResult = await postQuery(SUBGRAPH, QUERY_PAIR_LIST(), {
       pairs: pairList.map((item: any) => item.id).slice((currentPage - 1) * pageSize, pageSize * currentPage)
     })
-    console.log('pairsResult', pairsResult)
     const allStaking = await postQuery(SUBGRAPH, QUERY_ALL_STAKING())
     const stakings = allStaking.data.poolGombocs
     const pairs = pairsResult.data.pairs

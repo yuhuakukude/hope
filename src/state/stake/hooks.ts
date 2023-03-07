@@ -741,6 +741,15 @@ function PAIR_LIST_QUERY(account: string, sort: 'asc' | 'desc', orderBy: string,
   }`
 }
 
+function PAIR_TIME_INFO_QUERY(block?: number[]) {
+  return `query pairs($pairs: [Bytes]!){
+    pairs(where: {id_in: $pairs} ${block ? `,block: { number: ${block}}` : ``}) {
+      id
+      volumeUSD
+    }
+  }`
+}
+
 export interface GraphPairInfo {
   address: string
   oneDayTVLUSD: number
@@ -764,6 +773,12 @@ export interface GraphPairInfo {
   maxApr?: string | undefined
   rewardRate?: string | undefined
   searchString?: string | undefined
+}
+
+export interface TimeInfo {
+  pairAddress: string
+  dayVolume: number
+  dayVolumeChange: number
 }
 
 export async function fetchPairsList(account: string, sort: 'asc' | 'desc', orderBy: string): Promise<GraphPairInfo[]> {
@@ -1251,6 +1266,47 @@ export async function fetchPairTxs(pairAddress: string, type?: string): Promise<
     }
     return result
   } catch (error) {
+    return []
+  }
+}
+
+export async function fetchPairsTimeInfo(pairs: string[]): Promise<TimeInfo[]> {
+  try {
+    const utcCurrentTime = dayjs()
+    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
+    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix()
+    const [oneDayBlock, twoDayBlock] = await getBlocksFromTimestamps([utcOneDayBack, utcTwoDaysBack])
+    const curRes = await postQuery(SUBGRAPH, PAIR_TIME_INFO_QUERY(), { pairs })
+    console.log('curRes', curRes)
+    const d1Res = await postQuery(SUBGRAPH, PAIR_TIME_INFO_QUERY(oneDayBlock.number), { pairs })
+    const d2Res = await postQuery(SUBGRAPH, PAIR_TIME_INFO_QUERY(twoDayBlock.number), { pairs })
+
+    const curPairs = curRes.data.pairs
+    const d1Pairs = d1Res.data.pairs
+    const d2Pairs = d2Res.data.pairs
+    return curPairs.map((pair: any) => {
+      const d1Pair = d1Pairs.find((d1pair: any) => {
+        return d1pair.id === pair.id
+      })
+      const d2Pair = d2Pairs.find((d2pair: any) => {
+        return d2pair.id === pair.id
+      })
+      const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
+        pair?.volumeUSD,
+        d1Pair?.volumeUSD,
+        d2Pair?.volumeUSD
+      )
+
+      return {
+        pairAddress: pair.id,
+        dayVolume:
+          oneDayVolumeUSD && oneDayVolumeUSD.toString() !== '0' ? Number(oneDayVolumeUSD) : Number(pair.volumeUSD),
+        dayVolumeChange: Number(volumeChangeUSD),
+        totalVolume: Number(pair.reserveUSD)
+      }
+    })
+  } catch (error) {
+    console.error(`error${error}`)
     return []
   }
 }

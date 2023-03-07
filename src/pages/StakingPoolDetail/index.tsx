@@ -24,7 +24,7 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import AprApi from '../../api/apr.api'
-import format, { formatUTCDate } from '../../utils/format'
+import format, { amountFormat, formatUTCDate } from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -37,7 +37,9 @@ import { usePosition, useStakePosition } from '../../hooks/usePosition'
 import { ArrowRight } from 'react-feather'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { usePairStakeInfo } from '../../hooks/usePairInfo'
-import { JSBI, Percent } from '@uniswap/sdk'
+import { JSBI, WETH } from '@uniswap/sdk'
+import { tokenId, tokenSymbol } from '../../utils/currencyId'
+import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -146,11 +148,12 @@ const RateTag = styled.div`
   background-color: #26262c;
 `
 
-const GoBackIcon = styled(Link)`
+const GoBackIcon = styled.span`
   text-decoration: none;
   cursor: pointer;
   color: #fff;
   font-weight: 500;
+  cursor: pointer;
 
   &:hover {
     color: #fff;
@@ -177,17 +180,19 @@ export default function StakingPoolDetail({
   }
 }: RouteComponentProps<{ address: string }>) {
   const { account, chainId, library } = useActiveWeb3React()
+  const history = useHistory()
+  const chainWETH = WETH[chainId ?? 1]
   const { result: pool, pairMore } = useStakingPairPool(address)
   const { claimAbleRewards, currentBoots, futureBoots } = usePairStakeInfo(pool?.stakingRewardAddress)
-  const [newFutureBoots, setNewFutureBoots] = useState<Percent | undefined>(undefined)
   const ltMinterContract = useLtMinterContract()
   const addTransaction = useTransactionAdder()
   const toggleWalletModal = useWalletModalToggle()
-  //const history = useHistory()
-  // const addresses = useMemo(() => {
-  //   return [LT[chainId ?? 1].address]
-  // }, [chainId])
-  //const { result: priceResult } = useTokenPrice(addresses)
+  const addresses = useMemo(() => {
+    return [pool?.tokens[0].address ?? '', pool?.tokens[1].address ?? '']
+  }, [pool])
+  const { result: priceResult } = useTokenPriceObject(addresses)
+  const token0Symbol = tokenSymbol(chainWETH, pool?.tokens[0])
+  const token1Symbol = tokenSymbol(chainWETH, pool?.tokens[1])
 
   const [showClaimModal, setShowClaimModal] = useState(false)
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -198,7 +203,6 @@ export default function StakingPoolDetail({
   const [showTx, setShowTx] = useState<boolean>(false)
   const [transactionType, setTransactionType] = useState('All')
   const txs = usePairTxs(address, transactionType)
-  const history = useHistory()
   //const stakedAmount = useTokenBalance(account ?? undefined, pool?.stakingToken)
 
   const { token0Deposited, token1Deposited, balance } = usePosition(pool?.pair)
@@ -207,7 +211,6 @@ export default function StakingPoolDetail({
   const userTotalBalance = stakedLpAmount && balance ? stakedLpAmount?.add(balance) : balance
   const userToken0 = token0Deposited && token0Staked ? token0Deposited.add(token0Staked) : token0Deposited
   const userToken1 = token1Deposited && token1Staked ? token1Deposited.add(token1Staked) : token1Deposited
-
   // charts
   const [tabIndex, setTabIndex] = useState('Volume')
   const [timeIndex, setTimeIndex] = useState('24H')
@@ -500,10 +503,6 @@ export default function StakingPoolDetail({
     initFn()
   }, [initFn])
 
-  useEffect(() => {
-    futureBoots && setNewFutureBoots(futureBoots)
-  }, [futureBoots])
-
   function LiquidityCard() {
     return (
       <LightCard padding={'0'} height={'fit-content'}>
@@ -518,7 +517,7 @@ export default function StakingPoolDetail({
           <AutoRowBetween>
             <AutoRow gap={'10px'}>
               <DoubleCurrencyLogo over size={24} currency0={pool?.pair.token0} currency1={pool?.pair.token1} />
-              <TYPE.white fontWeight={700} fontSize={18}>{`${pool?.tokens[0].symbol || '-'}/${pool?.tokens[1].symbol ||
+              <TYPE.white fontWeight={700} fontSize={18}>{`${token0Symbol || '-'}/${token1Symbol ||
                 '-'} Pool Token`}</TYPE.white>
             </AutoRow>
             <TYPE.main>{userTotalBalance?.toFixed(4)}</TYPE.main>
@@ -528,19 +527,33 @@ export default function StakingPoolDetail({
               <AutoRow gap={'10px'}>
                 <CurrencyLogo size={'20px'} currency={pool?.pair.token0} />
                 <TYPE.white>
-                  {userToken0 ? userToken0.toFixed(4) : ''} {pool?.pair.token0.symbol ?? ''}
+                  {userToken0 ? userToken0.toFixed(4) : ''} {token0Symbol ?? ''}
                 </TYPE.white>
               </AutoRow>
-              <TYPE.main>≈$</TYPE.main>
+              <TYPE.main>
+                {userToken0 && priceResult && pool?.tokens[0]
+                  ? `$${amountFormat(
+                      Number(userToken0.toExact().toString()) *
+                        Number(priceResult[pool.tokens[0].address.toLowerCase()])
+                    )}`
+                  : '$--'}
+              </TYPE.main>
             </RowBetween>
             <RowBetween>
               <AutoRow gap={'10px'}>
                 <CurrencyLogo size={'20px'} currency={pool?.pair.token1} />
                 <TYPE.white>
-                  {userToken1 ? userToken1.toFixed(4) : ''} {pool?.pair.token1.symbol ?? ''}
+                  {userToken1 ? userToken1.toFixed(4) : ''} {token1Symbol ?? ''}
                 </TYPE.white>
               </AutoRow>
-              <TYPE.main>≈$</TYPE.main>
+              <TYPE.main>
+                {userToken1 && priceResult && pool?.tokens[1]
+                  ? `$${amountFormat(
+                      Number(userToken1.toExact().toString()) *
+                        Number(priceResult[pool.tokens[1].address.toLowerCase()])
+                    )}`
+                  : '$--'}
+              </TYPE.main>
             </RowBetween>
           </AutoColumn>
           <AutoColumn gap={'20px'}>
@@ -555,7 +568,14 @@ export default function StakingPoolDetail({
             <AutoRowBetween gap={'30px'}>
               <ButtonPrimary
                 onClick={() =>
-                  history.push(`/swap/liquidity/manager/deposit/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
+                  pool?.tokens[0] &&
+                  pool?.tokens[1] &&
+                  history.push(
+                    `/swap/liquidity/manager/deposit/${tokenId(chainWETH, pool?.tokens[0])}/${tokenId(
+                      chainWETH,
+                      pool?.tokens[1]
+                    )}`
+                  )
                 }
                 height={46}
               >
@@ -564,7 +584,14 @@ export default function StakingPoolDetail({
               <ButtonOutlined
                 primary
                 onClick={() =>
-                  history.push(`/swap/liquidity/manager/withdraw/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
+                  pool?.tokens[0] &&
+                  pool?.tokens[1] &&
+                  history.push(
+                    `/swap/liquidity/manager/withdraw/${tokenId(chainWETH, pool.tokens[0])}/${tokenId(
+                      chainWETH,
+                      pool.tokens[1]
+                    )}`
+                  )
                 }
                 height={46}
               >
@@ -612,11 +639,11 @@ export default function StakingPoolDetail({
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Current Boost</TYPE.main>
-                    <TYPE.white>{currentBoots ? currentBoots.toFixed(2) : '--'}</TYPE.white>
+                    <TYPE.white>{currentBoots ? `${currentBoots.toFixed(2)}x` : '--'}</TYPE.white>
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Future Boost</TYPE.main>
-                    <TYPE.white>{newFutureBoots ? newFutureBoots.toFixed(2) : '--'}</TYPE.white>
+                    <TYPE.white>{futureBoots ? `${futureBoots.toFixed(2)}x` : '--'}</TYPE.white>
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Claimable Rewards</TYPE.main>
@@ -661,7 +688,7 @@ export default function StakingPoolDetail({
               </AutoColumn>
             </>
           )}
-          {account && currentBoots && newFutureBoots && !(currentBoots.toFixed(2) === newFutureBoots.toFixed(2)) && (
+          {account && currentBoots && futureBoots && !(currentBoots.toFixed(2) === futureBoots.toFixed(2)) && (
             <AutoRow>
               <i style={{ color: '#FBDD55', fontSize: 16, fontWeight: 700 }} className="iconfont">
                 &#xe614;
@@ -695,10 +722,10 @@ export default function StakingPoolDetail({
       <AutoRow justify={'space-between'} padding={'0 30px'}>
         <div className="flex ai-center">
           <TYPE.white fontSize={28} fontWeight={700}>
-            <GoBackIcon to={'/swap/pools'}>
+            <GoBackIcon onClick={() => history.goBack()}>
               <i className="iconfont font-28 m-r-20 cursor-select font-bold">&#xe61a;</i>
             </GoBackIcon>
-            {`${pool?.tokens[0].symbol || '-'}/${pool?.tokens[1].symbol || '-'}`}
+            {`${tokenSymbol(chainWETH, pool?.tokens[0]) || '-'}/${tokenSymbol(chainWETH, pool?.tokens[1]) || '-'}`}
           </TYPE.white>
           {pool && <RateTag>0.3%</RateTag>}
         </div>
@@ -731,7 +758,7 @@ export default function StakingPoolDetail({
                     <Circular></Circular>
                     <CurrencyLogo currency={pool?.tokens[0]} />
                     <TYPE.body marginLeft={9}>
-                      {pool?.token0Value.toFixed(2)} {pool?.tokens[0].symbol}
+                      {pool?.token0Value.toFixed(2)} {token0Symbol}
                       {!!pool?.token0Amount && ' (50%)'}
                     </TYPE.body>
                   </Row>
@@ -739,7 +766,7 @@ export default function StakingPoolDetail({
                     <Circular color={'#8FFBAE'}></Circular>
                     <CurrencyLogo currency={pool?.tokens[1]} />
                     <TYPE.body marginLeft={9}>
-                      {pool?.token1Value.toFixed(2)} {pool?.tokens[1].symbol}
+                      {pool?.token1Value.toFixed(2)} {token1Symbol}
                       {!!pool?.token1Amount && ' (50%)'}
                     </TYPE.body>
                   </Row>
@@ -768,7 +795,7 @@ export default function StakingPoolDetail({
                 <p className="m-t-15 text-normal">Fees: {format.rate(aprInfo.feeApr)} </p>
                 {aprInfo.rewardRate && (
                   <p className="m-t-10 text-normal">
-                    Rewards: {format.rate(aprInfo.rewardRate)} (
+                    Rewards: {format.rate(aprInfo.ltApr)} (
                     {tryParseAmount(aprInfo?.ltAmountPerDay, LT[chainId ?? 1])?.toFixed(2, { groupSeparator: ',' })} LT
                     per day){' '}
                   </p>
@@ -779,12 +806,12 @@ export default function StakingPoolDetail({
               <Row marginTop={30}>
                 <CurrencyLogo currency={pool?.tokens[1]} />
                 <TYPE.body marginLeft={9} marginRight={40}>
-                  1.00 {pool?.tokens[0].symbol} = {format.separate(pool?.token1Price ?? 0)} {pool?.tokens[1].symbol}
+                  1.00 {token0Symbol} = {format.separate(pool?.token1Price ?? 0)} {token1Symbol}
                 </TYPE.body>
                 <CurrencyLogo currency={pool?.tokens[0]} />
                 <TYPE.body marginLeft={9}>
                   {' '}
-                  1.00 {pool?.tokens[1].symbol} = {format.separate(pool?.token0Price ?? 0)} {pool?.tokens[0].symbol}
+                  1.00 {token1Symbol} = {format.separate(pool?.token0Price ?? 0)} {token0Symbol}
                 </TYPE.body>
               </Row>
             )}
@@ -968,13 +995,13 @@ export default function StakingPoolDetail({
                       <AutoRow gap={'5px'}>
                         <CurrencyLogo currency={pool?.tokens[0]} />
                         <TYPE.main>
-                          {pool?.volume0Amount ? `${pool.volume0Amount.toFixed(2)} ${pool?.tokens[0].symbol}` : '--'}
+                          {pool?.volume0Amount ? `${pool.volume0Amount.toFixed(2)} ${token0Symbol}` : '--'}
                         </TYPE.main>
                       </AutoRow>
                       <AutoRow gap={'5px'}>
                         <CurrencyLogo currency={pool?.tokens[0]} />
                         <TYPE.main>
-                          {pool?.volume1Amount ? `${pool.volume1Amount.toFixed(2)} ${pool?.tokens[1].symbol}` : '--'}
+                          {pool?.volume1Amount ? `${pool.volume1Amount.toFixed(2)} ${token1Symbol}` : '--'}
                         </TYPE.main>
                       </AutoRow>
                     </AutoColumn>

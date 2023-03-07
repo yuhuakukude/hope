@@ -1,4 +1,4 @@
-import React, { RefObject, useRef, useState } from 'react'
+import React, { RefObject, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import Row, { AutoRow, RowBetween, RowFixed } from '../../components/Row'
@@ -18,6 +18,8 @@ import Card from '../../components/Card'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useActiveWeb3React } from '../../hooks'
 import Circle from '../../assets/images/blue-loader.svg'
+import { LT } from '../../constants'
+import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
@@ -62,7 +64,7 @@ const poolTitles = [
   { value: 'TVL' },
   { value: 'Volume (24h)' },
   { value: 'Base APR' },
-  { value: 'Reward APR' },
+  { value: 'Rewards APR' },
   { value: 'Mining Rewards' },
   { value: ' ', weight: 0.5 }
 ]
@@ -77,7 +79,7 @@ const positionTitles = [
   { value: 'Actions', weight: 0.5 }
 ]
 export default function Pools() {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const inputRef = useRef<HTMLInputElement>()
   const [searchValue, setSearchValue] = useState('')
   const [searchType, setSearchType] = useState(PAIR_SEARCH.ALL)
@@ -87,6 +89,10 @@ export default function Pools() {
   const history = useHistory()
   const { pairInfos, total, loading } = usePairsInfo(pageSize, currentPage, searchType, searchValue)
 
+  const ltAddress = useMemo(() => {
+    return [LT[chainId ?? 1].address.toString()]
+  }, [chainId])
+  const { result: priceResult } = useTokenPriceObject(ltAddress)
   const handleSearchInput = (event: any) => {
     const input = event.target.value
     setSearchValue(input)
@@ -224,7 +230,7 @@ export default function Pools() {
           </AutoColumn>
         </RowBetween>
       </AutoRow>
-      {account && pairInfos.length !== 0 && (
+      {pairInfos.length !== 0 && (
         <TableWrapper>
           <TableTitleWrapper>
             {(searchType === PAIR_SEARCH.ALL ? poolTitles : positionTitles).map(({ value, weight }, index) => (
@@ -264,10 +270,11 @@ export default function Pools() {
               {pairInfos.map((amountPair, index) => (
                 <FullPositionCard
                   key={amountPair.pair.liquidityToken.address}
+                  ltPrice={priceResult ? Number(priceResult[ltAddress[0].toLowerCase()]) : undefined}
                   stakingAddress={amountPair.stakingAddress}
                   reward={amountPair.reward}
-                  futureBoots={amountPair.futureBoots?.toFixed(2).toString() ?? '-'}
-                  currentBoots={amountPair.currentBoots?.toFixed(2).toString() ?? '-'}
+                  futureBoots={amountPair?.futureBoots}
+                  currentBoots={amountPair?.currentBoots}
                   feeRate={amountPair.feeRate}
                   pairInfo={amountPair.pair}
                   stakedBalance={amountPair.stakedAmount}

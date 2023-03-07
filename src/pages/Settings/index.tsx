@@ -5,7 +5,7 @@ import { ArrowLeft } from 'react-feather'
 import { Text } from 'rebass'
 import TransactionSettings from '../../components/TransactionSettings'
 import { RowBetween, RowFixed } from '../../components/Row'
-import { StyledInternalLink, TYPE } from '../../theme'
+import { TYPE } from '../../theme'
 import QuestionHelper from '../../components/QuestionHelper'
 import Toggle from '../../components/Toggle'
 import ReactGA from 'react-ga'
@@ -20,6 +20,7 @@ import {
 import Modal from '../../components/Modal'
 import { ButtonError } from '../../components/Button'
 import { useToggleSettingsMenu } from '../../state/application/hooks'
+import { useHistory } from 'react-router-dom'
 
 const StyledCloseIcon = styled(X)`
   height: 20px;
@@ -89,6 +90,7 @@ const ModalContentWrapper = styled.div`
 `
 
 export default function SettingPage() {
+  const history = useHistory()
   const [userSlippageTolerance, setUserslippageTolerance] = useUserSlippageTolerance()
   const [ttl, setTtl] = useUserTransactionTTL()
   const theme = useContext(ThemeContext)
@@ -147,10 +149,8 @@ export default function SettingPage() {
       {/*</StyledMenuButton>*/}
       <MenuFlyout>
         <AutoColumn gap="lg" style={{ padding: '1rem' }}>
-          <RowFixed>
-            <StyledInternalLink color={theme.text1} to={'/swap/exchange'}>
-              <ArrowLeft />
-            </StyledInternalLink>
+          <RowFixed style={{ cursor: 'pointer' }} onClick={() => history.goBack()}>
+            <ArrowLeft />
             <Text ml={13} fontWeight={600} fontSize={16}>
               Transaction Settings
             </Text>

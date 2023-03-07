@@ -26,6 +26,7 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { useLtMinterContract } from '../../hooks/useContract'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../TransactionConfirmationModal'
+import { amountFormat } from '../../utils/format'
 
 export const FixedHeightRow = styled(RowBetween)`
   height: 24px;
@@ -158,10 +159,11 @@ interface FullCardProps {
   border?: string
   stakedBalance?: TokenAmount // optional balance to indicate that liquidity is deposited in mining pool
   feeRate?: number
-  futureBoots?: string
-  currentBoots?: string
+  futureBoots?: Percent
+  currentBoots?: Percent
   reward?: TokenAmount | undefined
   stakingAddress?: string
+  ltPrice?: number
 }
 
 export default function FullPositionCard({
@@ -172,7 +174,8 @@ export default function FullPositionCard({
   futureBoots,
   currentBoots,
   reward,
-  stakingAddress
+  stakingAddress,
+  ltPrice
 }: FullCardProps) {
   const { account, chainId, library } = useActiveWeb3React()
   const history = useHistory()
@@ -191,7 +194,7 @@ export default function FullPositionCard({
 
   const [, pair] = usePair(currency0, currency1)
 
-  const [newFutureBoots, setNewFutureBoots] = useState<string | undefined>(undefined)
+  const [newFutureBoots, setNewFutureBoots] = useState<Percent | undefined>(undefined)
 
   const userDefaultPoolBalance = useTokenBalance(account ?? undefined, pairInfo.liquidityToken)
   const totalPoolTokens = useTotalSupply(pairInfo.liquidityToken)
@@ -220,11 +223,19 @@ export default function FullPositionCard({
       }
     },
     {
+      label: 'Liquidity Mining',
+      value: 'Liquidity Mining',
+      isHide: !stakingAddress,
+      onClick: data => {
+        history.push(`/swap/liquidity/mining/${stakingAddress}`)
+      }
+    },
+    {
       label: 'Yield Boost',
       value: 'Yield Boost',
       isHide: !stakingAddress,
       onClick: data => {
-        history.push(`/swap/liquidity/mining/${stakingAddress}`)
+        history.push(`/dao/gomboc?gomboc=${stakingAddress}`)
       }
     },
     {
@@ -245,7 +256,7 @@ export default function FullPositionCard({
   ]
 
   useEffect(() => {
-    futureBoots && futureBoots !== '-' && setNewFutureBoots(futureBoots)
+    futureBoots && setNewFutureBoots(futureBoots)
   }, [futureBoots])
 
   const onClaim = useCallback(async () => {
@@ -375,7 +386,7 @@ export default function FullPositionCard({
               <TYPE.white>{userPoolBalance ? userPoolBalance.toSignificant(4) : '--'} </TYPE.white>
             </DataRow>
             <DataRow gap={'8px'}>
-              <TYPE.main>{stakedBalance ? `${stakedBalance.toSignificant(6)} %Staked` : '--'}</TYPE.main>
+              <TYPE.main>{stakedBalance ? `${stakedBalance.toSignificant(6)} Staked` : '--'}</TYPE.main>
             </DataRow>
           </AutoColumn>
         </ContentRow>
@@ -383,11 +394,11 @@ export default function FullPositionCard({
           <AutoColumn gap={'10px'}>
             <AutoRow>
               <TYPE.main>Current:&nbsp;</TYPE.main>
-              <TYPE.white>{currentBoots}</TYPE.white>
+              <TYPE.white>{currentBoots ? `${currentBoots.toFixed(2)}x` : '--'}</TYPE.white>
             </AutoRow>
             <AutoRow>
               <TYPE.main>Future:&nbsp;&nbsp;</TYPE.main>
-              <TYPE.white>{newFutureBoots}</TYPE.white>
+              <TYPE.white>{newFutureBoots ? `${newFutureBoots.toFixed(2)}x` : '--'}</TYPE.white>
             </AutoRow>
           </AutoColumn>
         </ContentRow>
@@ -395,7 +406,9 @@ export default function FullPositionCard({
         <ContentRow>
           <AutoColumn gap={'10px'}>
             <TYPE.white>{reward ? reward.toFixed(4) : '--'}</TYPE.white>
-            <TYPE.main>≈ $</TYPE.main>
+            <TYPE.main>
+              ≈ ${reward && ltPrice ? amountFormat(Number(reward?.toExact().toString()) * Number(ltPrice)) : '--'}
+            </TYPE.main>
           </AutoColumn>
         </ContentRow>
 

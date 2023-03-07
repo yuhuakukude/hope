@@ -109,6 +109,7 @@ export default function App() {
               <TopLevelModals />
               <Web3ReactManager>
                 <Switch>
+                  <Route exact strict path="/swap/settings" component={SettingPage} />
                   <Route exact strict path="/swap/exchange" component={Swap} />
                   <Route exact strict path="/swap/liquidity/manager" component={LiquidityManager} />
                   <Route exact strict path="/swap/liquidity" component={Pools} />
@@ -116,7 +117,6 @@ export default function App() {
                   <Route exact strict path="/swap/liquidity/pool-detail/:address" component={StakingPoolDetail} />
                   <Route exact strict path="/swap/stake/:stakingRewardAddress" component={LiquidityStake} />
                   <Route exact strict path="/swap/liquidity/mining/:stakingRewardAddress" component={LiquidityMining} />
-                  <Route exact strict path="/swap/settings" component={SettingPage} />
                   {/*<Route exact path="/swap/add" component={AddLiquidity} />*/}
                   <Route
                     exact
