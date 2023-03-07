@@ -150,7 +150,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
         if (record.gomboc && stakingAddress === record.gomboc) {
           return <span>Staking $HOPE</span>
         } else {
-          return <span>{`pool - ${text}`}</span>
+          return <span>{`Pool - ${text}`}</span>
         }
       }
     },

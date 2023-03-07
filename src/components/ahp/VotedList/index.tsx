@@ -504,15 +504,16 @@ const VotedList = ({
       key: 'actions',
       width: 150,
       render: (text: string, record: any) => {
-        const options: TitleTipsProps[] = [
-          {
+        const options: TitleTipsProps[] = []
+        if (record.gomboc && record.gomboc.pair) {
+          options.unshift({
             label: 'Pool Details',
             value: 'Pool',
             onClick: () => {
               history.push(`/swap/liquidity/pool-detail/${record.gomboc.pair.id}`)
             }
-          }
-        ]
+          })
+        }
         const val = rewardsView[record.gomboc.id].value
         if (val && Number(val) > 0) {
           options.unshift({
@@ -532,7 +533,7 @@ const VotedList = ({
             }
           })
         }
-        return <SelectTips options={options} />
+        return options.length > 0 ? <SelectTips options={options} /> : '--'
       }
     }
   ]
