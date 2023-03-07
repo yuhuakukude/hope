@@ -32,7 +32,7 @@ import { ButtonPrimary, ButtonOutlined } from '../../components/Button'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import ActionButton from '../../components/Button/ActionButton'
-import { CurrencyAmount, Token, TokenAmount, Percent } from '@uniswap/sdk'
+import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
 import './index.scss'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
@@ -96,10 +96,10 @@ export default function Staking() {
   const { toWithdraw } = useToWithdraw()
   const { toClaim } = useToClaim()
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
-  const { currentBoots, futureBoots } = usePairStakeInfo(
-    `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
-  )
-  const [newFutureBoots, setNewFutureBoots] = useState<Percent | undefined>(undefined)
+  const stakingAddr = useMemo(() => {
+    return `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+  }, [chainId])
+  const { currentBoots, futureBoots } = usePairStakeInfo(stakingAddr)
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   const gas = useMemo(() => {
     if (!gasPrice) return undefined
@@ -323,10 +323,6 @@ export default function Staking() {
       setStakingType('unstake')
     }
   }, [search])
-
-  useEffect(() => {
-    futureBoots && setNewFutureBoots(futureBoots)
-  }, [futureBoots])
 
   const confirmationContent = useCallback(
     () =>
@@ -558,7 +554,7 @@ export default function Staking() {
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-normal">My Future Boost</span>
-                      <span className="text-white">{newFutureBoots ? newFutureBoots.toFixed(2) : '--'}x</span>
+                      <span className="text-white">{futureBoots ? futureBoots.toFixed(2) : '--'}x</span>
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-normal">My Current Boost</span>
