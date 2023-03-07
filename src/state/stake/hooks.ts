@@ -1236,21 +1236,21 @@ export interface TxResponse {
 
 export async function fetchPairTxs(pairAddress: string, type?: string): Promise<TxResponse[]> {
   try {
-    const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(type), { allPairs: [pairAddress] })
+    const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(type), { allPairs: [pairAddress.toLowerCase()] })
     let result: TxResponse[] = []
     if (response.data.mints) {
-      result = result
-        .map(item => {
+      result = response.data.mints
+        .map((item: any) => {
           return { ...item, title: `Add ${item.pair.token0.symbol}-${item.pair.token1.symbol}` }
         })
-        .concat(response.data.mints)
+        .concat(result)
     }
     if (response.data.burns) {
-      result = result
-        .map(item => {
+      result = response.data.burns
+        .map((item: any) => {
           return { ...item, title: `Remove ${item.pair.token0.symbol}-${item.pair.token1.symbol}` }
         })
-        .concat(response.data.burns)
+        .concat(result)
     }
     if (response.data.swaps) {
       result = result.concat(

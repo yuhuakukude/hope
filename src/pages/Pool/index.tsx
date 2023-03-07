@@ -200,7 +200,7 @@ export default function Pool() {
                   <ExternalLink
                     style={{ color: 'white', textDecoration: 'underline' }}
                     target="_blank"
-                    href="https://uniswap.org/docs/v2/core-concepts/pools/"
+                    href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/usdhope-token"
                   >
                     <TYPE.link fontSize={14}>Read more about providing liquidity</TYPE.link>
                   </ExternalLink>

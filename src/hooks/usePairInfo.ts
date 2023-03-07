@@ -2,11 +2,11 @@ import useBasePairs from './liquidity/useBasePairs'
 import { useMemo } from 'react'
 import { toV2LiquidityToken } from '../state/user/hooks'
 import { useActiveWeb3React } from './index'
-import { JSBI, Percent, TokenAmount } from '@uniswap/sdk'
+import { CurrencyAmount, JSBI, Percent, TokenAmount } from '@uniswap/sdk'
 import { useMultipleContractSingleData, useSingleCallResult } from '../state/multicall/hooks'
 import { STAKING_REWARDS_INTERFACE } from '../constants/abis/staking-rewards'
-import { useLockerContract, useStakingContract } from './useContract'
-import { LT } from '../constants'
+import { useGomConContract, useLockerContract, useStakingContract } from './useContract'
+import { LT, STAKING_HOPE_GOMBOC_ADDRESS } from '../constants'
 import useCurrentBlockTimestamp from './useCurrentBlockTimestamp'
 
 export enum PAIR_SEARCH {
@@ -153,6 +153,12 @@ export function usePairStakeInfo(stakingAddress?: string) {
   const timestamp = useCurrentBlockTimestamp()
   const { account, chainId } = useActiveWeb3React()
   const stakingContract = useStakingContract(stakingAddress)
+  const gomContract = useGomConContract()
+
+  const relativeWeight = useSingleCallResult(gomContract, 'gombocRelativeWeight', [
+    STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1],
+    timestamp?.toString()
+  ])?.result?.[0].toString()
 
   const veltBalance = useSingleCallResult(
     veltContract,
@@ -204,6 +210,9 @@ export function usePairStakeInfo(stakingAddress?: string) {
   return {
     currentBoots,
     futureBoots,
+    relativeWeight: relativeWeight
+      ? CurrencyAmount.ether(JSBI.multiply(JSBI.BigInt(relativeWeight), JSBI.BigInt(100)))
+      : undefined,
     claimAbleRewards: claimAbleRewards?.[0]
       ? new TokenAmount(LT[chainId ?? 1], claimAbleRewards?.[0].toString())
       : undefined

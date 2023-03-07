@@ -181,7 +181,7 @@ export default function StakingPoolDetail({
   const history = useHistory()
   const chainWETH = WETH[chainId ?? 1]
   const { result: pool, pairMore } = useStakingPairPool(address)
-  const { claimAbleRewards, currentBoots, futureBoots } = usePairStakeInfo(pool?.stakingRewardAddress)
+  const { claimAbleRewards, currentBoots, futureBoots, relativeWeight } = usePairStakeInfo(pool?.stakingRewardAddress)
   const toggleWalletModal = useWalletModalToggle()
   const addresses = useMemo(() => {
     return [pool?.tokens[0].address ?? '', pool?.tokens[1].address ?? '']
@@ -433,9 +433,10 @@ export default function StakingPoolDetail({
               </AutoRow>
               <TYPE.main>
                 {userToken0 && priceResult && pool?.tokens[0]
-                  ? `$${amountFormat(
+                  ? `≈$${amountFormat(
                       Number(userToken0.toExact().toString()) *
-                        Number(priceResult[pool.tokens[0].address.toLowerCase()])
+                        Number(priceResult[pool.tokens[0].address.toLowerCase()]),
+                      2
                     )}`
                   : '$--'}
               </TYPE.main>
@@ -449,9 +450,10 @@ export default function StakingPoolDetail({
               </AutoRow>
               <TYPE.main>
                 {userToken1 && priceResult && pool?.tokens[1]
-                  ? `$${amountFormat(
+                  ? `≈$${amountFormat(
                       Number(userToken1.toExact().toString()) *
-                        Number(priceResult[pool.tokens[1].address.toLowerCase()])
+                        Number(priceResult[pool.tokens[1].address.toLowerCase()]),
+                      2
                     )}`
                   : '$--'}
               </TYPE.main>
@@ -535,7 +537,7 @@ export default function StakingPoolDetail({
                 <AutoColumn gap={'20px'}>
                   <RowBetween>
                     <TYPE.main>Gömböc Relative Weight</TYPE.main>
-                    <TYPE.white>--</TYPE.white>
+                    <TYPE.white>{relativeWeight ? `${relativeWeight.toFixed(2)}%` : ''}</TYPE.white>
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Mining Position</TYPE.main>
@@ -595,12 +597,12 @@ export default function StakingPoolDetail({
               </AutoColumn>
             </>
           )}
-          {account && currentBoots && futureBoots && !(currentBoots.toFixed(2) === futureBoots.toFixed(2)) && (
+          {account && currentBoots && futureBoots && (currentBoots.toFixed(2) !== futureBoots.toFixed(2)) && (
             <AutoRow marginLeft={30}>
               <i style={{ color: '#FBDD55', fontSize: 16, fontWeight: 700 }} className="iconfont">
                 &#xe614;
               </i>
-              <TYPE.main>You can apply future boost by claiming LT</TYPE.main>
+              <TYPE.main ml={10}>You can apply future boost by claiming LT</TYPE.main>
             </AutoRow>
           )}
         </LightCard>
@@ -824,7 +826,7 @@ export default function StakingPoolDetail({
                             </TYPE.link>
                           </TxItem>
                           <TxItem>
-                            <TYPE.subHeader>{`$${Number(tx.amountUSD).toFixed(2)}`}</TYPE.subHeader>
+                            <TYPE.subHeader>{`≈$${amountFormat(tx.amountUSD, 2)}`}</TYPE.subHeader>
                           </TxItem>
                           <TxItem>
                             <TYPE.subHeader>{`${Number(tx.amount0).toFixed(2)} ${
@@ -838,9 +840,9 @@ export default function StakingPoolDetail({
                           </TxItem>
                           <TxItem>
                             <ExternalLink href={`${getEtherscanLink(chainId || 1, tx.sender, 'address')}`}>
-                              <TYPE.subHeader style={{ color: '#fff' }}>{`${shortenAddress(
-                                tx.sender
-                              )}`}</TYPE.subHeader>
+                              <TYPE.subHeader style={{ color: '#fff' }}>{`${
+                                tx.sender ? shortenAddress(tx.sender) : ''
+                              }`}</TYPE.subHeader>
                             </ExternalLink>
                           </TxItem>
                           <TxItem>
@@ -891,7 +893,7 @@ export default function StakingPoolDetail({
                         </TYPE.main>
                       </AutoRow>
                     </AutoColumn>
-                    <TableTitle>{pairMore ? `$${(pairMore.totalVolume * 0.003).toFixed()}` : '--'}</TableTitle>
+                    <TableTitle>{pairMore ? `≈$${(pairMore.totalVolume * 0.003).toFixed()}` : '--'}</TableTitle>
                     <TableTitle>{pool ? pool.txCount : '--'}</TableTitle>
                   </AutoRow>
                 </LightCard>
