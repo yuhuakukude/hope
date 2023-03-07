@@ -5,7 +5,7 @@ import Row, { AutoRow, AutoRowBetween, RowBetween, RowFixed } from '../../compon
 import { AutoColumn } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import { TYPE, ExternalLink } from '../../theme'
-import { GreyCard, LightCard } from '../../components/Card'
+import Card, { GreyCard, LightCard } from '../../components/Card'
 import { LT } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { ButtonOutlined, ButtonPrimary } from '../../components/Button'
@@ -93,6 +93,7 @@ const TabItem = styled.div<{ isActive?: boolean }>`
   width: 118px;
   height: 38px;
   border-radius: 8px;
+  font-size: 16px;
   font-family: Arboria-Medium;
   cursor: pointer;
   user-select: none;
@@ -104,18 +105,6 @@ const TabItem = styled.div<{ isActive?: boolean }>`
   &:hover {
     color: ${({ theme }) => theme.text1};
   }
-
-  // &::after {
-  //   content: '';
-  //   width: 24px;
-  //   height: 2px;
-  //   display: ${({ isActive }) => (isActive ? 'block' : 'none')};
-  //   position: absolute;
-  //   bottom: 0;
-  //   left: 50%;
-  //   transform: translate(-50%, 0);
-  //   background: #e4c989;
-  // }
 `
 
 const TimeItem = styled.div<{ isActive?: boolean }>`
@@ -215,8 +204,6 @@ export default function StakingPoolDetail({
   const [timeIndex, setTimeIndex] = useState('24H')
   const [xData, setXData] = useState<string[]>()
   const [yData, setYData] = useState<string[]>()
-  const [xCurrentData, setXCurrentData] = useState<string>()
-  const [yCurrentData, setYCurrentData] = useState<string>()
   const { result: dayChartResult } = useLineDaysChartsData(address ?? '')
   const { result: hourChartResult } = useLine24HourChartsData(address ?? '')
 
@@ -434,11 +421,6 @@ export default function StakingPoolDetail({
   }, [errorStatus])
   const [aprInfo, setAprInfo] = useState<any>({})
 
-  const getCurrentData = (xCurrent: string, yCurrent: string) => {
-    setXCurrentData(xCurrent)
-    setYCurrentData(yCurrent)
-  }
-
   const initFn = useCallback(async () => {
     if (!address) return
     const res = await AprApi.getHopeFeeApr(address)
@@ -447,30 +429,6 @@ export default function StakingPoolDetail({
     }
   }, [address])
 
-  const lineToTal = useMemo(() => {
-    if (!pairMore) return '0'
-    if (timeIndex === '24H') {
-      return pairMore?.oneDayTVLUSD.toFixed(2)
-    } else if (timeIndex === '1W') {
-      return pairMore?.oneWeekTVLUSD.toFixed(2)
-    } else if (timeIndex === '1M') {
-      return pairMore?.oneMonthTVLUSD.toFixed(2)
-    }
-    return '0'
-  }, [pairMore, timeIndex])
-
-  const barToTal = useMemo(() => {
-    if (!pairMore) return '0'
-    if (timeIndex === '24H') {
-      return tabIndex === 'Volume' ? pairMore?.oneDayVolumeUSD.toFixed(2) : pairMore?.oneDayVolumeUSD.toFixed(2)
-    } else if (timeIndex === '1W') {
-      return tabIndex === 'Volume' ? pairMore?.oneWeekVolume.toFixed(2) : pairMore?.oneWeekVolume.toFixed(2)
-    } else if (timeIndex === '1M') {
-      return tabIndex === 'Volume' ? pairMore?.oneMonthVolume.toFixed(2) : pairMore?.oneMonthVolume.toFixed(2)
-    }
-    return '0'
-  }, [pairMore, timeIndex, tabIndex])
-
   useEffect(() => {
     initFn()
   }, [initFn])
@@ -478,7 +436,7 @@ export default function StakingPoolDetail({
   function LiquidityCard() {
     return (
       <LightCard padding={'0'} height={'fit-content'}>
-        <CardHeader>
+        <CardHeader style={{ padding: '30px' }}>
           <RowBetween>
             <TYPE.white fontSize={18} fontWeight={700}>
               My Liquidity Position
@@ -539,6 +497,7 @@ export default function StakingPoolDetail({
             </RowBetween>
             <AutoRowBetween gap={'30px'}>
               <ButtonPrimary
+                className="text-medium"
                 onClick={() =>
                   pool?.tokens[0] &&
                   pool?.tokens[1] &&
@@ -549,7 +508,7 @@ export default function StakingPoolDetail({
                     )}`
                   )
                 }
-                height={46}
+                height={42}
               >
                 Deposit
               </ButtonPrimary>
@@ -565,7 +524,7 @@ export default function StakingPoolDetail({
                     )}`
                   )
                 }
-                height={46}
+                height={42}
               >
                 Withdraw
               </ButtonOutlined>
@@ -580,7 +539,7 @@ export default function StakingPoolDetail({
     return (
       <AutoColumn style={{ marginTop: 30, flex: 1 }}>
         <LightCard padding={'0'}>
-          <CardHeader>
+          <CardHeader style={{ padding: '30px' }}>
             <TYPE.white fontSize={18} fontWeight={700}>
               Liquidity Gömböc
             </TYPE.white>
@@ -591,7 +550,9 @@ export default function StakingPoolDetail({
                 The Pool has not yet been added to the liquidity mining list, you can start the add process via the
                 governance specification.
               </TYPE.white>
-              <ButtonPrimary mt={50}>Create Proposal</ButtonPrimary>
+              <ButtonPrimary className="text-medium" mt={50}>
+                Create Proposal
+              </ButtonPrimary>
               <AutoRow mt={30} justify={'center'}>
                 <TYPE.main>Learn more about Liquidity Mining</TYPE.main>
                 <ArrowRight style={{ marginLeft: 20 }} size={12} color={'#A8A8AA'} />
@@ -633,6 +594,7 @@ export default function StakingPoolDetail({
                   <>
                     <AutoRowBetween gap={'30px'}>
                       <ButtonPrimary
+                        className="text-medium"
                         onClick={() => history.push(`/swap/liquidity/mining/${pool?.stakingRewardAddress}`)}
                         height={42}
                       >
@@ -654,7 +616,9 @@ export default function StakingPoolDetail({
                         <TYPE.main>Connect your wallet to view more information</TYPE.main>
                       </AutoRow>
                     </GreyCard>
-                    <ButtonPrimary onClick={toggleWalletModal}>Connect Wallet</ButtonPrimary>
+                    <ButtonPrimary className="text-medium" onClick={toggleWalletModal}>
+                      Connect Wallet
+                    </ButtonPrimary>
                   </>
                 )}
               </AutoColumn>
@@ -804,31 +768,10 @@ export default function StakingPoolDetail({
                       </TimeItem>
                     </Row>
                   </div>
-                  {!!yCurrentData && (
-                    <div>
-                      <p className="text-success font-20 text-medium text-right">
-                        {!!pool &&
-                          `$ ${
-                            yCurrentData === 'total'
-                              ? format.amountFormat(tabIndex === 'TVL' ? lineToTal : barToTal, 2)
-                              : format.amountFormat(yCurrentData, 2)
-                          }`}
-                      </p>
-                      <p className="font-nor text-right m-t-12">
-                        {xCurrentData === 'total' ? `Last ${timeIndex}` : xCurrentData}
-                      </p>
-                    </div>
-                  )}
                 </Row>
               </div>
               {tabIndex === 'TVL' ? (
-                <LineCharts
-                  xData={xData}
-                  yData={yData}
-                  height={330}
-                  is24Hour={timeIndex === '24H'}
-                  getCurrentData={getCurrentData}
-                ></LineCharts>
+                <LineCharts xData={xData} yData={yData} height={330} is24Hour={timeIndex === '24H'}></LineCharts>
               ) : (
                 <BarCharts
                   xData={xData}
@@ -836,7 +779,6 @@ export default function StakingPoolDetail({
                   bottom={10}
                   height={330}
                   is24Hour={timeIndex === '24H'}
-                  getCurrentData={getCurrentData}
                 ></BarCharts>
               )}
             </div>
@@ -890,7 +832,7 @@ export default function StakingPoolDetail({
             </TabWrapper>
             {showTx ? (
               <>
-                <GreyCard marginTop={30}>
+                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 30px'}>
                   <AutoRow>
                     <TableTitle>
                       <SelectTips options={TransactionType} label={transactionType} />
@@ -901,7 +843,7 @@ export default function StakingPoolDetail({
                     <TableTitle>Account</TableTitle>
                     <TableTitle>Time (UTC)</TableTitle>
                   </AutoRow>
-                </GreyCard>
+                </Card>
 
                 <LightCard padding={'0 10px 10px'}>
                   <TxItemWrapper>
@@ -949,7 +891,7 @@ export default function StakingPoolDetail({
               </>
             ) : (
               <>
-                <GreyCard marginTop={30}>
+                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 30px'}>
                   <AutoRow>
                     <TableTitle>Contract Address</TableTitle>
                     <TableTitle>Creation Time(UTC)</TableTitle>
@@ -958,7 +900,7 @@ export default function StakingPoolDetail({
                     <TableTitle>Total Swap Fee</TableTitle>
                     <TableTitle>Total Number of Trad</TableTitle>
                   </AutoRow>
-                </GreyCard>
+                </Card>
 
                 <LightCard>
                   <AutoRow align={'flex-start'}>
