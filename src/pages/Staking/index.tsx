@@ -534,12 +534,12 @@ export default function Staking() {
                       <span className="text-white">{format.rate(relWeight)}</span>
                     </div>
                     <div className="flex jc-between m-b-20">
-                      <span className="text-normal">My Future Boost</span>
-                      <span className="text-white">{futureBoots ? futureBoots.toFixed(2) : '--'}x</span>
-                    </div>
-                    <div className="flex jc-between m-b-20">
                       <span className="text-normal">My Current Boost</span>
                       <span className="text-white">{currentBoots ? currentBoots.toFixed(2) : '--'}x</span>
+                    </div>
+                    <div className="flex jc-between m-b-20">
+                      <span className="text-normal">My Future Boost</span>
+                      <span className="text-white">{futureBoots ? futureBoots.toFixed(2) : '--'}x</span>
                     </div>
                     <div className="flex jc-between ai-center m-b-20">
                       <span className="text-normal">Claimable</span>
