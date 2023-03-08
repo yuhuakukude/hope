@@ -74,7 +74,7 @@ const positionTitles = [
   { value: 'My Composition' },
   { value: 'LP Tokens' },
   { value: 'Boost' },
-  { value: 'APR' },
+  { value: 'APR', weight: 1.5 },
   { value: 'Claimable Rewards' },
   { value: 'Actions', weight: 0.5 }
 ]
@@ -285,6 +285,9 @@ export default function Pools() {
                   feeRate={amountPair.feeRate}
                   pairInfo={amountPair.pair}
                   stakedBalance={amountPair.stakedAmount}
+                  feeApr={amountPair.feeApr}
+                  RewardsApr={amountPair.ltApr}
+                  maxApr={amountPair.maxApr}
                 />
               ))}
             </>

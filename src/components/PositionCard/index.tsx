@@ -22,7 +22,8 @@ import CurrencyLogo from '../CurrencyLogo'
 import TitleTips, { TitleTipsProps } from '../../pages/Portfolio/component/SelectTips'
 import { useHistory } from 'react-router-dom'
 import ClaimRewardModal from '../earn/ClaimRewardModal'
-import { amountFormat } from '../../utils/format'
+import { amountFormat, rate } from '../../utils/format'
+import { ArrowUpRight } from 'react-feather'
 
 export const FixedHeightRow = styled(RowBetween)`
   height: 24px;
@@ -160,6 +161,9 @@ interface FullCardProps {
   reward?: TokenAmount | undefined
   stakingAddress?: string
   ltPrice?: number
+  feeApr?: number | string
+  RewardsApr?: number | string
+  maxApr?: number | string
 }
 
 export default function FullPositionCard({
@@ -171,7 +175,10 @@ export default function FullPositionCard({
   currentBoots,
   reward,
   stakingAddress,
-  ltPrice
+  ltPrice,
+  feeApr,
+  RewardsApr,
+  maxApr
 }: FullCardProps) {
   const { account, chainId } = useActiveWeb3React()
   const history = useHistory()
@@ -310,7 +317,20 @@ export default function FullPositionCard({
             </AutoRow>
           </AutoColumn>
         </ContentRow>
-        <ContentRow>--</ContentRow>
+        <ContentRow weight={1.5}>
+          <AutoColumn gap={'10px'}>
+            <AutoRow>
+              <TYPE.main>Fees:&nbsp;</TYPE.main>
+              <TYPE.white>{rate(feeApr)}</TYPE.white>
+            </AutoRow>
+            <AutoRow>
+              <TYPE.main>Rewards:&nbsp;</TYPE.main>
+              <TYPE.white>{rate(RewardsApr)}</TYPE.white>
+              {maxApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
+              <TYPE.green>{maxApr ? `${amountFormat(maxApr, 2)}%` : ''}</TYPE.green>
+            </AutoRow>
+          </AutoColumn>
+        </ContentRow>
         <ContentRow>
           <AutoColumn gap={'10px'}>
             <TYPE.white>{reward ? `${reward.toFixed(4)} LT` : '--'}</TYPE.white>

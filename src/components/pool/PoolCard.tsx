@@ -103,7 +103,7 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
         <ContentRow gap={'10px'}>
           <TYPE.white>{pairData?.ltApr ? `${amountFormat(pairData?.ltApr, 2)}%` : ''}</TYPE.white>
           {pairData.maxApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
-          <TYPE.white>{pairData.maxApr ? `${amountFormat(pairData.maxApr, 2)}%` : ''}</TYPE.white>
+          <TYPE.green>{pairData.maxApr ? `${amountFormat(pairData.maxApr, 2)}%` : ''}</TYPE.green>
         </ContentRow>
         <ContentRow>
           <TYPE.white>

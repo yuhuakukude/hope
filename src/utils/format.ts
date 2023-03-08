@@ -1,7 +1,7 @@
 import { Decimal } from 'decimal.js'
 import moment from 'moment'
 // rate
-export const rate = (value: string | number, decimal?: number, isNull?: boolean) => {
+export const rate = (value: string | number | undefined, decimal?: number, isNull?: boolean) => {
   if (value || value === 0) {
     const val = Number(value) * 100
     const de = decimal || 2
