@@ -114,7 +114,11 @@ export default function Pools() {
               </TYPE.white>
             </RowBetween>
             <RowBetween>
-              <ExternalLink style={{ color: 'white', textDecoration: 'underline' }} target="_blank" href="">
+              <ExternalLink
+                style={{ color: 'white', textDecoration: 'underline' }}
+                target="_blank"
+                href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/usdhope-token"
+              >
                 <TYPE.link fontSize={14}>Read more about providing liquidity</TYPE.link>
               </ExternalLink>
             </RowBetween>
