@@ -8,9 +8,8 @@ import { usePortfolio, toUsdPrice } from '../../../../hooks/ahp/usePortfolio'
 import format from '../../../../utils/format'
 import { useActiveWeb3React } from '../../../../hooks'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
-import { VELT, ST_HOPE } from '../../../../constants'
+import { VELT, ST_HOPE, STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
 import { Percent, Token } from '@uniswap/sdk'
-import usePrice from 'hooks/usePrice'
 import VotedList from '../../../../components/ahp/VotedList'
 import { NavLink, Link } from 'react-router-dom'
 import { Decimal } from 'decimal.js'
@@ -20,12 +19,12 @@ import TransactionConfirmationModal, {
 } from '../../../../components/TransactionConfirmationModal'
 import './index.scss'
 import { ButtonPrimary } from '../../../../components/Button'
+import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
 
 export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (stHope: string, lt: string) => void }) {
   const { account, chainId } = useActiveWeb3React()
   const { lockerRes, veltTotalAmounnt } = useLocker()
   const { claimableFees } = usePortfolio()
-  const hopePrice = usePrice()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const [curWithType, setCurWithType] = useState<string>('all')
   // modal and loading
@@ -44,6 +43,17 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
   const [unUseRateVal, setUnUseRateVal] = useState<string>('')
   const [votingFee, setVotingFee] = useState<any>({ stHope: '0.00', toUsd: '0.00' })
   const [allData, setAllData] = useState([])
+  const addresses = useMemo(() => {
+    return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] ?? '']
+  }, [chainId])
+  const { result: priceResult } = useTokenPriceObject(addresses)
+  const stHopePrice = useMemo(() => {
+    let pr = '0'
+    if (STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] && priceResult) {
+      pr = priceResult[STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
+    }
+    return pr
+  }, [chainId, priceResult])
   useEffect(() => {
     if (veltTotalAmounnt && veltBalance) {
       const ra = new Percent(veltBalance?.raw, veltTotalAmounnt?.raw)
@@ -70,7 +80,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
   const curItemData = useMemo(() => {
     let res = {
       value: claimableFees?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00',
-      usdOfValue: toUsdPrice(claimableFees?.toFixed(2), hopePrice)
+      usdOfValue: toUsdPrice(claimableFees?.toFixed(2), stHopePrice)
     }
     if (curWithType === 'all') {
       res = {
@@ -79,7 +89,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
       }
     }
     return res
-  }, [curWithType, claimableFees, hopePrice, votingFee])
+  }, [curWithType, claimableFees, stHopePrice, votingFee])
 
   const withdrawFn = (type: string) => {
     setCurWithType(type)
@@ -248,7 +258,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                       ≈ {claimableFees?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} stHOPE
                     </span>
                     <span className="my-locked-lt-value2">
-                      ≈ ${toUsdPrice(claimableFees?.toFixed(2), hopePrice) || '--'}
+                      ≈ ${toUsdPrice(claimableFees?.toFixed(2), stHopePrice) || '--'}
                     </span>
                   </div>
                   <Button
