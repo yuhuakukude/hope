@@ -42,6 +42,7 @@ import { useUserSlippageTolerance } from '../../state/user/hooks'
 import { BigNumber } from '@ethersproject/bignumber'
 import { useHistory } from 'react-router-dom'
 import { Divider } from 'antd'
+import { GreyCard } from '../../components/Card'
 
 const PageWrapper = styled(ColumnCenter)`
   width: 100%;
@@ -330,7 +331,6 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
     } else {
       throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
     }
-
     onTxStart(
       `Removing ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${currencyA?.symbol} and ${parsedAmounts[
         Field.CURRENCY_B
@@ -402,34 +402,37 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
 
   const modalHeader = useCallback(() => {
     return (
-      <AutoColumn gap={'md'} style={{ marginTop: 20 }}>
-        <RowBetween align="flex-end">
-          <RowFixed gap="4px">
-            <CurrencyLogo currency={currencyA} size={'20px'} />
-            <Text fontSize={20} fontWeight={500} style={{ marginLeft: '10px' }}>
-              {currencyA?.symbol}
-            </Text>
-          </RowFixed>
-          <TYPE.main fontSize={20} fontWeight={500}>
-            {parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)}
-          </TYPE.main>
-        </RowBetween>
-        <RowFixed>
-          <PlusCircle style={{ marginLeft: 20 }} size="20" color={theme.text3} />
-        </RowFixed>
-        <RowBetween align="flex-end">
-          <RowFixed gap="4px">
-            <CurrencyLogo currency={currencyB} size={'20px'} />
-            <Text fontSize={20} fontWeight={500} style={{ marginLeft: '10px' }}>
-              {currencyB?.symbol}
-            </Text>
-          </RowFixed>
-          <TYPE.main fontSize={20} fontWeight={500}>
-            {parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)}
-          </TYPE.main>
-        </RowBetween>
-
-        <TYPE.main fontSize={12} color={theme.text2} textAlign="left" padding={'12px 0 0 0'}>
+      <AutoColumn>
+        <GreyCard mt={'20px'}>
+          <AutoColumn gap={'md'}>
+            <RowBetween align="flex-end">
+              <RowFixed gap="4px">
+                <CurrencyLogo currency={currencyA} size={'24px'} />
+                <TYPE.white ml={'10px'} fontSize={20} fontWeight={500}>
+                  {parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)}
+                </TYPE.white>
+              </RowFixed>
+              <TYPE.main fontSize={16} fontWeight={500} style={{ marginLeft: '10px' }}>
+                {currencyA?.symbol}
+              </TYPE.main>
+            </RowBetween>
+            <RowFixed>
+              <PlusCircle style={{ marginLeft: 20 }} size="24" color={theme.text3} />
+            </RowFixed>
+            <RowBetween align="flex-end">
+              <RowFixed gap="4px">
+                <CurrencyLogo currency={currencyB} size={'20px'} />
+                <TYPE.white ml={'10px'} fontSize={20} fontWeight={500}>
+                  {parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)}
+                </TYPE.white>
+              </RowFixed>
+              <TYPE.main fontSize={16} fontWeight={500} style={{ marginLeft: '10px' }}>
+                {currencyB?.symbol}
+              </TYPE.main>
+            </RowBetween>
+          </AutoColumn>
+        </GreyCard>
+        <TYPE.main color={theme.text2} textAlign="left" mt={'24px'}>
           {`Output is estimated. If the price changes by more than ${allowedSlippage /
             100}% your transaction will revert.`}
         </TYPE.main>
@@ -440,36 +443,39 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
   const modalBottom = useCallback(() => {
     return (
       <>
+        <Divider style={{ background: '#3D3E46', marginTop: -20 }} />
         <RowBetween>
           <Text color={theme.text2} fontWeight={500} fontSize={16}>
             {'LP ' + currencyA?.symbol + '/' + currencyB?.symbol} Burned
           </Text>
-          <RowFixed>
-            <DoubleCurrencyLogo currency0={currencyA} currency1={currencyB} margin={true} />
-            <Text fontWeight={500} fontSize={16}>
-              {parsedAmounts[Field.LIQUIDITY]?.toSignificant(6)}
-            </Text>
-          </RowFixed>
+          <DoubleCurrencyLogo currency0={currencyA} currency1={currencyB} />
         </RowBetween>
+        <TYPE.white textAlign={'right'} fontWeight={700} fontSize={16}>
+          {parsedAmounts[Field.LIQUIDITY]?.toSignificant(6)}
+        </TYPE.white>
         {pair && (
           <>
             <RowBetween>
-              <Text color={theme.text2} fontWeight={500} fontSize={16}>
+              <Text color={theme.text2} fontWeight={500}>
                 Price
               </Text>
-              <Text fontWeight={500} fontSize={16} color={theme.text1}>
+              <Text fontWeight={700} color={theme.text1}>
                 1 {currencyA?.symbol} = {tokenA ? pair.priceOf(tokenA).toSignificant(6) : '-'} {currencyB?.symbol}
               </Text>
             </RowBetween>
             <RowBetween>
               <div />
-              <Text fontWeight={500} fontSize={16} color={theme.text1}>
+              <Text fontWeight={700} color={theme.text1}>
                 1 {currencyB?.symbol} = {tokenB ? pair.priceOf(tokenB).toSignificant(6) : '-'} {currencyA?.symbol}
               </Text>
             </RowBetween>
           </>
         )}
-        <ButtonPrimary disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)} onClick={onRemove}>
+        <ButtonPrimary
+          mt={'20px'}
+          disabled={!(approval === ApprovalState.APPROVED || signatureData !== null)}
+          onClick={onRemove}
+        >
           <Text fontWeight={500} fontSize={20}>
             Confirm
           </Text>
@@ -578,7 +584,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                   <AutoColumn style={{ minWidth: '20rem', width: '100%' }}>
                     <MinimalPositionCard showUnwrapped={oneCurrencyIsWETH} pair={pair} />
                   </AutoColumn>
-                  <Divider style={{ background: '#3D3E46', margin: 10 }} />
+                  <Divider style={{ background: '#3D3E46', margin: '10px 0' }} />
                 </>
               ) : null}
               <RowBetween>
@@ -685,6 +691,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                   </ButtonConfirmed>
                   <ButtonError
                     onClick={() => {
+                      setErrorStatus(undefined)
                       setShowConfirm(true)
                     }}
                     disabled={!isValid || (signatureData === null && approval !== ApprovalState.APPROVED)}

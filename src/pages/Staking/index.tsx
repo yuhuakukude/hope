@@ -12,6 +12,7 @@ import {
   LT,
   PERMIT2_ADDRESS,
   ST_HOPE,
+  HOPE_TOKEN_ADDRESS,
   STAKING_HOPE_GOMBOC_ADDRESS
 } from '../../constants'
 import StakingApi from '../../api/staking.api'
@@ -42,9 +43,9 @@ import { useLocation } from 'react-router-dom'
 import useGasPrice from '../../hooks/useGasPrice'
 import JSBI from 'jsbi'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
-import usePrice from 'hooks/usePrice'
 import { useActionPending } from '../../state/transactions/hooks'
 import { usePairStakeInfo } from '../../hooks/usePairInfo'
+import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1340px;
@@ -62,12 +63,32 @@ enum ACTION {
 export default function Staking() {
   const { account, chainId, library } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
-  const hopePrice = usePrice()
   const gasPrice = useGasPrice()
   const [curType, setStakingType] = useState('stake')
   const { search } = useLocation()
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
   const [actionType, setActionType] = useState(ACTION.STAKE)
+
+  const addresses = useMemo(() => {
+    return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] ?? '', HOPE_TOKEN_ADDRESS[chainId ?? 1] ?? '']
+  }, [chainId])
+
+  const { result: priceResult } = useTokenPriceObject(addresses)
+
+  const hopePrice = useMemo(() => {
+    let pr = '0'
+    if (HOPE_TOKEN_ADDRESS[chainId ?? 1] && priceResult) {
+      pr = priceResult[`${HOPE_TOKEN_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()]
+    }
+    return pr
+  }, [chainId, priceResult])
+  const stHopePrice = useMemo(() => {
+    let pr = '0'
+    if (STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] && priceResult) {
+      pr = priceResult[STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
+    }
+    return pr
+  }, [chainId, priceResult])
 
   const [stakePendingText, setStakePendingText] = useState('')
   const [claimPendingText, setClaimPendingText] = useState('')
@@ -596,7 +617,7 @@ export default function Staking() {
                         <div className="hope-icon"></div>
                         <div className="currency font-nor text-medium m-l-12">stHOPE</div>
                       </div>
-                      <span className="text-white">≈ ${toUsdPrice(stakedVal?.toFixed(2), hopePrice) || '--'}</span>
+                      <span className="text-white">≈ ${toUsdPrice(stakedVal?.toFixed(2), stHopePrice) || '--'}</span>
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-white">Available</span>

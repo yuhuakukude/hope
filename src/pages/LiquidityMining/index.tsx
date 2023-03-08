@@ -242,11 +242,18 @@ export default function LiquidityMining({
             <StakingTips />
           </RowBetween>
           <CustomTabWrapper>
-            <CustomTab onClick={() => setStaking(true)} isActive={staking}>
+            <CustomTab
+              onClick={() => {
+                setTypedValue('')
+                setStaking(true)
+              }}
+              isActive={staking}
+            >
               Stake
             </CustomTab>
             <CustomTab
               onClick={() => {
+                setTypedValue('')
                 setStaking(false)
               }}
               isActive={!staking}

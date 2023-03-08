@@ -204,8 +204,8 @@ export function TransactionErrorContent({
     <Wrapper>
       <Section>
         <RowBetween>
-          <Text fontWeight={500} fontSize={20}>
-            {''}
+          <Text fontWeight={500} fontSize={18}>
+            {'Something went wrong'}
           </Text>
           <CloseIcon onClick={onDismiss} />
         </RowBetween>
@@ -224,7 +224,7 @@ export function TransactionErrorContent({
                 overflow={'auto'}
                 fontWeight={500}
                 fontSize={16}
-                color={theme.red1}
+                color={theme.text2}
                 style={{ textAlign: 'center', width: '85%' }}
               >
                 {message}
@@ -267,7 +267,7 @@ export default function TransactionConfirmationModal({
 
   // confirmation screen
   return (
-    <Modal isOpen={isOpen} onDismiss={onDismiss} maxHeight={90}>
+    <Modal isOpen={isOpen} width={420} maxWidth={420} onDismiss={onDismiss} maxHeight={90}>
       {attemptingTxn ? (
         <ConfirmationPendingContent onDismiss={onDismiss} pendingText={pendingText} />
       ) : hash ? (

@@ -6,7 +6,7 @@ import { PlusCircle } from 'react-feather'
 import { Text } from 'rebass'
 import styled, { ThemeContext } from 'styled-components'
 import { ButtonConfirmed, ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
-import { LightCard } from '../../components/Card'
+import { GreyCard, LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter, GapColumn } from '../../components/Column'
 import TransactionConfirmationModal, {
   ConfirmationModalContent,
@@ -28,7 +28,7 @@ import { Field } from '../../state/mint/actions'
 import { useDerivedMintInfo, useMintActionHandlers, useMintState } from '../../state/mint/hooks'
 
 import { useTransactionAdder } from '../../state/transactions/hooks'
-import { useIsExpertMode, useUserSlippageTolerance } from '../../state/user/hooks'
+import { useUserSlippageTolerance } from '../../state/user/hooks'
 import { CustomLightSpinner, TYPE } from '../../theme'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '../../utils'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
@@ -63,7 +63,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
 
   const toggleWalletModal = useWalletModalToggle() // toggle wallet when disconnected
 
-  const expertMode = useIsExpertMode()
+  // const expertMode = useIsExpertMode()
 
   // mint state
   const { independentField, typedValue, otherTypedValue } = useMintState()
@@ -278,23 +278,27 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
         </LightCard>
       </AutoColumn>
     ) : (
-      <AutoColumn gap="20px">
-        <RowFlat style={{ marginTop: '20px' }}>
-          <Text fontSize="48px" fontWeight={500} lineHeight="42px" marginRight={10}>
-            {liquidityMinted?.toSignificant(6)}
-          </Text>
-          <DoubleCurrencyLogo
-            currency0={currencies[Field.CURRENCY_A]}
-            currency1={currencies[Field.CURRENCY_B]}
-            size={30}
-          />
-        </RowFlat>
-        <Row>
-          <Text fontSize="24px">
-            {currencies[Field.CURRENCY_A]?.symbol + '/' + currencies[Field.CURRENCY_B]?.symbol + ' Pool Tokens'}
-          </Text>
-        </Row>
-        <TYPE.main fontSize={12} textAlign="left" padding={'8px 0 0 0 '}>
+      <AutoColumn gap={'20px'} style={{ marginTop: 30 }}>
+        <GreyCard>
+          <AutoColumn gap="20px">
+            <RowFlat>
+              <DoubleCurrencyLogo
+                currency0={currencies[Field.CURRENCY_A]}
+                currency1={currencies[Field.CURRENCY_B]}
+                size={24}
+              />
+              <Text ml={'8px'} fontSize="16px">
+                {currencies[Field.CURRENCY_A]?.symbol + '/' + currencies[Field.CURRENCY_B]?.symbol + ' Pool Tokens'}
+              </Text>
+            </RowFlat>
+            <Row>
+              <Text fontSize="24px" fontWeight={500} marginRight={10}>
+                {liquidityMinted?.toSignificant(6)}
+              </Text>
+            </Row>
+          </AutoColumn>
+        </GreyCard>
+        <TYPE.main fontSize={16} textAlign="left" padding={'8px 0 0 0 '}>
           {`Output is estimated. If the price changes by more than ${allowedSlippage /
             100}% your transaction will revert.`}
         </TYPE.main>
@@ -450,6 +454,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
                     poolTokenPercentage={poolTokenPercentage}
                     noLiquidity={noLiquidity}
                     price={price}
+                    liquidityMinted={liquidityMinted}
                   />
                 </AutoColumn>
               </>
@@ -522,7 +527,8 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
                 ) : (
                   <ButtonError
                     onClick={() => {
-                      expertMode ? addCallback() : addCallback()
+                      setErrorStatus(undefined)
+                      setShowConfirm(true)
                     }}
                     disabled={!isValid || approvalA !== ApprovalState.APPROVED || approvalB !== ApprovalState.APPROVED}
                     error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
