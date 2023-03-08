@@ -16,7 +16,7 @@ const PoolsWrapper = styled(AutoColumn)`
 `
 const RateText = styled.p`
   font-size: 16px;
-  margin-left: 22px;
+  margin-left: 12px;
 `
 
 const Text2 = styled.p`

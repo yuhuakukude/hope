@@ -482,7 +482,7 @@ export default function StakingPoolDetail({
 
   function LiquidityCard() {
     return (
-      <LightCard padding={'0'} height={'fit-content'}>
+      <LightCard padding={'0'} height={'fit-content'} borderRadius={'20px'}>
         <CardHeader style={{ padding: '30px' }}>
           <RowBetween>
             <TYPE.white fontSize={18} fontWeight={700}>
@@ -585,7 +585,7 @@ export default function StakingPoolDetail({
   function StakeCard() {
     return (
       <AutoColumn style={{ marginTop: 30, flex: 1 }}>
-        <LightCard padding={'0'}>
+        <LightCard padding={'0'} borderRadius={'20px'}>
           <CardHeader style={{ padding: '30px' }}>
             <TYPE.white fontSize={18} fontWeight={700}>
               Liquidity Gömböc
@@ -730,9 +730,9 @@ export default function StakingPoolDetail({
           </ButtonPrimary>
         </RowFlat> */}
       </AutoRow>
-      <AutoRow style={{ margin: 0 }} padding={'20px 0px'} gap={'15px'} align={''}>
+      <AutoRow style={{ margin: 0 }} padding={'15px 0px'} gap={'15px'} align={''}>
         <AutoColumn style={{ flex: 4 }}>
-          <LightCard padding={'30px'}>
+          <LightCard padding={'30px'} borderRadius={'20px'}>
             <RowBetween>
               <Row>
                 <PieCharts data={[50, 50]}></PieCharts>
@@ -787,7 +787,7 @@ export default function StakingPoolDetail({
             )}
           </LightCard>
           <Overview viewData={viewData} smallSize={true}></Overview>
-          <LightCard style={{ marginTop: '20px' }} padding={'30px 30px 20px'}>
+          <LightCard style={{ marginTop: '30px' }} padding={'30px 30px 20px'} borderRadius={'20px'}>
             <div style={{ height: '435px' }}>
               <div className="charts-tab">
                 <Row justify={'space-between'} align={'flex-start'}>
@@ -862,7 +862,7 @@ export default function StakingPoolDetail({
         </AutoColumn>
       </AutoRow>
       <AutoRow padding={'0 15px'}>
-        <LightCard>
+        <LightCard borderRadius={'20px'}>
           <AutoColumn>
             <TabWrapper left={showTx ? 50 : 0}>
               <TabItem onClick={() => setShowTx(false)} isActive={!showTx}>
@@ -892,7 +892,7 @@ export default function StakingPoolDetail({
                   </AutoRow>
                 </Card>
 
-                <LightCard padding={'0 10px 10px'}>
+                <LightCard padding={'0 10px 10px'} borderRadius={'20px'}>
                   <TxItemWrapper>
                     {txs.result.map(tx => {
                       return (
