@@ -215,28 +215,28 @@ export default function StakingPoolDetail({
       label: 'All',
       value: 'All',
       onClick: data => {
-        setTransactionType(data.label)
+        setTransactionType(data.value)
       }
     },
     {
       label: 'Swap',
       value: 'Swaps',
       onClick: data => {
-        setTransactionType(data.label)
+        setTransactionType(data.value)
       }
     },
     {
       label: 'Deposit',
       value: 'Adds',
       onClick: data => {
-        setTransactionType(data.label)
+        setTransactionType(data.value)
       }
     },
     {
       label: 'Withdraw',
       value: 'Removes',
       onClick: data => {
-        setTransactionType(data.label)
+        setTransactionType(data.value)
       }
     }
   ]
@@ -690,11 +690,13 @@ export default function StakingPoolDetail({
                 <Row>
                   <TYPE.body>APR</TYPE.body>
                   <TYPE.green fontSize={30} marginLeft={12} fontFamily={'Arboria-Medium'}>
-                    {format.rate(aprInfo.ltApr)}
+                    {amountFormat(aprInfo.baseApr * 100, 2)}%
                   </TYPE.green>
                 </Row>
-                <p className="m-t-15 text-normal">Fees APR: {format.rate(aprInfo.feeApr)} </p>
-                {aprInfo.ltApr && <p className="m-t-12 text-normal">Rewards APR: {format.rate(aprInfo.ltApr)}</p>}
+                <p className="m-t-15 text-normal">Fees APR: {amountFormat(aprInfo.feeApr * 100, 2)}% </p>
+                {aprInfo.ltApr && (
+                  <p className="m-t-12 text-normal">Rewards APR: {amountFormat(aprInfo.ltApr * 100, 2)}%</p>
+                )}
                 {aprInfo.ltAmountPerDay && (
                   <p className="m-t-12 text-normal">
                     Daily Reward:{' '}
@@ -710,12 +712,12 @@ export default function StakingPoolDetail({
               <Row marginTop={30}>
                 <CurrencyLogo currency={pool?.tokens[1]} />
                 <TYPE.body marginLeft={9} marginRight={40}>
-                  1.00 {token0Symbol} = {format.separate(pool?.token1Price ?? 0)} {token1Symbol}
+                  1.00 {token0Symbol} = {amountFormat(pool?.token1Price ?? 0, 2)} {token1Symbol}
                 </TYPE.body>
                 <CurrencyLogo currency={pool?.tokens[0]} />
                 <TYPE.body marginLeft={9}>
                   {' '}
-                  1.00 {token1Symbol} = {format.separate(pool?.token0Price ?? 0)} {token0Symbol}
+                  1.00 {token1Symbol} = {amountFormat(pool?.token0Price ?? 0, 2)} {token0Symbol}
                 </TYPE.body>
               </Row>
             )}

@@ -1124,6 +1124,7 @@ const Swaps = `
 
 function QUERY_TXS_QUERY(type?: string | undefined) {
   let sql
+  console.log('type--->', type)
   switch (type) {
     case 'All':
       sql = `
