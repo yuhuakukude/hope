@@ -55,7 +55,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
     return pr
   }, [chainId, priceResult])
   useEffect(() => {
-    if (veltTotalAmounnt && veltBalance) {
+    if (veltTotalAmounnt && veltBalance && veltTotalAmounnt.toFixed(2) && Number(veltTotalAmounnt.toFixed(2)) > 0) {
       const ra = new Percent(veltBalance?.raw, veltTotalAmounnt?.raw)
       if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
         setUnUseRateVal(ra.toFixed(2))
