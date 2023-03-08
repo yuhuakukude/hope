@@ -415,14 +415,28 @@ export default function StakingPoolDetail({
           </RowBetween>
         </CardHeader>
         <AutoColumn gap={'30px'} style={{ padding: 30 }}>
-          <AutoRowBetween>
-            <AutoRow gap={'10px'}>
-              <DoubleCurrencyLogo over size={24} currency0={pool?.pair.token0} currency1={pool?.pair.token1} />
-              <TYPE.white fontWeight={700} fontSize={18}>{`${token0Symbol || '-'}/${token1Symbol ||
-                '-'} Pool Token`}</TYPE.white>
-            </AutoRow>
-            <TYPE.main>{userTotalBalance?.toFixed(4)}</TYPE.main>
-          </AutoRowBetween>
+          <AutoColumn gap={'8px'}>
+            <AutoRowBetween>
+              <AutoRow gap={'10px'}>
+                <DoubleCurrencyLogo over size={24} currency0={pool?.pair.token0} currency1={pool?.pair.token1} />
+                <TYPE.white fontWeight={700} fontSize={18}>{`${token0Symbol || '-'}/${token1Symbol ||
+                  '-'} Pool Token`}</TYPE.white>
+              </AutoRow>
+              <TYPE.white fontSize={18} fontWeight={700}>
+                {userTotalBalance?.toFixed(4)}
+              </TYPE.white>
+            </AutoRowBetween>
+            <TYPE.main textAlign={'right'}>
+              {userToken0 && priceResult && pool?.tokens[0]
+                ? `≈$${amountFormat(
+                    Number(userToken0.toExact().toString()) *
+                      2 *
+                      Number(priceResult[pool.tokens[0].address.toLowerCase()]),
+                    2
+                  )}`
+                : '$--'}
+            </TYPE.main>
+          </AutoColumn>
           <AutoColumn gap={'20px'}>
             <RowBetween>
               <AutoRow gap={'10px'} style={{ width: '50%' }}>
@@ -597,7 +611,7 @@ export default function StakingPoolDetail({
               </AutoColumn>
             </>
           )}
-          {account && currentBoots && futureBoots && (currentBoots.toFixed(2) !== futureBoots.toFixed(2)) && (
+          {account && currentBoots && futureBoots && currentBoots.toFixed(2) !== futureBoots.toFixed(2) && (
             <AutoRow marginLeft={30}>
               <i style={{ color: '#FBDD55', fontSize: 16, fontWeight: 700 }} className="iconfont">
                 &#xe614;

@@ -271,12 +271,6 @@ export default function LiquidityMining({
                 </TYPE.white>
               </AutoRow>
               <RowBetween>
-                <TYPE.main>Available</TYPE.main>
-                <TYPE.white>
-                  {staking ? (balance ? balance.toFixed(4) : '--') : stakedAmount ? stakedAmount.toFixed(4) : '--'}
-                </TYPE.white>
-              </RowBetween>
-              <RowBetween>
                 <TYPE.main>Staked</TYPE.main>
                 <TYPE.white>{stakedAmount ? stakedAmount.toFixed(4) : '--'}</TYPE.white>
               </RowBetween>
