@@ -204,11 +204,9 @@ export default function Pools() {
                 <TYPE.main>My Farms</TYPE.main>
                 <Switch
                   className="pool-switch"
-                  onChange={() => {
+                  onChange={(e: any) => {
                     setCurrentPage(1)
-                    searchType === PAIR_SEARCH.USER_STAKE
-                      ? setSearchType(PAIR_SEARCH.USER_LIQUIDITY)
-                      : setSearchType(PAIR_SEARCH.USER_STAKE)
+                    setSearchType(e ? PAIR_SEARCH.USER_STAKE : PAIR_SEARCH.USER_LIQUIDITY)
                   }}
                 />
               </AutoRow>
@@ -287,6 +285,7 @@ export default function Pools() {
                   stakedBalance={amountPair.stakedAmount}
                   feeApr={amountPair.feeApr}
                   RewardsApr={amountPair.ltApr || '0'}
+                  maxBoost={Number(amountPair.maxBoost) === 0 ? 1 : amountPair.maxBoost}
                 />
               ))}
             </>
