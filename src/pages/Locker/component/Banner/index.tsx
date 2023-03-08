@@ -9,7 +9,7 @@ export default function LockerBanner() {
         <p className="font-nor m-t-20">
           Extra earnings & voting power{' '}
           <a
-            href="https://docs.hope.money/light/lRGc3srjpd2008mDaMdR/light-hyfi-applications-roadmap/roadmap"
+            href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
             target="_blank"
             rel="noopener noreferrer"
             className="link text-primary m-l-20"

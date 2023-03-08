@@ -17,7 +17,6 @@ import { ReactComponent as Commited } from '../../assets/svg/commited.svg'
 import { ReactComponent as Warning } from '../../assets/svg/warning.svg'
 import { ReactComponent as Reject } from '../../assets/svg/reject.svg'
 import { ReactComponent as Wallet } from '../../assets/svg/wallet.svg'
-import { NavLink } from 'react-router-dom'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -107,7 +106,7 @@ function TransactionSubmittedContent({
             <ButtonLight
               mt={isToGomboc ? '35px' : '80px'}
               height="56px"
-              width="440px"
+              width="100%"
               color="rgba(38, 38, 44, 1)"
               onClick={addToken}
             >
@@ -143,11 +142,14 @@ function TransactionSubmittedContent({
                   <p className="font-nor" style={{ lineHeight: '24px' }}>
                     After Locked LT, you need to refresh accordingly to complete the update of boost and voting power.
                   </p>
-                  <NavLink to={'/dao/gomboc'}>
-                    <Text mt="12px" fontWeight={500} fontSize={16} color={theme.primary1}>
-                      Learn more
-                    </Text>
-                  </NavLink>
+                  <a
+                    href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/reward-goemboec/boosting-usdlt-rewards"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="m-t-12 font-nor text-primary"
+                  >
+                    Learn more
+                  </a>
                 </div>
               </div>
             </div>
