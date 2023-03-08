@@ -586,8 +586,8 @@ export default function Staking() {
                       </div>
                     </div>
                     {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
-                      <div className="flex">
-                        <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
+                      <div className="flex ai-center">
+                        <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
                         <p className="text-normal lh15">You can apply future boost by claiming LT</p>
                       </div>
                     )}
