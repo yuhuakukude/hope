@@ -10,7 +10,7 @@ import { GreyCard, LightCard, YellowCard } from '../../components/Card'
 import { AutoColumn } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import FormattedCurrencyAmount from '../../components/FormattedCurrencyAmount'
-import QuestionHelper from '../../components/QuestionHelper'
+import { Tooltip } from 'antd'
 import { AutoRow, RowBetween, RowFixed } from '../../components/Row'
 import { Dots } from '../../components/swap/styleds'
 import { DEFAULT_DEADLINE_FROM_NOW, INITIAL_ALLOWED_SLIPPAGE } from '../../constants'
@@ -346,7 +346,13 @@ export default function MigrateV1Exchange({
           <BackArrow to="/migrate/v1" />
           <TYPE.mediumHeader>Migrate V1 Liquidity</TYPE.mediumHeader>
           <div>
-            <QuestionHelper text="Migrate your liquidity tokens from Uniswap V1 to Uniswap V2." />
+            <Tooltip
+              className="m-l-5"
+              overlayClassName="tips-question"
+              title="Migrate your liquidity tokens from Uniswap V1 to Uniswap V2."
+            >
+              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+            </Tooltip>
           </div>
         </AutoRow>
 

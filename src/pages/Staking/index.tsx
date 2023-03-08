@@ -2,8 +2,8 @@ import React, { useEffect, useCallback, useState, useMemo } from 'react'
 import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
 import NumericalInput from '../../components/NumericalInput'
-import QuestionHelper from '../../components/QuestionHelper'
 import { useActiveWeb3React } from '../../hooks'
+import { Tooltip } from 'antd'
 import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
 import {
   HOPE,
@@ -379,7 +379,13 @@ export default function Staking() {
                     <div className="apy-box">
                       <div className="text-white font-nor flex ai-center">
                         APY
-                        <QuestionHelper text="The APY value is calculated based on the current data, which consists of the reward tokens by hold stHOPE. " />
+                        <Tooltip
+                          className="m-l-5"
+                          overlayClassName="tips-question"
+                          title="The APY value is calculated based on the current data, which consists of the reward tokens by hold stHOPE."
+                        >
+                          <i className="iconfont font-16 cursor-select tips-circle">&#xe620;</i>
+                        </Tooltip>
                       </div>
                       <h3 className="text-success font-28 font-bold m-t-10">{format.rate(apyVal)}</h3>
                     </div>

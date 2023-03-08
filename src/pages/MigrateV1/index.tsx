@@ -13,7 +13,7 @@ import { LightCard } from '../../components/Card'
 import { BodyWrapper } from '../AppBody'
 import { EmptyState } from './EmptyState'
 import V1PositionCard from '../../components/PositionCard/V1'
-import QuestionHelper from '../../components/QuestionHelper'
+import { Tooltip } from 'antd'
 import { Dots } from '../../components/swap/styleds'
 import { useAddUserToken } from '../../state/user/hooks'
 import { isTokenOnList } from '../../utils'
@@ -73,7 +73,13 @@ export default function MigrateV1() {
           <BackArrow to="/pool" />
           <TYPE.mediumHeader>Migrate V1 Liquidity</TYPE.mediumHeader>
           <div>
-            <QuestionHelper text="Migrate your liquidity tokens from Uniswap V1 to Uniswap V2." />
+            <Tooltip
+              className="m-l-5"
+              overlayClassName="tips-question"
+              title="Migrate your liquidity tokens from Uniswap V1 to Uniswap V2."
+            >
+              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+            </Tooltip>
           </div>
         </AutoRow>
 

@@ -51,7 +51,7 @@ export default function Portfolio() {
       .toFixed(3)
     const stBal = getTokenToHope(stHopeBalance?.toFixed(3) || '0', stToHope)
     const claRVal = getTokenToHope(claRewards?.toFixed(3) || '0', ltToHope)
-    const staking = new Decimal(stBal).add(new Decimal(claRVal))
+    const staking = new Decimal(stBal).add(new Decimal(claRVal)).toNumber()
     const lp = lpData.lpTotal.toFixed(3) || '0'
     const yieldFarming = lpData.yfTotal.toFixed(3) || '0'
     return {

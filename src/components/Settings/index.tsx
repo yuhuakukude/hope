@@ -16,7 +16,7 @@ import { TYPE } from '../../theme'
 import { ButtonError } from '../Button'
 import { AutoColumn } from '../Column'
 import Modal from '../Modal'
-import QuestionHelper from '../QuestionHelper'
+import { Tooltip } from 'antd'
 import { RowBetween, RowFixed } from '../Row'
 import Toggle from '../Toggle'
 import TransactionSettings from '../TransactionSettings'
@@ -203,7 +203,13 @@ export default function SettingsTab() {
                   <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
                     Toggle Expert Mode
                   </TYPE.black>
-                  <QuestionHelper text="Bypasses confirmation modals and allows high slippage trades. Use at your own risk." />
+                  <Tooltip
+                    className="m-l-5"
+                    overlayClassName="tips-question"
+                    title="Bypasses confirmation modals and allows high slippage trades. Use at your own risk."
+                  >
+                    <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+                  </Tooltip>
                 </RowFixed>
                 <Toggle
                   id="toggle-expert-mode-button"
@@ -226,7 +232,13 @@ export default function SettingsTab() {
                   <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
                     Disable Multihops
                   </TYPE.black>
-                  <QuestionHelper text="Restricts swaps to direct pairs only." />
+                  <Tooltip
+                    className="m-l-5"
+                    overlayClassName="tips-question"
+                    title="Restricts swaps to direct pairs only."
+                  >
+                    <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+                  </Tooltip>
                 </RowFixed>
                 <Toggle
                   id="toggle-disable-multihop-button"

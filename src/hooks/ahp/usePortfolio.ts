@@ -5,7 +5,7 @@ import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Decimal } from 'decimal.js'
-// import format from 'utils/format'
+import format from '../../utils/format'
 import { CurrencyAmount } from '@uniswap/sdk'
 import { useSingleCallResult } from '../../state/multicall/hooks'
 
@@ -172,7 +172,7 @@ export function toUsdPrice(val: any, price: string | number) {
   let res = '0'
   if (val && price) {
     const pr = new Decimal(val).mul(new Decimal(price)).toNumber()
-    res = pr.toFixed(2)
+    res = format.amountFormat(pr, 2)
   }
   return res
 }

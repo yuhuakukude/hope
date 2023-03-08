@@ -161,7 +161,7 @@ export default function MyHOPEStaking() {
           {
             label: 'Unstake',
             value: 'Unstake',
-            isHide: Number(stakedVal?.toFixed(2)) <= 0,
+            isHide: Number(stakedVal?.toFixed(8)) <= 0,
             onClick: () => {
               history.push(`/staking?type=unstake`)
             }
@@ -169,7 +169,7 @@ export default function MyHOPEStaking() {
           {
             label: 'Claim Rewards',
             value: 'Claim Rewards',
-            isHide: Number(claRewards?.toFixed(2)) <= 0,
+            isHide: Number(claRewards?.toFixed(8)) <= 0,
             onClick: () => {
               setItem({
                 ltOfReward: claRewards?.toExact() || 0,

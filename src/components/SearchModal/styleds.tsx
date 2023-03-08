@@ -97,6 +97,7 @@ export const SearchInput = styled.input<{
 
   ::placeholder {
     color: ${({ theme }) => theme.text3};
+    font-family: Arboria-Medium;
   }
   transition: border 100ms;
   :focus {

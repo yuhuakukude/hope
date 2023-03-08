@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState, useMemo, useCallback, forwardRef, useImperativeHandle } from 'react'
 import './index.scss'
 import dayjs from 'dayjs'
-import QuestionHelper from '../../../../components/QuestionHelper'
+import { Tooltip } from 'antd'
 import NumericalInput from '../../../../components/NumericalInput'
 import { ButtonPrimary } from '../../../../components/Button'
 import { useActiveWeb3React } from '../../../../hooks'
@@ -368,7 +368,9 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
         </p>
         <div className="text-center text-normal m-t-20 flex jc-center ai-center">
           Voting period ends
-          <QuestionHelper text="Voting period ends" />
+          <Tooltip className="m-l-5" overlayClassName="tips-question" title="Voting period ends.">
+            <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+          </Tooltip>
         </div>
         <div className="end-time-box flex m-t-20 w-100">
           <div className="flex-1">

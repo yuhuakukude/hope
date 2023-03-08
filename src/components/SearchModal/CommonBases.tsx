@@ -5,7 +5,7 @@ import styled from 'styled-components'
 
 import { SUGGESTED_BASES } from '../../constants'
 import { AutoColumn } from '../Column'
-import QuestionHelper from '../QuestionHelper'
+import { Tooltip } from 'antd'
 import { AutoRow } from '../Row'
 import CurrencyLogo from '../CurrencyLogo'
 
@@ -40,7 +40,13 @@ export default function CommonBases({
         <Text fontWeight={500} fontSize={14}>
           Common bases
         </Text>
-        <QuestionHelper text="These tokens are commonly paired with other tokens." />
+        <Tooltip
+          className="m-l-5"
+          overlayClassName="tips-question"
+          title="These tokens are commonly paired with other tokens."
+        >
+          <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+        </Tooltip>
       </AutoRow>
       <AutoRow gap="4px">
         <BaseWrapper

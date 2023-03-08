@@ -6,7 +6,7 @@ import { Redirect, RouteComponentProps } from 'react-router'
 import { ButtonConfirmed } from '../../components/Button'
 import { LightCard } from '../../components/Card'
 import { AutoColumn } from '../../components/Column'
-import QuestionHelper from '../../components/QuestionHelper'
+import { Tooltip } from 'antd'
 import { AutoRow } from '../../components/Row'
 import { DEFAULT_DEADLINE_FROM_NOW } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
@@ -160,7 +160,13 @@ export default function RemoveV1Exchange({
           <BackArrow to="/migrate/v1" />
           <TYPE.mediumHeader>Remove V1 Liquidity</TYPE.mediumHeader>
           <div>
-            <QuestionHelper text="Remove your Uniswap V1 liquidity tokens." />
+            <Tooltip
+              className="m-l-5"
+              overlayClassName="tips-question"
+              title="Remove your Uniswap V1 liquidity tokens."
+            >
+              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+            </Tooltip>
           </div>
         </AutoRow>
 

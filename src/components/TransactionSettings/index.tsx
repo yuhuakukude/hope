@@ -1,7 +1,7 @@
 import React, { useState, useRef, useContext } from 'react'
 import styled, { ThemeContext } from 'styled-components'
 
-import QuestionHelper from '../QuestionHelper'
+import { Tooltip } from 'antd'
 import { TYPE } from '../../theme'
 import { AutoColumn } from '../Column'
 import { RowBetween, RowFixed } from '../Row'
@@ -151,7 +151,13 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
           <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
             Slippage tolerance
           </TYPE.black>
-          <QuestionHelper text="Your transaction will revert if the price changes unfavorably by more than this percentage." />
+          <Tooltip
+            className="m-l-5"
+            overlayClassName="tips-question"
+            title="Your transaction will revert if the price changes unfavorably by more than this percentage."
+          >
+            <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+          </Tooltip>
         </RowFixed>
         <RowBetween>
           <Option
@@ -233,7 +239,13 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
           <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
             Transaction deadline
           </TYPE.black>
-          <QuestionHelper text="Your transaction will revert if it is pending for more than this long." />
+          <Tooltip
+            className="m-l-5"
+            overlayClassName="tips-question"
+            title="Your transaction will revert if it is pending for more than this long."
+          >
+            <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+          </Tooltip>
         </RowFixed>
         <RowFixed>
           <OptionCustom style={{ width: '80px' }} tabIndex={-1}>

@@ -13,7 +13,7 @@ import {
 } from '../../utils/prices'
 import { ButtonError } from '../Button'
 import { AutoColumn } from '../Column'
-import QuestionHelper from '../QuestionHelper'
+import { Tooltip } from 'antd'
 import { AutoRow, RowBetween, RowFixed } from '../Row'
 import FormattedPriceImpact from './FormattedPriceImpact'
 import { StyledBalanceMaxMini, SwapCallbackError } from './styleds'
@@ -71,7 +71,13 @@ export default function SwapModalFooter({
             <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
               {trade.tradeType === TradeType.EXACT_INPUT ? 'Minimum received' : 'Maximum sold'}
             </TYPE.black>
-            <QuestionHelper text="Your transaction will revert if there is a large, unfavorable price movement before it is confirmed." />
+            <Tooltip
+              className="m-l-5"
+              overlayClassName="tips-question"
+              title="Your transaction will revert if there is a large, unfavorable price movement before it is confirmed."
+            >
+              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+            </Tooltip>
           </RowFixed>
           <RowFixed>
             <TYPE.black fontSize={14}>
@@ -91,7 +97,13 @@ export default function SwapModalFooter({
             <TYPE.black color={theme.text2} fontSize={14} fontWeight={400}>
               Price Impact
             </TYPE.black>
-            <QuestionHelper text="The difference between the market price and your price due to trade size." />
+            <Tooltip
+              className="m-l-5"
+              overlayClassName="tips-question"
+              title="The difference between the market price and your price due to trade size."
+            >
+              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+            </Tooltip>
           </RowFixed>
           <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
         </RowBetween>
@@ -100,7 +112,13 @@ export default function SwapModalFooter({
             <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
               Liquidity Provider Fee
             </TYPE.black>
-            <QuestionHelper text="A portion of each trade (0.30%) goes to liquidity providers as a protocol incentive." />
+            <Tooltip
+              className="m-l-5"
+              overlayClassName="tips-question"
+              title="A portion of each trade (0.30%) goes to liquidity providers as a protocol incentive."
+            >
+              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+            </Tooltip>
           </RowFixed>
           <TYPE.black fontSize={14}>
             {realizedLPFee ? realizedLPFee?.toSignificant(6) + ' ' + trade.inputAmount.currency.symbol : '-'}
@@ -116,9 +134,7 @@ export default function SwapModalFooter({
           style={{ margin: '10px 0 0 0' }}
           id="confirm-swap-or-send"
         >
-          <Text fontWeight={500}>
-            {severity > 2 ? 'Swap Anyway' : 'Confirm Swap'}
-          </Text>
+          <Text fontWeight={500}>{severity > 2 ? 'Swap Anyway' : 'Confirm Swap'}</Text>
         </ButtonError>
 
         {swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
