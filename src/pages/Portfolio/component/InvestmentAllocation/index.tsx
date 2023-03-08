@@ -177,7 +177,7 @@ export default function InvestmentAllocation({ data }: { data: any }) {
                 {' '}
                 $
                 {priceResult && priceResult[0] && priceResult[0].price
-                  ? format.amountFormat(toUsdPrice(data.totalHope, priceResult[0].price), 2)
+                  ? toUsdPrice(data.totalHope, priceResult[0].price)
                   : '0.00'}
               </span>
             </div>
@@ -198,7 +198,7 @@ export default function InvestmentAllocation({ data }: { data: any }) {
                   <div className="investment-allocation-box-amount2">
                     ≈ $
                     {priceResult && priceResult[0] && priceResult[0].price
-                      ? format.amountFormat(toUsdPrice(item.value, priceResult[0].price), 2)
+                      ? toUsdPrice(item.value, priceResult[0].price)
                       : '0.00'}
                   </div>
                 </div>
