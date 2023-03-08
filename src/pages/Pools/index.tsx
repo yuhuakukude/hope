@@ -64,7 +64,7 @@ const poolTitles = [
   { value: 'TVL' },
   { value: 'Volume (24h)' },
   { value: 'Fees APR' },
-  { value: 'Rewards APR' },
+  { value: 'Rewards APR', weight: 1.5 },
   { value: 'Mining Rewards' },
   { value: ' ', weight: 0.1 }
 ]
@@ -286,8 +286,7 @@ export default function Pools() {
                   pairInfo={amountPair.pair}
                   stakedBalance={amountPair.stakedAmount}
                   feeApr={amountPair.feeApr}
-                  RewardsApr={amountPair.ltApr}
-                  maxApr={amountPair.maxApr}
+                  RewardsApr={amountPair.ltApr || '0'}
                 />
               ))}
             </>

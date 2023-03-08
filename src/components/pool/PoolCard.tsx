@@ -13,7 +13,7 @@ import { getEtherscanLink } from '../../utils'
 import { ArrowUpRight, ChevronRight } from 'react-feather'
 import { useHistory } from 'react-router-dom'
 import { BasePair } from '../../graph/fetch'
-import { amountFormat } from '../../utils/format'
+import { amountFormat, rate } from '../../utils/format'
 
 const StyledPositionCard = styled(LightCard)<{ bgColor: any }>`
   background-color: transparent;
@@ -98,12 +98,12 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
           <TYPE.white>{pairData?.dayVolume ? `$${amountFormat(pairData.dayVolume, 2)}` : '--'}</TYPE.white>
         </ContentRow>
         <ContentRow>
-          <TYPE.white>{pairData?.feeApr ? `${amountFormat(pairData?.feeApr, 2)}%` : '--'}</TYPE.white>
+          <TYPE.white>{pairData?.feeApr ? `${rate(pairData?.feeApr, 2)}` : '--'}</TYPE.white>
         </ContentRow>
-        <ContentRow gap={'10px'}>
-          <TYPE.white>{pairData?.ltApr ? `${amountFormat(pairData?.ltApr, 2)}%` : ''}</TYPE.white>
-          {pairData.maxApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
-          <TYPE.green>{pairData.maxApr ? `${amountFormat(pairData.maxApr, 2)}%` : ''}</TYPE.green>
+        <ContentRow gap={'10px'} weight={1.5}>
+          <TYPE.white>{pairData?.ltApr ? `${rate(pairData?.ltApr, 2)}` : ''}</TYPE.white>
+          {pairData.ltApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
+          <TYPE.green>{pairData.ltApr ? `${rate((pairData?.ltApr || 0) * 2.5, 2)}` : ''}</TYPE.green>
         </ContentRow>
         <ContentRow>
           <TYPE.white>
