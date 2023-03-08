@@ -155,15 +155,21 @@ export default function DaoLocker() {
     return flag
   }, [amount, ltBalance, chainId])
 
+  const isWithDraw = useMemo(() => {
+    return lockerRes?.end === '--' && lockerRes?.amount
+  }, [lockerRes])
+
   const actionText = useMemo(() => {
-    if (isMaxDisabled) {
+    if (lockerRes?.end === '--' && lockerRes?.amount) {
+      return `Withdraw First Before Relock`
+    } else if (isMaxDisabled) {
       return `Insufficient LT balance`
     } else if (!inputAmount || !lockerDate) {
       return `Enter Amount & Date`
     } else {
       return approvalState === ApprovalState.NOT_APPROVED ? 'Approve LT' : 'Lock'
     }
-  }, [isMaxDisabled, inputAmount, lockerDate, approvalState])
+  }, [isMaxDisabled, inputAmount, lockerDate, approvalState, lockerRes])
 
   const confirmationContent = useCallback(() => {
     return (
@@ -274,10 +280,6 @@ export default function DaoLocker() {
         onTxError(error)
       })
   }, [account, chainId, lockerRes, onTxError, onTxStart, onTxSubmitted, toWithdraw])
-
-  const isWithDraw = useMemo(() => {
-    return lockerRes?.end === '--' && lockerRes?.amount
-  }, [lockerRes])
 
   useEffect(() => {
     changeDateIndex(2)
