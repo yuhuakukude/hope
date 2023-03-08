@@ -4,6 +4,7 @@ import { CloseIcon } from '../../../theme/components'
 import { ButtonPrimary } from '../../Button'
 import { useActiveWeb3React } from '../../../hooks'
 import { useEstimate } from 'hooks/ahp'
+import format from '../../../utils/format'
 import { IHeadItem } from 'pages/Portfolio/component/MyLiquidityPools/components/head'
 
 export type ITableItem = {
@@ -46,7 +47,7 @@ function GombocClaimAll({ onSubmit, onDismiss, total, list }: GombocClaimProps) 
                 <div onClick={drapFn} className="radio-box-head flex jc-between">
                   <div className="flex ai-center">Total Claimable Rewards</div>
                   <div className="flex ai-center">
-                    <p className="text-normal text-right">{total} LT</p>
+                    <p className="text-normal text-right">{format.amountFormat(total, 2)} LT</p>
                     <i className={drapIndex ? 'iconfont icon-drap ' : 'iconfont icon-drap active'}>&#xe60d;</i>
                   </div>
                 </div>
@@ -62,8 +63,8 @@ function GombocClaimAll({ onSubmit, onDismiss, total, list }: GombocClaimProps) 
                                 <div className="currency text-white text-medium">{item.composition}</div>
                               </div>
                               <div>
-                                <p className="text-white text-right">{item.ltOfReward} LT</p>
-                                <p className="text-white text-right">≈ $ {item.usdOfReward}</p>
+                                <p className="text-white text-right">{format.amountFormat(item.ltOfReward, 2)} LT</p>
+                                <p className="text-white text-right">≈ $ {format.amountFormat(item.usdOfReward, 2)}</p>
                               </div>
                             </div>
                           )}
