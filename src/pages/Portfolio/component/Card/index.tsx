@@ -13,7 +13,7 @@ export default function Card({
 }) {
   return (
     <div className={['card-wrap', isShowBg ? 'card-bg' : ''].join(' ')}>
-      {title && <div className="card-title">{title}</div>}
+      {title && <div className="card-title text-medium">{title}</div>}
       <div className="card-content">{children}</div>
     </div>
   )
