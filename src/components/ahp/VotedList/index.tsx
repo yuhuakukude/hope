@@ -139,7 +139,7 @@ const VotedList = ({
         res[addr] = {
           view,
           value: format.amountFormat(value, 2),
-          usdOfValue: format.amountFormat(usdOfValue, 2)
+          usdOfValue: usdOfValue
         }
       })
     }
