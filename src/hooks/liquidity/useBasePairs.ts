@@ -31,10 +31,14 @@ export default function useBasePairs(
       setLoading(true)
       try {
         const { pairs, total } = await fetchPairs(chainId ?? 1, pageSize, currentPage, searchType, searchValue, account)
-        const res = await AprApi.getHopeAllFeeApr(pairs.map(item => item.pairAddress).join(','))
-
+        let res: any = null
+        if (searchType === PAIR_SEARCH.ALL) {
+          res = await AprApi.getHopeAllFeeApr(pairs.map(item => item.pairAddress).join(','))
+        } else {
+          res = await AprApi.getUserAllFeeApr(pairs.map(item => item.pairAddress).join(','), account)
+        }
         setTotal(total)
-        setResult(pairs.map((e: BasePair) => ({ ...e, ...res.result?.[e.pairAddress] })))
+        setResult(pairs.map((e: BasePair) => ({ ...e, ...res?.result?.[e.pairAddress] })))
         setLoading(false)
       } catch (error) {
         setResult([])

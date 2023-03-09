@@ -10,4 +10,9 @@ export default class Apr {
   static getHopeAllFeeApr(address: string): any {
     return http.get('/light/dao/hope/fee/apr/list', { params: { pairs: address } })
   }
+
+  // user allfee apr
+  static getUserAllFeeApr(pairAddresss: string, userAddress: string): any {
+    return http.get('/light/dao/hope/user/base/aprs', { params: { pairAddresss, userAddress } })
+  }
 }

@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
 import NumericalInput from '../../components/NumericalInput'
 import { useActiveWeb3React } from '../../hooks'
+import { Decimal } from 'decimal.js'
 import { Tooltip } from 'antd'
 import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
 import {
@@ -623,7 +624,15 @@ export default function Staking() {
                         <div className="hope-icon"></div>
                         <div className="currency font-nor text-medium m-l-12">stHOPE</div>
                       </div>
-                      <span className="text-white">≈ ${toUsdPrice(stakedVal?.toFixed(2), stHopePrice) || '--'}</span>
+                      <span className="text-white">
+                        ≈ $
+                        {toUsdPrice(
+                          new Decimal(stakedVal?.toFixed(2) || 0)
+                            .add(new Decimal(unstakingVal?.toFixed(2) || 0))
+                            .toNumber(),
+                          stHopePrice
+                        ) || '--'}
+                      </span>
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-white">Available</span>

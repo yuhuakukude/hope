@@ -132,6 +132,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       title: 'Boost',
       dataIndex: 'currentBoost',
       key: 'currentBoost',
+      width: 150,
       render: (text: string, record: ILiquidityPools) => {
         return (
           <Item

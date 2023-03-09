@@ -64,7 +64,7 @@ const poolTitles = [
   { value: 'TVL' },
   { value: 'Volume (24h)' },
   { value: 'Fees APR' },
-  { value: 'Rewards APR' },
+  { value: 'Rewards APR', weight: 1.5 },
   { value: 'Mining Rewards' },
   { value: ' ', weight: 0.1 }
 ]
@@ -204,11 +204,9 @@ export default function Pools() {
                 <TYPE.main>My Farms</TYPE.main>
                 <Switch
                   className="pool-switch"
-                  onChange={() => {
+                  onChange={(e: any) => {
                     setCurrentPage(1)
-                    searchType === PAIR_SEARCH.USER_STAKE
-                      ? setSearchType(PAIR_SEARCH.USER_LIQUIDITY)
-                      : setSearchType(PAIR_SEARCH.USER_STAKE)
+                    setSearchType(e ? PAIR_SEARCH.USER_STAKE : PAIR_SEARCH.USER_LIQUIDITY)
                   }}
                 />
               </AutoRow>
@@ -286,8 +284,8 @@ export default function Pools() {
                   pairInfo={amountPair.pair}
                   stakedBalance={amountPair.stakedAmount}
                   feeApr={amountPair.feeApr}
-                  RewardsApr={amountPair.ltApr}
-                  maxApr={amountPair.maxApr}
+                  RewardsApr={amountPair.ltApr || '0'}
+                  maxBoost={Number(amountPair.maxBoost) === 0 ? 1 : amountPair.maxBoost}
                 />
               ))}
             </>

@@ -700,7 +700,7 @@ export default function StakingPoolDetail({
                 <Row>
                   <TYPE.body>APR</TYPE.body>
                   <TYPE.green fontSize={30} marginLeft={12} fontFamily={'Arboria-Medium'}>
-                    {amountFormat(aprInfo.baseApr * 100, 2)}%
+                    {format.rate(aprInfo.baseApr)}
                   </TYPE.green>
                 </Row>
                 <p className="m-t-15 text-normal">Fees APR: {amountFormat(aprInfo.feeApr * 100, 2)}% </p>

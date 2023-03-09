@@ -163,7 +163,7 @@ interface FullCardProps {
   ltPrice?: number
   feeApr?: number | string
   RewardsApr?: number | string
-  maxApr?: number | string
+  maxBoost?: number | string
 }
 
 export default function FullPositionCard({
@@ -178,7 +178,7 @@ export default function FullPositionCard({
   ltPrice,
   feeApr,
   RewardsApr,
-  maxApr
+  maxBoost
 }: FullCardProps) {
   const { account, chainId } = useActiveWeb3React()
   const history = useHistory()
@@ -326,8 +326,8 @@ export default function FullPositionCard({
             <AutoRow>
               <TYPE.main>Rewards:&nbsp;</TYPE.main>
               <TYPE.white>{rate(RewardsApr)}</TYPE.white>
-              {maxApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
-              <TYPE.green>{maxApr ? `${amountFormat(maxApr, 2)}%` : ''}</TYPE.green>
+              {RewardsApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
+              <TYPE.green>{RewardsApr ? `${rate(Number(RewardsApr) * Number(maxBoost))}` : ''}</TYPE.green>
             </AutoRow>
           </AutoColumn>
         </ContentRow>

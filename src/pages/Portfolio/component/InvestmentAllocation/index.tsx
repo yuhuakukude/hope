@@ -67,7 +67,15 @@ export default function InvestmentAllocation({ data }: { data: any }) {
             <div>
               Profits: Platform fee income. veLT holders will receive 25% of all agreed fee income as an reward, as well
               as a portion of the Gömböc fee income during the voting period if they participate in the weighted vote of
-              a Gömböc. Learn more
+              a Gömböc.{' '}
+              <a
+                className="text-primary"
+                href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                Learn more
+              </a>
             </div>
           </>
         )
@@ -177,7 +185,7 @@ export default function InvestmentAllocation({ data }: { data: any }) {
                 {' '}
                 $
                 {priceResult && priceResult[0] && priceResult[0].price
-                  ? format.amountFormat(toUsdPrice(data.totalHope, priceResult[0].price), 2)
+                  ? toUsdPrice(data.totalHope, priceResult[0].price)
                   : '0.00'}
               </span>
             </div>
@@ -198,7 +206,7 @@ export default function InvestmentAllocation({ data }: { data: any }) {
                   <div className="investment-allocation-box-amount2">
                     ≈ $
                     {priceResult && priceResult[0] && priceResult[0].price
-                      ? format.amountFormat(toUsdPrice(item.value, priceResult[0].price), 2)
+                      ? toUsdPrice(item.value, priceResult[0].price)
                       : '0.00'}
                   </div>
                 </div>

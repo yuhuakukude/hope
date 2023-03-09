@@ -30,6 +30,7 @@ export interface BasePair {
   rewardRate?: number
   last7AvgVolume?: number
   dayVolume?: number
+  maxBoost?: number
 }
 
 export async function fetchPairs(
