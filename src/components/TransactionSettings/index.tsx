@@ -25,7 +25,7 @@ const FancyButton = styled.button`
   border-radius: 10px;
   font-size: 1rem;
   width: auto;
-  min-width: 4rem;
+  min-width: 6rem;
   border: 1px solid ${({ theme }) => theme.bg3};
   outline: none;
   background: ${({ theme }) => theme.bg1};
@@ -39,7 +39,7 @@ const FancyButton = styled.button`
 `
 
 const Option = styled(FancyButton)<{ active: boolean }>`
-  margin-right: 36px;
+  margin-right: 20px;
   :hover {
     cursor: pointer;
   }
@@ -197,12 +197,9 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
               {!!slippageInput &&
               (slippageError === SlippageError.RiskyLow || slippageError === SlippageError.RiskyHigh) ? (
                 <SlippageEmojiContainer>
-                  <span role="img" aria-label="warning">
-                    ⚠️
-                  </span>
+                  <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
                 </SlippageEmojiContainer>
               ) : null}
-              {/* https://github.com/DefinitelyTyped/DefinitelyTyped/issues/30451 */}
               <Input
                 ref={inputRef as any}
                 placeholder={(rawSlippage / 100).toFixed(1)}
@@ -222,7 +219,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
             style={{
               fontSize: '14px',
               paddingTop: '7px',
-              color: slippageError === SlippageError.InvalidInput ? 'red' : '#F3841E'
+              color: 'red'
             }}
           >
             {slippageError === SlippageError.InvalidInput

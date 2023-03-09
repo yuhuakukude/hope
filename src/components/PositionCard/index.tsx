@@ -298,7 +298,7 @@ export default function FullPositionCard({
         <ContentRow>
           <AutoColumn gap={'12px'}>
             <DataRow gap={'8px'}>
-              <TYPE.white>{userPoolBalance ? userPoolBalance.toSignificant(4) : '--'} </TYPE.white>
+              <TYPE.white>{userPoolBalance ? userPoolBalance.toFixed(4) : '--'} </TYPE.white>
             </DataRow>
             <DataRow gap={'8px'}>
               <TYPE.main>{stakePercent ? `${stakePercent.toFixed(2)}% Staked` : '--'}</TYPE.main>

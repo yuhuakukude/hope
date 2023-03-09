@@ -85,7 +85,6 @@ const ModalContentWrapper = styled.div`
   align-items: center;
   justify-content: center;
   padding: 2rem 0;
-  background-color: ${({ theme }) => theme.bg2};
   border-radius: 20px;
 `
 
@@ -100,8 +99,14 @@ export default function SettingPage() {
   const [singleHopOnly, setSingleHopOnly] = useUserSingleHopOnly()
 
   return (
-    <LightCard width={'fit-content'}>
-      <Modal isOpen={showConfirmation} onDismiss={() => setShowConfirmation(false)} maxHeight={100}>
+    <LightCard width={'fit-content'} borderRadius={'20px'}>
+      <Modal
+        maxWidth={420}
+        width={420}
+        isOpen={showConfirmation}
+        onDismiss={() => setShowConfirmation(false)}
+        maxHeight={100}
+      >
         <ModalContentWrapper>
           <AutoColumn gap="lg">
             <RowBetween style={{ padding: '0 2rem' }}>

@@ -42,7 +42,7 @@ export default function SwapModalFooter({
 
   return (
     <>
-      <AutoColumn gap="0px">
+      <AutoColumn gap="20px">
         <RowBetween align="center">
           <Text fontWeight={400} fontSize={14} color={theme.text2}>
             Price

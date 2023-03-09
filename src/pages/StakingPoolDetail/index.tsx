@@ -384,25 +384,25 @@ export default function StakingPoolDetail({
     {
       title: 'TVL',
       isRise: !!pairMore && pairMore.tvlChangeUSD > 0,
-      rate: pairMore ? `${pairMore.tvlChangeUSD.toFixed(2)} %` : `--`,
+      rate: pairMore ? `${amountFormat(pairMore.tvlChangeUSD, 2)} %` : `--`,
       amount: pool ? `$${format.separate(Number(pool.tvl).toFixed(2))}` : `--`
     },
     {
       title: 'Volume(24H)',
       isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
-      rate: pairMore ? `${pairMore.volumeChangeUSD.toFixed(2)} %` : `--`,
+      rate: pairMore ? `${amountFormat(pairMore.volumeChangeUSD, 2)} %` : `--`,
       amount: pairMore ? `$${format.separate(pairMore.oneDayVolumeUSD.toFixed(2))}` : `--`
     },
     {
       title: 'Fees(24H)',
       isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
-      rate: pairMore ? `${pairMore.volumeChangeUSD.toFixed(2)} %` : `--`,
+      rate: pairMore ? `${amountFormat(pairMore.volumeChangeUSD, 2)} %` : `--`,
       amount: pairMore ? `$${format.separate((pairMore.oneDayVolumeUSD * 0.003).toFixed(2))}` : `--`
     },
     {
       title: 'Fees(7d)',
       isRise: !!pairMore && pairMore.weeklyVolumeChange > 0,
-      rate: pairMore ? `${pairMore.weeklyVolumeChange.toFixed(2)} %` : `--`,
+      rate: pairMore ? `${amountFormat(pairMore.weeklyVolumeChange, 2)} %` : `--`,
       amount: pairMore ? `$${format.separate(pairMore.oneWeekVolume.toFixed(2))}` : `--`
     }
   ]
@@ -450,7 +450,7 @@ export default function StakingPoolDetail({
                       Number(userToken1.toExact().toString()) * token1PriceUSD,
                     2
                   )}`
-                : '$--'}
+                : ''}
             </TYPE.main>
           </AutoColumn>
           <AutoColumn gap={'20px'}>
@@ -464,7 +464,7 @@ export default function StakingPoolDetail({
               <TYPE.main>
                 {userToken0 && token0PriceUSD
                   ? `≈$${amountFormat(Number(userToken0.toExact().toString()) * token0PriceUSD, 2)}`
-                  : '$--'}
+                  : ''}
               </TYPE.main>
             </RowBetween>
             <RowBetween>

@@ -127,7 +127,6 @@ export function useStakingPairPool(address: string) {
     ;(async () => {
       try {
         const more = await fetchPairMore(address.toLowerCase() ?? '')
-        console.warn('more--->', more)
         setLoading(false)
         setPairMore(more)
       } catch (error) {
