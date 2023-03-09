@@ -1034,7 +1034,7 @@ export async function fetchGlobalData() {
 }
 
 const Mints = `
- mints(first: 20, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
+ mints(first: 20, where: { pair_in: $allPairs }) {
       transaction {
         id
         timestamp
@@ -1110,7 +1110,6 @@ const Swaps = `
 
 function QUERY_TXS_QUERY(type?: string | undefined) {
   let sql
-  console.log('type--->', type)
   switch (type) {
     case 'All':
       sql = `

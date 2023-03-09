@@ -226,6 +226,7 @@ export default function StakingPoolDetail({
       : undefined
   const token0Percent = token0USD && totalUSD ? (token0USD / totalUSD) * 100 : undefined
   const token1Percent = token1USD && totalUSD ? (token1USD / totalUSD) * 100 : undefined
+  console.log('percent', token0Percent, token1Percent)
   const TransactionType: TitleTipsProps[] = [
     {
       label: 'All',
