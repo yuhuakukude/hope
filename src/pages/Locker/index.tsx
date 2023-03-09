@@ -34,6 +34,7 @@ const PageWrapper = styled(AutoColumn)`
   width: 100%;
   padding: 0 30px;
   max-width: 1340px;
+  min-width: 1210px;
 `
 
 enum ACTION {
