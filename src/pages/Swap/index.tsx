@@ -1,4 +1,4 @@
-import { CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk'
+import { CurrencyAmount, JSBI, Token, Trade, WETH } from '@uniswap/sdk'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { ArrowDownCircle } from 'react-feather'
 import ReactGA from 'react-ga'
@@ -49,6 +49,9 @@ import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter
 import { isTradeBetter } from 'utils/trades'
 import { RouteComponentProps } from 'react-router-dom'
 import spinner from '../../assets/svg/spinner.svg'
+import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
+import { tokenAddress } from '../../utils/currencyId'
+import { amountFormat } from '../../utils/format'
 
 export default function Swap({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
@@ -75,7 +78,7 @@ export default function Swap({ history }: RouteComponentProps) {
       return !Boolean(token.address in defaultTokens)
     })
 
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const theme = useContext(ThemeContext)
 
   // toggle wallet when disconnected
@@ -127,6 +130,14 @@ export default function Swap({ history }: RouteComponentProps) {
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount
       }
 
+  const chainWETH = WETH[chainId ?? 1]
+  const inputAddress = tokenAddress(chainWETH, currencies.INPUT)?.toLowerCase()
+  const outAddress = tokenAddress(chainWETH, currencies.OUTPUT)?.toLowerCase()
+
+  const addresses = useMemo(() => {
+    return [inputAddress, outAddress]
+  }, [inputAddress, outAddress])
+  const { result: priceResult } = useTokenPriceObject(addresses)
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
   const isValid = !swapInputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
@@ -427,7 +438,12 @@ export default function Swap({ history }: RouteComponentProps) {
               id="swap-currency-input"
             />
             <TYPE.main textAlign={'right'} fontSize={16}>
-              ≈0.00 USD
+              {`≈$${
+                inputAddress && priceResult && formattedAmounts[Field.INPUT]
+                  ? amountFormat(Number(priceResult[inputAddress]) * Number(formattedAmounts[Field.INPUT]), 2)
+                  : '0.00'
+              }`}
+              USD
             </TYPE.main>
             <AutoColumn justify="space-between">
               <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
@@ -460,7 +476,12 @@ export default function Swap({ history }: RouteComponentProps) {
               id="swap-currency-output"
             />
             <TYPE.main textAlign={'right'} fontSize={16}>
-              ≈0.00 USD
+              {`≈$${
+                outAddress && priceResult && formattedAmounts[Field.OUTPUT]
+                  ? amountFormat(Number(priceResult[outAddress]) * Number(formattedAmounts[Field.OUTPUT]), 2)
+                  : '0.00'
+              }`}
+              USD
             </TYPE.main>
 
             {recipient !== null && !showWrap ? (
