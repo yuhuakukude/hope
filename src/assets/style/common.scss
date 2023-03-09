@@ -434,3 +434,8 @@ a:hover {
   color: #A8A8AA;
   transform: translate(0, -50%);
 }
+
+.echarts-tooltip{
+  border-radius: 10px !important;
+  box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.2) !important;
+}
