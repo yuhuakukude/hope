@@ -210,6 +210,23 @@ export default function StakingPoolDetail({
   const { result: dayChartResult } = useLineDaysChartsData(address ?? '')
   const { result: hourChartResult } = useLine24HourChartsData(address ?? '')
 
+  const token0PriceUSD =
+    priceResult && pool?.tokens[0].address ? Number(priceResult[pool.tokens[0].address.toLowerCase()]) : undefined
+  const token1PriceUSD =
+    priceResult && pool?.tokens[1].address ? Number(priceResult[pool.tokens[1].address.toLowerCase()]) : undefined
+
+  const token0USD =
+    pool?.token0Amount && token0PriceUSD ? Number(pool?.token0Amount.toExact().toString()) * token0PriceUSD : undefined
+  const token1USD =
+    pool?.token1Amount && token1PriceUSD ? Number(pool?.token1Amount.toExact().toString()) * token1PriceUSD : undefined
+
+  const totalUSD =
+    pool?.token0Amount && pool.token1Amount && token0PriceUSD && token1PriceUSD
+      ? Number(pool?.token0Amount.toExact().toString()) * token0PriceUSD +
+        Number(pool?.token1Amount.toExact().toString()) * token1PriceUSD
+      : undefined
+  const token0Percent = token0USD && totalUSD ? (token0USD / totalUSD) * 100 : undefined
+  const token1Percent = token1USD && totalUSD ? (token1USD / totalUSD) * 100 : undefined
   const TransactionType: TitleTipsProps[] = [
     {
       label: 'All',
@@ -427,11 +444,10 @@ export default function StakingPoolDetail({
               </TYPE.white>
             </AutoRowBetween>
             <TYPE.main textAlign={'right'}>
-              {userToken0 && priceResult && pool?.tokens[0]
+              {userToken0 && userToken1 && token0PriceUSD && token1PriceUSD && pool?.tokens[0]
                 ? `≈$${amountFormat(
-                    Number(userToken0.toExact().toString()) *
-                      2 *
-                      Number(priceResult[pool.tokens[0].address.toLowerCase()]),
+                    Number(userToken0.toExact().toString()) * token0PriceUSD +
+                      Number(userToken1.toExact().toString()) * token1PriceUSD,
                     2
                   )}`
                 : '$--'}
@@ -446,12 +462,8 @@ export default function StakingPoolDetail({
                 </TYPE.white>
               </AutoRow>
               <TYPE.main>
-                {userToken0 && priceResult && pool?.tokens[0]
-                  ? `≈$${amountFormat(
-                      Number(userToken0.toExact().toString()) *
-                        Number(priceResult[pool.tokens[0].address.toLowerCase()]),
-                      2
-                    )}`
+                {userToken0 && token0PriceUSD
+                  ? `≈$${amountFormat(Number(userToken0.toExact().toString()) * token0PriceUSD, 2)}`
                   : '$--'}
               </TYPE.main>
             </RowBetween>
@@ -463,12 +475,8 @@ export default function StakingPoolDetail({
                 </TYPE.white>
               </AutoRow>
               <TYPE.main>
-                {userToken1 && priceResult && pool?.tokens[1]
-                  ? `≈$${amountFormat(
-                      Number(userToken1.toExact().toString()) *
-                        Number(priceResult[pool.tokens[1].address.toLowerCase()]),
-                      2
-                    )}`
+                {userToken1 && token1PriceUSD
+                  ? `≈$${amountFormat(Number(userToken1.toExact().toString()) * token1PriceUSD, 2)}`
                   : '$--'}
               </TYPE.main>
             </RowBetween>
@@ -666,14 +674,16 @@ export default function StakingPoolDetail({
           <LightCard padding={'30px'} borderRadius={'20px'}>
             <RowBetween>
               <Row>
-                <PieCharts data={[50, 50]}></PieCharts>
+                <PieCharts
+                  data={token0Percent && token1Percent ? [token0Percent, token1Percent] : [50, 50]}
+                ></PieCharts>
                 <div className="m-l-20">
                   <Row>
                     <Circular></Circular>
                     <CurrencyLogo currency={pool?.tokens[0]} />
                     <TYPE.body marginLeft={9}>
                       {pool?.token0Value.toFixed(2)} {token0Symbol}
-                      {!!pool?.token0Amount && ' (50%)'}
+                      {token0Percent ? ` ${amountFormat(token0Percent)}%` : '--'}
                     </TYPE.body>
                   </Row>
                   <Row margin={'35px 0 0 0'}>
@@ -681,7 +691,7 @@ export default function StakingPoolDetail({
                     <CurrencyLogo currency={pool?.tokens[1]} />
                     <TYPE.body marginLeft={9}>
                       {pool?.token1Value.toFixed(2)} {token1Symbol}
-                      {!!pool?.token1Amount && ' (50%)'}
+                      {token1Percent ? ` ${amountFormat(token1Percent)}%` : '--'}
                     </TYPE.body>
                   </Row>
                 </div>
