@@ -1,10 +1,10 @@
-import { CurrencyAmount, Rounding } from '@uniswap/sdk'
+import { CurrencyAmount, formatInF, Rounding } from '@uniswap/sdk'
 
 const toFixed = CurrencyAmount.prototype.toFixed
 
 CurrencyAmount.prototype.toFixed = function(
   decimalPlaces?: number | undefined,
-  format?: object | undefined,
+  format?: formatInF | undefined,
   rounding?: Rounding | undefined
 ): string {
   const baseNum = 1 / Math.pow(10, decimalPlaces || 0)
