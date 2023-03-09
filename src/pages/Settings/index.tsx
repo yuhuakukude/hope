@@ -9,8 +9,8 @@ import { TYPE } from '../../theme'
 import { Tooltip } from 'antd'
 import Toggle from '../../components/Toggle'
 import ReactGA from 'react-ga'
-import React, { useContext, useState } from 'react'
-import styled, { ThemeContext } from 'styled-components'
+import React, { useState } from 'react'
+import styled from 'styled-components'
 import {
   useExpertModeManager,
   useUserSingleHopOnly,
@@ -92,7 +92,6 @@ export default function SettingPage() {
   const history = useHistory()
   const [userSlippageTolerance, setUserslippageTolerance] = useUserSlippageTolerance()
   const [ttl, setTtl] = useUserTransactionTTL()
-  const theme = useContext(ThemeContext)
   const [expertMode, toggleExpertMode] = useExpertModeManager()
   const [showConfirmation, setShowConfirmation] = useState(false)
   const toggle = useToggleSettingsMenu()
@@ -166,59 +165,65 @@ export default function SettingPage() {
             deadline={ttl}
             setDeadline={setTtl}
           />
-          <Text fontWeight={600} fontSize={14}>
+          <TYPE.main fontWeight={600} fontSize={14}>
             Interface Settings
-          </Text>
-          <RowBetween>
-            <RowFixed>
-              <TYPE.white fontWeight={400} fontSize={14} color={theme.text2}>
-                Toggle Expert Mode
-              </TYPE.white>
-              <Tooltip
-                className="m-l-5"
-                overlayClassName="tips-question"
-                title="Bypasses confirmation modals and allows high slippage trades. Use at your own risk."
-              >
-                <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
-              </Tooltip>
-            </RowFixed>
-            <Toggle
-              id="toggle-expert-mode-button"
-              isActive={expertMode}
-              toggle={
-                expertMode
-                  ? () => {
-                      toggleExpertMode()
-                      setShowConfirmation(false)
-                    }
-                  : () => {
-                      toggle()
-                      setShowConfirmation(true)
-                    }
-              }
-            />
-          </RowBetween>
-          <RowBetween>
-            <RowFixed>
-              <TYPE.white fontWeight={400} fontSize={14} color={theme.text2}>
-                Disable Multihops
-              </TYPE.white>
-              <Tooltip className="m-l-5" overlayClassName="tips-question" title="Restricts swaps to direct pairs only.">
-                <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
-              </Tooltip>
-            </RowFixed>
-            <Toggle
-              id="toggle-disable-multihop-button"
-              isActive={singleHopOnly}
-              toggle={() => {
-                ReactGA.event({
-                  category: 'Routing',
-                  action: singleHopOnly ? 'disable single hop' : 'enable single hop'
-                })
-                setSingleHopOnly(!singleHopOnly)
-              }}
-            />
-          </RowBetween>
+          </TYPE.main>
+          <AutoColumn gap="sm">
+            <RowBetween>
+              <RowFixed>
+                <TYPE.white fontWeight={700} fontSize={14}>
+                  Toggle Expert Mode
+                </TYPE.white>
+                <Tooltip
+                  className="m-l-5"
+                  overlayClassName="tips-question"
+                  title="Bypasses confirmation modals and allows high slippage trades. Use at your own risk."
+                >
+                  <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+                </Tooltip>
+              </RowFixed>
+              <Toggle
+                id="toggle-expert-mode-button"
+                isActive={expertMode}
+                toggle={
+                  expertMode
+                    ? () => {
+                        toggleExpertMode()
+                        setShowConfirmation(false)
+                      }
+                    : () => {
+                        toggle()
+                        setShowConfirmation(true)
+                      }
+                }
+              />
+            </RowBetween>
+            <RowBetween>
+              <RowFixed>
+                <TYPE.white fontWeight={700} fontSize={14}>
+                  Disable Multihops
+                </TYPE.white>
+                <Tooltip
+                  className="m-l-5"
+                  overlayClassName="tips-question"
+                  title="Restricts swaps to direct pairs only."
+                >
+                  <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+                </Tooltip>
+              </RowFixed>
+              <Toggle
+                id="toggle-disable-multihop-button"
+                isActive={singleHopOnly}
+                toggle={() => {
+                  ReactGA.event({
+                    category: 'Routing',
+                    action: singleHopOnly ? 'disable single hop' : 'enable single hop'
+                  })
+                  setSingleHopOnly(!singleHopOnly)
+                }}
+              />
+            </RowBetween>
+          </AutoColumn>
         </AutoColumn>
       </MenuFlyout>
     </LightCard>

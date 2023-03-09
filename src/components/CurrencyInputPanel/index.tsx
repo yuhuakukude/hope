@@ -92,22 +92,13 @@ const StyledTokenName = styled.span<{ active?: boolean }>`
 `
 
 const StyledBalanceMax = styled.button`
-  height: 28px;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
+  font-size: 0.16px;
   background-color: transparent;
   border: 1px solid transparent;
   font-weight: 500;
   cursor: pointer;
   margin-left: 0.5rem;
   color: ${({ theme }) => theme.primary1};
-  :hover {
-    border: 1px solid ${({ theme }) => theme.primary1};
-  }
-  :focus {
-    border: 1px solid ${({ theme }) => theme.primary1};
-    outline: none;
-  }
 
   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
     margin-right: 0.5rem;
@@ -181,10 +172,10 @@ export default function CurrencyInputPanel({
                   style={{ display: 'inline', cursor: 'pointer' }}
                 >
                   {!hideBalance && !!currency && selectedCurrencyBalance
-                    ? (customBalanceText ?? 'Balance: ') + selectedCurrencyBalance?.toSignificant(6)
+                    ? (customBalanceText ?? 'Available: ') + selectedCurrencyBalance?.toSignificant(6)
                     : ' -'}
                   {account && currency && showMaxButton && label !== 'To' && (
-                    <StyledBalanceMax onClick={onMax}>MAX</StyledBalanceMax>
+                    <StyledBalanceMax onClick={onMax}>Max</StyledBalanceMax>
                   )}
                 </TYPE.body>
               )}

@@ -5,7 +5,7 @@ import ReactGA from 'react-ga'
 import { Text } from 'rebass'
 import { ThemeContext } from 'styled-components'
 import AddressInputPanel from '../../components/AddressInputPanel'
-import { ButtonConfirmed, ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
+import { ButtonConfirmed, ButtonError, ButtonPrimary } from '../../components/Button'
 import Card, { GreyCard } from '../../components/Card'
 import { AutoColumn } from '../../components/Column'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
@@ -52,6 +52,7 @@ import spinner from '../../assets/svg/spinner.svg'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 import { tokenAddress } from '../../utils/currencyId'
 import { amountFormat } from '../../utils/format'
+import { LightQuestionHelper } from '../../components/QuestionHelper'
 
 export default function Swap({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
@@ -424,7 +425,7 @@ export default function Swap({ history }: RouteComponentProps) {
             onDismiss={handleConfirmDismiss}
           />
 
-          <AutoColumn gap={'md'}>
+          <AutoColumn gap={'sm'}>
             <CurrencyInputPanel
               showCommonBases
               label={independentField === Field.OUTPUT && !showWrap && trade ? 'Pay (estimated)' : 'Pay'}
@@ -499,7 +500,7 @@ export default function Swap({ history }: RouteComponentProps) {
             ) : null}
 
             {showWrap ? null : (
-              <Card padding={showWrap ? '.25rem 1rem 0 1rem' : '1.25rem'} borderRadius={'20px'}>
+              <Card padding={showWrap ? '.25rem 1rem 0 1rem' : '1rem'} borderRadius={'20px'}>
                 <AutoColumn gap="8px" style={{ padding: '0 16px' }}>
                   {Boolean(trade) ? (
                     <Row justify={'center'}>
@@ -512,7 +513,7 @@ export default function Swap({ history }: RouteComponentProps) {
                   ) : (
                     <Text textAlign={'center'} fontWeight={500} fontSize={14} color={theme.text2}>
                       {swapInputError || (noRoute && userHasSpecifiedInputOutput) ? (
-                        '--'
+                        '- -'
                       ) : (
                         <>
                           Fetching best price
@@ -541,7 +542,7 @@ export default function Swap({ history }: RouteComponentProps) {
                 <TYPE.main mb="4px">Unsupported Asset</TYPE.main>
               </ButtonPrimary>
             ) : !account ? (
-              <ButtonLight onClick={toggleWalletModal}>Connect Wallet</ButtonLight>
+              <ButtonPrimary onClick={toggleWalletModal}>Connect Wallet</ButtonPrimary>
             ) : showWrap ? (
               <ButtonPrimary disabled={Boolean(wrapInputError)} onClick={onWrap}>
                 {wrapInputError ??
@@ -567,7 +568,10 @@ export default function Swap({ history }: RouteComponentProps) {
                   ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
                     'Approved'
                   ) : (
-                    'Approve ' + currencies[Field.INPUT]?.symbol
+                    <AutoRow gap={'4px'} justify={'center'}>
+                      {'Approve use of ' + currencies[Field.INPUT]?.symbol}
+                      <LightQuestionHelper text={''} />
+                    </AutoRow>
                   )}
                 </ButtonConfirmed>
                 {/*<ButtonError*/}
@@ -667,12 +671,12 @@ export default function Swap({ history }: RouteComponentProps) {
         ) : (
           <UnsupportedCurrencyFooter show={swapIsUnsupported} currencies={[currencies.INPUT, currencies.OUTPUT]} />
         )}
-        <AutoColumn style={{ margin: '0 20px', padding: '20px 0', borderTop: '1px solid #3D3E46' }}>
-          <RowBetween>
-            <TYPE.main>Network Fee</TYPE.main>
-            <TYPE.white>≈0.01 ETH</TYPE.white>
-          </RowBetween>
-        </AutoColumn>
+        {/*<AutoColumn style={{ margin: '0 20px', padding: '20px 0', borderTop: '1px solid #3D3E46' }}>*/}
+        {/*  <RowBetween>*/}
+        {/*    <TYPE.main>Network Fee</TYPE.main>*/}
+        {/*    <TYPE.white>≈0.01 ETH</TYPE.white>*/}
+        {/*  </RowBetween>*/}
+        {/*</AutoColumn>*/}
       </AppBody>
     </>
   )

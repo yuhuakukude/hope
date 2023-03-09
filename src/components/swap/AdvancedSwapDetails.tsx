@@ -30,7 +30,7 @@ function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippag
 
   return (
     <>
-      <AutoColumn gap={'20px'} style={{ padding: '0 16px' }}>
+      <AutoColumn gap={'20px'}>
         <RowBetween>
           <RowFixed>
             <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
@@ -87,6 +87,15 @@ function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippag
             {realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${trade.inputAmount.currency.symbol}` : '-'}
           </TYPE.black>
         </RowBetween>
+        <RowBetween>
+          <RowFixed>
+            <TYPE.main>Network Fee</TYPE.main>
+            <Tooltip className="m-l-5" overlayClassName="tips-question" title="">
+              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+            </Tooltip>
+          </RowFixed>
+          <TYPE.white>≈0.01 ETH</TYPE.white>
+        </RowBetween>
       </AutoColumn>
     </>
   )
@@ -104,13 +113,13 @@ export function AdvancedSwapDetails({ trade, error }: AdvancedSwapDetailsProps) 
   const showRoute = Boolean(trade && trade.route.path.length > 2)
 
   return (
-    <AutoColumn gap="0px">
+    <AutoColumn gap="0px" style={{ paddingTop: 20, margin: '0 20px', borderTop: !error ? '1px solid #3D3E46' : '' }}>
       {trade ? (
         <>
           <TradeSummary trade={trade} allowedSlippage={allowedSlippage} />
           {showRoute && (
             <>
-              <RowBetween style={{ padding: '0 16px' }}>
+              <RowBetween mt={20}>
                 <span style={{ display: 'flex', alignItems: 'center' }}>
                   <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
                     Route
