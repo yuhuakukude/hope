@@ -51,8 +51,8 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
         let yfTotal = 0
         if (data.result && data.result.length > 0) {
           data.result.forEach(e => {
-            if (e.hopeOfLpBalance) {
-              lpTotal = new Decimal(lpTotal).add(new Decimal(Number(e.hopeOfLpBalance))).toNumber()
+            if (e.hopeOfStakableLpBalance) {
+              lpTotal = new Decimal(lpTotal).add(new Decimal(Number(e.hopeOfStakableLpBalance))).toNumber()
             }
             if (e.hopeOfStakedLpBalance && e.hopeOfTotalReward) {
               yfTotal = new Decimal(yfTotal)

@@ -166,7 +166,7 @@ export default function InvestmentAllocation({ data }: { data: any }) {
           <>
             My Investment Allocation
             <i className="iconfont investment-allocation-title" onClick={() => setVisibleMap(true)}>
-              &#xe611;
+              &#xe624;
             </i>
           </>
         }

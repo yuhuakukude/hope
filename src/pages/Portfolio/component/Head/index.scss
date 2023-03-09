@@ -1,4 +1,17 @@
 .portfolio-head {
+  .learn-a{
+    display: block;
+    width: 130px;
+    height: 42px;
+    line-height: 42px;
+    text-align: center;
+    border-radius: 10px;
+    background-color: #3D3E46;
+    &:hover{
+      box-shadow: 0 0 0 1px #3d3d3d;
+      background-color: #33333c;
+    }
+  }
   .card-wrap {
     margin-top: 0;
   }

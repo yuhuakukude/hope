@@ -104,6 +104,7 @@ export interface ILiquidityPools {
   usdOfReward: number
   usdOfExtReward: number
   ltOfExtReward: number
+  hopeOfStakableLpBalance: number
   extRewardList: {
     symbol: string
     tokenAddress: string

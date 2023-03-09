@@ -15,13 +15,15 @@
       margin-left: 4px;
     }
 
-    .pools-head-top-button {
+    .ant-btn{
       height: 20px;
       line-height: 20px;
       padding: 0 16px;
       font-size: 12px;
       margin-left: 12px;
       vertical-align: middle;
+      display: flex;
+      justify-content: center;
     }
   }
 

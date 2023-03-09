@@ -34,6 +34,7 @@ const PageWrapper = styled(AutoColumn)`
   width: 100%;
   padding: 0 30px;
   max-width: 1340px;
+  min-width: 1210px;
 `
 
 enum ACTION {
@@ -477,9 +478,9 @@ export default function DaoLocker() {
                   </div>
                 )}
                 {account && isEthBalanceInsufficient && (
-                  <div className="tip flex m-t-30">
-                    <div className="icon m-r-15">
-                      <i className="iconfont font-28 text-primary font-bold">&#xe614;</i>
+                  <div className="tip flex m-t-25">
+                    <div className="icon m-r-15 m-t-5">
+                      <i className="iconfont font-nor text-primary font-bold">&#xe614;</i>
                     </div>
                     <p className="text-normal font-nor">
                       Your wallet balance is below 0.001 ETH. The approve action require small transaction fees, so you

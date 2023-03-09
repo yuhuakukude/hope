@@ -141,7 +141,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     )
   }
 
-  const columns = [
+  const columns: any = [
     {
       title: 'Gömböc',
       dataIndex: 'name',
@@ -188,6 +188,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     },
     {
       title: 'Vote',
+      align: 'center',
       dataIndex: 'gomboc',
       render: actionNode,
       key: 'gomboc'

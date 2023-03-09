@@ -402,7 +402,7 @@ const VotedList = ({
     [errorStatus, curItemData, gomFeeClaimCallback]
   )
 
-  const columns = [
+  const columns: any = [
     {
       title: 'Gömböc',
       dataIndex: 'id',
@@ -502,7 +502,8 @@ const VotedList = ({
       title: 'Actions',
       dataIndex: 'actions',
       key: 'actions',
-      width: 150,
+      align: 'center',
+      width: 160,
       render: (text: string, record: any) => {
         const options: TitleTipsProps[] = []
         if (record.gomboc && record.gomboc.pair) {
