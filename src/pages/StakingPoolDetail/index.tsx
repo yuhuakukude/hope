@@ -397,7 +397,7 @@ export default function StakingPoolDetail({
       title: 'Fees(24H)',
       isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
       rate: pairMore ? `${pairMore.volumeChangeUSD.toFixed(2)} %` : `--`,
-      amount: pairMore ? `$${format.separate(pairMore.oneDayVolumeUSD.toFixed(2))}` : `--`
+      amount: pairMore ? `$${format.separate((pairMore.oneDayVolumeUSD * 0.003).toFixed(2))}` : `--`
     },
     {
       title: 'Fees(7d)',

@@ -404,11 +404,8 @@ export interface PairMore {
 
   oneDayTVLUSD: number
   oneWeekTVLUSD: number
-  oneMonthTVLUSD: number
-
   oneDayVolumeUSD: number
   oneWeekVolume: number
-  oneMonthVolume: number
 }
 
 export async function fetchTotalAmount(): Promise<any> {
@@ -917,37 +914,22 @@ export async function fetchPairMore(stakingAddress: string): Promise<PairMore | 
     const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix()
     const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix()
     const utcTwoWeeksBack = utcCurrentTime.subtract(2, 'week').unix()
-    const utcOneMonthsBack = utcCurrentTime.subtract(1, 'month').unix()
-    const utcTwoMonthsBack = utcCurrentTime.subtract(2, 'month').unix()
-    const [
-      oneDayBlock,
-      twoDayBlock,
-      oneWeekBlock,
-      twoWeekBlock,
-      utcOneMonthBlock,
-      utcTwoMonthBlock
-    ] = await getBlocksFromTimestamps([
+    const [oneDayBlock, twoDayBlock, oneWeekBlock, twoWeekBlock] = await getBlocksFromTimestamps([
       utcOneDayBack,
       utcTwoDaysBack,
       utcOneWeekBack,
-      utcTwoWeeksBack,
-      utcOneMonthsBack,
-      utcTwoMonthsBack
+      utcTwoWeeksBack
     ])
     const res = await postQuery(SUBGRAPH, PAIR_QUERY({ stakingAddress }))
     const d1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: oneDayBlock.number, stakingAddress }))
     const d2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoDayBlock.number, stakingAddress }))
     const w1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: oneWeekBlock.number, stakingAddress }))
     const w2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoWeekBlock?.number, stakingAddress }))
-    const m1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: utcOneMonthBlock?.number, stakingAddress }))
-    const m2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: utcTwoMonthBlock?.number, stakingAddress }))
     const pair = res.data.pairs[0]
     const d1Pair = d1Res?.data.pairs[0]
     const d2Pair = d2Res?.data.pairs[0]
     const w1Pair = w1Res?.data.pairs[0]
     const w2Pair = w2Res?.data.pairs[0]
-    const m1Pair = m1Res?.data.pairs[0]
-    const m2Pair = m2Res?.data.pairs[0]
 
     const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(pair?.reserveUSD, d1Pair?.reserveUSD, d2Pair?.reserveUSD)
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
@@ -962,8 +944,6 @@ export async function fetchPairMore(stakingAddress: string): Promise<PairMore | 
       w1Pair?.volumeUSD,
       w2Pair?.volumeUSD
     )
-    const [oneMonthTVLUSD] = get2DayPercentChange(pair.reserveUSD, m1Pair?.reserveUSD, m2Pair?.reserveUSD)
-    const [oneMonthVolume] = get2DayPercentChange(pair.totalVolumeUSD, m1Pair?.volumeUSD, m2Pair?.volumeUSD)
 
     return {
       tvlChangeUSD: Number(tvlChangeUSD),
@@ -973,11 +953,9 @@ export async function fetchPairMore(stakingAddress: string): Promise<PairMore | 
 
       oneDayTVLUSD: Number(oneDayTVLUSD),
       oneWeekTVLUSD: Number(oneWeekTVLUSD),
-      oneMonthTVLUSD: Number(oneMonthTVLUSD),
 
       oneDayVolumeUSD: Number(oneDayVolumeUSD),
-      oneWeekVolume: Number(oneWeekVolume),
-      oneMonthVolume: Number(oneMonthVolume)
+      oneWeekVolume: Number(oneWeekVolume)
     }
   } catch (error) {
     console.log('error', error)
