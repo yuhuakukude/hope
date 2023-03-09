@@ -68,7 +68,7 @@ export default function LockerEcharts() {
               backgroundColor: 'rgba(51, 51, 60, 1)',
               borderColor: 'rgba(90, 90, 91, 1)',
               padding: 20,
-              className: 'locker-line-charts',
+              className: 'echarts-tooltip',
               textStyle: {
                 color: '#FFFFFF'
               },
