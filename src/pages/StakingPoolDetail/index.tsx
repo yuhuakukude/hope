@@ -440,7 +440,7 @@ export default function StakingPoolDetail({
                   '-'} Pool Token`}</TYPE.white>
               </AutoRow>
               <TYPE.white fontSize={18} fontWeight={700}>
-                {userTotalBalance?.toFixed(4)}
+                {userTotalBalance?.toFixed(4, { groupSeparator: ',' } ?? '0.00')}
               </TYPE.white>
             </AutoRowBetween>
             <TYPE.main textAlign={'right'}>
@@ -458,7 +458,7 @@ export default function StakingPoolDetail({
               <AutoRow gap={'10px'} style={{ width: '50%' }}>
                 <CurrencyLogo size={'20px'} currency={pool?.pair.token0} />
                 <TYPE.white>
-                  {userToken0 ? userToken0.toFixed(4) : ''} {token0Symbol ?? ''}
+                  {userToken0 ? userToken0.toFixed(4, { groupSeparator: ',' } ?? '0.00') : ''} {token0Symbol ?? ''}
                 </TYPE.white>
               </AutoRow>
               <TYPE.main>
@@ -471,7 +471,7 @@ export default function StakingPoolDetail({
               <AutoRow gap={'10px'} style={{ width: '50%' }}>
                 <CurrencyLogo size={'20px'} currency={pool?.pair.token1} />
                 <TYPE.white>
-                  {userToken1 ? userToken1.toFixed(4) : ''} {token1Symbol ?? ''}
+                  {userToken1 ? userToken1.toFixed(4, { groupSeparator: ',' } ?? '0.00') : ''} {token1Symbol ?? ''}
                 </TYPE.white>
               </AutoRow>
               <TYPE.main>
@@ -484,11 +484,11 @@ export default function StakingPoolDetail({
           <AutoColumn gap={'20px'}>
             <RowBetween>
               <TYPE.main>Unstaked Position</TYPE.main>
-              <TYPE.white>{balance?.toFixed(4) ?? ''}</TYPE.white>
+              <TYPE.white>{balance?.toFixed(4, { groupSeparator: ',' } ?? '0.00') ?? ''}</TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.main>Staked Position</TYPE.main>
-              <TYPE.white>{stakedLpAmount?.toFixed(4) ?? ''}</TYPE.white>
+              <TYPE.white>{stakedLpAmount?.toFixed(4, { groupSeparator: ',' } ?? '0.00') ?? ''}</TYPE.white>
             </RowBetween>
             <AutoRowBetween gap={'30px'}>
               <ButtonPrimary
@@ -563,7 +563,9 @@ export default function StakingPoolDetail({
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Mining Position</TYPE.main>
-                    <TYPE.white>{stakedLpAmount ? stakedLpAmount.toFixed(4) : '--'}</TYPE.white>
+                    <TYPE.white>
+                      {stakedLpAmount ? stakedLpAmount.toFixed(4, { groupSeparator: ',' } ?? '0.00') : '--'}
+                    </TYPE.white>
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Current Boost</TYPE.main>
@@ -576,7 +578,9 @@ export default function StakingPoolDetail({
                   <RowBetween>
                     <TYPE.main>My Claimable Rewards</TYPE.main>
                     <RowFixed>
-                      <TYPE.white>{claimAbleRewards ? claimAbleRewards?.toFixed(4) : '--'}</TYPE.white>
+                      <TYPE.white>
+                        {claimAbleRewards ? claimAbleRewards?.toFixed(4, { groupSeparator: ',' } ?? '0.00') : '--'}
+                      </TYPE.white>
                       {claimAbleRewards && claimAbleRewards.greaterThan(JSBI.BigInt('0')) && (
                         <TYPE.link style={{ cursor: 'pointer' }} ml={'10px'} onClick={() => setShowClaimModal(true)}>
                           claim
