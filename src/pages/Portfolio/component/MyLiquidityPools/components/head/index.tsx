@@ -32,7 +32,7 @@ export default function Head({ data, claimAll }: { data: IHeadItem[]; claimAll: 
         </Button>
       </div>
       <div className="pools-head-bottom flex ai-center">
-        <span className="pools-head-bottom-value">{format.amountFormat(total, 2)} LT</span>
+        <span className="pools-head-bottom-value text-medium">{format.amountFormat(total, 2)} LT</span>
         <span className="pools-head-bottom-value2">≈ ${format.amountFormat(uTotal, 2)}</span>
       </div>
     </div>

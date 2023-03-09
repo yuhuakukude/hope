@@ -29,9 +29,10 @@
 
   .ant-table-thead>tr>th {
     background-color: rgba(61, 62, 70, 1);
-    color: #fff;
-    font-size: 16px;
+    color: #A8A8AA;
+    font-size: 14px;
     border: none;
+    font-family: Arboria-Medium;
   }
 
   .ant-table-thead>tr:first-child>th:last-child {
@@ -46,7 +47,7 @@
   }
 
   .ant-table-thead>tr>th {
-    padding: 12px 34px;
+    padding: 8px 34px;
   }
 
   .ant-table-tbody>tr>td {

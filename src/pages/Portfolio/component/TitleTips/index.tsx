@@ -17,7 +17,9 @@ export default function TitleTips({ title, desc, link }: { title: string; desc: 
   )
   return (
     <div>
-      <span style={{ marginRight: '6px' }}>{title}</span>
+      <span style={{ marginRight: '6px' }} className="text-medium">
+        {title}
+      </span>
       <Tips title={getTitle}></Tips>
     </div>
   )

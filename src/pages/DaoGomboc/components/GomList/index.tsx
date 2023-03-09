@@ -62,7 +62,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       const ta = new TokenAmount(LT[chainId ?? 1], JSBI.BigInt(value))
       const ra = ta.multiply(JSBI.BigInt(100))
       if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
-        res = `${ra.toFixed(2)}`
+        res = `${ra.toFixed(2, { groupSeparator: '' }, 0)}`
       }
     }
     return res
@@ -73,7 +73,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     if (value && value !== '0') {
       const ta = new TokenAmount(LT[chainId ?? 1], JSBI.BigInt(value))
       if (ta.toFixed(2) && Number(ta.toFixed(2)) > 0) {
-        res = `${ta.toFixed(2)}`
+        res = `${ta.toFixed(2, { groupSeparator: '' }, 0)}`
       }
     }
     return res
@@ -84,7 +84,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     if (value && value !== '0') {
       const ta = new TokenAmount(ST_HOPE[chainId ?? 1], JSBI.BigInt(value))
       if (ta.toFixed(2) && Number(ta.toFixed(2)) > 0) {
-        res = `${ta.toFixed(2)}`
+        res = `${ta.toFixed(2, { groupSeparator: '' }, 0)}`
       }
     }
     return res

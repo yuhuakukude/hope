@@ -180,10 +180,10 @@ export default function InvestmentAllocation({ data }: { data: any }) {
               />
             </div>
             <div className="investment-allocation-total2">
-              {format.amountFormat(data.totalHope, 2)} HOPE ≈
+              <span className="text-medium">{format.amountFormat(data.totalHope, 2)} HOPE</span>
               <span className="investment-allocation-total3">
                 {' '}
-                $
+                ≈ $
                 {priceResult && priceResult[0] && priceResult[0].price
                   ? toUsdPrice(data.totalHope, priceResult[0].price)
                   : '0.00'}
@@ -195,14 +195,14 @@ export default function InvestmentAllocation({ data }: { data: any }) {
           <div className="investment-allocation-content">
             {allocations.map((item, index) => {
               return (
-                <div className="investment-allocation-box" key={index}>
+                <div className="investment-allocation-box flex-1" key={index}>
                   <div className="investment-allocation-box-head">
                     <span className="investment-allocation-box-name">{item.name}</span>
                     <span className="investment-allocation-box-question">
                       <Tips title={item.tips} />
                     </span>
                   </div>
-                  <div className="investment-allocation-box-amount">≈ {item.formatValue} HOPE</div>
+                  <div className="investment-allocation-box-amount text-medium">≈ {item.formatValue} HOPE</div>
                   <div className="investment-allocation-box-amount2">
                     ≈ $
                     {priceResult && priceResult[0] && priceResult[0].price
