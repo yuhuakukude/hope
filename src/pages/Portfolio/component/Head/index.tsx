@@ -1,4 +1,3 @@
-import Button from 'components/antd/Button'
 import React from 'react'
 import Card from '../Card'
 import './index.scss'
@@ -13,16 +12,14 @@ export default function PortfolioHead() {
           and pooling rewards!
         </div>
         <div className="learn-more">
-          <Button
-            type="link"
-            onClick={() => {
-              window.open(
-                'https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/usdhope-reserve-pools-hrp/understanding-usdhope-reserve-pools'
-              )!.opener = null
-            }}
+          <a
+            className="learn-a font-nor text-primary text-medium m-t-30"
+            target="_blank"
+            rel="noopener noreferrer"
+            href={`https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/usdhope-reserve-pools-hrp/understanding-usdhope-reserve-pools`}
           >
             Learn more
-          </Button>
+          </a>
         </div>
       </Card>
     </div>
