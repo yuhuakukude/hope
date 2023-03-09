@@ -1,7 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
 import { CheckCircle, Triangle } from 'react-feather'
-import moment from 'moment'
 import { useActiveWeb3React } from '../../hooks'
 import { getEtherscanLink } from '../../utils'
 import { ExternalLink } from '../../theme'
@@ -9,6 +8,7 @@ import { useAllTransactions } from '../../state/transactions/hooks'
 import { RowFixed } from '../Row'
 import Loader from '../Loader'
 import { TYPE } from '../../theme'
+import { formatUTCDate } from '../../utils/format'
 
 const TransactionWrapper = styled.div``
 
@@ -54,7 +54,7 @@ export default function Transaction({ hash }: { hash: string }) {
     <TransactionWrapper>
       <TransactionState href={getEtherscanLink(chainId, hash, 'transaction')} pending={pending} success={success}>
         <RowFixed>
-          <TYPE.main>{`${moment(tx?.addedTime).format('YYYY-MM-DD')}`}</TYPE.main>
+          <TYPE.main>{`${formatUTCDate(tx?.addedTime)}`}</TYPE.main>
         </RowFixed>
         <RowFixed>
           <TransactionStatusText>{summary ?? hash}</TransactionStatusText>

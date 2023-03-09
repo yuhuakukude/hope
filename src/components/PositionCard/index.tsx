@@ -194,7 +194,9 @@ export default function FullPositionCard({
   // if staked balance balance provided, add to standard liquidity amount
   const userPoolBalance = stakedBalance ? userDefaultPoolBalance?.add(stakedBalance) : userDefaultPoolBalance
   const stakePercent =
-    stakedBalance && userPoolBalance ? new Percent(stakedBalance?.raw, userPoolBalance?.raw) : undefined
+    stakedBalance && userPoolBalance && userPoolBalance.greaterThan(JSBI.BigInt(0))
+      ? new Percent(stakedBalance?.raw, userPoolBalance?.raw)
+      : undefined
   const [token0Deposited, token1Deposited] =
     !!pair &&
     !!totalPoolTokens &&

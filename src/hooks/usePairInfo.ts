@@ -60,6 +60,17 @@ export default function usePairsInfo(
     accountArg
   )
 
+  const ltRewardsArg = useMemo(() => [account ?? undefined, LT[chainId ?? 1].address], [account, chainId])
+
+  const ltRewardAmounts = useMultipleContractSingleData(
+    allPairs.map(pair => {
+      return pair.stakingAddress
+    }),
+    STAKING_REWARDS_INTERFACE,
+    'claimableReward',
+    ltRewardsArg
+  )
+  console.log('ltRewardAmounts', ltRewardAmounts)
   const stakedAmounts = useMultipleContractSingleData(
     allPairs.map(pair => {
       return pair.stakingAddress
@@ -90,6 +101,7 @@ export default function usePairsInfo(
     () =>
       liquidityPairs.map((pair, index) => {
         const reward = rewardAmounts[index]?.result
+        const ltReward = ltRewardAmounts[index]?.result
         const work = workAmounts[index]?.result
         const stake = stakedAmounts[index]?.result
         const total = totalAmounts[index]?.result
@@ -127,7 +139,16 @@ export default function usePairsInfo(
           ...pair,
           pair,
           stakingAddress: pair.stakingAddress,
-          reward: reward ? new TokenAmount(LT[chainId ?? 1], reward?.[0].toString()) : undefined,
+          reward: new TokenAmount(
+            LT[chainId ?? 1],
+            reward && ltReward
+              ? JSBI.add(JSBI.BigInt(reward?.[0].toString()), JSBI.BigInt(ltReward?.[0].toString()))
+              : reward
+              ? reward?.[0].toString()
+              : ltReward
+              ? ltReward?.[0].toString()
+              : '0'
+          ),
           futureBoots,
           currentBoots,
           feeRate: pair.feeRate,
@@ -137,7 +158,17 @@ export default function usePairsInfo(
             : undefined
         }
       }),
-    [chainId, liquidityPairs, rewardAmounts, stakedAmounts, totalAmounts, veltBalance, veltTotal, workAmounts]
+    [
+      chainId,
+      liquidityPairs,
+      ltRewardAmounts,
+      rewardAmounts,
+      stakedAmounts,
+      totalAmounts,
+      veltBalance,
+      veltTotal,
+      workAmounts
+    ]
   )
 
   return {

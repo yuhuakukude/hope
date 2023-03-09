@@ -180,6 +180,7 @@ export default function Swap({ history }: RouteComponentProps) {
   }
 
   const route = trade?.route
+
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0))
   )
@@ -425,6 +426,9 @@ export default function Swap({ history }: RouteComponentProps) {
               otherCurrency={currencies[Field.OUTPUT]}
               id="swap-currency-input"
             />
+            <TYPE.main textAlign={'right'} fontSize={16}>
+              ≈0.00 USD
+            </TYPE.main>
             <AutoColumn justify="space-between">
               <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
                 <ArrowWrapper clickable>
@@ -455,6 +459,9 @@ export default function Swap({ history }: RouteComponentProps) {
               otherCurrency={currencies[Field.INPUT]}
               id="swap-currency-output"
             />
+            <TYPE.main textAlign={'right'} fontSize={16}>
+              ≈0.00 USD
+            </TYPE.main>
 
             {recipient !== null && !showWrap ? (
               <>
