@@ -16,3 +16,4 @@ export function unwrappedToken(token: Token): Currency {
   if (token.equals(WETH[token.chainId])) return ETHER
   return token
 }
+

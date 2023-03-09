@@ -3,7 +3,6 @@ import styled from 'styled-components'
 import { AutoColumn } from '../../components/Column'
 import NumericalInput from '../../components/NumericalInput'
 import { useActiveWeb3React } from '../../hooks'
-import { Decimal } from 'decimal.js'
 import { Tooltip } from 'antd'
 import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
 import {
@@ -106,6 +105,7 @@ export default function Staking() {
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
   const hopeBal = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
+  const stHopeBalance = useTokenBalance(account ?? undefined, ST_HOPE[chainId ?? 1])
   const [apyVal, setApyVal] = useState('0')
   const [amount, setAmount] = useState('')
 
@@ -625,13 +625,7 @@ export default function Staking() {
                         <div className="currency font-nor text-medium m-l-12">stHOPE</div>
                       </div>
                       <span className="text-white">
-                        ≈ $
-                        {toUsdPrice(
-                          new Decimal(stakedVal?.toFixed(2) || 0)
-                            .add(new Decimal(unstakingVal?.toFixed(2) || 0))
-                            .toNumber(),
-                          stHopePrice
-                        ) || '--'}
+                        ≈ ${toUsdPrice(stHopeBalance?.toFixed(2), stHopePrice) || '--'}
                       </span>
                     </div>
                     <div className="flex jc-between m-b-20">
