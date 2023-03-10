@@ -35,7 +35,8 @@ export default function ConfirmSwapModal({
   attemptingTxn,
   pendingMessage,
   errorCode,
-  txHash
+  txHash,
+  showAddToken
 }: {
   isOpen: boolean
   trade: Trade | undefined
@@ -50,6 +51,7 @@ export default function ConfirmSwapModal({
   swapErrorMessage: string | undefined
   errorCode?: number | undefined
   onDismiss: () => void
+  showAddToken: boolean
 }) {
   const showAcceptChanges = useMemo(
     () => Boolean(trade && originalTrade && tradeMeaningfullyDiffers(trade, originalTrade)),
@@ -93,7 +95,7 @@ export default function ConfirmSwapModal({
         <TransactionErrorContent errorCode={errorCode} onDismiss={onDismiss} message={swapErrorMessage} />
       ) : (
         <ConfirmationModalContent
-          title="Confirm Swap"
+          title="Order Confirm"
           onDismiss={onDismiss}
           topContent={modalHeader}
           bottomContent={modalBottom}
@@ -110,7 +112,7 @@ export default function ConfirmSwapModal({
       hash={txHash}
       content={confirmationContent}
       pendingText={pendingText}
-      currencyToAdd={trade?.outputAmount.currency}
+      currencyToAdd={showAddToken ? trade?.outputAmount.currency : undefined}
     />
   )
 }

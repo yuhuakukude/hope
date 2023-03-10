@@ -121,13 +121,13 @@ export default function App() {
                   {/*<Route exact path="/swap/add" component={AddLiquidity} />*/}
                   <Route
                     exact
-                    path="/swap/liquidity/manager/:currencyIdA"
+                    path="/swap/liquidity/manager/deposit/:currencyIdA"
                     component={RedirectOldAddLiquidityPathStructure}
                   />
                   <Route
                     exact
-                    path="/swap/liquidity/manager/:currencyIdA/:currencyIdB"
-                    component={RedirectDuplicateTokenIds}
+                    path="/swap/liquidity/manager/withdraw/:currencyIdA"
+                    component={RedirectOldAddLiquidityPathStructure}
                   />
                   <Route
                     exact

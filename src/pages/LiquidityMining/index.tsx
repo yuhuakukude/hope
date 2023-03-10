@@ -72,7 +72,6 @@ export default function LiquidityMining({
   const onUserInput = useCallback((typedValue: string) => {
     setTypedValue(typedValue)
   }, [])
-  console.log('dummyPair', pool?.lpToken, dummyPair)
   const balance = useTokenBalance(account ?? undefined, pool?.lpToken)
   const stakedAmount = useTokenBalance(account ?? undefined, pool?.stakingToken)
 
@@ -301,7 +300,7 @@ export default function LiquidityMining({
               </AutoRow>
               <RowBetween>
                 <TYPE.main>Staked</TYPE.main>
-                <TYPE.white>{stakedAmount ? stakedAmount.toFixed(4) : '--'}</TYPE.white>
+                <TYPE.white>{stakedAmount ? stakedAmount.toFixed(4, { groupSeparator: ',' }) : '--'}</TYPE.white>
               </RowBetween>
               <CurrencyInputPanel
                 hideCurrency

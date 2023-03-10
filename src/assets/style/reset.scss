@@ -294,19 +294,29 @@
 
   .ant-pagination-item {
     background-color: #26262C;
-    border-color: #434343;
+    border: none;
 
     a {
       color: #868790;
+      font-family: Arboria-Medium;
+      &:hover{
+        color: #E4C989;
+      }
     }
   }
 
   .ant-pagination-prev,
   .ant-pagination-next {
     a {
-      color: #868790;
-      background-color: #434343;
-      border-color: #434343;
+      color: #ffffff;
+      background-color: transparent;
+      border: none;
+    }
+    &.ant-pagination-disabled a{
+      color: #63636A;
+      &:hover{
+        color: #63636A;
+      }
     }
   }
 
@@ -329,9 +339,15 @@
     background-color: #26262C;
     border-color: #434343;
   }
+  .ant-pagination-options-size-changer .ant-select-selection{
+    border: none !important;
+  }
 
-  .ant-pagination-item-active a {
-    color: #E4C989 !important;
+  .ant-pagination-item-active{
+    background-color: #33333C;
+    a {
+      color: #E4C989 !important;
+    }
   }
 
   .ant-pagination-item-active:focus a,

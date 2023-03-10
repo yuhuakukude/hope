@@ -10,6 +10,7 @@ import { ReactComponent as Email } from 'assets/svg/sidebar-email.svg'
 import { Text } from 'rebass'
 import { NavLink, useLocation } from 'react-router-dom'
 import { PrimaryText } from '../Text'
+import { DOC_API } from '../../constants'
 
 import './index.scss'
 
@@ -53,7 +54,7 @@ const Icon = styled('i')`
 `
 
 const MenuText = styled(Text)`
-  color: #ffffff99;
+  color: #ffffff;
   font-size: 12px;
   text-align: center;
 `
@@ -74,7 +75,6 @@ const TabBox = styled(Column)``
 
 export default function SideBar() {
   const location = useLocation()
-
   const ROUTERS = [
     { title: 'Portfolio', icon: '&#xe609;', baseRouter: '/portfolio', router: '/portfolio' },
     { title: 'Staking', icon: '&#xe606;', baseRouter: '/hope', router: '/hope/staking' },
@@ -123,7 +123,16 @@ export default function SideBar() {
         <AutoColumn gap={'18px'} style={{ marginTop: '30px' }}>
           <MenuText>About</MenuText>
           <MenuText>Docs</MenuText>
-          <MenuText>Bug bounty</MenuText>
+          <MenuText>
+            <a
+              href={`${DOC_API}/bug-bounty.html`}
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ color: '#FFFFFF' }}
+            >
+              Bug bounty
+            </a>
+          </MenuText>
         </AutoColumn>
         <MenuText mt={26} mb={30}>
           @2023 Light

@@ -76,14 +76,36 @@ export default function LiquidityManager({
         </RowBetween>
         <CustomTabWrapper>
           <CustomTab
-            onClick={() => history.replace(`/swap/liquidity/manager/deposit/${currencyIdA}/${currencyIdB}`)}
+            onClick={() =>
+              history.replace(
+                `/swap/liquidity/manager/deposit/${
+                  !currencyIdA && !currencyIdB
+                    ? 'ETH'
+                    : currencyIdA && currencyIdB
+                    ? currencyIdA + '/' + currencyIdB
+                    : currencyIdA
+                    ? currencyIdA
+                    : currencyIdB
+                }`
+              )
+            }
             isActive={!isRemove}
           >
             Deposit
           </CustomTab>
           <CustomTab
             onClick={() => {
-              history.replace(`/swap/liquidity/manager/withdraw/${currencyIdA}/${currencyIdB}`)
+              history.replace(
+                `/swap/liquidity/manager/withdraw/${
+                  !currencyIdA && !currencyIdB
+                    ? 'ETH'
+                    : currencyIdA && currencyIdB
+                    ? currencyIdA + '/' + currencyIdB
+                    : currencyIdA
+                    ? currencyIdA
+                    : currencyIdB
+                }`
+              )
             }}
             isActive={isRemove}
           >

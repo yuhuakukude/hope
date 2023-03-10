@@ -41,6 +41,7 @@ const EmptyProposals = styled.div`
 const EmptyCover = styled.img`
   width: 80%;
   height: fit-content;
+  height: auto;
 `
 
 const TableWrapper = styled(AutoColumn)`
@@ -84,7 +85,7 @@ export default function Pools() {
   const [searchValue, setSearchValue] = useState('')
   const [searchType, setSearchType] = useState(PAIR_SEARCH.ALL)
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const [pageSize, setPageSize] = useState<number>(5)
+  const [pageSize, setPageSize] = useState<number>(10)
   const toggleWalletModal = useWalletModalToggle()
   const history = useHistory()
   const { pairInfos, total, loading } = usePairsInfo(pageSize, currentPage, searchType, searchValue)
@@ -110,13 +111,13 @@ export default function Pools() {
         <CardSection style={{ maxWidth: 580 }} justify={'center'}>
           <AutoColumn justify={'center'} gap="md">
             <RowBetween>
-              <TYPE.white fontSize={14}>
+              <TYPE.white fontSize={16} lineHeight={'24px'}>
                 {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
               </TYPE.white>
             </RowBetween>
             <RowBetween>
               <ExternalLink
-                style={{ color: 'white', textDecoration: 'underline' }}
+                style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }}
                 target="_blank"
                 href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/usdhope-token"
               >
@@ -143,12 +144,12 @@ export default function Pools() {
           <AutoColumn justify={'center'} gap="lg">
             <EmptyCover src={empty} />
             <RowBetween>
-              <TYPE.white fontSize={14}>
+              <TYPE.white fontSize={16} lineHeight={'24px'}>
                 {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
               </TYPE.white>
             </RowBetween>
             <a
-              style={{ width: `400px` }}
+              style={{ width: `400px`, fontSize: '16px', textDecoration: 'none' }}
               target="_blank"
               rel="noopener noreferrer"
               href={`https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/`}
@@ -233,10 +234,21 @@ export default function Pools() {
           </AutoColumn>
         </RowBetween>
       </AutoRow>
-      {pairInfos.length !== 0 && (
+      {pairInfos.length !== 0 && searchType === PAIR_SEARCH.ALL && (
         <TableWrapper>
           <TableTitleWrapper>
-            {(searchType === PAIR_SEARCH.ALL ? poolTitles : positionTitles).map(({ value, weight }, index) => (
+            {poolTitles.map(({ value, weight }, index) => (
+              <TableTitle key={index} flex={weight ?? 1}>
+                {value}
+              </TableTitle>
+            ))}
+          </TableTitleWrapper>
+        </TableWrapper>
+      )}
+      {pairInfos.length !== 0 && searchType === PAIR_SEARCH.USER_LIQUIDITY && account && (
+        <TableWrapper>
+          <TableTitleWrapper>
+            {positionTitles.map(({ value, weight }, index) => (
               <TableTitle key={index} flex={weight ?? 1}>
                 {value}
               </TableTitle>
@@ -292,7 +304,7 @@ export default function Pools() {
       )}
       <ColumnCenter style={{ marginTop: 30 }}>
         {(account || (!account && searchType === PAIR_SEARCH.ALL)) && !loading && pairInfos.length !== 0 && total > 0 && (
-          <Row justify="center">
+          <Row justify="flex-end">
             <Pagination
               showQuickJumper
               total={total}

@@ -14,7 +14,7 @@ export default function LockerBanner() {
             rel="noopener noreferrer"
             className="link text-primary m-l-20 flex ai-center"
           >
-            Learn more <i className="iconfont m-l-5">&#xe619;</i>{' '}
+            Learn more <i className="iconfont m-l-5 m-t-2">&#xe619;</i>{' '}
           </a>
         </p>
         <ul className="m-t-20">

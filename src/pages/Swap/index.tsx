@@ -205,6 +205,7 @@ export default function Swap({ history }: RouteComponentProps) {
   const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
 
   const [pending, setPending] = useState<boolean>(false)
+  const [showAddToken, setShowAddToken] = useState<boolean>(false)
 
   // mark when a user has submitted an approval, reset onTokenSelection for input field
   useEffect(() => {
@@ -236,6 +237,7 @@ export default function Swap({ history }: RouteComponentProps) {
     setPending(true)
     approveCallback()
       .then(response => {
+        setShowAddToken(false)
         setPending(true)
         setSwapState({
           pendingMessage: undefined,
@@ -282,6 +284,7 @@ export default function Swap({ history }: RouteComponentProps) {
     })
     swapCallback()
       .then(hash => {
+        setShowAddToken(true)
         onUserInput(Field.INPUT, '')
         setPending(true)
         setSwapState({
@@ -410,6 +413,7 @@ export default function Swap({ history }: RouteComponentProps) {
         <SwapHeader />
         <Wrapper id="swap-page">
           <ConfirmSwapModal
+            showAddToken={showAddToken}
             isOpen={showConfirm || pending}
             errorCode={errorCode}
             pendingMessage={pendingMessage}

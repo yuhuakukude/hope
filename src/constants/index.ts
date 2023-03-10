@@ -4,6 +4,7 @@ import { AbstractConnector } from '@web3-react/abstract-connector'
 import { injected, walletconnect } from '../connectors'
 
 export const SUBGRAPH = 'https://hope-dapp-dev1.hivefin.net/subgraphs/name/light-dev/light-subgraph'
+export const DOC_API = 'https://hope-static-test1.hivefin.net'
 
 export const BLOCK_SUBGRAPH = 'https://hope-dapp-dev1.hivefin.net/subgraphs/name/light-dev/ethereum-blocks'
 

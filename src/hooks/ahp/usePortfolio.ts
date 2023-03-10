@@ -169,7 +169,7 @@ export function toUsdPrice(val: any, price: string | number) {
   if (isNaN(val)) {
     return val
   }
-  let res = '0'
+  let res = '0.00'
   if (val && price) {
     const pr = new Decimal(val).mul(new Decimal(price)).toNumber()
     res = format.amountFormat(pr, 2)
