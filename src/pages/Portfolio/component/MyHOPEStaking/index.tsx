@@ -110,7 +110,10 @@ export default function MyHOPEStaking() {
     {
       title: 'My Boost',
       dataIndex: 'boost',
-      key: 'boost'
+      key: 'boost',
+      render: (text: string) => {
+        return `${text}x`
+      }
     },
     {
       title: 'Balance',

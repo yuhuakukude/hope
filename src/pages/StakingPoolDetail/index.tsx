@@ -384,25 +384,25 @@ export default function StakingPoolDetail({
     {
       title: 'TVL',
       isRise: !!pairMore && pairMore.tvlChangeUSD > 0,
-      amount: pool ? `$${format.amountFormat(Number(pool.tvl), 2)}` : `--`,
+      amount: pool ? `$${format.numFormat(format.amountFormat(Number(pool.tvl), 2), 2, true)}` : `--`,
       rate: pairMore ? `${format.numeral(Math.abs(pairMore.tvlChangeUSD), 2)} %` : `--`
     },
     {
       title: 'Volume(24H)',
       isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
-      amount: pairMore ? `$${(format.amountFormat(pairMore.oneDayVolumeUSD), 2)}` : `--`,
+      amount: pairMore ? `$${format.numFormat(format.amountFormat(pairMore.oneDayVolumeUSD, 2), 2, true)}` : `--`,
       rate: pairMore ? `${format.numeral(Math.abs(pairMore.volumeChangeUSD), 2)} %` : `--`
     },
     {
       title: 'Fees(24H)',
       isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
-      amount: pairMore ? `$${(format.amountFormat(pairMore.oneDayVolumeUSD * 0.003), 2)}` : `--`,
+      amount: pairMore ? `$${format.amountFormat(pairMore.oneDayVolumeUSD * 0.003, 2)}` : `--`,
       rate: pairMore ? `${format.numeral(Math.abs(pairMore.volumeChangeUSD), 2)} %` : `--`
     },
     {
       title: 'Fees(7d)',
       isRise: !!pairMore && pairMore.weeklyVolumeChange > 0,
-      amount: pairMore ? `$${(format.amountFormat(pairMore.oneWeekVolume), 2)}` : `--`,
+      amount: pairMore ? `$${format.amountFormat(pairMore.oneWeekVolume, 2)}` : `--`,
       rate: pairMore ? `${format.numeral(Math.abs(pairMore.weeklyVolumeChange), 2)} %` : `--`
     }
   ]
@@ -440,7 +440,7 @@ export default function StakingPoolDetail({
                   '-'} Pool Token`}</TYPE.white>
               </AutoRow>
               <TYPE.white fontSize={18} fontWeight={700}>
-                {userTotalBalance?.toFixed(4, { groupSeparator: ',' } ?? '0.00')}
+                {userTotalBalance ? userTotalBalance?.toFixed(4, { groupSeparator: ',' }) : '0.00'}
               </TYPE.white>
             </AutoRowBetween>
             <TYPE.main textAlign={'right'}>
@@ -773,12 +773,19 @@ export default function StakingPoolDetail({
                 </Row>
               </div>
               {tabIndex === 'TVL' ? (
-                <LineCharts xData={xData} yData={yData} height={330} is24Hour={timeIndex === '24H'}></LineCharts>
+                <LineCharts
+                  xData={xData}
+                  yData={yData}
+                  height={330}
+                  left={10}
+                  is24Hour={timeIndex === '24H'}
+                ></LineCharts>
               ) : (
                 <BarCharts
                   xData={xData}
                   yData={yData}
                   bottom={10}
+                  left={10}
                   height={330}
                   is24Hour={timeIndex === '24H'}
                 ></BarCharts>
@@ -912,7 +919,11 @@ export default function StakingPoolDetail({
                     <TableTitle>{formatUTCDate(pool?.createAt)}</TableTitle>
                     <TableTitle flex={0.8}>0.30%</TableTitle>
                     <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
-                      <TableTitle>{pairMore ? `≈ $${format.amountFormat(pairMore.totalVolume, 2)}` : '--'}</TableTitle>
+                      <TableTitle>
+                        {pairMore
+                          ? `≈ $${format.numFormat(format.amountFormat(pairMore.totalVolume, 2), 2, true)}`
+                          : '--'}
+                      </TableTitle>
                       <AutoRow gap={'5px'}>
                         <CurrencyLogo currency={pool?.tokens[0]} />
                         <TYPE.main>
