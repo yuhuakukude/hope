@@ -1,11 +1,11 @@
-import { CurrencyAmount, JSBI, Token, Trade } from '@uniswap/sdk'
+import { CurrencyAmount, JSBI, Token, Trade, WETH } from '@uniswap/sdk'
 import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { ArrowDownCircle } from 'react-feather'
 import ReactGA from 'react-ga'
 import { Text } from 'rebass'
 import { ThemeContext } from 'styled-components'
 import AddressInputPanel from '../../components/AddressInputPanel'
-import { ButtonConfirmed, ButtonError, ButtonLight, ButtonPrimary } from '../../components/Button'
+import { ButtonConfirmed, ButtonError, ButtonPrimary } from '../../components/Button'
 import Card, { GreyCard } from '../../components/Card'
 import { AutoColumn } from '../../components/Column'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
@@ -49,6 +49,10 @@ import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter
 import { isTradeBetter } from 'utils/trades'
 import { RouteComponentProps } from 'react-router-dom'
 import spinner from '../../assets/svg/spinner.svg'
+import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
+import { tokenAddress } from '../../utils/currencyId'
+import { amountFormat } from '../../utils/format'
+import { LightQuestionHelper } from '../../components/QuestionHelper'
 
 export default function Swap({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
@@ -75,7 +79,7 @@ export default function Swap({ history }: RouteComponentProps) {
       return !Boolean(token.address in defaultTokens)
     })
 
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const theme = useContext(ThemeContext)
 
   // toggle wallet when disconnected
@@ -127,6 +131,14 @@ export default function Swap({ history }: RouteComponentProps) {
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount
       }
 
+  const chainWETH = WETH[chainId ?? 1]
+  const inputAddress = tokenAddress(chainWETH, currencies.INPUT)?.toLowerCase()
+  const outAddress = tokenAddress(chainWETH, currencies.OUTPUT)?.toLowerCase()
+
+  const addresses = useMemo(() => {
+    return [inputAddress, outAddress]
+  }, [inputAddress, outAddress])
+  const { result: priceResult } = useTokenPriceObject(addresses)
   const { onSwitchTokens, onCurrencySelection, onUserInput, onChangeRecipient } = useSwapActionHandlers()
   const isValid = !swapInputError
   const dependentField: Field = independentField === Field.INPUT ? Field.OUTPUT : Field.INPUT
@@ -180,6 +192,7 @@ export default function Swap({ history }: RouteComponentProps) {
   }
 
   const route = trade?.route
+
   const userHasSpecifiedInputOutput = Boolean(
     currencies[Field.INPUT] && currencies[Field.OUTPUT] && parsedAmounts[independentField]?.greaterThan(JSBI.BigInt(0))
   )
@@ -412,7 +425,7 @@ export default function Swap({ history }: RouteComponentProps) {
             onDismiss={handleConfirmDismiss}
           />
 
-          <AutoColumn gap={'md'}>
+          <AutoColumn gap={'sm'}>
             <CurrencyInputPanel
               showCommonBases
               label={independentField === Field.OUTPUT && !showWrap && trade ? 'Pay (estimated)' : 'Pay'}
@@ -425,6 +438,14 @@ export default function Swap({ history }: RouteComponentProps) {
               otherCurrency={currencies[Field.OUTPUT]}
               id="swap-currency-input"
             />
+            <TYPE.main textAlign={'right'} fontSize={16}>
+              {`≈$${
+                inputAddress && priceResult && formattedAmounts[Field.INPUT]
+                  ? amountFormat(Number(priceResult[inputAddress]) * Number(formattedAmounts[Field.INPUT]), 2)
+                  : '0.00'
+              }`}
+              USD
+            </TYPE.main>
             <AutoColumn justify="space-between">
               <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
                 <ArrowWrapper clickable>
@@ -455,6 +476,14 @@ export default function Swap({ history }: RouteComponentProps) {
               otherCurrency={currencies[Field.INPUT]}
               id="swap-currency-output"
             />
+            <TYPE.main textAlign={'right'} fontSize={16}>
+              {`≈$${
+                outAddress && priceResult && formattedAmounts[Field.OUTPUT]
+                  ? amountFormat(Number(priceResult[outAddress]) * Number(formattedAmounts[Field.OUTPUT]), 2)
+                  : '0.00'
+              }`}
+              USD
+            </TYPE.main>
 
             {recipient !== null && !showWrap ? (
               <>
@@ -471,7 +500,7 @@ export default function Swap({ history }: RouteComponentProps) {
             ) : null}
 
             {showWrap ? null : (
-              <Card padding={showWrap ? '.25rem 1rem 0 1rem' : '1.25rem'} borderRadius={'20px'}>
+              <Card padding={showWrap ? '.25rem 1rem 0 1rem' : '1rem'} borderRadius={'20px'}>
                 <AutoColumn gap="8px" style={{ padding: '0 16px' }}>
                   {Boolean(trade) ? (
                     <Row justify={'center'}>
@@ -484,7 +513,7 @@ export default function Swap({ history }: RouteComponentProps) {
                   ) : (
                     <Text textAlign={'center'} fontWeight={500} fontSize={14} color={theme.text2}>
                       {swapInputError || (noRoute && userHasSpecifiedInputOutput) ? (
-                        '--'
+                        '- -'
                       ) : (
                         <>
                           Fetching best price
@@ -513,7 +542,7 @@ export default function Swap({ history }: RouteComponentProps) {
                 <TYPE.main mb="4px">Unsupported Asset</TYPE.main>
               </ButtonPrimary>
             ) : !account ? (
-              <ButtonLight onClick={toggleWalletModal}>Connect Wallet</ButtonLight>
+              <ButtonPrimary onClick={toggleWalletModal}>Connect Wallet</ButtonPrimary>
             ) : showWrap ? (
               <ButtonPrimary disabled={Boolean(wrapInputError)} onClick={onWrap}>
                 {wrapInputError ??
@@ -539,7 +568,10 @@ export default function Swap({ history }: RouteComponentProps) {
                   ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
                     'Approved'
                   ) : (
-                    'Approve ' + currencies[Field.INPUT]?.symbol
+                    <AutoRow gap={'4px'} justify={'center'}>
+                      {'Approve use of ' + currencies[Field.INPUT]?.symbol}
+                      <LightQuestionHelper text={''} />
+                    </AutoRow>
                   )}
                 </ButtonConfirmed>
                 {/*<ButtonError*/}
@@ -639,12 +671,12 @@ export default function Swap({ history }: RouteComponentProps) {
         ) : (
           <UnsupportedCurrencyFooter show={swapIsUnsupported} currencies={[currencies.INPUT, currencies.OUTPUT]} />
         )}
-        <AutoColumn style={{ margin: '0 20px', padding: '20px 0', borderTop: '1px solid #3D3E46' }}>
-          <RowBetween>
-            <TYPE.main>Network Fee</TYPE.main>
-            <TYPE.white>≈0.01 ETH</TYPE.white>
-          </RowBetween>
-        </AutoColumn>
+        {/*<AutoColumn style={{ margin: '0 20px', padding: '20px 0', borderTop: '1px solid #3D3E46' }}>*/}
+        {/*  <RowBetween>*/}
+        {/*    <TYPE.main>Network Fee</TYPE.main>*/}
+        {/*    <TYPE.white>≈0.01 ETH</TYPE.white>*/}
+        {/*  </RowBetween>*/}
+        {/*</AutoColumn>*/}
       </AppBody>
     </>
   )

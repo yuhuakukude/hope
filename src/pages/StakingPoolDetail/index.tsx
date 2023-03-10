@@ -26,7 +26,6 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { useLineDaysChartsData, useLine24HourChartsData } from '../../hooks/useCharts'
 import SelectTips, { TitleTipsProps } from '../Portfolio/component/SelectTips'
-import moment from 'moment'
 import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { usePosition, useStakePosition } from '../../hooks/usePosition'
 import { ArrowRight } from 'react-feather'
@@ -384,26 +383,26 @@ export default function StakingPoolDetail({
     {
       title: 'TVL',
       isRise: !!pairMore && pairMore.tvlChangeUSD > 0,
-      rate: pairMore ? `${pairMore.tvlChangeUSD.toFixed(2)} %` : `--`,
-      amount: pool ? `$${format.amountFormat(Number(pool.tvl))}` : `--`
+      amount: pool ? `$${format.amountFormat(Number(pool.tvl))}` : `--`,
+      rate: pairMore ? `${amountFormat(pairMore.tvlChangeUSD, 2)} %` : `--`
     },
     {
       title: 'Volume(24H)',
       isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
-      rate: pairMore ? `${pairMore.volumeChangeUSD.toFixed(2)} %` : `--`,
-      amount: pairMore ? `$${format.amountFormat(pairMore.oneDayVolumeUSD)}` : `--`
+      amount: pairMore ? `$${format.amountFormat(pairMore.oneDayVolumeUSD)}` : `--`,
+      rate: pairMore ? `${amountFormat(pairMore.volumeChangeUSD, 2)} %` : `--`
     },
     {
       title: 'Fees(24H)',
       isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
-      rate: pairMore ? `${pairMore.volumeChangeUSD.toFixed(2)} %` : `--`,
-      amount: pairMore ? `$${format.amountFormat(pairMore.oneDayVolumeUSD * 0.003)}` : `--`
+      amount: pairMore ? `$${format.amountFormat(pairMore.oneDayVolumeUSD * 0.003)}` : `--`,
+      rate: pairMore ? `${amountFormat(pairMore.volumeChangeUSD, 2)} %` : `--`
     },
     {
       title: 'Fees(7d)',
       isRise: !!pairMore && pairMore.weeklyVolumeChange > 0,
-      rate: pairMore ? `${pairMore.weeklyVolumeChange.toFixed(2)} %` : `--`,
-      amount: pairMore ? `$${format.amountFormat(pairMore.oneWeekVolume)}` : `--`
+      amount: pairMore ? `$${format.amountFormat(pairMore.oneWeekVolume)}` : `--`,
+      rate: pairMore ? `${amountFormat(pairMore.weeklyVolumeChange, 2)} %` : `--`
     }
   ]
 
@@ -450,7 +449,7 @@ export default function StakingPoolDetail({
                       Number(userToken1.toExact().toString()) * token1PriceUSD,
                     2
                   )}`
-                : '$--'}
+                : ''}
             </TYPE.main>
           </AutoColumn>
           <AutoColumn gap={'20px'}>
@@ -464,7 +463,7 @@ export default function StakingPoolDetail({
               <TYPE.main>
                 {userToken0 && token0PriceUSD
                   ? `≈$${amountFormat(Number(userToken0.toExact().toString()) * token0PriceUSD, 2)}`
-                  : '$--'}
+                  : ''}
               </TYPE.main>
             </RowBetween>
             <RowBetween>
@@ -876,9 +875,7 @@ export default function StakingPoolDetail({
                             </ExternalLink>
                           </TxItem>
                           <TxItem>
-                            <TYPE.subHeader>{`${moment(new Date(parseInt(tx.transaction.timestamp) * 1000)).format(
-                              'YYYY-MM-DD HH:mm:ss'
-                            )}`}</TYPE.subHeader>
+                            <TYPE.subHeader>{`${formatUTCDate(tx.transaction.timestamp)}`}</TYPE.subHeader>
                           </TxItem>
                         </AutoRow>
                       )
@@ -909,7 +906,7 @@ export default function StakingPoolDetail({
                     <TableTitle>{formatUTCDate(pool?.createAt)}</TableTitle>
                     <TableTitle flex={0.8}>0.30%</TableTitle>
                     <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
-                      <TableTitle>{pairMore ? `$${pairMore.totalVolume.toFixed(2)}` : '--'}</TableTitle>
+                      <TableTitle>{pairMore ? `≈$${pairMore.totalVolume.toFixed(2)}` : '--'}</TableTitle>
                       <AutoRow gap={'5px'}>
                         <CurrencyLogo currency={pool?.tokens[0]} />
                         <TYPE.main>

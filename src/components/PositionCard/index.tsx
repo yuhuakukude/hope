@@ -194,7 +194,9 @@ export default function FullPositionCard({
   // if staked balance balance provided, add to standard liquidity amount
   const userPoolBalance = stakedBalance ? userDefaultPoolBalance?.add(stakedBalance) : userDefaultPoolBalance
   const stakePercent =
-    stakedBalance && userPoolBalance ? new Percent(stakedBalance?.raw, userPoolBalance?.raw) : undefined
+    stakedBalance && userPoolBalance && userPoolBalance.greaterThan(JSBI.BigInt(0))
+      ? new Percent(stakedBalance?.raw, userPoolBalance?.raw)
+      : undefined
   const [token0Deposited, token1Deposited] =
     !!pair &&
     !!totalPoolTokens &&
@@ -287,18 +289,22 @@ export default function FullPositionCard({
           <AutoColumn gap={'12px'}>
             <DataRow gap={'8px'}>
               <CurrencyLogo size={'16px'} currency={currency0} />
-              <TYPE.white>{`${token0Deposited ? token0Deposited?.toSignificant(4) : '--'}`}</TYPE.white>
+              <TYPE.white>{`${
+                token0Deposited ? token0Deposited?.toFixed(4, { groupSeparator: ',' }) : '--'
+              }`}</TYPE.white>
             </DataRow>
             <DataRow gap={'8px'}>
               <CurrencyLogo size={'16px'} currency={currency1} />
-              <TYPE.white>{`${token1Deposited ? token1Deposited?.toSignificant(4) : '--'}`}</TYPE.white>
+              <TYPE.white>{`${
+                token1Deposited ? token1Deposited?.toFixed(4, { groupSeparator: ',' }) : '--'
+              }`}</TYPE.white>
             </DataRow>
           </AutoColumn>
         </ContentRow>
         <ContentRow>
           <AutoColumn gap={'12px'}>
             <DataRow gap={'8px'}>
-              <TYPE.white>{userPoolBalance ? userPoolBalance.toSignificant(4) : '--'} </TYPE.white>
+              <TYPE.white>{userPoolBalance ? userPoolBalance.toFixed(4) : '--'} </TYPE.white>
             </DataRow>
             <DataRow gap={'8px'}>
               <TYPE.main>{stakePercent ? `${stakePercent.toFixed(2)}% Staked` : '--'}</TYPE.main>

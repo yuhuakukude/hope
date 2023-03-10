@@ -90,8 +90,8 @@ export async function fetchPairs(
               return staking.pair.id === item.id
             })?.id,
             tokens: [
-              new Token(chainId, item.token0.id, item.token0.decimals, item.token0.symbol) as Token,
-              new Token(chainId, item.token1.id, item.token1.decimals, item.token1.symbol) as Token
+              new Token(chainId, item.token0.id, Number(item.token0.decimals), item.token0.symbol) as Token,
+              new Token(chainId, item.token1.id, Number(item.token1.decimals), item.token1.symbol) as Token
             ]
           }
         })

@@ -42,7 +42,7 @@ export default function SwapModalFooter({
 
   return (
     <>
-      <AutoColumn gap="0px">
+      <AutoColumn gap="20px">
         <RowBetween align="center">
           <Text fontWeight={400} fontSize={14} color={theme.text2}>
             Price
@@ -134,7 +134,7 @@ export default function SwapModalFooter({
           style={{ margin: '10px 0 0 0' }}
           id="confirm-swap-or-send"
         >
-          <Text fontWeight={500}>{severity > 2 ? 'Swap Anyway' : 'Confirm Swap'}</Text>
+          <Text fontWeight={500}>{severity > 2 ? 'Swap Anyway' : 'Submit'}</Text>
         </ButtonError>
 
         {swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}

@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import Row, { AutoRow, RowBetween, RowFixed } from '../../components/Row'
 import { CustomLightSpinner, ExternalLink, TYPE } from '../../theme'
-import { ButtonGray, ButtonOutlined, ButtonPrimary } from '../../components/Button'
+import { ButtonOutlined, ButtonPrimary } from '../../components/Button'
 import { TabItem, TabWrapper } from '../../components/Tab'
 import usePairsInfo, { PAIR_SEARCH } from '../../hooks/usePairInfo'
 import PoolCard from '../../components/pool/PoolCard'
@@ -95,6 +95,7 @@ export default function Pools() {
   const { result: priceResult } = useTokenPriceObject(ltAddress)
   const handleSearchInput = (event: any) => {
     const input = event.target.value
+    setCurrentPage(1)
     setSearchValue(input)
   }
 
@@ -226,9 +227,6 @@ export default function Pools() {
                     />
                     <i className="iconfont search-input-icon">&#xe61b;</i>
                   </div>
-                  <ButtonGray padding={'12px 24px'} style={{ width: 'max-content' }} onClick={() => {}}>
-                    Search
-                  </ButtonGray>
                 </div>
               </div>
             </RowFixed>

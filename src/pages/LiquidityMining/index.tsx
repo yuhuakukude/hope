@@ -28,6 +28,7 @@ import { StakeTabs } from '../../components/NavigationTabs'
 import { StakingTips } from '../LiquidityManager/component/Tips'
 import Loader from '../../components/Loader'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
+import noData from '../../assets/images/no_data.png'
 
 const CustomTabWrapper = styled(TabWrapper)`
   width: auto;
@@ -41,6 +42,10 @@ const PageWrapper = styled(GapColumn)`
   width: 100%;
   align-items: center;
   justify-content: center;
+`
+
+const NoData = styled.img`
+  width: 60px;
 `
 
 export default function LiquidityMining({
@@ -216,6 +221,31 @@ export default function LiquidityMining({
       })
   }, [account, parsedAmount, library, chainId, pool, typedValue, onTxStart, onUnstake, onTxSubmitted, onTxError])
 
+  function NoLiquidityView() {
+    return (
+      <AutoColumn justify={'center'} gap={'24px'} style={{ padding: 60 }}>
+        <NoData src={noData} />
+        <TYPE.white maxWidth={227} textAlign={'center'}>
+          {staking
+            ? 'Sorry, the position you can stake cannot be found, please deposit your position first.'
+            : 'Sorry, the position you can stake cannot be found,  please deposit your position first.'}
+        </TYPE.white>
+        {staking && (
+          <TYPE.link
+            mt={4}
+            onClick={() =>
+              history.push(`/swap/liquidity/manager/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
+            }
+            as={Link}
+            m={'auto'}
+          >
+            Become a Liquidity Provider
+          </TYPE.link>
+        )}
+      </AutoColumn>
+    )
+  }
+
   return (
     <PageWrapper gap={'50px'}>
       <TransactionConfirmationModal
@@ -261,7 +291,8 @@ export default function LiquidityMining({
               Unstake
             </CustomTab>
           </CustomTabWrapper>
-          {!staking || (staking && balance && balance.greaterThan(JSBI.BigInt(0))) ? (
+          {(staking && balance && balance.greaterThan(JSBI.BigInt(0))) ||
+          (!staking && stakedAmount && stakedAmount.greaterThan(JSBI.BigInt(0))) ? (
             <AutoColumn gap={'20px'} style={{ padding: 20 }}>
               <AutoRow>
                 <CurrencyLogo currency={pool?.tokens[0]} />
@@ -274,70 +305,52 @@ export default function LiquidityMining({
                 <TYPE.main>Staked</TYPE.main>
                 <TYPE.white>{stakedAmount ? stakedAmount.toFixed(4) : '--'}</TYPE.white>
               </RowBetween>
-            </AutoColumn>
-          ) : (
-            <AutoColumn justify={'center'}>
-              <AutoRow p={'20px'}>
-                <i style={{ color: '#FBDD55', fontSize: 16, fontWeight: 700 }} className="iconfont">
-                  &#xe614;
-                </i>
-                <TYPE.main ml={'10px'}>No liquidity tokens found, you should add liquidity first.</TYPE.main>
-              </AutoRow>
-              <TYPE.link
-                onClick={() =>
-                  history.push(`/swap/liquidity/manager/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
-                }
-                as={Link}
-                m={'auto'}
-              >
-                Become a Liquidity Provider
-              </TYPE.link>
-            </AutoColumn>
-          )}
-          <AutoColumn style={{ padding: 20 }} gap={'20px'}>
-            <CurrencyInputPanel
-              hideCurrency
-              value={typedValue}
-              onUserInput={onUserInput}
-              onMax={handleMax}
-              showMaxButton={!atMaxAmount}
-              currency={staking ? pool?.lpToken : pool?.stakingToken}
-              pair={dummyPair}
-              label={'Amount'}
-              disableCurrencySelect={true}
-              customBalanceText={` `}
-              id="stake-liquidity-token"
-            />
-            <ButtonError
-              onClick={
-                staking
-                  ? approvalState === ApprovalState.NOT_APPROVED
-                    ? onApprove
-                    : onStakeCallback
-                  : onUnstakeCallback
-              }
-              disabled={
-                (!!error && error !== 'Connect Wallet') || !!pendingText || approvalState === ApprovalState.PENDING
-              }
-              error={!!error && !!parsedAmount}
-            >
-              {pendingText || (approvalState === ApprovalState.PENDING && staking) ? (
-                <AutoRow gap="6px" justify="center">
-                  {approvalState === ApprovalState.PENDING && staking ? `Approving` : `Confirm in your wallet`}{' '}
-                  <Loader stroke="white" />
-                </AutoRow>
-              ) : (
-                error ??
-                `${
+              <CurrencyInputPanel
+                hideCurrency
+                value={typedValue}
+                onUserInput={onUserInput}
+                onMax={handleMax}
+                showMaxButton={!atMaxAmount}
+                currency={staking ? pool?.lpToken : pool?.stakingToken}
+                pair={dummyPair}
+                label={'Amount'}
+                disableCurrencySelect={true}
+                customBalanceText={` `}
+                id="stake-liquidity-token"
+              />
+              <ButtonError
+                onClick={
                   staking
                     ? approvalState === ApprovalState.NOT_APPROVED
-                      ? `Approve ${pool?.lpToken.symbol}`
-                      : 'Stake'
-                    : 'Unstake'
-                }`
-              )}
-            </ButtonError>
-          </AutoColumn>
+                      ? onApprove
+                      : onStakeCallback
+                    : onUnstakeCallback
+                }
+                disabled={
+                  (!!error && error !== 'Connect Wallet') || !!pendingText || approvalState === ApprovalState.PENDING
+                }
+                error={!!error && !!parsedAmount}
+              >
+                {pendingText || (approvalState === ApprovalState.PENDING && staking) ? (
+                  <AutoRow gap="6px" justify="center">
+                    {approvalState === ApprovalState.PENDING && staking ? `Approving` : `Confirm in your wallet`}{' '}
+                    <Loader stroke="white" />
+                  </AutoRow>
+                ) : (
+                  error ??
+                  `${
+                    staking
+                      ? approvalState === ApprovalState.NOT_APPROVED
+                        ? `Approve ${pool?.lpToken.symbol}`
+                        : 'Stake'
+                      : 'Unstake'
+                  }`
+                )}
+              </ButtonError>
+            </AutoColumn>
+          ) : (
+            <NoLiquidityView />
+          )}
         </AutoColumn>
       </AppBody>
     </PageWrapper>

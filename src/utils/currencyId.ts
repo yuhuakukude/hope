@@ -12,6 +12,12 @@ export function tokenId(weth: Token, token: Token): string {
   throw new Error('invalid currency')
 }
 
+export function tokenAddress(weth: Token, token: Currency | undefined): string {
+  if (token === ETHER) return weth.address
+  if (token instanceof Token) return token.address
+  return ''
+}
+
 export function tokenSymbol(weth: Token, token: Token | undefined): string {
   if (!token) return ''
   if (weth.address === token?.address) return 'ETH'

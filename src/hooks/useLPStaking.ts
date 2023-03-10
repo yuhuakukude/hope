@@ -127,7 +127,6 @@ export function useStakingPairPool(address: string) {
     ;(async () => {
       try {
         const more = await fetchPairMore(address.toLowerCase() ?? '')
-        console.warn('more--->', more)
         setLoading(false)
         setPairMore(more)
       } catch (error) {
@@ -224,6 +223,7 @@ export function usePairTxs(pairAddress: string, type?: string) {
       setLoading(true)
       try {
         const data = await fetchPairTxs(pairAddress, type)
+        data.sort((a, b) => Number(b.transaction.timestamp) - Number(a.transaction.timestamp))
         setLoading(false)
         setResult(data)
       } catch (error) {

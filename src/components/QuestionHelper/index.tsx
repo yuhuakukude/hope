@@ -26,15 +26,14 @@ const LightQuestionWrapper = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 0.2rem;
-  border: none;
-  background: none;
   outline: none;
   cursor: default;
   border-radius: 36px;
-  width: 24px;
-  height: 24px;
+  padding: 2px;
+  width: 14px;
+  height: 14px;
   background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid ${({ theme }) => theme.text4};
   color: ${({ theme }) => theme.white};
 
   :hover,
@@ -44,7 +43,8 @@ const LightQuestionWrapper = styled.div`
 `
 
 const QuestionMark = styled.span`
-  font-size: 1rem;
+  font-size: 0.2px;
+  color: ${({ theme }) => theme.text4};
 `
 
 export default function QuestionHelper({ text }: { text: string }) {

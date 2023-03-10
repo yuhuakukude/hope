@@ -931,18 +931,26 @@ export async function fetchPairMore(stakingAddress: string): Promise<PairMore | 
     const w1Pair = w1Res?.data.pairs[0]
     const w2Pair = w2Res?.data.pairs[0]
 
-    const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(pair?.reserveUSD, d1Pair?.reserveUSD, d2Pair?.reserveUSD)
+    const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(
+      pair?.reserveUSD,
+      d1Pair?.reserveUSD ?? pair?.reserveUSD,
+      d2Pair?.reserveUSD ?? '0'
+    )
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
       pair?.volumeUSD,
-      d1Pair?.volumeUSD,
-      d2Pair?.volumeUSD
+      d1Pair?.volumeUSD ?? pair?.reserveUSD,
+      d2Pair?.volumeUSD ?? '0'
     )
 
-    const [oneWeekTVLUSD] = get2DayPercentChange(pair?.reserveUSD, w1Pair?.reserveUSD, w2Pair?.reserveUSD)
+    const [oneWeekTVLUSD] = get2DayPercentChange(
+      pair?.reserveUSD,
+      w1Pair?.reserveUSD ?? pair?.reserveUSD,
+      w2Pair?.reserveUSD ?? '0'
+    )
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
-      pair?.totalVolumeUSD,
-      w1Pair?.volumeUSD,
-      w2Pair?.volumeUSD
+      pair?.volumeUSD,
+      w1Pair?.volumeUSD ?? pair?.volumeUSD,
+      w2Pair?.volumeUSD ?? '0'
     )
 
     return {
@@ -1026,7 +1034,7 @@ export async function fetchGlobalData() {
 }
 
 const Mints = `
- mints(first: 20, where: { pair_in: $allPairs }, orderBy: timestamp, orderDirection: desc) {
+ mints(first: 20, where: { pair_in: $allPairs }) {
       transaction {
         id
         timestamp
@@ -1102,7 +1110,6 @@ const Swaps = `
 
 function QUERY_TXS_QUERY(type?: string | undefined) {
   let sql
-  console.log('type--->', type)
   switch (type) {
     case 'All':
       sql = `

@@ -21,11 +21,10 @@ enum DeadlineError {
 const FancyButton = styled.button`
   color: ${({ theme }) => theme.text1};
   align-items: center;
-  height: 2.5rem;
+  height: 40px;
   border-radius: 10px;
   font-size: 1rem;
-  width: auto;
-  min-width: 4rem;
+  width: 83px;
   border: 1px solid ${({ theme }) => theme.bg3};
   outline: none;
   background: ${({ theme }) => theme.bg1};
@@ -39,7 +38,7 @@ const FancyButton = styled.button`
 `
 
 const Option = styled(FancyButton)<{ active: boolean }>`
-  margin-right: 36px;
+  margin-right: 20px;
   :hover {
     cursor: pointer;
   }
@@ -61,9 +60,9 @@ const Input = styled.input`
 `
 
 const OptionCustom = styled(FancyButton)<{ active?: boolean; warning?: boolean }>`
-  height: 2.5rem;
+  height: 40px;
+  width: 57px;
   position: relative;
-  padding: 0 0.75rem;
   flex: 1;
   border: ${({ theme, active, warning }) => active && `1px solid ${warning ? theme.red1 : theme.primary1}`};
   :hover {
@@ -77,13 +76,6 @@ const OptionCustom = styled(FancyButton)<{ active?: boolean; warning?: boolean }
     border: 0px;
     border-radius: 2rem;
   }
-`
-
-const SlippageEmojiContainer = styled.span`
-  color: #f3841e;
-  ${({ theme }) => theme.mediaWidth.upToSmall`
-    display: none;  
-  `}
 `
 
 export interface SlippageTabsProps {
@@ -126,7 +118,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
     setSlippageInput(value)
 
     try {
-      const valueAsIntFromRoundedFloat = Number.parseInt((Number.parseFloat(value) * 100).toString())
+      const valueAsIntFromRoundedFloat = Number((Number.parseFloat(value) * 100).toFixed(0).toString())
       if (!Number.isNaN(valueAsIntFromRoundedFloat) && valueAsIntFromRoundedFloat < 5000) {
         setRawSlippage(valueAsIntFromRoundedFloat)
       }
@@ -145,8 +137,8 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
   }
 
   return (
-    <AutoColumn gap="md">
-      <AutoColumn gap="sm">
+    <AutoColumn gap="30px">
+      <AutoColumn gap="lg">
         <RowFixed>
           <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
             Slippage tolerance
@@ -188,21 +180,12 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
             1%
           </Option>
           <OptionCustom
-            style={{ width: '2rem' }}
+            style={{ width: '57px' }}
             active={![10, 50, 100].includes(rawSlippage)}
             warning={!slippageInputIsValid}
             tabIndex={-1}
           >
             <RowBetween>
-              {!!slippageInput &&
-              (slippageError === SlippageError.RiskyLow || slippageError === SlippageError.RiskyHigh) ? (
-                <SlippageEmojiContainer>
-                  <span role="img" aria-label="warning">
-                    ⚠️
-                  </span>
-                </SlippageEmojiContainer>
-              ) : null}
-              {/* https://github.com/DefinitelyTyped/DefinitelyTyped/issues/30451 */}
               <Input
                 ref={inputRef as any}
                 placeholder={(rawSlippage / 100).toFixed(1)}
@@ -222,7 +205,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
             style={{
               fontSize: '14px',
               paddingTop: '7px',
-              color: slippageError === SlippageError.InvalidInput ? 'red' : '#F3841E'
+              color: 'red'
             }}
           >
             {slippageError === SlippageError.InvalidInput
@@ -234,7 +217,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
         )}
       </AutoColumn>
 
-      <AutoColumn gap="sm">
+      <AutoColumn gap="lg">
         <RowFixed>
           <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
             Transaction deadline
@@ -259,9 +242,9 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
               onChange={e => parseCustomDeadline(e.target.value)}
             />
           </OptionCustom>
-          <TYPE.body style={{ paddingLeft: '8px' }} fontSize={14}>
+          <TYPE.white fontWeight={700} style={{ paddingLeft: '8px' }} fontSize={14}>
             minutes
-          </TYPE.body>
+          </TYPE.white>
         </RowFixed>
       </AutoColumn>
     </AutoColumn>

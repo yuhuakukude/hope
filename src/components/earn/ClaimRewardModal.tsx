@@ -50,32 +50,30 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
 
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
   const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
-
+  const ltRewards = useSingleCallResult(stakingContract, 'claimableReward', [
+    account ?? undefined,
+    LT[chainId ?? 1].address
+  ])
+  const ltRewardsAmount = ltRewards?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], ltRewards?.result?.[0]) : undefined
+  const totalRewards = ltRewardsAmount && earnedAmount ? earnedAmount.add(ltRewardsAmount) : undefined
   const contract = claimType === Reward.LT ? ltMinterContract : stakingContract
   const method = claimType === Reward.LT ? 'mint' : 'claimRewards'
-  const rewardSummary = claimType === Reward.LT ? `Claim ${earnedAmount?.toSignificant(6)} LT` : 'Claim all rewards'
-
-  const totalRes = useSingleCallResult(stakingContract, 'integrateFraction', [account ?? undefined])
-  const totalRewardAmount = totalRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], totalRes?.result?.[0]) : undefined
+  const rewardSummary =
+    claimType === Reward.LT ? `Claim ${earnedAmount?.toExact({ groupSeparator: ',' })} LT` : 'Claim all rewards'
 
   const count = useSingleCallResult(stakingContract, 'rewardCount')?.result?.[0]
-  console.log('tag-->', count, count && Array.from(new Array(Number(count.toString())).keys()).map(value => [value]))
 
-  console.log('count', count?.toString())
   const addressArgs =
     count && count > 0 ? Array.from(new Array(Number(count.toString())).keys()).map(value => [value]) : []
   const tokenAddress = useSingleContractMultipleData(stakingContract, 'rewardTokens', addressArgs)
-  console.log('tokenAddress', tokenAddress, addressArgs)
   const rewardArgs = useMemo(() => {
     return tokenAddress.map(token => [account, token?.result?.[0]])
   }, [account, tokenAddress])
-  console.log('rewardArgs', rewardArgs)
   const rewards = useSingleContractMultipleData(
     account && tokenAddress[0]?.result ? stakingContract : undefined,
     'claimableReward',
     rewardArgs
   )
-  console.log('claimAll', claimType)
 
   const ltAddress = useMemo(() => {
     return [LT[chainId ?? 1].address.toString().toLowerCase()]
@@ -166,10 +164,10 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
           <AutoColumn style={{ padding: '0 20px 20px  20px' }} gap={'20px'}>
             <AutoColumn gap={'lg'}>
               <RowBetween>
-                <TYPE.main color={'text2'}>Total Rewards</TYPE.main>
+                <TYPE.main color={'text2'}>Total claimable Rewards</TYPE.main>
                 <RowFixed>
                   <TYPE.white ml={'8px'} mr={'8px'} fontWeight={500}>
-                    {totalRewardAmount?.toFixed(2, { groupSeparator: ',' }) ?? '0'}
+                    {totalRewards?.toFixed(2, { groupSeparator: ',' }) ?? '0'}
                   </TYPE.white>
                   <TYPE.white alignSelf={'end'}>LT</TYPE.white>
                 </RowFixed>
@@ -186,11 +184,11 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
                   </RowFixed>
                   <TYPE.white>
                     {priceResult
-                      ? `$${amountFormat(
+                      ? `≈$${amountFormat(
                           Number(earnedAmount?.toExact().toString()) * Number(priceResult[ltAddress[0]]),
                           2
                         )}`
-                      : '$--'}
+                      : ''}
                   </TYPE.white>
                 </RowBetween>
               </GreyCard>

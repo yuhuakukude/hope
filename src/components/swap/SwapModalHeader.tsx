@@ -12,6 +12,7 @@ import { AutoColumn } from '../Column'
 import CurrencyLogo from '../CurrencyLogo'
 import { RowBetween, RowFixed } from '../Row'
 import { TruncatedText, SwapShowAcceptChanges } from './styleds'
+import { Tooltip } from 'antd'
 
 const TradeWrapper = styled(AutoColumn)`
   background-color: #303037;
@@ -45,9 +46,11 @@ export default function SwapModalHeader({
     <AutoColumn gap={'md'} style={{ marginTop: '20px' }}>
       <TradeWrapper gap={'lg'}>
         <AutoColumn gap={'md'}>
-          <TYPE.body color={theme.text2} fontWeight={500} fontSize={14}>
-            You will pay
-          </TYPE.body>
+          <RowFixed>
+            <TYPE.main fontWeight={500} fontSize={14}>
+              You will pay
+            </TYPE.main>
+          </RowFixed>
           <RowFixed>
             <CurrencyLogo currency={trade.inputAmount.currency} size={'24px'} style={{ marginRight: '12px' }} />
             <TruncatedText
@@ -63,9 +66,18 @@ export default function SwapModalHeader({
           </RowFixed>
         </AutoColumn>
         <AutoColumn gap={'md'}>
-          <TYPE.body color={theme.text2} fontWeight={500} fontSize={14}>
-            You will receive
-          </TYPE.body>
+          <RowFixed>
+            <TYPE.main fontWeight={500} fontSize={14}>
+              You will receive
+            </TYPE.main>
+            <Tooltip
+              className="m-l-5"
+              overlayClassName="tips-question"
+              title="The amount you expect to receive at the current market price.You may receive less or more if the market price changes while your transaction is pending."
+            >
+              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+            </Tooltip>
+          </RowFixed>
           <RowFixed>
             <CurrencyLogo currency={trade.outputAmount.currency} size={'24px'} style={{ marginRight: '12px' }} />
             <TruncatedText
@@ -105,21 +117,21 @@ export default function SwapModalHeader({
       ) : null}
       <AutoColumn justify="flex-start" gap="sm" style={{ padding: '12px 0 0 0px' }}>
         {trade.tradeType === TradeType.EXACT_INPUT ? (
-          <TYPE.darkGray textAlign="left" style={{ width: '100%' }}>
+          <TYPE.main textAlign="left" style={{ width: '100%' }}>
             {`Output is estimated. You will receive at least `}
             <b>
               {slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(6)} {trade.outputAmount.currency.symbol}
             </b>
             {' or the transaction will revert.'}
-          </TYPE.darkGray>
+          </TYPE.main>
         ) : (
-          <TYPE.darkGray textAlign="left" style={{ width: '100%' }}>
+          <TYPE.main textAlign="left" style={{ width: '100%' }}>
             {`Input is estimated. You will sell at most `}
             <b>
               {slippageAdjustedAmounts[Field.INPUT]?.toSignificant(6)} {trade.inputAmount.currency.symbol}
             </b>
             {' or the transaction will revert.'}
-          </TYPE.darkGray>
+          </TYPE.main>
         )}
       </AutoColumn>
       {recipient !== null ? (
