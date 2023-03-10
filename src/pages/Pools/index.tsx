@@ -292,7 +292,7 @@ export default function Pools() {
       )}
       <ColumnCenter style={{ marginTop: 30 }}>
         {(account || (!account && searchType === PAIR_SEARCH.ALL)) && !loading && pairInfos.length !== 0 && total > 0 && (
-          <Row justify="center">
+          <Row justify="flex-end">
             <Pagination
               showQuickJumper
               total={total}

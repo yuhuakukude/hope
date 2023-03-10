@@ -43,6 +43,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { useHistory } from 'react-router-dom'
 import { Divider } from 'antd'
 import { GreyCard } from '../../components/Card'
+import format from 'utils/format'
 
 const PageWrapper = styled(ColumnCenter)`
   width: 100%;
@@ -735,7 +736,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                         {currencyA?.symbol}
                       </Text>
                     </RowFixed>
-                    <Text fontWeight={500}>{formattedAmounts[Field.CURRENCY_A] || '-'}</Text>
+                    <Text fontWeight={500}>{format.separate(formattedAmounts[Field.CURRENCY_A], 6) || '-'}</Text>
                   </RowBetween>
                   <RowBetween>
                     <RowFixed>
@@ -744,7 +745,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                         {currencyB?.symbol}
                       </Text>
                     </RowFixed>
-                    <Text fontWeight={500}>{formattedAmounts[Field.CURRENCY_B] || '-'}</Text>
+                    <Text fontWeight={500}>{format.separate(formattedAmounts[Field.CURRENCY_B], 6) || '-'}</Text>
                   </RowBetween>
                 </AutoColumn>
               </>
@@ -754,13 +755,15 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                 <RowBetween>
                   <TYPE.main>{currencyA?.symbol} Swap Rate</TYPE.main>
                   <div>
-                    1 {currencyA?.symbol} ≈ {tokenA ? pair.priceOf(tokenA).toSignificant(6) : '-'} {currencyB?.symbol}
+                    1 {currencyA?.symbol} ≈{' '}
+                    {tokenA ? pair.priceOf(tokenA).toSignificant(6, { groupSeparator: ',' }) : '-'} {currencyB?.symbol}
                   </div>
                 </RowBetween>
                 <RowBetween>
                   <TYPE.main>{currencyA?.symbol} Swap Rate</TYPE.main>
                   <div>
-                    1 {currencyB?.symbol} ≈ {tokenB ? pair.priceOf(tokenB).toSignificant(6) : '-'} {currencyA?.symbol}
+                    1 {currencyB?.symbol} ≈{' '}
+                    {tokenB ? pair.priceOf(tokenB).toSignificant(6, { groupSeparator: ',' }) : '-'} {currencyA?.symbol}
                   </div>
                 </RowBetween>
               </AutoColumn>

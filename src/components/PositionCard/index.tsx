@@ -109,20 +109,24 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
               </Text>
             </RowFixed>
             <RowFixed>
-              <Text fontWeight={700}>{userPoolBalance ? userPoolBalance.toSignificant(4) : '-'}</Text>
+              <Text fontWeight={700}>
+                {userPoolBalance ? userPoolBalance.toSignificant(4, { groupSeparator: ',' }) : '-'}
+              </Text>
             </RowFixed>
           </FixedHeightRow>
           <AutoColumn gap="4px">
             <FixedHeightRow>
               <TYPE.main fontWeight={500}>Your pool share</TYPE.main>
-              <Text fontWeight={500}>{poolTokenPercentage ? poolTokenPercentage.toSignificant(2) + '%' : '-'}</Text>
+              <Text fontWeight={500}>
+                {poolTokenPercentage ? poolTokenPercentage.toSignificant(2, { groupSeparator: ',' }) + '%' : '-'}
+              </Text>
             </FixedHeightRow>
             <FixedHeightRow>
               <TYPE.main fontWeight={500}>{currency0.symbol}</TYPE.main>
               {token0Deposited ? (
                 <RowFixed>
                   <Text fontWeight={500} marginLeft={'6px'}>
-                    {token0Deposited?.toSignificant(6)}
+                    {token0Deposited?.toSignificant(6, { groupSeparator: ',' })}
                   </Text>
                 </RowFixed>
               ) : (
@@ -304,7 +308,7 @@ export default function FullPositionCard({
         <ContentRow>
           <AutoColumn gap={'12px'}>
             <DataRow gap={'8px'}>
-              <TYPE.white>{userPoolBalance ? userPoolBalance.toFixed(4) : '--'} </TYPE.white>
+              <TYPE.white>{userPoolBalance ? userPoolBalance.toFixed(4, { groupSeparator: ',' }) : '--'} </TYPE.white>
             </DataRow>
             <DataRow gap={'8px'}>
               <TYPE.main>{stakePercent ? `${stakePercent.toFixed(2)}% Staked` : '--'}</TYPE.main>

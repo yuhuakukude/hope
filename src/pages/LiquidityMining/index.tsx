@@ -303,7 +303,7 @@ export default function LiquidityMining({
               </AutoRow>
               <RowBetween>
                 <TYPE.main>Staked</TYPE.main>
-                <TYPE.white>{stakedAmount ? stakedAmount.toFixed(4) : '--'}</TYPE.white>
+                <TYPE.white>{stakedAmount ? stakedAmount.toFixed(4, { groupSeparator: ',' }) : '--'}</TYPE.white>
               </RowBetween>
               <CurrencyInputPanel
                 hideCurrency

@@ -286,7 +286,7 @@ export default function BuyHope() {
               <div className="input-title text-medium font-16 text-normal">You Pay</div>
               {account && (
                 <div className="balance text-normal font-nor">
-                  Available: {balanceAmount?.toFixed(2)}
+                  Available: {balanceAmount?.toFixed(2, { groupSeparator: ',' } ?? '0.00')}
                   {balanceAmount && (
                     <span
                       className="text-primary m-l-8 cursor-select"
