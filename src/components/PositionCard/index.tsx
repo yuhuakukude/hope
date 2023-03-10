@@ -289,11 +289,15 @@ export default function FullPositionCard({
           <AutoColumn gap={'12px'}>
             <DataRow gap={'8px'}>
               <CurrencyLogo size={'16px'} currency={currency0} />
-              <TYPE.white>{`${token0Deposited ? token0Deposited?.toSignificant(4) : '--'}`}</TYPE.white>
+              <TYPE.white>{`${
+                token0Deposited ? token0Deposited?.toFixed(4, { groupSeparator: ',' }) : '--'
+              }`}</TYPE.white>
             </DataRow>
             <DataRow gap={'8px'}>
               <CurrencyLogo size={'16px'} currency={currency1} />
-              <TYPE.white>{`${token1Deposited ? token1Deposited?.toSignificant(4) : '--'}`}</TYPE.white>
+              <TYPE.white>{`${
+                token1Deposited ? token1Deposited?.toFixed(4, { groupSeparator: ',' }) : '--'
+              }`}</TYPE.white>
             </DataRow>
           </AutoColumn>
         </ContentRow>
