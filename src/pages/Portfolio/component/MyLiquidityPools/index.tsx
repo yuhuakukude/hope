@@ -15,7 +15,11 @@ import { Decimal } from 'decimal.js'
 import format from 'utils/format'
 import { ButtonPrimary } from '../../../../components/Button'
 import { Link } from 'react-router-dom'
+import Row, { AutoRow } from '../../../../components/Row'
 import { CustomLightSpinner, TYPE } from '../../../../theme'
+import { Pagination } from 'antd'
+import { ArrowUpRight } from 'react-feather'
+import { AutoColumn } from '../../../../components/Column'
 
 function toFixed(val: string | number, length = 2) {
   return format.amountFormat(val, length)
@@ -25,6 +29,10 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
   const { account } = useActiveWeb3React()
   const [dataSource, setDataSource] = useState<ILiquidityPools[]>([])
   const [listLoading, setListLoading] = useState<boolean>(false)
+  const [currentPage, setCurrentPage] = useState<number>(1)
+  const [pageSize, setPageSize] = useState<number>(10)
+  const [pageTotal, setPageTotal] = useState<number>(0)
+  const [allTableData, setAllTableData] = useState<any>([])
   const [headData, setHeadData] = useState<IHeadItem[]>([])
   useEffect(() => {
     if (!account) {
@@ -33,7 +41,9 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
     setListLoading(true)
     PortfolioApi.getLiquidityPools(account).then(data => {
       if (data.success && data.result) {
-        setDataSource(data.result)
+        setAllTableData(data.result)
+        setPageTotal(data.result.length || 0)
+        setDataSource(data.result.slice(0, pageSize))
         const headList: IHeadItem[] = []
         data.result.forEach(item => {
           if (item.ltOfReward && Number(item.ltOfReward) !== 0) {
@@ -72,7 +82,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
 
   const [item, setItem] = useState<ILiquidityPools | IHeadItem[] | null>(null)
   const history = useHistory()
-  const columns = [
+  const columns: any = [
     {
       title: 'Pools',
       dataIndex: 'composition',
@@ -143,14 +153,6 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
         )
       }
     },
-    // {
-    //   title: 'Staked LP Tokens',
-    //   dataIndex: 'stakedLpBalance',
-    //   key: 'stakedLpBalance',
-    //   render: (text: string, record: ILiquidityPools) => {
-    //     return <Item title={toFixed(record.stakedLpBalance)} desc={'≈ $' + toFixed(record.hopeOfStakedLpBalance)} />
-    //   }
-    // },
     {
       title: 'APR',
       dataIndex: 'feesApr',
@@ -158,18 +160,24 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       width: 260,
       render: (text: string, record: ILiquidityPools) => {
         return (
-          <Item
-            type={3}
-            title={format.rate(record.feesApr)}
-            desc={`${format.rate(record.ltApr)} -> ${format.rate(record.maxLtApr)}`}
-          />
+          <AutoColumn gap={'10px'}>
+            <AutoRow>
+              <TYPE.main>Fees:&nbsp;</TYPE.main>
+              <TYPE.white>{format.rate(record.feesApr)}</TYPE.white>
+            </AutoRow>
+            <AutoRow>
+              <TYPE.main>Rewards:&nbsp;</TYPE.main>
+              <TYPE.white>{format.rate(record.ltApr)}</TYPE.white>
+              {record.maxLtApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
+              <TYPE.green>{format.rate(record.maxLtApr)}</TYPE.green>
+            </AutoRow>
+          </AutoColumn>
         )
       }
     },
     {
       title: 'Claimable Rewards',
       dataIndex: 'ltTotalReward',
-      width: 200,
       key: 'ltTotalReward',
       render: (text: string, record: ILiquidityPools) => {
         return <Item title={toFixed(record.ltTotalReward) + ' LT'} desc={'≈ $' + toFixed(record.usdOfTotalReward)} />
@@ -179,6 +187,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       title: 'Actions',
       dataIndex: 'actions',
       key: 'actions',
+      align: 'center',
       render: (text: string, record: ILiquidityPools) => {
         const options: TitleTipsProps[] = []
         if (record.ltOfReward && Number(record.ltOfReward) > 0) {
@@ -213,6 +222,17 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
     setItem(headData)
   }
 
+  const setPageSearch = (page: number, pagesize: number) => {
+    const resList = allTableData?.slice((page - 1) * pagesize, Number(pagesize) + (page - 1) * pagesize)
+    setDataSource(resList)
+  }
+
+  const onPagesChange = (page: any, pageSize: any) => {
+    setCurrentPage(Number(page))
+    setPageSize(Number(pageSize))
+    setPageSearch(page, pageSize)
+  }
+
   return (
     <>
       <ClaimRewards item={item} clearItem={clearItem} />
@@ -224,10 +244,27 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
             <CustomLightSpinner src={Circle} alt="loader" size={'30px'} />
             <TYPE.main mt={20}>Loading</TYPE.main>
           </ColumnCenter>
-        ) : dataSource.length > 0 ? (
+        ) : allTableData.length > 0 ? (
           <>
             <Head data={headData} claimAll={claimAll}></Head>
             <Table columns={columns} dataSource={dataSource}></Table>
+            {pageTotal > 0 && (
+              <Row justify="flex-end" marginTop={12}>
+                <Pagination
+                  showQuickJumper
+                  total={pageTotal}
+                  current={currentPage}
+                  pageSize={pageSize}
+                  showSizeChanger
+                  pageSizeOptions={['5', '10', '20', '30', '40']}
+                  onChange={onPagesChange}
+                  onShowSizeChange={onPagesChange}
+                />{' '}
+                <span className="m-l-15" style={{ color: '#868790' }}>
+                  Total {pageTotal}
+                </span>
+              </Row>
+            )}
           </>
         ) : (
           <div className="flex jc-center">

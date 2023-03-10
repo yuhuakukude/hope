@@ -42,7 +42,7 @@ const VotedList = ({
   const [curTableItem, setCurTableItem] = useState<any>({})
   const [curItemData, setCurItemData] = useState<any>({})
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const [pageSize, setPageSize] = useState<number>(5)
+  const [pageSize, setPageSize] = useState<number>(10)
   const [pageTotal, setPageTotal] = useState<number>(0)
   const history = useHistory()
   const addresses = useMemo(() => {
@@ -609,24 +609,24 @@ const VotedList = ({
       />
       <div className="my-list-box">
         <Table rowKey={'id'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
+        {pageTotal > 0 && (
+          <Row justify="flex-end" marginTop={12}>
+            <Pagination
+              showQuickJumper
+              total={pageTotal}
+              current={currentPage}
+              pageSize={pageSize}
+              showSizeChanger
+              pageSizeOptions={['5', '10', '20', '30', '40']}
+              onChange={onPagesChange}
+              onShowSizeChange={onPagesChange}
+            />{' '}
+            <span className="m-l-15" style={{ color: '#868790' }}>
+              Total {pageTotal}
+            </span>
+          </Row>
+        )}
       </div>
-      {pageTotal > 0 && (
-        <Row justify="center">
-          <Pagination
-            showQuickJumper
-            total={pageTotal}
-            current={currentPage}
-            pageSize={pageSize}
-            showSizeChanger
-            pageSizeOptions={['5', '10', '20', '30', '40']}
-            onChange={onPagesChange}
-            onShowSizeChange={onPagesChange}
-          />{' '}
-          <span className="m-l-15" style={{ color: '#868790' }}>
-            Total {pageTotal}
-          </span>
-        </Row>
-      )}
     </>
   )
 }

@@ -225,7 +225,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                 <div className="my-locked-lt-col">
                   <div className="my-locked-lt-title">Locked LT Amount</div>
                   <div className="my-locked-lt-desc">
-                    <span className="my-locked-lt-value">
+                    <span className="my-locked-lt-value text-medium">
                       ≈ {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}
                     </span>
                     <span className="my-locked-lt-value2">
@@ -236,7 +236,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                 <div className="my-locked-lt-col">
                   <div className="my-locked-lt-title">Balance in Voting Escrow</div>
                   <div className="my-locked-lt-desc">
-                    <span className="my-locked-lt-value">
+                    <span className="my-locked-lt-value text-medium">
                       ≈ {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
                     </span>
                     <span className="my-locked-lt-value2">{unUseRateVal || '0.00'}% share of total</span>
@@ -254,7 +254,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                     Claimable veLT Held Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
                   </div>
                   <div className="my-locked-lt-desc">
-                    <span className="my-locked-lt-value">
+                    <span className="my-locked-lt-value text-medium">
                       ≈ {claimableFees?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} stHOPE
                     </span>
                     <span className="my-locked-lt-value2">
@@ -280,7 +280,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                     Claimable veLT voting Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
                   </div>
                   <div className="my-locked-lt-desc">
-                    <span className="my-locked-lt-value">≈ {votingFee.stHope} stHOPE</span>
+                    <span className="my-locked-lt-value text-medium">≈ {votingFee.stHope} stHOPE</span>
                     <span className="my-locked-lt-value2">≈ ${votingFee.toUsd}</span>
                   </div>
                   <Button

@@ -84,7 +84,7 @@ export default function Pools() {
   const [searchValue, setSearchValue] = useState('')
   const [searchType, setSearchType] = useState(PAIR_SEARCH.ALL)
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const [pageSize, setPageSize] = useState<number>(5)
+  const [pageSize, setPageSize] = useState<number>(10)
   const toggleWalletModal = useWalletModalToggle()
   const history = useHistory()
   const { pairInfos, total, loading } = usePairsInfo(pageSize, currentPage, searchType, searchValue)
