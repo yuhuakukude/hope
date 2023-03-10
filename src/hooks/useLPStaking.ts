@@ -106,7 +106,7 @@ export function useStakingPairPool(address: string) {
   const [result, setResult] = useState<PairDetail | undefined>(undefined)
   const [pairMore, setPairMore] = useState<PairMore | undefined>(undefined)
 
-  const [loading, setLoading] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(true)
   // const [total, setTotal] = useState<number>(0)
 
   useEffect(() => {

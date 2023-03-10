@@ -37,7 +37,6 @@ export default function PieCharts({ data, size }: { data?: any; size?: number })
     window.addEventListener('resize', () => handleResizeChart(pieChart))
     return () => {
       window.removeEventListener('resize', () => handleResizeChart(pieChart))
-      pieChart.dispose()
     }
   }, [data, size])
   return <div style={{ width: `${size ? size : 120}px`, height: `${size ? size : 120}px` }} ref={chartRef} />

@@ -34,6 +34,7 @@ import { usePairStakeInfo } from '../../hooks/usePairInfo'
 import { JSBI, WETH } from '@uniswap/sdk'
 import { tokenId, tokenSymbol } from '../../utils/currencyId'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
+import Loader from '../../components/Loader'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -179,7 +180,7 @@ export default function StakingPoolDetail({
   const { account, chainId } = useActiveWeb3React()
   const history = useHistory()
   const chainWETH = WETH[chainId ?? 1]
-  const { result: pool, pairMore } = useStakingPairPool(address)
+  const { result: pool, pairMore, loading } = useStakingPairPool(address)
   const { claimAbleRewards, currentBoots, futureBoots, relativeWeight } = usePairStakeInfo(pool?.stakingRewardAddress)
   const toggleWalletModal = useWalletModalToggle()
   const addresses = useMemo(() => {
@@ -538,7 +539,11 @@ export default function StakingPoolDetail({
               Liquidity Gömböc
             </TYPE.white>
           </CardHeader>
-          {!pool?.stakingRewardAddress ? (
+          {loading && !pool?.stakingRewardAddress ? (
+            <div className="flex jc-center m-t-50">
+              <Loader size={'20px'} style={{ margin: 'auto' }} />
+            </div>
+          ) : !pool?.stakingRewardAddress ? (
             <AutoColumn style={{ justifyContent: 'center', padding: '93px 30px' }}>
               <TYPE.white lineHeight={'20px'} textAlign={'center'}>
                 The Pool has not yet been added to the liquidity mining list, you can start the add process via the
@@ -622,6 +627,7 @@ export default function StakingPoolDetail({
               </AutoColumn>
             </>
           )}
+
           {account && currentBoots && futureBoots && currentBoots.toFixed(2) !== futureBoots.toFixed(2) && (
             <AutoRow marginLeft={30}>
               <i style={{ color: '#FBDD55', fontSize: 16, fontWeight: 700 }} className="iconfont">
@@ -725,12 +731,12 @@ export default function StakingPoolDetail({
               <Row marginTop={30}>
                 <CurrencyLogo currency={pool?.tokens[1]} />
                 <TYPE.body marginLeft={9} marginRight={40}>
-                  1.00 {token0Symbol} = {amountFormat(pool?.token1Price ?? 0, 2)} {token1Symbol}
+                  1.00 {token0Symbol} = {amountFormat(pool?.token1Price, 2)} {token1Symbol}
                 </TYPE.body>
                 <CurrencyLogo currency={pool?.tokens[0]} />
                 <TYPE.body marginLeft={9}>
                   {' '}
-                  1.00 {token1Symbol} = {amountFormat(pool?.token0Price ?? 0, 2)} {token0Symbol}
+                  1.00 {token1Symbol} = {amountFormat(pool?.token0Price, 2)} {token0Symbol}
                 </TYPE.body>
               </Row>
             )}
