@@ -642,7 +642,6 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                   <ArrowDown size="16" color={theme.text2} />
                 </ColumnCenter>
                 <CurrencyInputPanel
-                  hideBalance={true}
                   value={formattedAmounts[Field.CURRENCY_A]}
                   onUserInput={onCurrencyAInput}
                   onMax={() => onUserInput(Field.LIQUIDITY_PERCENT, '100')}
@@ -656,7 +655,6 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                   <Plus size="16" color={theme.text2} />
                 </ColumnCenter>
                 <CurrencyInputPanel
-                  hideBalance={true}
                   value={formattedAmounts[Field.CURRENCY_B]}
                   onUserInput={onCurrencyBInput}
                   onMax={() => onUserInput(Field.LIQUIDITY_PERCENT, '100')}

@@ -14,9 +14,9 @@ import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 import { useActiveWeb3React } from '../../hooks'
 import useTheme from '../../hooks/useTheme'
 
-const InputRow = styled.div<{ selected: boolean }>`
+const InputRow = styled.div<{ selected: boolean; active: boolean }>`
   ${({ theme }) => theme.flexRowNoWrap}
-  border: 1px solid ${({ theme }) => theme.borderInput};
+  border: 1px solid ${({ theme, active }) => (active ? theme.primary1 : theme.borderInput)};
   margin-top: 10px;
   border-radius: 10px;
   align-items: center;
@@ -72,7 +72,7 @@ const StyledDropDown = styled(DropDown)<{ selected: boolean }>`
   }
 `
 
-const InputPanel = styled.div<{ hideInput?: boolean }>`
+const InputPanel = styled.div<{ hideInput?: boolean; active?: boolean }>`
   ${({ theme }) => theme.flexColumnNoWrap}
   position: relative;
   border-radius: ${({ hideInput }) => (hideInput ? '8px' : '20px')};
@@ -149,6 +149,7 @@ export default function CurrencyInputPanel({
   const currencyBalance = useCurrencyBalance(account ?? undefined, currency ?? undefined)
   const selectedCurrencyBalance = otherBalance ? otherBalance : currencyBalance
   const theme = useTheme()
+  const [focus, setFocus] = useState(false)
 
   const handleDismissSearch = useCallback(() => {
     setModalOpen(false)
@@ -172,7 +173,8 @@ export default function CurrencyInputPanel({
                   style={{ display: 'inline', cursor: 'pointer' }}
                 >
                   {!hideBalance && !!currency && selectedCurrencyBalance
-                    ? (customBalanceText ?? 'Available: ') + selectedCurrencyBalance?.toSignificant(6)
+                    ? (customBalanceText ?? 'Available: ') +
+                      selectedCurrencyBalance?.toSignificant(6, { groupSeparator: ',' })
                     : ' -'}
                   {account && currency && showMaxButton && label !== 'To' && (
                     <StyledBalanceMax onClick={onMax}>Max</StyledBalanceMax>
@@ -182,7 +184,11 @@ export default function CurrencyInputPanel({
             </RowBetween>
           </LabelRow>
         )}
-        <InputRow style={hideInput ? { padding: '0', borderRadius: '8px' } : {}} selected={disableCurrencySelect}>
+        <InputRow
+          active={focus}
+          style={hideInput ? { padding: '0', borderRadius: '8px' } : {}}
+          selected={disableCurrencySelect}
+        >
           {!hideCurrency && (
             <CurrencySelect
               selected={!!currency}
@@ -220,6 +226,8 @@ export default function CurrencyInputPanel({
           {!hideInput && (
             <>
               <NumericalInput
+                onFocus={() => setFocus(true)}
+                onBlur={() => setFocus(false)}
                 align={'right'}
                 className="token-amount-input"
                 value={value}

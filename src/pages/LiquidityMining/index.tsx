@@ -137,7 +137,7 @@ export default function LiquidityMining({
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Stake ${amount.toSignificant()} ${pool?.lpToken.symbol}`
+            summary: `Stake ${amount.toFixed(4, { groupSeparator: ',' })} ${pool?.lpToken.symbol}`
           })
           return response.hash
         })
@@ -160,7 +160,7 @@ export default function LiquidityMining({
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Unstake ${amount.toSignificant()} ${pool?.lpToken.symbol}`
+            summary: `Unstake ${amount.toFixed(4, { groupSeparator: ',' })} ${pool?.lpToken.symbol}`
           })
           return response.hash
         })
@@ -190,7 +190,7 @@ export default function LiquidityMining({
       .getSigner(account)
       ._signTypedData(domain, types, values)
       .then(signature => {
-        setPendingText(`Stake  ${parsedAmount.toSignificant()} ${pool.lpToken.symbol}`)
+        setPendingText(`Stake  ${parsedAmount.toFixed(4, { groupSeparator: ',' })} ${pool.lpToken.symbol}`)
         onStake(parsedAmount, nonce, deadline, signature)
           .then(hash => {
             onTxSubmitted(hash)
@@ -209,8 +209,6 @@ export default function LiquidityMining({
     if (!account || !parsedAmount || !library || !chainId || !pool) return
     setPendingText(`Unstake ${typedValue} ${pool.lpToken.symbol}`)
     onTxStart()
-    // sign
-    setPendingText(`Stake  ${parsedAmount.toSignificant()} ${pool.lpToken.symbol}`)
     onUnstake(parsedAmount)
       .then(hash => {
         onTxSubmitted(hash)

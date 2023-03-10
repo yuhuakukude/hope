@@ -226,6 +226,7 @@ export default function StakingPoolDetail({
       : undefined
   const token0Percent = token0USD && totalUSD ? (token0USD / totalUSD) * 100 : undefined
   const token1Percent = token1USD && totalUSD ? (token1USD / totalUSD) * 100 : undefined
+
   const TransactionType: TitleTipsProps[] = [
     {
       label: 'All',
@@ -416,6 +417,8 @@ export default function StakingPoolDetail({
     }
   }, [address])
 
+  const dayRewards = aprInfo.ltAmountPerDay ? tryParseAmount(aprInfo.ltAmountPerDay, LT[chainId ?? 1]) : undefined
+
   useEffect(() => {
     initFn()
   }, [initFn])
@@ -476,7 +479,7 @@ export default function StakingPoolDetail({
               <TYPE.main>
                 {userToken1 && token1PriceUSD
                   ? `≈$${amountFormat(Number(userToken1.toExact().toString()) * token1PriceUSD, 2)}`
-                  : '$--'}
+                  : ''}
               </TYPE.main>
             </RowBetween>
           </AutoColumn>
@@ -712,10 +715,7 @@ export default function StakingPoolDetail({
                 )}
                 {aprInfo.ltAmountPerDay && (
                   <p className="m-t-12 text-normal">
-                    Daily Reward:{' '}
-                    {aprInfo?.ltAmountPerDay
-                      ? tryParseAmount(aprInfo?.ltAmountPerDay, LT[chainId ?? 1])?.toFixed(2, { groupSeparator: ',' })
-                      : '--'}{' '}
+                    Daily Reward: {dayRewards ? dayRewards?.toFixed(2, { groupSeparator: ',' }) : '0'}
                     LT
                   </p>
                 )}

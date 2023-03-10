@@ -58,8 +58,7 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
   const totalRewards = ltRewardsAmount && earnedAmount ? earnedAmount.add(ltRewardsAmount) : undefined
   const contract = claimType === Reward.LT ? ltMinterContract : stakingContract
   const method = claimType === Reward.LT ? 'mint' : 'claimRewards'
-  const rewardSummary =
-    claimType === Reward.LT ? `Claim ${earnedAmount?.toExact({ groupSeparator: ',' })} LT` : 'Claim all rewards'
+  const rewardSummary = `Claim rewards`
 
   const count = useSingleCallResult(stakingContract, 'rewardCount')?.result?.[0]
 
