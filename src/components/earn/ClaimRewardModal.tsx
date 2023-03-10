@@ -241,7 +241,7 @@ function RewardCard({ address, reward }: { address: string; reward: string }) {
       </RowFixed>
       <TYPE.white>
         {priceResult
-          ? `$${amountFormat(Number(rewardAmount?.toExact().toString()) * Number(priceResult[addresses[0]]), 2)}`
+          ? `≈$${amountFormat(Number(rewardAmount?.toExact().toString()) * Number(priceResult[addresses[0]]), 2)}`
           : '$--'}
       </TYPE.white>
     </RowBetween>

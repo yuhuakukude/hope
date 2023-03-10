@@ -13,7 +13,7 @@ import { getEtherscanLink } from '../../utils'
 import { ArrowUpRight, ChevronRight } from 'react-feather'
 import { useHistory } from 'react-router-dom'
 import { BasePair } from '../../graph/fetch'
-import { amountFormat, rate } from '../../utils/format'
+import { amountFormat, rate, numFormat } from '../../utils/format'
 
 const StyledPositionCard = styled(LightCard)<{ bgColor: any }>`
   background-color: transparent;
@@ -92,10 +92,12 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
           {pairData.feeRate && <SmallCard ml={10}>{pairData?.feeRate * 100} %</SmallCard>}
         </ContentRow>
         <ContentRow>
-          <TYPE.white>{tvl ? `≈$${tvl?.toFixed(2, { groupSeparator: ',' } ?? '0.00')}` : '--'}</TYPE.white>
+          <TYPE.white>{tvl ? `≈$${numFormat(tvl?.toFixed(2, { groupSeparator: ',' }), 2, true)}` : '--'}</TYPE.white>
         </ContentRow>
         <ContentRow>
-          <TYPE.white>{pairData?.dayVolume ? `≈$${amountFormat(pairData.dayVolume, 2)}` : '--'}</TYPE.white>
+          <TYPE.white>
+            {pairData?.dayVolume ? `≈$${numFormat(amountFormat(pairData.dayVolume, 2), 2, true)}` : '--'}
+          </TYPE.white>
         </ContentRow>
         <ContentRow>
           <TYPE.white>{pairData?.feeApr ? `${rate(pairData?.feeApr, 2)}` : '--'}</TYPE.white>

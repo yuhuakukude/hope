@@ -114,13 +114,24 @@ export const formatUTCDate = (value: any, formatString = 'YYYY-MM-DD HH:mm:ss') 
 }
 
 // numFormat
-export const numFormat = (num: number, digits: number) => {
-  const si = [
+export const numFormat = (num: number | string, digits: number, isTvl?: boolean) => {
+  if (String(num).indexOf('<') > -1) {
+    return num
+  }
+  num = Number(String(num).replace(/\$\s?|(,*)/g, ''))
+  if (isTvl && num <= 100000) {
+    return amountFormat(num, digits)
+  }
+  let si = [
     { value: 1, symbol: '' },
     { value: 1e3, symbol: 'K' },
     { value: 1e4, symbol: 'W' },
-    { value: 1e6, symbol: 'M' }
+    { value: 1e6, symbol: 'M' },
+    { value: 1e10, symbol: 'B' }
   ]
+  if (isTvl) {
+    si = si.filter((e: any) => e.symbol !== 'W')
+  }
   const rx = /\.0+$|(\.[0-9]*[1-9])0+$/
   let i
   for (i = si.length - 1; i > 0; i--) {
@@ -128,7 +139,13 @@ export const numFormat = (num: number, digits: number) => {
       break
     }
   }
-  return (num / si[i].value).toFixed(digits).replace(rx, '$1') + si[i].symbol
+  return (
+    new Decimal(num)
+      .div(new Decimal(si[i].value))
+      .toNumber()
+      .toFixed(digits)
+      .replace(rx, '$1') + si[i].symbol
+  )
 }
 
 // 地址 脱敏
