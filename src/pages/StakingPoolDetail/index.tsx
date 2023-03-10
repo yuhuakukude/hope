@@ -483,11 +483,11 @@ export default function StakingPoolDetail({
           <AutoColumn gap={'20px'}>
             <RowBetween>
               <TYPE.main>Unstaked Position</TYPE.main>
-              <TYPE.white>{balance?.toFixed(4, { groupSeparator: ',' } ?? '0.00') ?? ''}</TYPE.white>
+              <TYPE.white>{balance?.toFixed(4, { groupSeparator: ',' } ?? '0.0000') ?? '0.0000'}</TYPE.white>
             </RowBetween>
             <RowBetween>
               <TYPE.main>Staked Position</TYPE.main>
-              <TYPE.white>{stakedLpAmount?.toFixed(4, { groupSeparator: ',' } ?? '0.00') ?? ''}</TYPE.white>
+              <TYPE.white>{stakedLpAmount?.toFixed(4, { groupSeparator: ',' } ?? '0.0000') ?? '0.0000'}</TYPE.white>
             </RowBetween>
             <AutoRowBetween gap={'30px'}>
               <ButtonPrimary
@@ -703,7 +703,7 @@ export default function StakingPoolDetail({
                 <Row>
                   <TYPE.body>APR</TYPE.body>
                   <TYPE.green fontSize={30} marginLeft={12} fontFamily={'Arboria-Medium'}>
-                    {amountFormat(aprInfo.baseApr, 2)}%
+                    {amountFormat(aprInfo.baseApr * 100, 2)}%
                   </TYPE.green>
                 </Row>
                 <p className="m-t-15 text-normal">Fees APR: {amountFormat(aprInfo.feeApr * 100, 2)}% </p>
@@ -910,13 +910,13 @@ export default function StakingPoolDetail({
                       <AutoRow gap={'5px'}>
                         <CurrencyLogo currency={pool?.tokens[0]} />
                         <TYPE.main>
-                          {pool?.volume0Amount ? `${pool.volume0Amount.toFixed(2)} ${token0Symbol}` : '--'}
+                          {pool?.volume0Amount ? `${pool.volume0Amount.toFixed(4)} ${token0Symbol}` : '--'}
                         </TYPE.main>
                       </AutoRow>
                       <AutoRow gap={'5px'}>
                         <CurrencyLogo currency={pool?.tokens[0]} />
                         <TYPE.main>
-                          {pool?.volume1Amount ? `${pool.volume1Amount.toFixed(2)} ${token1Symbol}` : '--'}
+                          {pool?.volume1Amount ? `${pool.volume1Amount.toFixed(4)} ${token1Symbol}` : '--'}
                         </TYPE.main>
                       </AutoRow>
                     </AutoColumn>

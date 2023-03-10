@@ -199,6 +199,10 @@ export function usePairStakeInfo(stakingAddress?: string) {
     timestamp?.toString()
   ])?.result?.[0].toString()
   const claimAbleRewards = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])?.result
+  const ltRewards = useSingleCallResult(stakingContract, 'claimableReward', [
+    account ?? undefined,
+    LT[chainId ?? 1].address
+  ]).result
   const balance = useSingleCallResult(stakingContract, 'lpBalanceOf', [account ?? undefined])?.result?.[0].toString()
   const workingBalance = useSingleCallResult(stakingContract, 'workingBalances', [
     account ?? undefined
@@ -243,8 +247,16 @@ export function usePairStakeInfo(stakingAddress?: string) {
     relativeWeight: relativeWeight
       ? CurrencyAmount.ether(JSBI.multiply(JSBI.BigInt(relativeWeight), JSBI.BigInt(100)))
       : undefined,
-    claimAbleRewards: claimAbleRewards?.[0]
-      ? new TokenAmount(LT[chainId ?? 1], claimAbleRewards?.[0].toString())
-      : undefined
+    claimAbleRewards:
+      !claimAbleRewards?.[0] && !ltRewards?.[0]
+        ? undefined
+        : new TokenAmount(
+            LT[chainId ?? 1],
+            claimAbleRewards?.[0] && !ltRewards?.[0]
+              ? JSBI.add(JSBI.BigInt(claimAbleRewards?.[0].toString()), JSBI.BigInt(ltRewards?.[0].toString()))
+              : claimAbleRewards?.[0]
+              ? claimAbleRewards?.[0]
+              : ltRewards?.[0]
+          )
   }
 }
