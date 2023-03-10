@@ -933,7 +933,7 @@ export default function StakingPoolDetail({
                         </TYPE.main>
                       </AutoRow>
                       <AutoRow gap={'5px'}>
-                        <CurrencyLogo currency={pool?.tokens[0]} />
+                        <CurrencyLogo currency={pool?.tokens[1]} />
                         <TYPE.main>
                           {pool?.volume1Amount
                             ? `${pool.volume1Amount.toFixed(2, { groupSeparator: ',' })} ${token1Symbol}`
@@ -949,15 +949,21 @@ export default function StakingPoolDetail({
                         <CurrencyLogo currency={pool?.tokens[0]} />
                         <TYPE.main>
                           {pool?.volume0Amount
-                            ? `${pool.volume0Amount.toFixed(2, { groupSeparator: ',' })} ${token0Symbol}`
+                            ? `${format.amountFormat(
+                                Number(pool?.volume0Amount.toFixed(2)) * 0.003,
+                                2
+                              )} ${token0Symbol}`
                             : '--'}
                         </TYPE.main>
                       </AutoRow>
                       <AutoRow gap={'5px'}>
-                        <CurrencyLogo currency={pool?.tokens[0]} />
+                        <CurrencyLogo currency={pool?.tokens[1]} />
                         <TYPE.main>
                           {pool?.volume1Amount
-                            ? `${pool.volume1Amount.toFixed(2, { groupSeparator: ',' })} ${token1Symbol}`
+                            ? `${format.amountFormat(
+                                Number(pool?.volume1Amount.toFixed(2)) * 0.003,
+                                2
+                              )} ${token1Symbol}`
                             : '--'}
                         </TYPE.main>
                       </AutoRow>

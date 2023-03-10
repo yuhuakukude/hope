@@ -19,6 +19,7 @@ import { useActiveWeb3React } from '../../hooks'
 import Circle from '../../assets/images/blue-loader.svg'
 import { LT } from '../../constants'
 import { Switch } from 'antd'
+import NoData from '../../assets/images/no_data.png'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 
 const PageWrapper = styled(AutoColumn)`
@@ -234,7 +235,7 @@ export default function Pools() {
           </AutoColumn>
         </RowBetween>
       </AutoRow>
-      {pairInfos.length !== 0 && searchType === PAIR_SEARCH.ALL && (
+      {searchType === PAIR_SEARCH.ALL && (
         <TableWrapper>
           <TableTitleWrapper>
             {poolTitles.map(({ value, weight }, index) => (
@@ -245,7 +246,7 @@ export default function Pools() {
           </TableTitleWrapper>
         </TableWrapper>
       )}
-      {pairInfos.length !== 0 && searchType === PAIR_SEARCH.USER_LIQUIDITY && account && (
+      {searchType === PAIR_SEARCH.USER_LIQUIDITY && account && (
         <TableWrapper>
           <TableTitleWrapper>
             {positionTitles.map(({ value, weight }, index) => (
@@ -265,14 +266,31 @@ export default function Pools() {
         </ColumnCenter>
       ) : searchType === PAIR_SEARCH.ALL ? (
         <>
-          {pairInfos.map(amountPair => (
-            <PoolCard
-              pairData={amountPair}
-              key={amountPair.pair.liquidityToken.address}
-              tvl={amountPair.tvl}
-              pairInfo={amountPair}
-            />
-          ))}
+          {pairInfos.length > 0 ? (
+            pairInfos.map(amountPair => (
+              <PoolCard
+                pairData={amountPair}
+                key={amountPair.pair.liquidityToken.address}
+                tvl={amountPair.tvl}
+                pairInfo={amountPair}
+              />
+            ))
+          ) : (
+            <div style={{ width: '115px', margin: '60px auto' }}>
+              <div
+                style={{
+                  width: '60px',
+                  height: '40px',
+                  margin: '0 auto',
+                  background: `url(${NoData}) no-repeat center`,
+                  backgroundSize: 'contain'
+                }}
+              ></div>
+              <p className="font-nor m-t-15" style={{ color: '#63636A' }}>
+                No data found
+              </p>
+            </div>
+          )}
         </>
       ) : (
         <>
