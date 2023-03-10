@@ -109,23 +109,26 @@ export default function SettingPage() {
         <ModalContentWrapper>
           <AutoColumn gap="lg">
             <RowBetween style={{ padding: '0 2rem' }}>
-              <div />
-              <Text fontWeight={500} fontSize={20}>
+              <Text fontWeight={700} fontSize={20}>
                 Are you sure?
               </Text>
               <StyledCloseIcon onClick={() => setShowConfirmation(false)} />
             </RowBetween>
             <Break />
             <AutoColumn gap="lg" style={{ padding: '0 2rem' }}>
-              <Text fontWeight={500} fontSize={20}>
+              <Text fontWeight={500} fontSize={16}>
                 Expert mode turns off the confirm transaction prompt and allows high slippage trades that often result
                 in bad rates and lost funds.
               </Text>
-              <Text fontWeight={600} fontSize={20}>
-                ONLY USE THIS MODE IF YOU KNOW WHAT YOU ARE DOING.
-              </Text>
+              <RowFixed align={'flex-start'}>
+                <i style={{ color: '#FFDE29' }} className="iconfont text-normal">
+                  &#xe614;
+                </i>
+                <Text ml={12} color={'#FFDE29'} fontWeight={700} fontSize={18}>
+                  ONLY USE THIS MODE IF YOU KNOW WHAT YOU ARE DOING.
+                </Text>
+              </RowFixed>
               <ButtonError
-                error={true}
                 padding={'12px'}
                 onClick={() => {
                   if (window.prompt(`Please type the word "confirm" to enable expert mode.`) === 'confirm') {
@@ -134,7 +137,7 @@ export default function SettingPage() {
                   }
                 }}
               >
-                <Text fontSize={20} fontWeight={500} id="confirm-expert-mode">
+                <Text fontSize={16} fontWeight={500} id="confirm-expert-mode">
                   Turn On Expert Mode
                 </Text>
               </ButtonError>

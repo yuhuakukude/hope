@@ -69,7 +69,6 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
   const rewardArgs = useMemo(() => {
     return tokenAddress.map(token => [account, token?.result?.[0]])
   }, [account, tokenAddress])
-  console.log('rewardArgs', rewardArgs)
   const rewards = useSingleContractMultipleData(
     account && tokenAddress[0]?.result ? stakingContract : undefined,
     'claimableReward',
