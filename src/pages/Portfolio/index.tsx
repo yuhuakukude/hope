@@ -128,9 +128,9 @@ export default function Portfolio() {
           <>
             <InvestmentAllocation data={allData} />
             {/* <GombocRewards data={overViewData.rewards} /> */}
-            <MyHOPEStaking />
+            {<MyHOPEStaking />}
             <MyLiquidityPools getLpData={setLpTotal} />
-            <MyLockedLTAndProfits getAllVoting={getAllVoting} />
+            {stHopeBalance && <MyLockedLTAndProfits getAllVoting={getAllVoting} />}
             {/* <VeLTRewards /> */}
             {/* <Govern /> */}
           </>
