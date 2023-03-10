@@ -216,16 +216,16 @@ export default function StakingPoolDetail({
 
   const token0USD =
     pool?.token0Amount && token0PriceUSD ? Number(pool?.token0Amount.toExact().toString()) * token0PriceUSD : undefined
-  const token1USD =
-    pool?.token1Amount && token1PriceUSD ? Number(pool?.token1Amount.toExact().toString()) * token1PriceUSD : undefined
+  // const token1USD =
+  //   pool?.token1Amount && token1PriceUSD ? Number(pool?.token1Amount.toExact().toString()) * token1PriceUSD : undefined
 
   const totalUSD =
     pool?.token0Amount && pool.token1Amount && token0PriceUSD && token1PriceUSD
       ? Number(pool?.token0Amount.toExact().toString()) * token0PriceUSD +
         Number(pool?.token1Amount.toExact().toString()) * token1PriceUSD
       : undefined
-  const token0Percent = token0USD && totalUSD ? (token0USD / totalUSD) * 100 : undefined
-  const token1Percent = token1USD && totalUSD ? (token1USD / totalUSD) * 100 : undefined
+  const token0Percent = token0USD && totalUSD ? format.numeral((token0USD / totalUSD) * 100, 2) : undefined
+  const token1Percent = token0Percent ? 100 - Number(token0Percent) : undefined
   const TransactionType: TitleTipsProps[] = [
     {
       label: 'All',
@@ -384,25 +384,25 @@ export default function StakingPoolDetail({
       title: 'TVL',
       isRise: !!pairMore && pairMore.tvlChangeUSD > 0,
       amount: pool ? `$${format.amountFormat(Number(pool.tvl), 2)}` : `--`,
-      rate: pairMore ? `${format.numeral(pairMore.tvlChangeUSD, 2)} %` : `--`
+      rate: pairMore ? `${format.numeral(Math.abs(pairMore.tvlChangeUSD), 2)} %` : `--`
     },
     {
       title: 'Volume(24H)',
       isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
       amount: pairMore ? `$${(format.amountFormat(pairMore.oneDayVolumeUSD), 2)}` : `--`,
-      rate: pairMore ? `${format.numeral(pairMore.volumeChangeUSD, 2)} %` : `--`
+      rate: pairMore ? `${format.numeral(Math.abs(pairMore.volumeChangeUSD), 2)} %` : `--`
     },
     {
       title: 'Fees(24H)',
       isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
       amount: pairMore ? `$${(format.amountFormat(pairMore.oneDayVolumeUSD * 0.003), 2)}` : `--`,
-      rate: pairMore ? `${format.numeral(pairMore.volumeChangeUSD, 2)} %` : `--`
+      rate: pairMore ? `${format.numeral(Math.abs(pairMore.volumeChangeUSD), 2)} %` : `--`
     },
     {
       title: 'Fees(7d)',
       isRise: !!pairMore && pairMore.weeklyVolumeChange > 0,
       amount: pairMore ? `$${(format.amountFormat(pairMore.oneWeekVolume), 2)}` : `--`,
-      rate: pairMore ? `${format.numeral(pairMore.weeklyVolumeChange, 2)} %` : `--`
+      rate: pairMore ? `${format.numeral(Math.abs(pairMore.weeklyVolumeChange), 2)} %` : `--`
     }
   ]
 
