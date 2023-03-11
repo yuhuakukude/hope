@@ -16,7 +16,7 @@ import { LT, VELT } from '../../../../constants'
 import { useActionPending } from '../../../../state/transactions/hooks'
 
 export default function AddTime({ maxWeek }: { maxWeek: number }) {
-  const [weekNumber, setWeekNumber] = useState(2)
+  const [weekNumber, setWeekNumber] = useState(maxWeek < 2 ? 0 : 2)
   const { account, chainId } = useActiveWeb3React()
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
   const [txHash, setTxHash] = useState<string>('')
@@ -188,7 +188,12 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
             </p> */}
             <p className="font-nor flex jc-between ai-center">
               <span className="text-normal">new unlock date is:</span>
-              <span className="text-medium">{argTime ? format.formatUTCDate(argTime) : '--'} (UTC)</span>
+              <span className="text-medium">
+                {argTime
+                  ? format.formatUTCDate(argTime)
+                  : format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}{' '}
+                (UTC)
+              </span>
             </p>
             <p className="font-nor flex jc-between ai-center m-t-16">
               <span className="text-normal">Your starting voting power will be:</span>
