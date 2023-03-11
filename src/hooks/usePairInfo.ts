@@ -6,7 +6,7 @@ import { CurrencyAmount, JSBI, Percent, TokenAmount } from '@uniswap/sdk'
 import { useMultipleContractSingleData, useSingleCallResult } from '../state/multicall/hooks'
 import { STAKING_REWARDS_INTERFACE } from '../constants/abis/staking-rewards'
 import { useGomConContract, useLockerContract, useStakingContract } from './useContract'
-import { LT } from '../constants'
+import { LT, STAKING_HOPE_GOMBOC_ADDRESS } from '../constants'
 import useCurrentBlockTimestamp from './useCurrentBlockTimestamp'
 
 export enum PAIR_SEARCH {
@@ -70,7 +70,6 @@ export default function usePairsInfo(
     'claimableReward',
     ltRewardsArg
   )
-  console.log('ltRewardAmounts', ltRewardAmounts)
   const stakedAmounts = useMultipleContractSingleData(
     allPairs.map(pair => {
       return pair.stakingAddress
@@ -199,10 +198,30 @@ export function usePairStakeInfo(stakingAddress?: string) {
     timestamp?.toString()
   ])?.result?.[0].toString()
   const claimAbleRewards = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])?.result
-  const ltRewards = useSingleCallResult(stakingContract, 'claimableReward', [
-    account ?? undefined,
-    LT[chainId ?? 1].address
-  ]).result
+
+  const isSHAddr = useMemo(() => {
+    let res = false
+    const addr = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+    if (addr === stakingAddress) {
+      res = true
+    }
+    return res
+  }, [chainId, stakingAddress])
+
+  const ltRewardsData = useSingleCallResult(
+    stakingContract,
+    isSHAddr ? 'claimableTokens' : 'claimableReward',
+    isSHAddr ? [account ?? undefined] : [account ?? undefined, LT[chainId ?? 1].address]
+  ).result
+
+  const ltRewards = useMemo(() => {
+    if (isSHAddr) {
+      return undefined
+    } else {
+      return ltRewardsData
+    }
+  }, [isSHAddr, ltRewardsData])
+
   const balance = useSingleCallResult(stakingContract, 'lpBalanceOf', [account ?? undefined])?.result?.[0].toString()
   const workingBalance = useSingleCallResult(stakingContract, 'workingBalances', [
     account ?? undefined
@@ -252,7 +271,7 @@ export function usePairStakeInfo(stakingAddress?: string) {
         ? undefined
         : new TokenAmount(
             LT[chainId ?? 1],
-            claimAbleRewards?.[0] && !ltRewards?.[0]
+            claimAbleRewards?.[0] && ltRewards?.[0]
               ? JSBI.add(JSBI.BigInt(claimAbleRewards?.[0].toString()), JSBI.BigInt(ltRewards?.[0].toString()))
               : claimAbleRewards?.[0]
               ? claimAbleRewards?.[0]
