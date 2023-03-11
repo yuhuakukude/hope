@@ -20,7 +20,7 @@ import Overview, { OverviewData } from '../../components/pool/Overview'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
 import { shortenAddress, getEtherscanLink } from '../../utils'
 import AprApi from '../../api/apr.api'
-import format, { amountFormat, formatUTCDate } from '../../utils/format'
+import format, { amountFormat, formatUTCDate, numeral } from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -690,17 +690,15 @@ export default function StakingPoolDetail({
                   </Row>
                 </div>
               </Row>
-              <div style={{ width: '345px' }}>
+              <div style={{ width: '325px' }}>
                 <Row>
                   <TYPE.body>APR</TYPE.body>
                   <TYPE.green fontSize={30} marginLeft={12} fontFamily={'Arboria-Medium'}>
-                    {amountFormat(aprInfo.baseApr * 100, 2)}%
+                    {numeral(aprInfo.baseApr * 100, 2)}%
                   </TYPE.green>
                 </Row>
-                <p className="m-t-15 text-normal">Fees APR: {amountFormat(aprInfo.feeApr * 100, 2)}% </p>
-                {aprInfo.ltApr && (
-                  <p className="m-t-12 text-normal">Rewards APR: {amountFormat(aprInfo.ltApr * 100, 2)}%</p>
-                )}
+                <p className="m-t-15 text-normal">Fees APR: {numeral(aprInfo.feeApr * 100, 2)}% </p>
+                {aprInfo.ltApr && <p className="m-t-12 text-normal">Rewards APR: {numeral(aprInfo.ltApr * 100, 2)}%</p>}
                 {aprInfo.ltAmountPerDay && (
                   <p className="m-t-12 text-normal">
                     Daily Reward: {dayRewards ? dayRewards?.toFixed(2, { groupSeparator: ',' }) : '0'}
