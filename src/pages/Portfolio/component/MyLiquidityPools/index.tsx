@@ -20,6 +20,7 @@ import { CustomLightSpinner, TYPE } from '../../../../theme'
 import { Pagination } from 'antd'
 import { ArrowUpRight } from 'react-feather'
 import { AutoColumn } from '../../../../components/Column'
+import { SymbolLogo } from 'components/CurrencyLogo'
 
 function toFixed(val: string | number, length = 2) {
   return format.amountFormat(val, length)
@@ -114,16 +115,24 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
             type={2}
             title={
               <>
-                <i className="iconfont"></i>
-                {toFixed(record.token0Balance, 8)}
-                &nbsp; {record.composition.split('/')[0]}
+                <div className="flex ai-center">
+                  <SymbolLogo size={'16px'} symbol={`${record.composition.split('/')[0]}`} />
+                  <div className="m-l-8">
+                    {toFixed(record.token0Balance, 8)}
+                    &nbsp; {record.composition.split('/')[0]}
+                  </div>
+                </div>
               </>
             }
             desc={
               <>
-                <i className="iconfont"></i>
-                {toFixed(record.token1Balance, 8)}
-                &nbsp;{record.composition.split('/')[1]}
+                <div className="flex ai-center">
+                  <SymbolLogo size={'16px'} symbol={`${record.composition.split('/')[1]}`} />
+                  <div className="m-l-8">
+                    {toFixed(record.token1Balance, 8)}
+                    &nbsp;{record.composition.split('/')[1]}
+                  </div>
+                </div>
               </>
             }
           />
