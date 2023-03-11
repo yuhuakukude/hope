@@ -530,7 +530,7 @@ export default function Staking() {
                             Note that you do not receive the $LT bonus when you confirm your submission. You can also
                             try{' '}
                             <NavLink to={'/swap/exchange'}>
-                              <div className="text-primary">HopeSwap</div>{' '}
+                              <span className="text-primary">HopeSwap</span>{' '}
                             </NavLink>
                             to convert $stHOPE to $HOPE or other assets quickly.
                           </p>

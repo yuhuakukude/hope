@@ -56,6 +56,14 @@ const VotedList = ({
   const { toGomFeeClaim } = useGomFeeClaim()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
 
+  const isNoVelt = useMemo(() => {
+    let res = false
+    if (veltBalance && Number(veltBalance.toFixed(2)) <= 0) {
+      res = true
+    }
+    return res
+  }, [veltBalance])
+
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
@@ -539,7 +547,7 @@ const VotedList = ({
             }
           })
         }
-        if (!isTimeDis[record.gomboc.id]) {
+        if (!isTimeDis[record.gomboc.id] && !isNoVelt) {
           options.unshift({
             label: 'Refresh Voting Balance',
             value: 'Refresh',
