@@ -208,19 +208,11 @@ export function usePairStakeInfo(stakingAddress?: string) {
     return res
   }, [chainId, stakingAddress])
 
-  const ltRewardsData = useSingleCallResult(
+  const ltRewards = useSingleCallResult(
     stakingContract,
-    isSHAddr ? 'claimableTokens' : 'claimableReward',
-    isSHAddr ? [account ?? undefined] : [account ?? undefined, LT[chainId ?? 1].address]
+    'claimableReward',
+    isSHAddr ? [undefined] : [account ?? undefined, LT[chainId ?? 1].address]
   ).result
-
-  const ltRewards = useMemo(() => {
-    if (isSHAddr) {
-      return undefined
-    } else {
-      return ltRewardsData
-    }
-  }, [isSHAddr, ltRewardsData])
 
   const balance = useSingleCallResult(stakingContract, 'lpBalanceOf', [account ?? undefined])?.result?.[0].toString()
   const workingBalance = useSingleCallResult(stakingContract, 'workingBalances', [
