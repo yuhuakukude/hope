@@ -1,4 +1,4 @@
-import { Trade, TradeType } from '@uniswap/sdk'
+import { JSBI, Percent, Trade, TradeType } from '@uniswap/sdk'
 import React, { useContext } from 'react'
 import { Text } from 'rebass'
 import { ThemeContext } from 'styled-components'
@@ -32,20 +32,25 @@ function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippag
     <>
       <AutoColumn gap={'20px'}>
         <RowBetween>
+          <AutoColumn gap={'4px'}>
+            <RowFixed>
+              <TYPE.black fontSize={16} fontWeight={400} color={theme.text2}>
+                {isExactIn ? 'Minimum received' : 'Maximum sold'}
+              </TYPE.black>
+              <Tooltip
+                className="m-l-5"
+                overlayClassName="tips-question"
+                title="Your transaction will revert if there is a large, unfavorable price movement before it is confirmed."
+              >
+                <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+              </Tooltip>
+            </RowFixed>
+            <TYPE.gray fontSize={14}>
+              After slippage ({new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000)).toFixed(2)}%)
+            </TYPE.gray>
+          </AutoColumn>
           <RowFixed>
-            <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
-              {isExactIn ? 'Minimum received' : 'Maximum sold'}
-            </TYPE.black>
-            <Tooltip
-              className="m-l-5"
-              overlayClassName="tips-question"
-              title="Your transaction will revert if there is a large, unfavorable price movement before it is confirmed."
-            >
-              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
-            </Tooltip>
-          </RowFixed>
-          <RowFixed>
-            <TYPE.black color={theme.text1} fontSize={14}>
+            <TYPE.black color={theme.text1} fontSize={16}>
               {isExactIn
                 ? `${slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(4)} ${trade.outputAmount.currency.symbol}` ??
                   '-'
@@ -56,7 +61,7 @@ function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippag
         </RowBetween>
         <RowBetween>
           <RowFixed>
-            <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
+            <TYPE.black fontSize={16} fontWeight={400} color={theme.text2}>
               Price Impact
             </TYPE.black>
             <Tooltip
@@ -72,7 +77,7 @@ function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippag
 
         <RowBetween>
           <RowFixed>
-            <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
+            <TYPE.black fontSize={16} fontWeight={400} color={theme.text2}>
               Liquidity Provider Fee
             </TYPE.black>
             <Tooltip
@@ -83,7 +88,7 @@ function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippag
               <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
             </Tooltip>
           </RowFixed>
-          <TYPE.black fontSize={14} color={theme.text1}>
+          <TYPE.black fontSize={16} color={theme.text1}>
             {realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${trade.inputAmount.currency.symbol}` : '-'}
           </TYPE.black>
         </RowBetween>
