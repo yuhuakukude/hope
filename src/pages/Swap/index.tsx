@@ -117,7 +117,7 @@ export default function Swap({ history }: RouteComponentProps) {
   }
   const trade = showWrap ? undefined : tradesByVersion[toggledVersion]
   const defaultTrade = showWrap ? undefined : tradesByVersion[DEFAULT_VERSION]
-
+  console.log('trade', trade)
   const betterTradeLinkV2: Version | undefined =
     toggledVersion === Version.v1 && isTradeBetter(v1Trade, v2Trade) ? Version.v2 : undefined
 
@@ -413,6 +413,16 @@ export default function Swap({ history }: RouteComponentProps) {
         <SwapHeader />
         <Wrapper id="swap-page">
           <ConfirmSwapModal
+            token0USD={`≈$${
+              inputAddress && priceResult && formattedAmounts[Field.INPUT]
+                ? amountFormat(Number(priceResult[inputAddress]) * Number(formattedAmounts[Field.INPUT]), 2)
+                : '0.00'
+            }USD`}
+            token1USD={`≈$${
+              outAddress && priceResult && formattedAmounts[Field.OUTPUT]
+                ? amountFormat(Number(priceResult[outAddress]) * Number(formattedAmounts[Field.OUTPUT]), 2)
+                : '0.00'
+            }USD`}
             showAddToken={showAddToken}
             isOpen={showConfirm || pending}
             errorCode={errorCode}

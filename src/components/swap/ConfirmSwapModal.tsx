@@ -36,7 +36,9 @@ export default function ConfirmSwapModal({
   pendingMessage,
   errorCode,
   txHash,
-  showAddToken
+  showAddToken,
+  token0USD,
+  token1USD
 }: {
   isOpen: boolean
   trade: Trade | undefined
@@ -52,6 +54,8 @@ export default function ConfirmSwapModal({
   errorCode?: number | undefined
   onDismiss: () => void
   showAddToken: boolean
+  token0USD: string
+  token1USD: string
 }) {
   const showAcceptChanges = useMemo(
     () => Boolean(trade && originalTrade && tradeMeaningfullyDiffers(trade, originalTrade)),
@@ -61,6 +65,8 @@ export default function ConfirmSwapModal({
   const modalHeader = useCallback(() => {
     return trade ? (
       <SwapModalHeader
+        token0USD={token0USD}
+        token1USD={token1USD}
         trade={trade}
         allowedSlippage={allowedSlippage}
         recipient={recipient}
