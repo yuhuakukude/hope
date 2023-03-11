@@ -85,7 +85,7 @@ export default function WalletDetail({
     <div
       style={{
         position: 'absolute',
-        width: '460px',
+        width: '420px',
         display: 'flex',
         background: theme.bg1,
         top: '80px',

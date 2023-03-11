@@ -52,7 +52,6 @@ import spinner from '../../assets/svg/spinner.svg'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 import { tokenAddress } from '../../utils/currencyId'
 import { amountFormat } from '../../utils/format'
-import { LightQuestionHelper } from '../../components/QuestionHelper'
 
 export default function Swap({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
@@ -584,7 +583,6 @@ export default function Swap({ history }: RouteComponentProps) {
                   ) : (
                     <AutoRow gap={'4px'} justify={'center'}>
                       {'Approve use of ' + currencies[Field.INPUT]?.symbol}
-                      <LightQuestionHelper text={''} />
                     </AutoRow>
                   )}
                 </ButtonConfirmed>
@@ -685,12 +683,6 @@ export default function Swap({ history }: RouteComponentProps) {
         ) : (
           <UnsupportedCurrencyFooter show={swapIsUnsupported} currencies={[currencies.INPUT, currencies.OUTPUT]} />
         )}
-        {/*<AutoColumn style={{ margin: '0 20px', padding: '20px 0', borderTop: '1px solid #3D3E46' }}>*/}
-        {/*  <RowBetween>*/}
-        {/*    <TYPE.main>Network Fee</TYPE.main>*/}
-        {/*    <TYPE.white>≈0.01 ETH</TYPE.white>*/}
-        {/*  </RowBetween>*/}
-        {/*</AutoColumn>*/}
       </AppBody>
     </>
   )
