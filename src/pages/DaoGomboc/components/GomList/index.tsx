@@ -14,6 +14,8 @@ import { useSingleContractMultipleData } from '../../../../state/multicall/hooks
 import { useGomConContract } from '../../../../hooks/useContract'
 import VotedList from '../../../../components/ahp/VotedList'
 
+import { SymbolLogo } from 'components/CurrencyLogo'
+
 interface ListProps {
   toSetSelGom: (gomboc: string) => void
 }
@@ -160,13 +162,26 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       key: 'composition',
       render: (text: string, record: any) => {
         if (record.gomboc && stakingAddress === record.gomboc) {
-          return <span>HOPE</span>
+          return (
+            <>
+              <div className="flex ai-center">
+                <SymbolLogo size={'16px'} symbol={`HOPE`} />
+                <p className="m-l-8">HOPE</p>
+              </div>
+            </>
+          )
         } else {
           const [token0, token1] = text.split('/')
           return (
             <>
-              <p>{token0}</p>
-              <p>{token1}</p>
+              <div className="flex ai-center">
+                <SymbolLogo size={'16px'} symbol={`${token0}`} />
+                <p className="m-l-8">{token0}</p>
+              </div>
+              <div className="flex ai-center m-t-">
+                <SymbolLogo size={'16px'} symbol={`${token1}`} />
+                <p className="m-l-8">{token1}</p>
+              </div>
             </>
           )
         }

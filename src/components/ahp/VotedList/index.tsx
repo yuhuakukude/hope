@@ -24,6 +24,7 @@ import Row from '../../../components/Row'
 import { Decimal } from 'decimal.js'
 import format from '../../../utils/format'
 import { useHistory } from 'react-router-dom'
+import { SymbolLogo } from 'components/CurrencyLogo'
 
 const VotedList = ({
   getVotingRewards,
@@ -436,12 +437,25 @@ const VotedList = ({
           }
           return (
             <>
-              <p>{token0}</p>
-              <p>{token1}</p>
+              <div className="flex ai-center">
+                <SymbolLogo size={'16px'} symbol={`${token0}`} />
+                <p className="m-l-8">{token0}</p>
+              </div>
+              <div className="flex ai-center m-t-">
+                <SymbolLogo size={'16px'} symbol={`${token1}`} />
+                <p className="m-l-8">{token1}</p>
+              </div>
             </>
           )
         }
-        return <span>HOPE</span>
+        return (
+          <>
+            <div className="flex ai-center">
+              <SymbolLogo size={'16px'} symbol={`HOPE`} />
+              <p className="m-l-8">HOPE</p>
+            </div>
+          </>
+        )
       }
     },
     {

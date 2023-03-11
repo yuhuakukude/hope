@@ -104,8 +104,9 @@ export default function LockerEcharts() {
             },
             yAxis: {
               type: 'value',
-              min: valueArr.length > 0 ? null : 0,
-              max: valueArr.length > 0 ? null : 1000,
+              min: valueArr.length > 0 ? Math.max(...valueArr) : 0,
+              max: valueArr.length > 0 ? Math.min(...valueArr) : 1000,
+              splitNumber: 7,
               splitLine: {
                 show: valueArr.length > 0,
                 lineStyle: { color: ['#606266'], width: 1, type: 'solid' }

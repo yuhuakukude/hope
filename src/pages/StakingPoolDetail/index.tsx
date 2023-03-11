@@ -20,7 +20,7 @@ import Overview, { OverviewData } from '../../components/pool/Overview'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
 import { shortenAddress, getEtherscanLink } from '../../utils'
 import AprApi from '../../api/apr.api'
-import format, { amountFormat, formatUTCDate } from '../../utils/format'
+import format, { amountFormat, formatUTCDate, numeral } from '../../utils/format'
 import { tryParseAmount } from '../../state/swap/hooks'
 import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
@@ -662,23 +662,6 @@ export default function StakingPoolDetail({
           </TYPE.white>
           {pool && <RateTag>0.3%</RateTag>}
         </div>
-        {/* <RowFlat>
-          <ButtonPrimary
-            as={Link}
-            width={'100px'}
-            style={{ marginRight: '20px' }}
-            to={`/swap/exchange/?inputCurrency=${pool?.tokens?.[0].address}&outputCurrency=${pool?.tokens?.[1].address}`}
-          >
-            Trade
-          </ButtonPrimary>
-          <ButtonPrimary
-            as={Link}
-            width={'150px'}
-            to={`/swap/liquidity/manager/${pool?.tokens?.[0].address}/${pool?.tokens?.[1].address}`}
-          >
-            Add Liquidity
-          </ButtonPrimary>
-        </RowFlat> */}
       </AutoRow>
       <AutoRow style={{ margin: 0 }} padding={'15px 0px'} gap={'15px'} align={''}>
         <AutoColumn style={{ flex: 4 }}>
@@ -694,7 +677,7 @@ export default function StakingPoolDetail({
                     <CurrencyLogo currency={pool?.tokens[0]} />
                     <TYPE.body marginLeft={9}>
                       {format.amountFormat(pool?.token0Value, 2)} {token0Symbol}
-                      {token0Percent ? ` ${amountFormat(token0Percent)}%` : '--'}
+                      {token0Percent ? ` ${Number(token0Percent).toFixed(2)}%` : '--'}
                     </TYPE.body>
                   </Row>
                   <Row margin={'35px 0 0 0'}>
@@ -702,22 +685,20 @@ export default function StakingPoolDetail({
                     <CurrencyLogo currency={pool?.tokens[1]} />
                     <TYPE.body marginLeft={9}>
                       {format.amountFormat(pool?.token1Value, 2)} {token1Symbol}
-                      {token1Percent ? ` ${amountFormat(token1Percent)}%` : '--'}
+                      {token1Percent ? ` ${Number(token1Percent).toFixed(2)}%` : '--'}
                     </TYPE.body>
                   </Row>
                 </div>
               </Row>
-              <div style={{ width: '345px' }}>
+              <div style={{ width: '325px' }}>
                 <Row>
                   <TYPE.body>APR</TYPE.body>
                   <TYPE.green fontSize={30} marginLeft={12} fontFamily={'Arboria-Medium'}>
-                    {amountFormat(aprInfo.baseApr * 100, 2)}%
+                    {numeral(aprInfo.baseApr * 100, 2)}%
                   </TYPE.green>
                 </Row>
-                <p className="m-t-15 text-normal">Fees APR: {amountFormat(aprInfo.feeApr * 100, 2)}% </p>
-                {aprInfo.ltApr && (
-                  <p className="m-t-12 text-normal">Rewards APR: {amountFormat(aprInfo.ltApr * 100, 2)}%</p>
-                )}
+                <p className="m-t-15 text-normal">Fees APR: {numeral(aprInfo.feeApr * 100, 2)}% </p>
+                {aprInfo.ltApr && <p className="m-t-12 text-normal">Rewards APR: {numeral(aprInfo.ltApr * 100, 2)}%</p>}
                 {aprInfo.ltAmountPerDay && (
                   <p className="m-t-12 text-normal">
                     Daily Reward: {dayRewards ? dayRewards?.toFixed(2, { groupSeparator: ',' }) : '0'}

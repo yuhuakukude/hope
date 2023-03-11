@@ -7,8 +7,9 @@ import useHttpLocations from '../../hooks/useHttpLocations'
 import { WrappedTokenInfo } from '../../state/lists/hooks'
 import Logo from '../Logo'
 
-export const getTokenLogoURL = (address: string) =>
-  `https://raw.githubusercontent.com/trustwallet/assets/master/blockchains/ethereum/assets/${address}/logo.png`
+const TOKEN_ICON_URL = process.env.REACT_APP_TOKEN_ICON_URL
+
+export const getTokenLogoURL = (symbol: string | undefined) => `${TOKEN_ICON_URL}/${symbol}/logo.png`
 
 const StyledEthereumLogo = styled.img<{ size: string }>`
   width: ${({ size }) => size};
@@ -38,12 +39,11 @@ export default function CurrencyLogo({
 
   const srcs: string[] = useMemo(() => {
     if (currency === ETHER) return []
-
     if (currency instanceof Token) {
       if (currency instanceof WrappedTokenInfo) {
-        return [...uriLocations, getTokenLogoURL(currency.address)]
+        return [...uriLocations, getTokenLogoURL(currency.symbol)]
       }
-      return [getTokenLogoURL(currency.address)]
+      return [getTokenLogoURL(currency.symbol)]
     }
     return []
   }, [currency, uriLocations])
@@ -55,19 +55,19 @@ export default function CurrencyLogo({
   return <StyledLogo size={size} srcs={srcs} alt={`${currency?.symbol ?? 'token'} logo`} style={style} />
 }
 
-export function AddressLogo({
-  address,
+export function SymbolLogo({
+  symbol,
   size = '24px',
   style
 }: {
-  address?: string
+  symbol?: string
   size?: string
   style?: React.CSSProperties
 }) {
   const srcs: string[] = useMemo(() => {
-    if (!address) return []
-    return [getTokenLogoURL(address)]
-  }, [address])
+    if (!symbol) return []
+    return [getTokenLogoURL(symbol)]
+  }, [symbol])
 
-  return <StyledLogo size={size} srcs={srcs} alt={`${address ?? 'token'} logo`} style={style} />
+  return <StyledLogo size={size} srcs={srcs} alt={`${symbol ?? 'token'} logo`} style={style} />
 }

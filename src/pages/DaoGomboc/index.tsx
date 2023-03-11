@@ -36,6 +36,9 @@ export default function DaoGomboc() {
     }
     return moment(format.formatDate(Number(`${lockerEndDate}`))).diff(moment(), 'days') < 14
   }, [lockerRes])
+  const isWithDraw = useMemo(() => {
+    return lockerRes?.end === '--' && lockerRes?.amount
+  }, [lockerRes])
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const isNoVelt = useMemo(() => {
     let res = false
@@ -91,6 +94,20 @@ export default function DaoGomboc() {
       <PageWrapper>
         <div className="dao-gomboc-page">
           <Head />
+          <div id="votepoint" className="flex m-t-30">
+            <div className="flex-3 normal-card m-r-30">
+              <GomChart votiingData={votiingData} />
+            </div>
+            <div className="flex-2 normal-card">
+              <Vote
+                ref={voteRef}
+                updateTable={updateTable}
+                isNoVelt={isNoVelt}
+                votiingData={votiingData}
+                gombocList={gombocList}
+              />
+            </div>
+          </div>
           {isNoVelt && (
             <div className="flex m-t-30 ai-center jc-center">
               <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
@@ -118,21 +135,20 @@ export default function DaoGomboc() {
               </div>
             </div>
           )}
-
-          <div id="votepoint" className="flex m-t-30">
-            <div className="flex-3 normal-card m-r-30">
-              <GomChart votiingData={votiingData} />
+          {isNoVelt && isWithDraw && (
+            <div className="flex m-t-30 ai-center jc-center">
+              <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
+              <div>
+                <p className="text-white lh15">
+                  Your lock has expired, please
+                  <NavLink to={'/dao/locker'}>
+                    <span className="text-primary"> withdraw </span>
+                  </NavLink>
+                  and re-lock
+                </p>
+              </div>
             </div>
-            <div className="flex-2 normal-card">
-              <Vote
-                ref={voteRef}
-                updateTable={updateTable}
-                isNoVelt={isNoVelt}
-                votiingData={votiingData}
-                gombocList={gombocList}
-              />
-            </div>
-          </div>
+          )}
           <div className="normal-card m-t-30">
             <GomList
               toSetSelGom={gomboc => {

@@ -140,10 +140,11 @@ export default function DaoLocker() {
     const maxEndTime = moment(
       moment()
         .utc()
-        .add(4, 'year')
+        .add(4 * 365, 'days')
     )
     const lastEndTime = format.formatDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')
     const todayDiffEnd = moment(maxEndTime).diff(moment(lastEndTime), 'days')
+    console.log(maxEndTime.format('YYYY-MM-DD'), lastEndTime, todayDiffEnd)
     return Math.floor(todayDiffEnd / 7)
   }, [lockerRes])
 
