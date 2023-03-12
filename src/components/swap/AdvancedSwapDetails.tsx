@@ -92,15 +92,6 @@ function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippag
             {realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${trade.inputAmount.currency.symbol}` : '-'}
           </TYPE.black>
         </RowBetween>
-        <RowBetween>
-          <RowFixed>
-            <TYPE.main>Network Fee</TYPE.main>
-            <Tooltip className="m-l-5" overlayClassName="tips-question" title="">
-              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
-            </Tooltip>
-          </RowFixed>
-          <TYPE.white>≈0.01 ETH</TYPE.white>
-        </RowBetween>
       </AutoColumn>
     </>
   )
