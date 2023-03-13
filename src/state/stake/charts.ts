@@ -2,8 +2,43 @@ import dayjs from 'dayjs'
 import utc from 'dayjs/plugin/utc'
 import { postQuery } from '../../utils/graph'
 import { SUBGRAPH } from '../../constants'
+import { getBlocksFromTimestamps } from './hooks'
 
 dayjs.extend(utc)
+
+export async function getChartStartInitData(pairAddress: string, isHour: boolean): Promise<string> {
+  let data = '0'
+  const utcCurrentTime = dayjs().utc()
+  const utcOneDayBack = utcCurrentTime
+    .subtract(23, 'hour')
+    .startOf('hour')
+    .unix()
+  const utcOneMonthsBack = utcCurrentTime
+    .subtract(29, 'day')
+    .startOf('day')
+    .unix()
+  const [oneDayBlock, oneMonthBlock] = await getBlocksFromTimestamps([utcOneDayBack, utcOneMonthsBack])
+  const getQuery = () => {
+    return `{
+      pair(id: "${pairAddress.toLocaleLowerCase()}", block: {number: ${
+      isHour ? oneDayBlock.number : oneMonthBlock.number
+    }}){
+        id
+        reserveUSD
+      }
+    }`
+  }
+
+  try {
+    const query = getQuery()
+    const result = await postQuery(SUBGRAPH, query)
+    data = result.data.pair.reserveUSD
+  } catch (e) {
+    console.log(e)
+  }
+
+  return data
+}
 
 export async function getPairChartDaysData(pairAddress: string): Promise<any[]> {
   let data: any = []
@@ -83,19 +118,15 @@ export async function getPairChartDaysData(pairAddress: string): Promise<any[]> 
 
 export async function getPairChart24HourData(pairAddress: string): Promise<any[]> {
   let data: any = []
-  const endTime = dayjs
-    .utc()
-    .subtract(1, 'hour')
-    .unix()
+  const endTime = dayjs.utc().unix()
   const startTime = dayjs
     .utc()
-    .subtract(25, 'hour')
+    .subtract(24, 'hour')
     .endOf('hour')
     .unix()
-  console.log(startTime, endTime)
   const getQuery = () => {
     return `{
-      pairHourDatas(orderBy: hourStartUnix, orderDirection: desc, where: {pair: "${pairAddress.toLocaleLowerCase()}", hourStartUnix_gte: ${startTime} hourStartUnix_lte: ${endTime}}) {
+      pairHourDatas(orderBy: hourStartUnix, orderDirection: asc, where: {pair: "${pairAddress.toLocaleLowerCase()}", hourStartUnix_gte: ${startTime} hourStartUnix_lte: ${endTime}}) {
         hourStartUnix
         hourlyVolumeUSD
         reserveUSD

@@ -30,7 +30,7 @@ export function useToVote() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `vote to gomboc`,
+            summary: `Vote to gomboc`,
             actionTag: {
               recipient: `${account}-${conFnNameEnum.VoteForGombocWeights}`
             }

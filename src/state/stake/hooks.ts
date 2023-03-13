@@ -937,7 +937,6 @@ export async function fetchPairMore(stakingAddress: string): Promise<PairMore | 
       d2Pair?.reserveUSD ?? '0'
     )
 
-    console.log(pair?.volumeUSD, d1Pair?.volumeUSD ?? pair?.reserveUSD, d2Pair?.volumeUSD)
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
       pair?.volumeUSD,
       d1Pair?.volumeUSD ?? '0',
@@ -1261,7 +1260,6 @@ export async function fetchPairsTimeInfo(pairs: string[]): Promise<TimeInfo[]> {
     const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix()
     const [oneDayBlock, twoDayBlock] = await getBlocksFromTimestamps([utcOneDayBack, utcTwoDaysBack])
     const curRes = await postQuery(SUBGRAPH, PAIR_TIME_INFO_QUERY(), { pairs })
-    console.log('curRes', curRes)
     const d1Res = await postQuery(SUBGRAPH, PAIR_TIME_INFO_QUERY(oneDayBlock.number), { pairs })
     const d2Res = await postQuery(SUBGRAPH, PAIR_TIME_INFO_QUERY(twoDayBlock.number), { pairs })
 
@@ -1283,8 +1281,7 @@ export async function fetchPairsTimeInfo(pairs: string[]): Promise<TimeInfo[]> {
 
       return {
         pairAddress: pair.id,
-        dayVolume:
-          oneDayVolumeUSD && oneDayVolumeUSD.toString() !== '0' ? Number(oneDayVolumeUSD) : Number(pair.volumeUSD),
+        dayVolume: oneDayVolumeUSD && oneDayVolumeUSD.toString() !== '0' ? Number(oneDayVolumeUSD) : '0.00',
         dayVolumeChange: Number(volumeChangeUSD),
         totalVolume: Number(pair.reserveUSD)
       }
