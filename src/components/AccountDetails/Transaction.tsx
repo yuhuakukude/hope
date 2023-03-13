@@ -54,7 +54,7 @@ export default function Transaction({ hash }: { hash: string }) {
     <TransactionWrapper>
       <TransactionState href={getEtherscanLink(chainId, hash, 'transaction')} pending={pending} success={success}>
         <RowFixed>
-          <TYPE.main>{`${formatUTCDate(tx?.addedTime)}`}</TYPE.main>
+          <TYPE.main>{`${tx?.addedTime ? formatUTCDate(Math.floor(tx?.addedTime / 1000)) : ''}`}</TYPE.main>
         </RowFixed>
         <RowFixed>
           <TransactionStatusText>{summary ?? hash}</TransactionStatusText>
