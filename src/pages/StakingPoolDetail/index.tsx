@@ -265,99 +265,36 @@ export default function StakingPoolDetail({
     setTimeIndex(e)
   }
 
-  const getTimeframe = (timeWindow: string) => {
-    const utcEndTime = dayjs.utc().subtract(1, 'day')
-    let utcStartTime = undefined
-    if (timeWindow === '7Day') {
-      utcStartTime =
-        utcEndTime
-          .subtract(7, 'day')
-          .endOf('day')
-          .unix() - 1
-    }
-    if (timeWindow === '1W') {
-      utcStartTime =
-        utcEndTime
-          .subtract(1, 'week')
-          .endOf('day')
-          .unix() - 1
-    }
-    if (timeWindow === '1M') {
-      utcStartTime =
-        utcEndTime
-          .subtract(1, 'month')
-          .endOf('day')
-          .unix() - 1
-    }
-    return utcStartTime
-  }
-
-  const dayResList = (dayRes: any, dayNum: number) => {
-    const tiemList = [
-      dayjs
-        .utc()
-        .subtract(1, 'day')
-        .startOf('day')
-        .unix()
-    ]
-    for (let i = 1; i < dayNum; i++) {
-      tiemList.unshift(
-        dayjs
-          .utc()
-          .subtract(i + 1, 'day')
-          .startOf('day')
-          .unix()
-      )
-    }
-    return tiemList.map(e => {
-      const itemObj = dayRes.find((item: any) => item.date === e)
-      if (itemObj) {
-        return { ...itemObj }
-      }
-      return { date: e, hourlyVolumeUSD: 0, reserveUSD: 0 }
-    })
-  }
-
   useEffect(() => {
-    const utcStartTime = getTimeframe(timeIndex)
     const xArr: string[] = []
     const yArr: string[] = []
     let dayRes = dayChartResult
     if (timeIndex === '1W') {
-      dayRes = dayResList(dayChartResult, 7)
+      dayRes = dayChartResult.slice(dayChartResult.length - 7, dayChartResult.length)
     }
     if (timeIndex === '1M') {
-      dayRes = dayResList(dayChartResult, 30)
+      dayRes = dayChartResult
     }
     const result = timeIndex === '24H' ? hourChartResult : dayRes
     result?.forEach((item: any) => {
       if (timeIndex === '24H') {
         if (tabIndex === 'Volume') {
-          yArr.unshift(item.hourlyVolumeUSD?.toFixed(2))
+          yArr.push(item.hourlyVolumeUSD?.toFixed(2))
         }
         if (tabIndex === 'TVL') {
-          yArr.unshift(item.reserveUSD?.toFixed(2))
+          yArr.push(item.reserveUSD?.toFixed(2))
         }
         if (tabIndex === 'Fees') {
-          yArr.unshift(
+          yArr.push(
             new Decimal(item.hourlyVolumeUSD || 0)
               .mul(new Decimal(0.003))
               .toNumber()
               .toFixed(2)
           )
         }
-        // xArr.unshift(format.formatDate(item.hourStartUnix, 'HH:mm'))
-        xArr.unshift(item.hourStartUnix)
-      } else if (
-        utcStartTime &&
-        item.date >= utcStartTime &&
-        item.date <
-          dayjs
-            .utc()
-            .endOf('day')
-            .subtract(1, 'day')
-            .unix()
-      ) {
+        // xArr.push(format.formatDate(item.hourStartUnix, 'HH:mm'))
+        xArr.push(item.hourStartUnix)
+      } else {
         if (tabIndex === 'Volume') {
           yArr.push(item.dailyVolumeUSD?.toFixed(2))
         }

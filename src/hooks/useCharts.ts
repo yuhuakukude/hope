@@ -5,10 +5,44 @@ import {
   getPairChartDaysData,
   getPairChart24HourData,
   getPairChartOverviewData,
-  getPairChartOverviewVolData
+  getPairChartOverviewVolData,
+  getChartStartInitData
 } from '../state/stake/charts'
 
 dayjs.extend(utc)
+
+const dayOrHourrResList = (dayRes: any, dayNum: number, initStartData: string, isHour?: boolean) => {
+  const tiemList = []
+  for (let i = 0; i < dayNum; i++) {
+    tiemList.unshift(
+      dayjs
+        .utc()
+        .subtract(i, isHour ? 'hour' : 'day')
+        .startOf(isHour ? 'hour' : 'day')
+        .unix()
+    )
+  }
+  return tiemList.map((e, i) => {
+    let resobj: any = { hourStartUnix: e, hourlyVolumeUSD: 0, reserveUSD: 0, date: e }
+    const itemObj = dayRes.find((item: any) => (isHour ? item.hourStartUnix === e : item.date === e))
+    if (itemObj) {
+      resobj = { ...itemObj }
+    }
+    if (i === 0 && Number(resobj.reserveUSD) === 0) {
+      resobj.reserveUSD = Number(initStartData)
+    }
+    return resobj
+  })
+}
+
+const dealListZeroData = (list: any) => {
+  list.forEach((e: any, i: any) => {
+    if (i > 0 && e.reserveUSD === 0) {
+      e.reserveUSD = list[i - 1].reserveUSD
+    }
+  })
+  return list
+}
 
 export function useLineDaysChartsData(address: string) {
   const [result, setResult] = useState<any[]>([])
@@ -17,7 +51,9 @@ export function useLineDaysChartsData(address: string) {
       try {
         if (address) {
           const list = await getPairChartDaysData(address ?? '')
-          setResult(list)
+          const initStartData = await getChartStartInitData(address ?? '', false)
+          const resList = dayOrHourrResList(list, 30, initStartData, false)
+          setResult(dealListZeroData(resList))
         } else {
           setResult([])
         }
@@ -38,32 +74,10 @@ export function useLine24HourChartsData(address: string) {
     ;(async () => {
       try {
         if (address) {
-          const tiemList = [
-            dayjs
-              .utc()
-              .subtract(1, 'hour')
-              .startOf('hour')
-              .unix()
-          ]
-          for (let i = 1; i < 24; i++) {
-            tiemList.push(
-              dayjs
-                .utc()
-                .subtract(i + 1, 'hour')
-                .startOf('hour')
-                .unix()
-            )
-          }
           const list = await getPairChart24HourData(address ?? '')
-          console.warn(list)
-          const resList = tiemList.map(e => {
-            const itemObj = list.find(item => item.hourStartUnix === e)
-            if (itemObj) {
-              return { ...itemObj }
-            }
-            return { hourStartUnix: e, hourlyVolumeUSD: 0, reserveUSD: 0 }
-          })
-          setResult(resList)
+          const initStartData = await getChartStartInitData(address ?? '', true)
+          const resList = dayOrHourrResList(list, 24, initStartData, true)
+          setResult(dealListZeroData(resList))
         } else {
           setResult([])
         }
