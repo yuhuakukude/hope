@@ -47,7 +47,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [pendingText, setPendingText] = useState('')
-  const { pending: isTranPending } = useActionPending(account ? `${account}-${conFnNameEnum.VoteForGombocWeights}` : '')
+  const { pending: isTranPending } = useActionPending(account ? `${account}-${conFnNameEnum.VoteForGaugeWeights}` : '')
 
   const { Option } = Select
   const endDate = dayjs()
@@ -99,7 +99,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
       gombocList.forEach((e: any) => {
         const item = {
           label: e.name,
-          value: e.gomboc
+          value: e.gauge
         }
         arr.push(item)
       })

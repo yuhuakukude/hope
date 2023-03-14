@@ -263,7 +263,7 @@ export async function fetchStakeList(
   size = 10
 ): Promise<PoolInfo[]> {
   const query = `{
-  poolGombocs {
+    poolGauges {
     id
     totalStakedBalanceUSD
     totalStakedBalance
@@ -301,7 +301,7 @@ export async function fetchStakeList(
 }`
   try {
     const response = await postQuery(SUBGRAPH, query)
-    const pools = response.data.poolGombocs
+    const pools = response.data.poolGauges
     const poolInfos = pools.map((pool: StakeInfo) => {
       const stakingRewardAddress = pool.id
       const token0 = new Token(
@@ -350,7 +350,7 @@ export async function fetchStakeList(
 
 export async function fetchStakingPool(stakingAddress: string): Promise<PoolInfo | undefined> {
   const query = `{
-  poolGombocs(where: {id:"${stakingAddress}"}) {
+    poolGauges(where: {id:"${stakingAddress}"}) {
     id
     totalStakedBalanceUSD
     totalStakedBalance
@@ -377,7 +377,7 @@ export async function fetchStakingPool(stakingAddress: string): Promise<PoolInfo
 }`
   try {
     const response = await postQuery(SUBGRAPH, query)
-    const pool = response.data.poolGombocs[0]
+    const pool = response.data.poolGauges[0]
     const token0 = new Token(
       ChainId.SEPOLIA,
       pool.pair.token0.id,

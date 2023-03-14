@@ -144,7 +144,7 @@ export function useGomFeeManyClaim() {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [addressArr, account]
-      const method = 'claimManyGomboc'
+      const method = 'claimManyGauge'
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
           gasLimit: calculateGasMargin(estimatedGasLimit),

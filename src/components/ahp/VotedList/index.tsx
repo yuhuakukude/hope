@@ -77,8 +77,8 @@ const VotedList = ({
     const arr: any = []
     if (tableData && tableData.length > 0) {
       tableData.forEach((e: any) => {
-        if (e.gomboc.id && account) {
-          arr.push([account, e.gomboc.id])
+        if (e.gauge.id && account) {
+          arr.push([account, e.gauge.id])
         }
       })
       res = arr
@@ -91,8 +91,8 @@ const VotedList = ({
     const arr: any = []
     if (tableData && tableData.length > 0) {
       tableData.forEach((e: any) => {
-        if (e.gomboc.id && account) {
-          arr.push([e.gomboc.id, account])
+        if (e.gauge.id && account) {
+          arr.push([e.gauge.id, account])
         }
       })
       res = arr
@@ -116,8 +116,8 @@ const VotedList = ({
     const arr: any = []
     if (tableData && tableData.length > 0 && lastEpochData.length > 0) {
       tableData.forEach((e: any, index: number) => {
-        if (e.gomboc.id && account && lastEpochData[index]) {
-          arr.push([account, e.gomboc.id, lastEpochData[index]])
+        if (e.gauge.id && account && lastEpochData[index]) {
+          arr.push([account, e.gauge.id, lastEpochData[index]])
         }
       })
       res = arr
@@ -144,7 +144,7 @@ const VotedList = ({
             usdOfValue = toUsdPrice(tn.toFixed(2), priceResult[0].price)
           }
         }
-        const addr = tableData[index]?.gomboc.id
+        const addr = tableData[index]?.gauge.id
         res[addr] = {
           view,
           value: format.amountFormat(value, 2),
@@ -161,15 +161,15 @@ const VotedList = ({
     getVotingRewards && getVotingRewards(format.amountFormat(stHope, 2), format.amountFormat(toUsd, 2))
     const arr: any = []
     tableData.forEach((e: any) => {
-      const addr = e.gomboc.id
+      const addr = e.gauge.id
       const item: any = {
         name: '',
         value: '',
         usdOfValue: '',
         id: ''
       }
-      if (e.gomboc && e.gomboc.pair) {
-        const pa = e.gomboc.pair
+      if (e.gauge && e.gauge.pair) {
+        const pa = e.gauge.pair
         let token0 = ''
         let token1 = ''
         if (pa.token0 && pa.token1) {
@@ -211,7 +211,7 @@ const VotedList = ({
               .toFixed(2, { groupSeparator: ',' } ?? '0.00', 0)
           }
         }
-        const addr = tableData[index]?.gomboc.id
+        const addr = tableData[index]?.gauge.id
         res[addr] = {
           value: po,
           view: item,
@@ -237,7 +237,7 @@ const VotedList = ({
             : JSBI.BigInt(Number(sub))
           const tn = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(Number(num)) ?? '0')
           const ftn = tn.toFixed(2, { groupSeparator: ',' })
-          const addr = tableData[index]?.gomboc.id
+          const addr = tableData[index]?.gauge.id
           res[addr] = ftn
         }
       })
@@ -257,7 +257,7 @@ const VotedList = ({
           const end = dayjs.unix(Number(e.result)).add(10, 'day')
           item = now.isBefore(end)
         }
-        const addr = tableData[index]?.gomboc.id
+        const addr = tableData[index]?.gauge.id
         if (!item && allocatedView[addr].value) {
           addArr.push(addr)
           amountArr.push(allocatedView[addr].value)
@@ -279,7 +279,7 @@ const VotedList = ({
     }
     if (tableData.length > 0) {
       tableData.forEach((e: any) => {
-        const arr = e.gomboc.id
+        const arr = e.gauge.id
         if (!isTimeDis[arr]) {
           res.add.push(arr)
           res.amount.push(allocatedView[arr].value)
@@ -296,8 +296,8 @@ const VotedList = ({
       setShowConfirm(true)
       setAttemptingTxn(true)
       setPendingText(`Refresh Voting Balance`)
-      const argAmount = allocatedView[item.gomboc.id].value
-      const curAdd = item.gomboc.id
+      const argAmount = allocatedView[item.gauge.id].value
+      const curAdd = item.gauge.id
       toVote(curAdd, argAmount)
         .then((hash: any) => {
           setShowConfirm(true)
@@ -363,7 +363,7 @@ const VotedList = ({
     setCurToken(ST_HOPE[chainId ?? 1])
     onTxStart()
     setPendingText(`Fees Withdraw`)
-    const arg = curTableItem.gomboc.id
+    const arg = curTableItem.gauge.id
     const amount = curItemData.value
     toGomFeeClaim(arg, amount)
       .then(hash => {
@@ -380,8 +380,8 @@ const VotedList = ({
     if (tableData && tableData.length > 0) {
       setCurTableItem(item)
       setCurItemData({
-        value: rewardsView[item.gomboc.id].view,
-        usdOfValue: rewardsView[item.gomboc.id].usdOfValue
+        value: rewardsView[item.gauge.id].view,
+        usdOfValue: rewardsView[item.gauge.id].usdOfValue
       })
     }
     setTxHash('')
@@ -416,8 +416,8 @@ const VotedList = ({
       title: 'Gömböc',
       dataIndex: 'id',
       render: (text: string, record: any) => {
-        if (record.gomboc && record.gomboc.pair) {
-          const pa = record.gomboc.pair
+        if (record.gauge && record.gauge.pair) {
+          const pa = record.gauge.pair
           let token0 = ''
           let token1 = ''
           if (pa.token0 && pa.token1) {
@@ -435,8 +435,8 @@ const VotedList = ({
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: any) => {
-        if (record.gomboc && record.gomboc.pair) {
-          const pa = record.gomboc.pair
+        if (record.gauge && record.gauge.pair) {
+          const pa = record.gauge.pair
           let token0 = ''
           let token1 = ''
           if (pa.token0 && pa.token1) {
@@ -473,7 +473,7 @@ const VotedList = ({
       render: (text: string, record: any) => {
         return (
           <>
-            <p>{`${allocatedView[record.gomboc.id].view} %`}</p>
+            <p>{`${allocatedView[record.gauge.id].view} %`}</p>
             <p>of my voting power</p>
           </>
         )
@@ -501,8 +501,8 @@ const VotedList = ({
       render: (text: string, record: any) => {
         return (
           <>
-            <p>Future: {allocatedView[record.gomboc.id].future}</p>
-            <p>Current: {pointView[record.gomboc.id]}</p>
+            <p>Future: {allocatedView[record.gauge.id].future}</p>
+            <p>Current: {pointView[record.gauge.id]}</p>
           </>
         )
       }
@@ -514,8 +514,8 @@ const VotedList = ({
       render: (text: string, record: any) => {
         return (
           <>
-            <p>≈ {rewardsView[record.gomboc.id].view} stHOPE</p>
-            <p>≈ ${rewardsView[record.gomboc.id].usdOfValue}</p>
+            <p>≈ {rewardsView[record.gauge.id].view} stHOPE</p>
+            <p>≈ ${rewardsView[record.gauge.id].usdOfValue}</p>
           </>
         )
       }
@@ -528,16 +528,16 @@ const VotedList = ({
       width: 160,
       render: (text: string, record: any) => {
         const options: TitleTipsProps[] = []
-        if (record.gomboc && record.gomboc.pair) {
+        if (record.gauge && record.gauge.pair) {
           options.unshift({
             label: 'Pool Details',
             value: 'Pool',
             onClick: () => {
-              history.push(`/swap/liquidity/pool-detail/${record.gomboc.pair.id}`)
+              history.push(`/swap/liquidity/pool-detail/${record.gauge.pair.id}`)
             }
           })
         }
-        const val = rewardsView[record.gomboc.id].value
+        const val = rewardsView[record.gauge.id].value
         if (val && Number(val) > 0) {
           options.unshift({
             label: 'Claim Voting Rewards',
@@ -547,7 +547,7 @@ const VotedList = ({
             }
           })
         }
-        if (!isTimeDis[record.gomboc.id] && !isNoVelt) {
+        if (!isTimeDis[record.gauge.id] && !isNoVelt) {
           options.unshift({
             label: 'Refresh Voting Balance',
             value: 'Refresh',
@@ -565,8 +565,8 @@ const VotedList = ({
     const par = account ? `${account}`.toLocaleLowerCase() : ''
     const query = `{
       user(id:"${par}") {
-        voteGombocs{
-          gomboc{
+        voteGauges{
+          gauge{
             id
             pair {
               id
@@ -587,8 +587,8 @@ const VotedList = ({
     }`
     try {
       const response = await postQuery(SUBGRAPH, query)
-      if (response && response.data && response.data.user && response.data.user.voteGombocs) {
-        const listData = response.data.user.voteGombocs
+      if (response && response.data && response.data.user && response.data.user.voteGauges) {
+        const listData = response.data.user.voteGauges
         setPageTotal(listData.length || 0)
         setAllTableData(listData)
         setTableData(listData.slice(0, pageSize))

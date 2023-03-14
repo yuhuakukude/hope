@@ -28,16 +28,16 @@ const GomChart = ({ votiingData }: GomChartProps) => {
         if (votArr && votArr.length > 0) {
           const arr: { name: string; value: string; ravPercent: string }[] = []
           votArr.forEach((e: any) => {
-            if (e.gaugeController && e.gaugeController.getGombocWeight && e.gaugeController.gombocRelativeWeight) {
-              const num = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.getGombocWeight))
-              const re = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.gombocRelativeWeight))
+            if (e.gaugeController && e.gaugeController.getGaugeWeight && e.gaugeController.gaugeRelativeWeight) {
+              const num = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.getGaugeWeight))
+              const re = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.gaugeRelativeWeight))
               const ra = re.multiply(JSBI.BigInt(100))
               const rav = ra.toFixed(2)
               const item = {
                 name: e.name as string,
                 value: num.toFixed(2),
                 ravPercent: rav,
-                gomboc: e.gomboc
+                gauge: e.gauge
               }
               arr.push(item)
             }
@@ -56,7 +56,7 @@ const GomChart = ({ votiingData }: GomChartProps) => {
                     Gömböc Relative Weight
                     </div>
                     <div style="font-size: 14px;margin-top: 16px">${params.name}: ${
-                  addr === params.data.gomboc ? '(stHOPE)' : ''
+                  addr === params.data.gauge ? '(stHOPE)' : ''
                 }</div>
                     <div style="font-size: 18px;margin-top: 8px">${params.value}(${params.data.ravPercent}%)</div>
                   </div>`

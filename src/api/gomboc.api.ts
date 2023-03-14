@@ -7,15 +7,15 @@ export default class GombocApi {
   }
   // 查询投票中的Gombocs权重
   static getGombocsVotiing(): any {
-    return http.get('/light/gombocs/votiing')
+    return http.get('/light/gauge/votiing')
   }
   // 查询投票历史
   static getVoteHistoryList(params: any): any {
-    return http.get('/light/gombocs/getLightGombocController', { params })
+    return http.get('/light/gauge/getLightGombocController', { params })
   }
   // 查询投票池
   static getGombocsPoolsList(params: any): any {
-    return http.get('/light/gombocs/pools', { params })
+    return http.get('/light/gauge/pools', { params })
   }
   // all gomboc
   static getGombocsAllPools(): any {

@@ -32,8 +32,8 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     const arr: any = []
     if (tableData && tableData.length > 0) {
       tableData.forEach((e: any) => {
-        if (e.gomboc && account) {
-          arr.push([account, e.gomboc])
+        if (e.gauge && account) {
+          arr.push([account, e.gauge])
         }
       })
       res = arr
@@ -52,7 +52,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
           const end = dayjs.unix(Number(e.result)).add(10, 'day')
           item = now.isBefore(end)
         }
-        res[tableData[index]?.gomboc] = item
+        res[tableData[index]?.gauge] = item
       })
     }
     return res
@@ -97,8 +97,8 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     if (dom) {
       dom.scrollIntoView({ behavior: 'smooth', block: 'end' })
     }
-    if (item && item.gomboc) {
-      toSetSelGom(item.gomboc)
+    if (item && item.gauge) {
+      toSetSelGom(item.gauge)
     }
   }
 
@@ -129,7 +129,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
           <div>
             <Button
               className="text-primary font-bold"
-              disabled={isTimeDis[record.gomboc]}
+              disabled={isTimeDis[record.gauge]}
               onClick={() => {
                 toVoteFn(record)
               }}
@@ -149,7 +149,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: any) => {
-        if (record.gomboc && stakingAddress === record.gomboc) {
+        if (record.gauge && stakingAddress === record.gauge) {
           return <span>Staking $HOPE</span>
         } else {
           return <span>{`Pool - ${text}`}</span>
@@ -161,7 +161,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       dataIndex: 'composition',
       key: 'composition',
       render: (text: string, record: any) => {
-        if (record.gomboc && stakingAddress === record.gomboc) {
+        if (record.gauge && stakingAddress === record.gauge) {
           return (
             <>
               <div className="flex ai-center">
@@ -321,7 +321,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
         </div>
         <div className="m-t-30">
           {curType === 'all' && (
-            <Table rowKey={'gomboc'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
+            <Table rowKey={'gauge'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
           )}
           {curType === 'my' && <VotedList isShowAll={false} />}
         </div>
