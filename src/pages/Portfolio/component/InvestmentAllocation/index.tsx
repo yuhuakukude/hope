@@ -12,6 +12,7 @@ import { HOPE } from '../../../../constants'
 import { useActiveWeb3React } from '../../../../hooks'
 import { useTokenPrice } from '../../../../hooks/liquidity/useBasePairs'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
+import { DOCS_URL } from 'constants/config'
 // import Button from 'components/antd/Button'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
@@ -70,7 +71,7 @@ export default function InvestmentAllocation({ data }: { data: any }) {
               a Gömböc.{' '}
               <a
                 className="text-primary"
-                href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
+                href={DOCS_URL['LightToken']}
                 target="_blank"
                 rel="noopener noreferrer"
               >

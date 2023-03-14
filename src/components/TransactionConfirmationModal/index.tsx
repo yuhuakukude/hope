@@ -17,6 +17,7 @@ import { ReactComponent as Commited } from '../../assets/svg/commited.svg'
 import { ReactComponent as Warning } from '../../assets/svg/warning.svg'
 import { ReactComponent as Reject } from '../../assets/svg/reject.svg'
 import { ReactComponent as Wallet } from '../../assets/svg/wallet.svg'
+import { DOCS_URL } from 'constants/config'
 
 const Wrapper = styled.div`
   width: 100%;
@@ -143,7 +144,7 @@ function TransactionSubmittedContent({
                     After Locked LT, you need to refresh accordingly to complete the update of boost and voting power.
                   </p>
                   <a
-                    href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/reward-goemboec/boosting-usdlt-rewards"
+                    href={DOCS_URL['BoostingLTRewards']}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="m-t-12 font-nor text-primary"

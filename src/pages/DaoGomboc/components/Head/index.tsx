@@ -5,6 +5,7 @@ import headImg2 from '../../../../assets/images/ahp/icon-gom2.png'
 import headImg3 from '../../../../assets/images/ahp/icon-gom3.png'
 import headImg4 from '../../../../assets/images/ahp/icon-gom4.png'
 import Button from 'components/antd/Button'
+import { DOCS_URL } from 'constants/config'
 /**
  *
  * @param props
@@ -25,7 +26,7 @@ const Head = () => {
             type="link"
             onClick={() => {
               window.open(
-                'https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/reward-goemboec/goemboec-weights'
+                DOCS_URL['GombocWeights']
               )!.opener = null
             }}
           >

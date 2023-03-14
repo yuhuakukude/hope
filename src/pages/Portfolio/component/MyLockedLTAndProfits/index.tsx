@@ -20,6 +20,7 @@ import TransactionConfirmationModal, {
 import './index.scss'
 import { ButtonPrimary } from '../../../../components/Button'
 import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
+import { DOCS_URL } from 'constants/config'
 
 export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (stHope: string, lt: string) => void }) {
   const { account, chainId } = useActiveWeb3React()
@@ -314,7 +315,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                 Get veLT
               </ButtonPrimary>
               <a
-                href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
+                href={DOCS_URL['LightToken']}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-center m-t-20 font-nor text-normal flex ai-center jc-center"

@@ -17,6 +17,7 @@ import { usePairStakeInfo } from 'hooks/usePairInfo'
 import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
 import './index.scss'
 import { ITableItem } from 'components/ahp/GombocClaim'
+import { DOCS_URL } from 'constants/config'
 
 interface IStaking {
   stHOPE: string
@@ -216,7 +217,7 @@ export default function MyHOPEStaking() {
                 Staking HOPE
               </ButtonPrimary>
               <a
-                href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/usdhope-token"
+                href={DOCS_URL['HopeToken']}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-center m-t-20 font-nor text-normal flex ai-center jc-center"

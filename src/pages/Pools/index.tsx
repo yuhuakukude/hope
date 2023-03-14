@@ -22,6 +22,7 @@ import { Switch } from 'antd'
 import NoData from '../../assets/images/no_data.png'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 import useTheme from '../../hooks/useTheme'
+import { DOCS_URL } from 'constants/config'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
@@ -123,7 +124,7 @@ export default function Pools() {
               <ExternalLink
                 style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }}
                 target="_blank"
-                href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/usdhope-token"
+                href={DOCS_URL['HopeToken']}
               >
                 <TYPE.link fontSize={14}>Read more about providing liquidity</TYPE.link>
               </ExternalLink>
@@ -156,7 +157,7 @@ export default function Pools() {
               style={{ width: `400px`, fontSize: '16px', textDecoration: 'none' }}
               target="_blank"
               rel="noopener noreferrer"
-              href={`https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/`}
+              href={DOCS_URL['WelcomeToHope']}
             >
               <ButtonOutlined primary mt={20}>
                 <TYPE.link textAlign="center">Learn about providing liquidity</TYPE.link>
