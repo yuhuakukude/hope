@@ -20,7 +20,7 @@ import { useTokenBalance } from '../../state/wallet/hooks'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { useStakingContract } from '../../hooks/useContract'
 import BasePoolInfoCard from '../../components/pool/PoolInfoCard'
-import { MaxButton } from '../Pool/styleds'
+import { MaxButton } from '../Pools/styleds'
 
 import TotalApr from '../../components/pool/TotalApr'
 
