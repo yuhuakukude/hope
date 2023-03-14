@@ -147,7 +147,7 @@ const GoBackIcon = styled.span`
 const TabWrapper = styled(Row)<{ flexW?: number; left: number }>`
   padding: 2px;
   width: fit-content;
-  background-color: ${({ theme }) => theme.bg5};
+  background-color: #1b1b1f;
   border-radius: 8px;
   position: relative;
   &::after {
@@ -237,21 +237,21 @@ export default function StakingPoolDetail({
     },
     {
       label: 'Swap',
-      value: 'Swaps',
+      value: 'Swap',
       onClick: data => {
         setTransactionType(data.value)
       }
     },
     {
       label: 'Deposit',
-      value: 'Adds',
+      value: 'Deposit',
       onClick: data => {
         setTransactionType(data.value)
       }
     },
     {
       label: 'Withdraw',
-      value: 'Removes',
+      value: 'Withdraw',
       onClick: data => {
         setTransactionType(data.value)
       }

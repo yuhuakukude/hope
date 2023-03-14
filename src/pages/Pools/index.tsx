@@ -249,7 +249,7 @@ export default function Pools() {
           </TableTitleWrapper>
         </TableWrapper>
       )}
-      {searchType === PAIR_SEARCH.USER_LIQUIDITY && account && (
+      {searchType !== PAIR_SEARCH.ALL && account && (
         <TableWrapper>
           <TableTitleWrapper>
             {positionTitles.map(({ value, weight }, index) => (

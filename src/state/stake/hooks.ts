@@ -1115,17 +1115,17 @@ function QUERY_TXS_QUERY(type?: string | undefined) {
          ${Swaps} 
       `
       break
-    case 'Swaps':
+    case 'Swap':
       sql = `
          ${Swaps} 
       `
       break
-    case 'Adds':
+    case 'Deposit':
       sql = `
          ${Mints}
       `
       break
-    case 'Removes':
+    case 'Withdraw':
       sql = `
          ${Burns}
       `
