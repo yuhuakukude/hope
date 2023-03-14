@@ -2,7 +2,6 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import PortfolioConnect from './component/Connect'
 import PortfolioHead from './component/Head'
 import InvestmentAllocation from './component/InvestmentAllocation'
-// import GombocRewards from './component/GombocRewards'
 // import VeLTRewards from './component/VeLTRewards'
 // import Govern from './component/Govern'
 
@@ -127,7 +126,6 @@ export default function Portfolio() {
         ) : (
           <>
             <InvestmentAllocation data={allData} />
-            {/* <GombocRewards data={overViewData.rewards} /> */}
             {<MyHOPEStaking />}
             <MyLiquidityPools getLpData={setLpTotal} />
             {stHopeBalance && <MyLockedLTAndProfits getAllVoting={getAllVoting} />}

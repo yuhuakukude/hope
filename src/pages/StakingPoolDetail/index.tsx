@@ -475,7 +475,7 @@ export default function StakingPoolDetail({
         <LightCard padding={'0'} borderRadius={'20px'}>
           <CardHeader style={{ padding: '30px' }}>
             <TYPE.white fontSize={18} fontWeight={700}>
-              Liquidity Gömböc
+              Liquidity Gauge
             </TYPE.white>
           </CardHeader>
           {loading && !pool?.stakingRewardAddress ? (
@@ -501,7 +501,7 @@ export default function StakingPoolDetail({
               <AutoColumn style={{ padding: 30 }} gap={'30px'}>
                 <AutoColumn gap={'20px'}>
                   <RowBetween>
-                    <TYPE.main>Gömböc Relative Weight</TYPE.main>
+                    <TYPE.main>Gauge Relative Weight</TYPE.main>
                     <TYPE.white>{relativeWeight ? `${relativeWeight.toFixed(2)}%` : ''}</TYPE.white>
                   </RowBetween>
                   <RowBetween>

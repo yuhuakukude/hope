@@ -8,7 +8,7 @@ import Tips from 'components/Tips'
 // import format from 'utils/format'
 import { useEstimate } from 'hooks/ahp'
 import { useActiveWeb3React } from '../../../hooks'
-interface GombocClaimProps {
+interface GaugeClaimProps {
   onSubmit: any
   onDismiss: () => void
   curWithType: string
@@ -16,7 +16,7 @@ interface GombocClaimProps {
   itemData?: any
 }
 
-const GombocClaim = ({ onSubmit, onDismiss, curWithType, allData, itemData }: GombocClaimProps) => {
+const GaugeClaim = ({ onSubmit, onDismiss, curWithType, allData, itemData }: GaugeClaimProps) => {
   const [drapIndex, setDrapIndex] = useState(true)
   const { account } = useActiveWeb3React()
   const isEthBalanceInsufficient = useEstimate()
@@ -150,4 +150,4 @@ const GombocClaim = ({ onSubmit, onDismiss, curWithType, allData, itemData }: Go
   )
 }
 
-export default GombocClaim
+export default GaugeClaim

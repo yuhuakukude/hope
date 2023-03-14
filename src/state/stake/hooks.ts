@@ -6,7 +6,7 @@ import { useActiveWeb3React } from '../../hooks'
 import { useMultipleContractSingleData } from '../multicall/hooks'
 import { tryParseAmount } from '../swap/hooks'
 import { postQuery } from '../../utils/graph'
-import GombocApi from '../../api/gomboc.api'
+import GaugeApi from '../../api/gauge.api'
 import dayjs from 'dayjs'
 
 export const STAKING_GENESIS = 1600387200
@@ -410,7 +410,7 @@ export interface PairMore {
 
 export async function fetchTotalAmount(): Promise<any> {
   const query = `{  
-    guageFactories{    
+    gaugeFactories{    
       totalValueLockedUSD
     }
   }
@@ -862,7 +862,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
     const res = await postQuery(SUBGRAPH, PAIR_QUERY({ stakingAddress }))
     const pair = res.data.pairs[0]
 
-    const gombocAddress = await GombocApi.getGombocsAddress({ pairAddress: pair.id })
+    const gaugeAddress = await GaugeApi.getGaugeAddress({ pairAddress: pair.id })
     const token0 = new Token(ChainId.SEPOLIA, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol)
     const token1 = new Token(ChainId.SEPOLIA, pair.token1.id, Number(pair.token1.decimals), pair.token1.symbol)
     const tokens = [token0, token1]
@@ -875,7 +875,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
     )
     const totalStakedAmount = tryParseAmount(pair.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
-    const stakingToken = gombocAddress.result ? new Token(11155111, gombocAddress.result, 18, '') : undefined
+    const stakingToken = gaugeAddress.result ? new Token(11155111, gaugeAddress.result, 18, '') : undefined
     const token0Price = pair.token0Price
     const token1Price = pair.token1Price
     return {
@@ -883,7 +883,7 @@ export async function fetchPairPool(stakingAddress: string): Promise<PairDetail 
       tvl: Number(pair?.reserveUSD),
       createAt: pair?.createdAtTimestamp,
       txCount: pair?.txCount,
-      stakingRewardAddress: gombocAddress.result,
+      stakingRewardAddress: gaugeAddress.result,
       token0Price: token0Price || '0.00',
       token1Price: token1Price || '0.00',
       pair: dummyPair,

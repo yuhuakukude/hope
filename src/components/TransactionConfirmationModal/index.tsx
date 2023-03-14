@@ -74,13 +74,13 @@ function TransactionSubmittedContent({
   chainId,
   hash,
   currencyToAdd,
-  isToGomboc
+  isToGauge
 }: {
   onDismiss: () => void
   hash: string | undefined
   chainId: ChainId
   currencyToAdd?: Currency | undefined
-  isToGomboc?: boolean
+  isToGauge?: boolean
 }) {
   const theme = useContext(ThemeContext)
 
@@ -104,7 +104,7 @@ function TransactionSubmittedContent({
           </Text>
           {currencyToAdd && library?.provider?.isMetaMask && (
             <ButtonLight
-              mt={isToGomboc ? '35px' : '80px'}
+              mt={isToGauge ? '35px' : '80px'}
               height="56px"
               width="100%"
               color="rgba(38, 38, 44, 1)"
@@ -129,7 +129,7 @@ function TransactionSubmittedContent({
               </Text>
             </ExternalLink>
           )}
-          {isToGomboc && (
+          {isToGauge && (
             <div
               className="m-b-10 p-20"
               style={{ borderRadius: '10px', backgroundColor: '#33333C', border: '0.5px solid #5A5A5B' }}
@@ -250,7 +250,7 @@ interface ConfirmationModalProps {
   attemptingTxn: boolean
   pendingText: string
   currencyToAdd?: Currency | undefined
-  isToGomboc?: boolean
+  isToGauge?: boolean
 }
 
 export default function TransactionConfirmationModal({
@@ -261,7 +261,7 @@ export default function TransactionConfirmationModal({
   pendingText,
   content,
   currencyToAdd,
-  isToGomboc
+  isToGauge
 }: ConfirmationModalProps) {
   const { chainId } = useActiveWeb3React()
 
@@ -278,7 +278,7 @@ export default function TransactionConfirmationModal({
           hash={hash}
           onDismiss={onDismiss}
           currencyToAdd={currencyToAdd}
-          isToGomboc={isToGomboc}
+          isToGauge={isToGauge}
         />
       ) : (
         content()

@@ -51,7 +51,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
             headList.push({
               ltOfReward: item.ltOfReward,
               ltTotalReward: item.ltTotalReward,
-              gomboc: item.gomboc,
+              gauge: item.gauge,
               composition: item.composition,
               usdOfReward: item.usdOfReward
             })
@@ -212,7 +212,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
           label: 'Yield Boost',
           value: 'Yield Boost',
           onClick: () => {
-            history.push(`/dao/gomboc?gomboc=${record.gomboc}`)
+            history.push(`/dao/gauge?gauge=${record.gauge}`)
           }
         })
         options.push({

@@ -1,11 +1,10 @@
 import React, { useState } from 'react'
 import './index.scss'
 import { CloseIcon } from '../../../theme/components'
-import { ButtonPrimary } from '../../../components/Button'
+import { ButtonPrimary } from '../../Button'
 import format from 'utils/format'
 import { Radio } from 'antd'
 import Tips from 'components/Tips'
-// import { STAKING_HOPE_GOMBOC_ADDRESS } from '../../../constants'
 import { useActiveWeb3React } from '../../../hooks'
 import { useEstimate } from 'hooks/ahp'
 
@@ -14,17 +13,17 @@ export type ITableItem = {
   ltOfReward: string | number
   rewardSymbol?: string | number
   usdOfReward: string | number
-  gomboc?: string | number
+  gauge?: string | number
   usdOfExtReward?: string | number
   extRewardList?: { symbol: string | number; amount: string | number; usdOfToken: string | number }[]
 }
-interface GombocClaimProps {
+interface GaugeClaimProps {
   onSubmit: any
   onDismiss: () => void
   tableItem: ITableItem
 }
 
-const GombocClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: GombocClaimProps) => {
+const GaugeClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: GaugeClaimProps) => {
   const { account } = useActiveWeb3React()
   const isEthBalanceInsufficient = useEstimate()
   const [curClaimType, setCurClaimType] = useState('')
@@ -33,7 +32,7 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: Gomb
   }
   return (
     <>
-      <div className="gomboc-claim-box staking-claim-box w-100">
+      <div className="gauge-claim-box staking-claim-box w-100">
         <div className="head">
           Rewards Claim
           <div className="icon-close">
@@ -136,4 +135,4 @@ const GombocClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: Gomb
   )
 }
 
-export default GombocClaim
+export default GaugeClaim

@@ -11,12 +11,12 @@ import { ButtonPrimary } from '../../../../components/Button'
 import { Link } from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
 
-import { STAKING_HOPE_GOMBOC_ADDRESS, LT_TOKEN_ADDRESS, HOPE_TOKEN_ADDRESS } from '../../../../constants'
+import { STAKING_HOPE_GAUGE_ADDRESS, LT_TOKEN_ADDRESS, HOPE_TOKEN_ADDRESS } from '../../../../constants'
 import ClaimRewards from '../ClaimRewards'
 import { usePairStakeInfo } from 'hooks/usePairInfo'
 import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
 import './index.scss'
-import { ITableItem } from 'components/ahp/GombocClaim'
+import { ITableItem } from 'components/ahp/GaugeClaim'
 
 interface IStaking {
   stHOPE: string
@@ -55,12 +55,12 @@ export default function MyHOPEStaking() {
   const { chainId } = useActiveWeb3React()
   const [item, setItem] = useState<ITableItem | null>(null)
   const stakingAddr = useMemo(() => {
-    return `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+    return `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
   }, [chainId])
   const { currentBoots } = usePairStakeInfo(stakingAddr)
   const addresses = useMemo(() => {
     return [
-      STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] ?? '',
+      STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] ?? '',
       LT_TOKEN_ADDRESS[chainId ?? 1] ?? '',
       HOPE_TOKEN_ADDRESS[chainId ?? 1] ?? ''
     ]
@@ -75,8 +75,8 @@ export default function MyHOPEStaking() {
   }, [chainId, priceResult])
   const stHopePrice = useMemo(() => {
     let pr = '0'
-    if (STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] && priceResult) {
-      pr = priceResult[STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
+    if (STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] && priceResult) {
+      pr = priceResult[STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
     }
     return pr
   }, [chainId, priceResult])
@@ -152,7 +152,7 @@ export default function MyHOPEStaking() {
       dataIndex: 'actions',
       key: 'actions',
       render: (text: string, record: IStaking) => {
-        const add = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`
+        const add = `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`
         const options: TitleTipsProps[] = [
           {
             label: 'Stake',
@@ -184,7 +184,7 @@ export default function MyHOPEStaking() {
             label: 'Yield Boost',
             value: 'Yield Boost',
             onClick: () => {
-              history.push(`/dao/gomboc?gomboc=${add.toLocaleLowerCase()}`) // TODO Sure
+              history.push(`/dao/gauge?gauge=${add.toLocaleLowerCase()}`) // TODO Sure
             }
           }
         ]

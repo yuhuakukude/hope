@@ -20,7 +20,7 @@ import Vote from './Vote'
 import VotePage from './Vote/VotePage'
 import BuyHope from './BuyHope'
 import Staking from './Staking'
-import DaoGomboc from './DaoGomboc'
+import DaoGauge from './DaoGomboc'
 import DaoLocker from './Locker'
 import Portfolio from './Portfolio'
 
@@ -156,12 +156,10 @@ export default function App() {
                   <Route exact strict path="/vote/:id" component={VotePage} />
                   <Route exact strict path="/hope/staking" component={Staking} />
                   <Route exact strict path="/hope/buy-hope" component={BuyHope} />
-                  <Route exact strict path="/dao/gomboc" component={DaoGomboc} />
+                  <Route exact strict path="/dao/gauge" component={DaoGauge} />
                   <Route exact strict path="/dao/locker" component={DaoLocker} />
                   <Route exact strict path="/staking" component={Staking} />
                   <Route exact strict path="/buy-hope" component={BuyHope} />
-                  <Route exact strict path="/dao-gomboc" component={DaoGomboc} />
-                  <Route exact strict path="/dao-locker" component={DaoLocker} />
                   <Route exact strict path="/portfolio" component={Portfolio} />
                   <Route exact strict path="/test" component={TestComponent} />
                   <Route component={RedirectPathToSwapOnly} />

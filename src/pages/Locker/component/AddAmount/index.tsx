@@ -195,7 +195,7 @@ export default function AddAmount() {
         content={confirmationContent}
         pendingText={pendingText}
         currencyToAdd={curToken}
-        isToGomboc={true}
+        isToGauge={true}
       />
       <div className="locker-add-amount-modal flex-1">
         <div className="amout-box">

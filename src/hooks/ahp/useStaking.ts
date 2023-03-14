@@ -1,10 +1,10 @@
 import { useCallback } from 'react'
 import { useSingleCallResult } from '../../state/multicall/hooks'
-import { useStakingHopeGombocContract, useLtMinterContract } from '../useContract'
+import { useStakingHopeGaugeContract, useLtMinterContract } from '../useContract'
 import { useActiveWeb3React } from '../index'
 import JSBI from 'jsbi'
 import { CurrencyAmount } from '@uniswap/sdk'
-import { STAKING_HOPE_GOMBOC_ADDRESS } from '../../constants'
+import { STAKING_HOPE_GAUGE_ADDRESS } from '../../constants'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
@@ -19,7 +19,7 @@ export enum stakingFnNameEnum {
 
 export function useStaking() {
   const { account, chainId } = useActiveWeb3React()
-  const shgContract = useStakingHopeGombocContract()
+  const shgContract = useStakingHopeGaugeContract()
   const ltMinterContract = useLtMinterContract()
   const gomContract = useGomConContract()
   const blockNumber = useBlockNumber()
@@ -31,10 +31,10 @@ export function useStaking() {
   const claRewards = useSingleCallResult(shgContract, 'claimableTokens', [account ?? undefined])
   const mintedVal = useSingleCallResult(ltMinterContract, 'minted', [
     account ?? undefined,
-    STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]
+    STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]
   ])
   const gomRelativeWeigh = useSingleCallResult(gomContract, 'gaugeRelativeWeight', [
-    STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1],
+    STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1],
     time
   ])
 
@@ -51,7 +51,7 @@ export function useStaking() {
 
 export function useToStaked() {
   const addTransaction = useTransactionAdder()
-  const contract = useStakingHopeGombocContract()
+  const contract = useStakingHopeGaugeContract()
   const { account } = useActiveWeb3React()
   const toStaked = useCallback(
     async (amount: CurrencyAmount, NONCE, DEADLINE, sigVal) => {
@@ -82,7 +82,7 @@ export function useToStaked() {
 
 export function useToUnStaked() {
   const addTransaction = useTransactionAdder()
-  const contract = useStakingHopeGombocContract()
+  const contract = useStakingHopeGaugeContract()
   const { account } = useActiveWeb3React()
   const toUnStaked = useCallback(
     async (amount: CurrencyAmount) => {
@@ -113,7 +113,7 @@ export function useToUnStaked() {
 
 export function useToWithdraw() {
   const addTransaction = useTransactionAdder()
-  const contract = useStakingHopeGombocContract()
+  const contract = useStakingHopeGaugeContract()
   const { account } = useActiveWeb3React()
   const toWithdraw = useCallback(async () => {
     if (!account) throw new Error('none account')

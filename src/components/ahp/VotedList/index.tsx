@@ -6,7 +6,7 @@ import { Pagination } from 'antd'
 import { Token, JSBI, Percent } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../hooks'
 import { TokenAmount } from '@uniswap/sdk'
-import { VELT, SUBGRAPH, STAKING_HOPE_GOMBOC_ADDRESS, ST_HOPE } from '../../../constants'
+import { VELT, SUBGRAPH, STAKING_HOPE_GAUGE_ADDRESS, ST_HOPE } from '../../../constants'
 import { useToVote, useToVoteAll } from '../../../hooks/ahp/useGomVote'
 // import format from '../../../utils/format'
 import { useSingleContractMultipleData } from '../../../state/multicall/hooks'
@@ -47,7 +47,7 @@ const VotedList = ({
   const [pageTotal, setPageTotal] = useState<number>(0)
   const history = useHistory()
   const addresses = useMemo(() => {
-    return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]]
+    return [STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]]
   }, [chainId])
   const { result: priceResult } = useTokenPrice(addresses)
   const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
@@ -413,7 +413,7 @@ const VotedList = ({
 
   const columns: any = [
     {
-      title: 'Gömböc',
+      title: 'Gauge',
       dataIndex: 'id',
       render: (text: string, record: any) => {
         if (record.gauge && record.gauge.pair) {

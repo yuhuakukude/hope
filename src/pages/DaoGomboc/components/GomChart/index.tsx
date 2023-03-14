@@ -3,7 +3,7 @@ import './index.scss'
 import * as echarts from 'echarts'
 import { TitleComponentOption } from 'echarts/components'
 import { PieSeriesOption } from 'echarts/charts'
-import { VELT, STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
+import { VELT, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 import { TokenAmount } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../../hooks'
 import { JSBI } from '@uniswap/sdk'
@@ -42,7 +42,7 @@ const GomChart = ({ votiingData }: GomChartProps) => {
               arr.push(item)
             }
           })
-          const addr = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+          const addr = `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
           const option: EChartsOption = {
             tooltip: {
               trigger: 'item',
@@ -53,7 +53,7 @@ const GomChart = ({ votiingData }: GomChartProps) => {
               formatter: (params: { name: string; value: number; data: any }) => {
                 return `<div>
                     <div style="font-size: 14px;">
-                    Gömböc Relative Weight
+                    Gauge Relative Weight
                     </div>
                     <div style="font-size: 14px;margin-top: 16px">${params.name}: ${
                   addr === params.data.gauge ? '(stHOPE)' : ''
@@ -119,9 +119,9 @@ const GomChart = ({ votiingData }: GomChartProps) => {
 
   return (
     <div className="gom-chart-box">
-      <h3 className="font-bolder text-white font-20">Proposed Gömböc Weight Changes</h3>
+      <h3 className="font-bolder text-white font-20">Proposed Gauge Weight Changes</h3>
       <p className="m-t-20 text-white lh15">
-        Gömböc weights are used to determine how much $LT does each protocol or pool get. You can vote for gömböc weight
+        Gauge weights are used to determine how much $LT does each protocol or pool get. You can vote for Gauge weight
         with your veLT ( locked $LT tokens in
         <NavLink to={'/dao/locker'}>
           <span className="text-primary"> Locker </span>
@@ -132,7 +132,7 @@ const GomChart = ({ votiingData }: GomChartProps) => {
         <div ref={voteChartRef as any} className="voting-chart" id="votingchart" />
       </div>
       <p className="m-t-10 text-center font-14 m-b-30">
-        Proposed Gömböc Weight Changes taking effect on {nextEffectTime || '--'} UTC
+        Proposed Gauge Weight Changes taking effect on {nextEffectTime || '--'} UTC
       </p>
     </div>
   )

@@ -6,7 +6,7 @@ import Head from './components/Head'
 import GomChart from './components/GomChart'
 import Vote from './components/Vote'
 import GomList from './components/GomList'
-import GombocApi from '../../api/gomboc.api'
+import GaugeApi from '../../api/gauge.api'
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { VELT } from '../../constants'
@@ -22,12 +22,12 @@ const PageWrapper = styled(AutoColumn)`
   min-width: 1210px;
 `
 
-export default function DaoGomboc() {
+export default function DaoGauge() {
   const childRef = useRef<any>()
   const voteRef = useRef<any>()
   const { account, chainId } = useActiveWeb3React()
   const [votiingData, setVotiingData] = useState({})
-  const [gombocList, setGombocList] = useState([])
+  const [gaugeList, setGaugeList] = useState([])
   const { lockerRes } = useLocker()
   const isShowTip = useMemo(() => {
     const lockerEndDate = lockerRes?.end
@@ -49,7 +49,7 @@ export default function DaoGomboc() {
   }, [veltBalance])
   async function initVotiingData() {
     try {
-      const res = await GombocApi.getGombocsVotiing()
+      const res = await GaugeApi.getGaugeVotiing()
       if (res && res.result) {
         setVotiingData(res.result)
       }
@@ -58,11 +58,11 @@ export default function DaoGomboc() {
     }
   }
 
-  async function initGombocsList() {
+  async function initGaugeList() {
     try {
-      const res = await GombocApi.getGombocsList()
+      const res = await GaugeApi.getGaugeList()
       if (res && res.result && res.result.length > 0) {
-        setGombocList(res.result)
+        setGaugeList(res.result)
       }
     } catch (error) {
       console.log(error)
@@ -75,15 +75,15 @@ export default function DaoGomboc() {
     }
   }
 
-  function toSetSelGom(gomboc: string) {
+  function toSetSelGom(gauge: string) {
     if (voteRef && voteRef.current) {
-      voteRef.current?.setSel(gomboc)
+      voteRef.current?.setSel(gauge)
     }
   }
 
   const init = useCallback(async () => {
     await initVotiingData()
-    await initGombocsList()
+    await initGaugeList()
   }, [])
 
   useEffect(() => {
@@ -92,7 +92,7 @@ export default function DaoGomboc() {
   return (
     <>
       <PageWrapper>
-        <div className="dao-gomboc-page">
+        <div className="dao-gauge-page">
           <Head />
           <div id="votepoint" className="flex m-t-30">
             <div className="flex-3 normal-card m-r-30">
@@ -104,7 +104,7 @@ export default function DaoGomboc() {
                 updateTable={updateTable}
                 isNoVelt={isNoVelt}
                 votiingData={votiingData}
-                gombocList={gombocList}
+                gaugeList={gaugeList}
               />
             </div>
           </div>
@@ -117,7 +117,7 @@ export default function DaoGomboc() {
                   <NavLink to={'/dao/locker'}>
                     <span className="text-primary">Locker</span>
                   </NavLink>{' '}
-                  in Locker in order to vote for gömböc weights
+                  in Locker in order to vote for Gauge weights
                 </p>
               </div>
             </div>
@@ -151,8 +151,8 @@ export default function DaoGomboc() {
           )}
           <div className="normal-card m-t-30">
             <GomList
-              toSetSelGom={gomboc => {
-                toSetSelGom(gomboc)
+              toSetSelGom={gauge => {
+                toSetSelGom(gauge)
               }}
               ref={childRef}
             />

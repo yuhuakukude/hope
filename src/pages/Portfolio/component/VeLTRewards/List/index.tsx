@@ -18,10 +18,10 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
   const columns = [
     {
       title: 'Pool / Protocol',
-      dataIndex: 'gombocName',
-      key: 'gombocName',
+      dataIndex: 'gaugeName',
+      key: 'gaugeName',
       render: (text: string, record: Item) => {
-        if (!record.gomboc) {
+        if (!record.gauge) {
           return (
             <div className="veLT-rewards-item-title">
               <span className="veLT-rewards-item-other">veLT hold dividends</span>
@@ -31,11 +31,11 @@ export default function List({ withdrawItem, tableData, hopePrice }: ListProps) 
         }
         return (
           <>
-            <div className="veLT-rewards-item-title">{record.gomboc?.gombocName}</div>
+            <div className="veLT-rewards-item-title">{record.gauge?.gaugeName}</div>
             <div className="veLT-rewards-item-desc">
-              {format.addressDes(record.gomboc?.gombocAddress)}
+              {format.addressDes(record.gauge?.gaugeAddress)}
               <span className="veLT-rewards-item-copy">
-                <CopyHelper toCopy={record.gomboc?.gombocAddress} />
+                <CopyHelper toCopy={record.gauge?.gaugeAddress} />
               </span>
             </div>
           </>

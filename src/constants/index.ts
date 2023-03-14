@@ -86,7 +86,7 @@ export const PERMIT2_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.SEPOLIA]: '0xE0b21E1E6Eda14dcc372cc51897f18A631344768',
   [ChainId.HOPE]: '0xE0b21E1E6Eda14dcc372cc51897f18A631344768'
 }
-export const GOMBOC_CONTROLLER_ADDRESS: { [chainId in ChainId]?: string } = {
+export const GAUGE_CONTROLLER_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0x279DbFFB3CbB306983FDd1B6a1636213debFC4aa',
   [ChainId.SEPOLIA]: '0x279DbFFB3CbB306983FDd1B6a1636213debFC4aa',
   [ChainId.HOPE]: '0x279DbFFB3CbB306983FDd1B6a1636213debFC4aa'
@@ -101,12 +101,12 @@ export const TOKEN_SALE_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.SEPOLIA]: '0xFAbD2493BE31Dc223b86C2337011253aB96E4A81',
   [ChainId.HOPE]: '0xFAbD2493BE31Dc223b86C2337011253aB96E4A81'
 }
-export const POOL_GOMBOC_ADDRESS: { [chainId in ChainId]?: string } = {
+export const POOL_GAUGE_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0x33023D17064c6e0B1B59F4A3EdaABacEF103cb7D',
   [ChainId.SEPOLIA]: '0x33023D17064c6e0B1B59F4A3EdaABacEF103cb7D',
   [ChainId.HOPE]: '0x33023D17064c6e0B1B59F4A3EdaABacEF103cb7D'
 }
-export const STAKING_HOPE_GOMBOC_ADDRESS: { [chainId in ChainId]: string } = {
+export const STAKING_HOPE_GAUGE_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: '0xf67E23C1D9A22fb1611a3D00F0d44Dc0f4bC7DF3',
   [ChainId.SEPOLIA]: '0xf67E23C1D9A22fb1611a3D00F0d44Dc0f4bC7DF3',
   [ChainId.HOPE]: '0xf67E23C1D9A22fb1611a3D00F0d44Dc0f4bC7DF3'

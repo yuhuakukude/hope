@@ -6,7 +6,7 @@ import { CurrencyAmount, JSBI, Percent, TokenAmount } from '@uniswap/sdk'
 import { useMultipleContractSingleData, useSingleCallResult } from '../state/multicall/hooks'
 import { STAKING_REWARDS_INTERFACE } from '../constants/abis/staking-rewards'
 import { useGomConContract, useLockerContract, useStakingContract } from './useContract'
-import { LT, STAKING_HOPE_GOMBOC_ADDRESS } from '../constants'
+import { LT, STAKING_HOPE_GAUGE_ADDRESS } from '../constants'
 import useCurrentBlockTimestamp from './useCurrentBlockTimestamp'
 
 export enum PAIR_SEARCH {
@@ -201,7 +201,7 @@ export function usePairStakeInfo(stakingAddress?: string) {
 
   const isSHAddr = useMemo(() => {
     let res = false
-    const addr = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+    const addr = `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
     if (addr === stakingAddress) {
       res = true
     }

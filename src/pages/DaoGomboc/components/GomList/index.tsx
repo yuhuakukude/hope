@@ -5,10 +5,10 @@ import { Input, Button } from 'antd'
 import dayjs from 'dayjs'
 import { JSBI } from '@uniswap/sdk'
 import { ButtonPrimary } from '../../../../components/Button'
-import GombocApi from '../../../../api/gomboc.api'
+import GaugeApi from '../../../../api/gauge.api'
 import { useActiveWeb3React } from '../../../../hooks'
 import { TokenAmount } from '@uniswap/sdk'
-import { LT, ST_HOPE, STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
+import { LT, ST_HOPE, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 
 import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
 import { useGomConContract } from '../../../../hooks/useContract'
@@ -17,7 +17,7 @@ import VotedList from '../../../../components/ahp/VotedList'
 import { SymbolLogo } from 'components/CurrencyLogo'
 
 interface ListProps {
-  toSetSelGom: (gomboc: string) => void
+  toSetSelGom: (gauge: string) => void
 }
 
 const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
@@ -26,7 +26,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const [searchValue, setSearchValue] = useState('')
   const [tableData, setTableData] = useState<any>([])
   const [curType, setCurType] = useState('all')
-  const stakingAddress = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+  const stakingAddress = `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
   const argList = useMemo(() => {
     let res: any = []
     const arr: any = []
@@ -145,7 +145,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
 
   const columns: any = [
     {
-      title: 'Gömböc',
+      title: 'Gauge',
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: any) => {
@@ -204,15 +204,15 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     {
       title: 'Vote',
       align: 'center',
-      dataIndex: 'gomboc',
+      dataIndex: 'gauge',
       render: actionNode,
-      key: 'gomboc'
+      key: 'gauge'
     }
   ]
 
   const init = useCallback(async () => {
     try {
-      const res = await GombocApi.getGombocsAllPools()
+      const res = await GaugeApi.getGaugeAllPools()
       if (res.result && res.result && res.result.length > 0) {
         res.result.sort((a: any, b: any) => {
           return b.weight - a.weight

@@ -66,8 +66,8 @@ export default function InvestmentAllocation({ data }: { data: any }) {
             <div>Locked LT: Total value of locked LT </div>
             <div>
               Profits: Platform fee income. veLT holders will receive 25% of all agreed fee income as an reward, as well
-              as a portion of the Gömböc fee income during the voting period if they participate in the weighted vote of
-              a Gömböc.{' '}
+              as a portion of the Gauge fee income during the voting period if they participate in the weighted vote of
+              a Gauge.{' '}
               <a
                 className="text-primary"
                 href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
