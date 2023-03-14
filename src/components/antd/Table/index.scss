@@ -66,7 +66,8 @@
 
   .ant-table-tbody>tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)>td {
 
-    background: rgb(61, 62, 70);
+    // background: rgb(61, 62, 70);
+    background: rgba(44, 45, 52, 1);
 
   }
 
@@ -81,6 +82,14 @@
 
     .ant-empty {
       display: none;
+    }
+  }
+  .ant-table-thead > tr > th .ant-table-header-column .ant-table-column-sorters{
+    &:hover::before{
+      background: #3D3E45;
+    }
+    &::before{
+      background: #3D3E45;
     }
   }
 }

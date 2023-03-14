@@ -8,8 +8,8 @@
   margin-bottom: 20px;
 
   .my-locked-lt-col {
+    height: 100%;
     flex: 1;
-
     position: relative;
 
     .my-locked-lt-title {
@@ -63,7 +63,7 @@
     display: flex;
     background-color: rgba(51, 51, 60, 1);
     border-radius: 8px;
-    padding: 20px;
+    padding: 20px 20px 10px;
     border: 1px solid rgba(61, 62, 70, 1);
 
 
@@ -84,7 +84,7 @@
 
     .my-locked-lt-col {
       flex: 1;
-      padding: 20px;
+      padding: 20px 20px 10px;
       border-radius: 8px;
       background-color: rgba(51, 51, 60, 1);
       border: 1px solid rgba(61, 62, 70, 1);

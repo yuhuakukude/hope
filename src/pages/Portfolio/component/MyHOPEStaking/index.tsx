@@ -100,7 +100,7 @@ export default function MyHOPEStaking() {
   }
   const history = useHistory()
 
-  const columns = [
+  const columns: any = [
     {
       title: 'Protocol',
       dataIndex: 'Protocol',
@@ -151,6 +151,8 @@ export default function MyHOPEStaking() {
       title: 'Actions',
       dataIndex: 'actions',
       key: 'actions',
+      width: 120,
+      align: 'center',
       render: (text: string, record: IStaking) => {
         const add = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`
         const options: TitleTipsProps[] = [
