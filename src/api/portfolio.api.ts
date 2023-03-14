@@ -114,7 +114,7 @@ export interface ILiquidityPools {
 }
 
 export default class PortfolioApi {
-  // 查询LT锁仓记录
+  //
   static getOverview(address: string) {
     return get<PortfolioInfo>('/light/portfolio/gomboc/overview', { params: { address } })
   }
