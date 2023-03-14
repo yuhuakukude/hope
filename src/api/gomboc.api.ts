@@ -3,7 +3,7 @@ import http from '../utils/http'
 export default class GombocApi {
   // 现在进行中的Gomboc权重
   static getGombocsList(): any {
-    return http.get('/light/gombocs/all')
+    return http.get('/light/gauge/all')
   }
   // 查询投票中的Gombocs权重
   static getGombocsVotiing(): any {
@@ -19,7 +19,7 @@ export default class GombocApi {
   }
   // all gomboc
   static getGombocsAllPools(): any {
-    return http.get('/light/gombocs/getAllPools')
+    return http.get('/light/gauge/getAllPools')
   }
 
   static getGombocsAddress(params: any): any {

@@ -126,6 +126,6 @@ export default class PortfolioApi {
   }
 
   static getLiquidityPools(address: string) {
-    return get<ILiquidityPools[]>('/light/portfolio/gomboc/liquidity/pools', { params: { address } })
+    return get<ILiquidityPools[]>('/light/portfolio/gauge/liquidity/pools', { params: { address } })
   }
 }
