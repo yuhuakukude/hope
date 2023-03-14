@@ -33,7 +33,7 @@ export function useStaking() {
     account ?? undefined,
     STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]
   ])
-  const gomRelativeWeigh = useSingleCallResult(gomContract, 'gombocRelativeWeight', [
+  const gomRelativeWeigh = useSingleCallResult(gomContract, 'gaugeRelativeWeight', [
     STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1],
     time
   ])

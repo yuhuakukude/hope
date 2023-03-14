@@ -184,7 +184,7 @@ export function usePairStakeInfo(stakingAddress?: string) {
   const stakingContract = useStakingContract(stakingAddress)
   const gomContract = useGomConContract()
 
-  const relativeWeight = useSingleCallResult(gomContract, 'gombocRelativeWeight', [
+  const relativeWeight = useSingleCallResult(gomContract, 'gaugeRelativeWeight', [
     stakingAddress,
     timestamp?.toString()
   ])?.result?.[0].toString()
