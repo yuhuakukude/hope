@@ -147,7 +147,7 @@ const VotedList = ({
         const addr = tableData[index]?.gomboc.id
         res[addr] = {
           view,
-          value: format.amountFormat(value, 2),
+          value,
           usdOfValue: usdOfValue
         }
       })
@@ -473,7 +473,7 @@ const VotedList = ({
       render: (text: string, record: any) => {
         return (
           <>
-            <p className="lh1">{`${allocatedView[record.gomboc.id].view} %`}</p>
+            <p className="lh1">{`${allocatedView[record.gomboc.id]?.view} %`}</p>
             <p className="m-t-12 lh1">of my voting power</p>
           </>
         )
@@ -501,7 +501,7 @@ const VotedList = ({
       render: (text: string, record: any) => {
         return (
           <>
-            <p className="lh1">Future: {allocatedView[record.gomboc.id].future}</p>
+            <p className="lh1">Future: {allocatedView[record.gomboc.id]?.future}</p>
             <p className="m-t-12 lh1">Current: {pointView[record.gomboc.id]}</p>
           </>
         )
@@ -511,11 +511,19 @@ const VotedList = ({
       title: 'Voting Rewards',
       dataIndex: 'rewards',
       key: 'rewards',
+      sorter: (a: any, b: any) => {
+        const an = rewardsView[a.gomboc.id]?.value ? Number(rewardsView[a.gomboc.id]?.value) : 0
+        const bn = rewardsView[b.gomboc.id]?.value ? Number(rewardsView[b.gomboc.id]?.value) : 0
+        if (an >= 0 && bn >= 0) {
+          return bn - an
+        }
+        return 0
+      },
       render: (text: string, record: any) => {
         return (
           <>
-            <p className="lh1">≈ {rewardsView[record.gomboc.id].view} stHOPE</p>
-            <p className="m-t-12 lh1">≈ ${rewardsView[record.gomboc.id].usdOfValue}</p>
+            <p className="lh1">≈ {rewardsView[record.gomboc.id]?.view} stHOPE</p>
+            <p className="m-t-12 lh1">≈ ${rewardsView[record.gomboc.id]?.usdOfValue}</p>
           </>
         )
       }
