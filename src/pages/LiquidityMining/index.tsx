@@ -288,7 +288,7 @@ export default function LiquidityMining({
             </CustomTab>
           </CustomTabWrapper>
           {(staking && balance && balance.greaterThan(JSBI.BigInt(0))) ||
-          (staking && stakedAmount && stakedAmount.greaterThan(JSBI.BigInt(0))) ? (
+          (!staking && stakedAmount && stakedAmount.greaterThan(JSBI.BigInt(0))) ? (
             <AutoColumn gap={'20px'} style={{ padding: 20 }}>
               <AutoRow>
                 <CurrencyLogo currency={pool?.tokens[0]} />
