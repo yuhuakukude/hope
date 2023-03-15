@@ -2,6 +2,7 @@ import React from 'react'
 import { ButtonPrimary } from 'components/Button'
 import { NavLink } from 'react-router-dom'
 import './index.scss'
+import { DOCS_URL } from 'constants/config'
 
 export default function Empty() {
   return (
@@ -14,7 +15,7 @@ export default function Empty() {
       </div>
       <a
         className="learn-more m-t-20"
-        href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
+        href={DOCS_URL['LightToken']}
         target="_blank"
         rel="noopener noreferrer"
       >

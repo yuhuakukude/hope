@@ -8,7 +8,7 @@ import { useAllTransactions } from '../../state/transactions/hooks'
 import { RowFixed } from '../Row'
 import Loader from '../Loader'
 import { TYPE } from '../../theme'
-import { formatUTCDate } from '../../utils/format'
+import { formatDate } from '../../utils/format'
 
 const TransactionWrapper = styled.div``
 
@@ -54,7 +54,7 @@ export default function Transaction({ hash }: { hash: string }) {
     <TransactionWrapper>
       <TransactionState href={getEtherscanLink(chainId, hash, 'transaction')} pending={pending} success={success}>
         <RowFixed>
-          <TYPE.main>{`${tx?.addedTime ? formatUTCDate(Math.floor(tx?.addedTime / 1000)) : ''}`}</TYPE.main>
+          <TYPE.main>{`${tx?.addedTime ? formatDate(Math.floor(tx?.addedTime / 1000)) : ''}`}</TYPE.main>
         </RowFixed>
         <RowFixed>
           <TransactionStatusText>{summary ?? hash}</TransactionStatusText>

@@ -31,6 +31,7 @@ import { SearchInput } from '../../components/SearchModal/styleds'
 import { ButtonPrimary } from '../../components/Button'
 import { useAllTokenBalances } from '../../state/wallet/hooks'
 import CurrencyLogo from '../../components/CurrencyLogo'
+import { DOCS_URL } from 'constants/config'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -381,7 +382,7 @@ export default function Earn() {
                     Provide Liquidity, Earn $LT{`${isMyVote}`}
                   </TYPE.white>
                   <a
-                    href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
+                    href={DOCS_URL['LightToken']}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="link m-l-0 text-primary flex ai-center"

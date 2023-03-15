@@ -1,3 +1,4 @@
+import { DOCS_URL } from 'constants/config'
 import React from 'react'
 import Card from '../Card'
 import './index.scss'
@@ -16,7 +17,7 @@ export default function PortfolioHead() {
             className="learn-a font-nor text-primary text-medium m-t-30"
             target="_blank"
             rel="noopener noreferrer"
-            href={`https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/usdhope-reserve-pools-hrp/understanding-usdhope-reserve-pools`}
+            href={DOCS_URL['ReservePools']}
           >
             Learn more
           </a>

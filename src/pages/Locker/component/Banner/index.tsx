@@ -1,5 +1,6 @@
 import React from 'react'
 import './index.scss'
+import { DOCS_URL } from 'constants/config'
 
 export default function LockerBanner() {
   return (
@@ -9,7 +10,7 @@ export default function LockerBanner() {
         <p className="font-nor m-t-20 flex ai-center">
           Extra earnings & voting power{' '}
           <a
-            href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
+            href={DOCS_URL['LightToken']}
             target="_blank"
             rel="noopener noreferrer"
             className="link text-primary m-l-20 flex ai-center"
