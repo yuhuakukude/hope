@@ -47,10 +47,6 @@ export default function LockerEcharts() {
             valueArr.unshift(Number(valItem))
           })
           const minAmount = valueArr.length > 0 ? Math.min(...valueArr) : 0
-          // let maxAmount = valueArr.length > 0 ? Math.max(...valueArr) : 1000
-          // if (maxAmount > 1000) {
-          //   maxAmount = maxAmount + (maxAmount - minAmount) / 6
-          // }
           setIsHasData(valueArr.length <= 0)
           const option = {
             grid: { top: '6%', bottom: '10%', right: '2%' },
@@ -74,6 +70,9 @@ export default function LockerEcharts() {
               borderColor: 'rgba(90, 90, 91, 1)',
               padding: 20,
               className: 'echarts-tooltip',
+              axisPointer: {
+                type: 'line'
+              },
               textStyle: {
                 color: '#FFFFFF'
               },
@@ -113,7 +112,7 @@ export default function LockerEcharts() {
               max: valueArr.length > 0 ? null : 1000,
               splitNumber: 6,
               splitLine: {
-                show: valueArr.length > 0,
+                show: false,
                 lineStyle: { color: ['#606266'], width: 1, type: 'solid' }
               },
               axisLine: {
