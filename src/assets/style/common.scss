@@ -13,6 +13,7 @@ $distance-list: 0,
 17,
 18,
 20,
+22,
 23,
 24,
 25,
@@ -274,6 +275,10 @@ $fonts-list: 12,
   font-size: 32px;
 }
 
+.font-30 {
+  font-size: 30px;
+}
+
 .font-34 {
   font-size: 34px;
 }
@@ -444,6 +449,7 @@ a:hover {
 .hope-icon-common{
   color: #A8A8AA;
   border-radius: 6px;
+  text-align: center;
   &:hover{
     color: #fff;
     background-color: #3D3E46;

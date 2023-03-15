@@ -25,6 +25,14 @@
 
     .portfolio-button {
       background-color: transparent;
+      border-radius: 10px;
+      height: 56px;
+      background-color: rgba(61, 62, 70, 1);
+      border: 0.5px solid rgba(90, 90, 91, 1);
+      &:hover{
+        box-shadow: 0 0 0 1px #3d3d3d;
+        background-color: #33333c;
+      }
     }
   }
 }

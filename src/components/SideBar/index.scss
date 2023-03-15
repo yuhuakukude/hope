@@ -17,12 +17,11 @@
 .sidebar-select-arc {
   position: absolute;
   right: 0;
-  top: -10px;
   width: 10px;
   height: 10px;
   background-color: rgba(12, 12, 13, 1);
-  display: none;
   overflow: hidden;
+  transition: all ease 0.25s;
 
   .sidebar-select-arc-mask {
     width: 10px;
@@ -36,9 +35,6 @@
 }
 
 .sidebar-select-arc-2 {
-  top: auto;
-  bottom: -10px;
-
   .sidebar-select-arc-mask {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 0px;
@@ -49,24 +45,21 @@
   // height: 80px;
   position: relative;
   color: #E4C989;
-
-  .sidebar-select-arc {
-    display: block;
+  &:hover {
+    color: #E4C989 !important;
   }
 }
 
-
-
-.SidebarOnSelect::before {
-  content: ' ';
-  height: 60px;
-  left: 20px;
-  border-top-left-radius: 30px;
-  border-bottom-left-radius: 30px;
-  position: absolute;
-  width: calc(100% - 20px);
-  background-color: rgba(12, 12, 13, 1);
-}
+// .SidebarOnSelect::before {
+//   content: ' ';
+//   height: 60px;
+//   left: 20px;
+//   border-top-left-radius: 30px;
+//   border-bottom-left-radius: 30px;
+//   position: absolute;
+//   width: calc(100% - 20px);
+//   background-color: rgba(12, 12, 13, 1);
+// }
 
 .icon-link{
   background-color: #3D3E46;

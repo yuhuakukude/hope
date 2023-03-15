@@ -147,7 +147,7 @@ const VotedList = ({
         const addr = tableData[index]?.gauge.id
         res[addr] = {
           view,
-          value: format.amountFormat(value, 2),
+          value,
           usdOfValue: usdOfValue
         }
       })
@@ -511,6 +511,14 @@ const VotedList = ({
       title: 'Voting Rewards',
       dataIndex: 'rewards',
       key: 'rewards',
+      sorter: (a: any, b: any) => {
+        const an = rewardsView[a.gauge.id]?.value ? Number(rewardsView[a.gauge.id]?.value) : 0
+        const bn = rewardsView[b.gauge.id]?.value ? Number(rewardsView[b.gauge.id]?.value) : 0
+        if (an >= 0 && bn >= 0) {
+          return bn - an
+        }
+        return 0
+      },
       render: (text: string, record: any) => {
         return (
           <>

@@ -252,7 +252,8 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
               <div className="my-locked-lt-row2">
                 <div className="my-locked-lt-col">
                   <div className="my-locked-lt-title">
-                    Claimable veLT Held Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
+                    Claimable veLT Held Fees{' '}
+                    <Tips title="25% of the platform fees will be distributed among all veLT holders."></Tips>
                   </div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">
@@ -278,7 +279,8 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                 </div>
                 <div className="my-locked-lt-col">
                   <div className="my-locked-lt-title">
-                    Claimable veLT voting Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
+                    Claimable veLT voting Fees{' '}
+                    <Tips title="All users who voted using veLT as their liquidity mining gauge will participate in the distribution of an additional 25% of the platform's fee revenue."></Tips>
                   </div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">≈ {votingFee.stHope} stHOPE</span>

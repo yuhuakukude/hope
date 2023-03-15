@@ -44,13 +44,13 @@ export default function InvestmentAllocation({ data }: { data: any }) {
         value: data.staking,
         formatValue: format.amountFormat(data.staking, 2),
         tips:
-          'The total value of tokens currently held in the HOPE Staking contract, including the transferable, unstaking, and withdrawable portions of the address'
+          'The total value of tokens currently held in the HOPE Staking contract, including the transferable, unstaking, redeemable, and claimable reward portions of the address'
       },
       {
         name: 'Liquidity Pools',
         value: data.lp,
         formatValue: format.amountFormat(data.lp, 2),
-        tips: 'Total value of assets withdrawable from liquidity pools'
+        tips: 'Total value of assets redeemable from liquidity pools'
       },
       {
         name: 'Yield Farming',
@@ -64,17 +64,10 @@ export default function InvestmentAllocation({ data }: { data: any }) {
         formatValue: format.amountFormat(data.profits, 2),
         tips: (
           <>
-            <div>Locked LT: Total value of locked LT </div>
             <div>
-              Profits: Platform fee income. veLT holders will receive 25% of all agreed fee income as an reward, as well
-              as a portion of the Gauge fee income during the voting period if they participate in the weighted vote of
-              a Gauge.{' '}
-              <a
-                className="text-primary"
-                href={DOCS_URL['LightToken']}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              The total value of LT locked into Voting Escrow contract, and the portion of platform fees earned through
+              the holding of veLT.{' '}
+              <a className="text-primary" href={DOCS_URL['LightToken']} target="_blank" rel="noopener noreferrer">
                 Learn more
               </a>
             </div>
@@ -177,7 +170,7 @@ export default function InvestmentAllocation({ data }: { data: any }) {
             <div className="investment-allocation-total">
               <TitleTips
                 title="Total Value"
-                desc="Total value of holdings, withdrawable liquidity, rewards, staked HOPE, and HOPE held"
+                desc="Total value of redeemable liquidity,  liquidity mining, claimable rewards, HOPE into the Staking Contract, and Locked LT"
               />
             </div>
             <div className="investment-allocation-total2">

@@ -508,7 +508,7 @@ export default function Staking() {
                   <div className="staking-tip">
                     {gas && userEthBalance && userEthBalance?.lessThan(CurrencyAmount.ether(gas)) && (
                       <div className="flex m-t-15">
-                        <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe62b;</i>
+                        <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
                         <div>
                           <p className="text-white lh15">
                             Your wallet balance is below 0.001 ETH. The approve action require small transaction fees,
@@ -520,7 +520,7 @@ export default function Staking() {
 
                     {curType === 'unstake' && (
                       <div className="flex m-t-15">
-                        <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe62b;</i>
+                        <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe61e;</i>
                         <div>
                           <p className="text-white lh15">
                             The $stHOPE unstake will take 28 days to processing and you can withdraw your $HOPE at any
@@ -588,7 +588,7 @@ export default function Staking() {
                     </div>
                     {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
                       <div className="flex ai-center">
-                        <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
+                        <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
                         <p className="text-normal lh15">You can apply future boost by claiming LT</p>
                       </div>
                     )}
