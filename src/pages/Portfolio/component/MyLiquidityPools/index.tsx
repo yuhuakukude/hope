@@ -3,6 +3,8 @@ import Table from 'components/antd/Table'
 import { ColumnCenter } from '../../../../components/Column'
 import Circle from '../../../../assets/images/blue-loader.svg'
 
+import Tips from 'components/Tips'
+
 import { useActiveWeb3React } from 'hooks'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
@@ -148,7 +150,12 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       }
     },
     {
-      title: 'Boost',
+      title: (
+        <>
+          Boost{' '}
+          <Tips title="When the number of a user's veLT changes, the values of the Current Boost and Future Boost may become inconsistent. To ensure that the Future Boost takes effect, the user needs to actively update the value."></Tips>
+        </>
+      ),
       dataIndex: 'currentBoost',
       key: 'currentBoost',
       width: 150,

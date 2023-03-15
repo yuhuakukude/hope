@@ -92,7 +92,7 @@ export default function Pools() {
   const toggleWalletModal = useWalletModalToggle()
   const history = useHistory()
   const [reload, setReload] = useState(0)
-  const { pairInfos, total, loading } = usePairsInfo(pageSize, currentPage, searchType, searchValue, reload)
+  const { pairInfos, total, loading, isError } = usePairsInfo(pageSize, currentPage, searchType, searchValue, reload)
 
   const ltAddress = useMemo(() => {
     return [LT[chainId ?? 1].address.toString()]
@@ -292,9 +292,11 @@ export default function Pools() {
               <p className="font-nor" style={{ color: '#63636A' }}>
                 No data found
               </p>
-              <ButtonGray style={{ color: theme.primary1 }} height={42} mt={15} onClick={() => setReload(reload + 1)}>
-                Reload
-              </ButtonGray>
+              {isError && (
+                <ButtonGray style={{ color: theme.primary1 }} height={42} mt={15} onClick={() => setReload(reload + 1)}>
+                  Reload
+                </ButtonGray>
+              )}
             </AutoColumn>
           )}
         </>

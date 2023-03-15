@@ -3,7 +3,7 @@ import React from 'react'
 import { RowBetween } from '..//Row'
 import styled from 'styled-components'
 import { AutoColumn } from '..//Column'
-import useTheme from '../../hooks/useTheme'
+// import useTheme from '../../hooks/useTheme'
 
 const TopSection = styled(AutoColumn)`
   width: 100%;
@@ -14,10 +14,10 @@ const PoolsWrapper = styled(AutoColumn)`
   border-radius: 20px;
   background-color: ${({ theme }) => theme.bg1};
 `
-const RateText = styled.p`
-  font-size: 16px;
-  margin-left: 12px;
-`
+// const RateText = styled.p`
+//   font-size: 16px;
+//   margin-left: 12px;
+// `
 
 const Text2 = styled.p`
   font-size: 16px;
@@ -37,7 +37,7 @@ export default function PieCharts({ smallSize, viewData }: { smallSize?: boolean
         <div>
           <RowBetween>
             <Text2 style={{ fontSize: `${smallSize ? '14px' : '16px'}` }}>{data.title}</Text2>
-            <RiseText data={data} />
+            {/* <RiseText data={data} /> */}
           </RowBetween>
           <p
             style={{
@@ -53,20 +53,20 @@ export default function PieCharts({ smallSize, viewData }: { smallSize?: boolean
       )
     }
 
-    const RiseText = ({ data }: { data: OverviewData }) => {
-      const theme = useTheme()
-      return (
-        <>
-          {data.isRise ? (
-            <RateText style={{ color: theme.green1, fontSize: `${smallSize ? '14px' : '16px'}` }}>
-              {data.rate} ↑
-            </RateText>
-          ) : (
-            <RateText style={{ color: theme.red1, fontSize: `${smallSize ? '14px' : '16px'}` }}>{data.rate} ↓</RateText>
-          )}
-        </>
-      )
-    }
+    // const RiseText = ({ data }: { data: OverviewData }) => {
+    //   const theme = useTheme()
+    //   return (
+    //     <>
+    //       {data.isRise ? (
+    //         <RateText style={{ color: theme.green1, fontSize: `${smallSize ? '14px' : '16px'}` }}>
+    //           {data.rate} ↑
+    //         </RateText>
+    //       ) : (
+    //         <RateText style={{ color: theme.red1, fontSize: `${smallSize ? '14px' : '16px'}` }}>{data.rate} ↓</RateText>
+    //       )}
+    //     </>
+    //   )
+    // }
     return (
       <TopSection>
         <PoolsWrapper style={{ marginTop: '30px' }}>

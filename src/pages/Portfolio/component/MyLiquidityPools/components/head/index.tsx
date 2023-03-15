@@ -1,5 +1,5 @@
 import Button from 'components/antd/Button'
-// import Tips from 'components/Tips'
+import Tips from 'components/Tips'
 import React from 'react'
 import format from 'utils/format'
 
@@ -26,7 +26,7 @@ export default function Head({ data, claimAll }: { data: IHeadItem[]; claimAll: 
     <div className="pools-head-wrap">
       <div className="pools-head-top">
         Total Claimable Mining Rewards
-        {/* <Tips title="Total tips"></Tips> */}
+        <Tips title="All claimable liquidity mining rewards, but not including additional earned rewards. For example, in the stHOPE/USDT liquidity pool, LT rewards earned due to stHOPE would need to be separately claim."></Tips>
         <Button disabled={total === 0} className="pools-head-top-button" type="ghost" onClick={claimAll}>
           Claim All
         </Button>
