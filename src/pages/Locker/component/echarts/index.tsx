@@ -104,6 +104,9 @@ export default function LockerEcharts() {
                 formatter: (value: any) => {
                   return moment(value).format('DD MMM')
                 }
+              },
+              axisTick: {
+                show: false
               }
             },
             yAxis: {
