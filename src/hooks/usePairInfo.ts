@@ -1,5 +1,5 @@
 import useBasePairs from './liquidity/useBasePairs'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { toV2LiquidityToken } from '../state/user/hooks'
 import { useActiveWeb3React } from './index'
 import { CurrencyAmount, JSBI, Percent, TokenAmount } from '@uniswap/sdk'
@@ -23,6 +23,7 @@ export default function usePairsInfo(
   reload: number
 ) {
   const { account, chainId } = useActiveWeb3React()
+  const [isError, setIsError] = useState(false)
   const { result: allPairs, total, loading } = useBasePairs(
     page,
     currentPage,
@@ -103,10 +104,9 @@ export default function usePairsInfo(
     STAKING_REWARDS_INTERFACE,
     'lpTotalSupply'
   )
-
-  const pairInfos = useMemo(
-    () =>
-      liquidityPairs.map((pair, index) => {
+  const pairInfos = useMemo(() => {
+    try {
+      return liquidityPairs.map((pair, index) => {
         const reward = rewardAmounts[index]?.result
         const ltReward = ltRewardAmounts[index]?.result
         const work = workAmounts[index]?.result
@@ -164,24 +164,29 @@ export default function usePairsInfo(
             ? new TokenAmount(pair.liquidityToken, stakedAmounts[index].result?.[0])
             : undefined
         }
-      }),
-    [
-      chainId,
-      liquidityPairs,
-      ltRewardAmounts,
-      rewardAmounts,
-      stakedAmounts,
-      totalAmounts,
-      veltBalance,
-      veltTotal,
-      workAmounts
-    ]
-  )
+      })
+    } catch (error) {
+      console.log(error)
+      setIsError(true)
+      return []
+    }
+  }, [
+    chainId,
+    liquidityPairs,
+    ltRewardAmounts,
+    rewardAmounts,
+    stakedAmounts,
+    totalAmounts,
+    veltBalance,
+    veltTotal,
+    workAmounts
+  ])
 
   return {
     loading,
     total,
-    pairInfos
+    pairInfos,
+    isError
   }
 }
 

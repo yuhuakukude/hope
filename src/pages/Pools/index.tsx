@@ -22,6 +22,7 @@ import { Switch } from 'antd'
 import NoData from '../../assets/images/no_data.png'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 import useTheme from '../../hooks/useTheme'
+import { DOCS_URL } from 'constants/config'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
@@ -92,7 +93,7 @@ export default function Pools() {
   const toggleWalletModal = useWalletModalToggle()
   const history = useHistory()
   const [reload, setReload] = useState(0)
-  const { pairInfos, total, loading } = usePairsInfo(pageSize, currentPage, searchType, searchValue, reload)
+  const { pairInfos, total, loading, isError } = usePairsInfo(pageSize, currentPage, searchType, searchValue, reload)
 
   const ltAddress = useMemo(() => {
     return [LT[chainId ?? 1].address.toString()]
@@ -123,7 +124,7 @@ export default function Pools() {
               <ExternalLink
                 style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }}
                 target="_blank"
-                href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/usdhope-token"
+                href={DOCS_URL['HopeToken']}
               >
                 <TYPE.link fontSize={14}>Read more about providing liquidity</TYPE.link>
               </ExternalLink>
@@ -156,7 +157,7 @@ export default function Pools() {
               style={{ width: `400px`, fontSize: '16px', textDecoration: 'none' }}
               target="_blank"
               rel="noopener noreferrer"
-              href={`https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/`}
+              href={DOCS_URL['WelcomeToHope']}
             >
               <ButtonOutlined primary mt={20}>
                 <TYPE.link textAlign="center">Learn about providing liquidity</TYPE.link>
@@ -249,7 +250,7 @@ export default function Pools() {
           </TableTitleWrapper>
         </TableWrapper>
       )}
-      {searchType === PAIR_SEARCH.USER_LIQUIDITY && account && (
+      {searchType !== PAIR_SEARCH.ALL && account && (
         <TableWrapper>
           <TableTitleWrapper>
             {positionTitles.map(({ value, weight }, index) => (
@@ -292,9 +293,11 @@ export default function Pools() {
               <p className="font-nor" style={{ color: '#63636A' }}>
                 No data found
               </p>
-              <ButtonGray style={{ color: theme.primary1 }} height={42} mt={15} onClick={() => setReload(reload + 1)}>
-                Reload
-              </ButtonGray>
+              {isError && (
+                <ButtonGray style={{ color: theme.primary1 }} height={42} mt={15} onClick={() => setReload(reload + 1)}>
+                  Reload
+                </ButtonGray>
+              )}
             </AutoColumn>
           )}
         </>

@@ -46,6 +46,7 @@ export default function LockerEcharts() {
             const valItem = new TokenAmount(LT[chainId ?? 1], e.lightLockedTotal).toFixed(2)
             valueArr.unshift(Number(valItem))
           })
+          const minAmount = valueArr.length > 0 ? Math.min(...valueArr) : 0
           setIsHasData(valueArr.length <= 0)
           const option = {
             grid: { top: '6%', bottom: '10%', right: '2%' },
@@ -69,6 +70,9 @@ export default function LockerEcharts() {
               borderColor: 'rgba(90, 90, 91, 1)',
               padding: 20,
               className: 'echarts-tooltip',
+              axisPointer: {
+                type: 'line'
+              },
               textStyle: {
                 color: '#FFFFFF'
               },
@@ -100,15 +104,18 @@ export default function LockerEcharts() {
                 formatter: (value: any) => {
                   return moment(value).format('DD MMM')
                 }
+              },
+              axisTick: {
+                alignWithLabel: true
               }
             },
             yAxis: {
               type: 'value',
-              min: valueArr.length > 0 ? Math.max(...valueArr) : 0,
-              max: valueArr.length > 0 ? Math.min(...valueArr) : 1000,
-              splitNumber: 7,
+              min: minAmount,
+              max: valueArr.length > 0 ? null : 1000,
+              splitNumber: 6,
               splitLine: {
-                show: valueArr.length > 0,
+                show: false,
                 lineStyle: { color: ['#606266'], width: 1, type: 'solid' }
               },
               axisLine: {
@@ -128,6 +135,7 @@ export default function LockerEcharts() {
               {
                 type: 'line',
                 showSymbol: false,
+                smooth: true,
                 symbolSize: 10,
                 data: valueArr,
                 lineStyle: {

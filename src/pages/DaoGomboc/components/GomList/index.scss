@@ -8,6 +8,13 @@
       width: 440px;
       font-size: 16px;
       color: #fff;
+      font-family: Arboria-Medium;
+      &:not(:first-child){
+        padding-left: 40px;
+      }
+      &::placeholder{
+        color: #63636A;
+      }
     }
     &.ant-input-affix-wrapper:hover .ant-input:not(.ant-input-disabled) {
       border-color: #E4C989;
@@ -29,6 +36,17 @@
   }
   .search-btn {
     height: 42px;
+    border-radius: 10px;
+    background-color: rgba(61, 62, 70, 1);
+    border: 0.5px solid rgba(90, 90, 91, 1);
+    color: #E4C989;
+    font-family: Arboria-Medium;
+    font-size: 16px;
+    &:hover, &:active, &:focus{
+      background-color: #33333C !important;
+      border: 0.5px solid rgba(90, 90, 91, 1) !important;
+      box-shadow: none;
+    }
   }
   .add-tab{
     height: 42px;
@@ -71,27 +89,6 @@
   }
   .hope-dapp-table {
     padding: 0;
-  }
-  .hp-table {
-    .ant-table-thead > tr > th {
-      background: #3D3E46;
-      color: #fff;
-      border-bottom: none;
-    }
-    .ant-table-tbody > tr > td {
-      color: #fff;
-      border-bottom: 1px solid #3D3E46;
-    }
-    .ant-table-thead > tr.ant-table-row-hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td, .ant-table-tbody > tr.ant-table-row-hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td, .ant-table-thead > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td, .ant-table-tbody > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td {
-      background: none;
-    }
-    .ant-table-thead > tr > th.ant-table-column-has-actions.ant-table-column-has-sorters:hover {
-      background: #3D3E46;
-    }
-    .ant-table-thead > tr > th .ant-table-column-sorter .ant-table-column-sorter-inner .ant-table-column-sorter-up.on, .ant-table-thead > tr > th .ant-table-column-sorter .ant-table-column-sorter-inner .ant-table-column-sorter-down.on {
-      color: #E4C989;
-    }
-  
   }
   .hp-button-primary {
     height: 42px;

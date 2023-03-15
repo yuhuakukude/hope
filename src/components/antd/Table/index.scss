@@ -66,7 +66,8 @@
 
   .ant-table-tbody>tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected)>td {
 
-    background: rgb(61, 62, 70);
+    // background: rgb(61, 62, 70);
+    background: rgba(44, 45, 52, 1);
 
   }
 
@@ -82,5 +83,22 @@
     .ant-empty {
       display: none;
     }
+  }
+  .ant-table-thead > tr > th .ant-table-header-column .ant-table-column-sorters{
+    &:hover::before{
+      background: #3D3E45;
+    }
+    &::before{
+      background: #3D3E45;
+    }
+  }
+  .ant-table-thead > tr > th .ant-table-column-sorter .ant-table-column-sorter-inner-full {
+    margin-top: -0.3rem;
+  }
+  .ant-table-thead > tr > th.ant-table-column-has-actions.ant-table-column-has-sorters:hover {
+    background: #3D3E46;
+  }
+  .ant-table-thead > tr > th .ant-table-column-sorter .ant-table-column-sorter-inner .ant-table-column-sorter-up.on, .ant-table-thead > tr > th .ant-table-column-sorter .ant-table-column-sorter-inner .ant-table-column-sorter-down.on {
+    color: #E4C989;
   }
 }

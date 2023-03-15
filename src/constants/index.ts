@@ -181,7 +181,14 @@ const WETH_ONLY: ChainTokenList = {
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC[ChainId.MAINNET], USDT[ChainId.MAINNET], WBTC]
+  [ChainId.MAINNET]: [
+    ...WETH_ONLY[ChainId.MAINNET],
+    DAI,
+    USDC[ChainId.MAINNET],
+    USDT[ChainId.MAINNET],
+    HOPE[ChainId.MAINNET],
+    WBTC
+  ]
 }
 
 export const ADDITIONAL_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {

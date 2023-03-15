@@ -13,6 +13,7 @@ $distance-list: 0,
 17,
 18,
 20,
+22,
 23,
 24,
 25,
@@ -274,6 +275,10 @@ $fonts-list: 12,
   font-size: 32px;
 }
 
+.font-30 {
+  font-size: 30px;
+}
+
 .font-34 {
   font-size: 34px;
 }
@@ -439,4 +444,18 @@ a:hover {
 .echarts-tooltip{
   border-radius: 10px !important;
   box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.2) !important;
+}
+
+.hope-icon-common{
+  color: #A8A8AA;
+  border-radius: 6px;
+  text-align: center;
+  &:hover{
+    color: #fff;
+    background-color: #3D3E46;
+  }
+  &:active{
+    color: #fff;
+    background-color: #5A5A5B;
+  }
 }

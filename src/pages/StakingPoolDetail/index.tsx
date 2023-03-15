@@ -16,7 +16,6 @@ import BarCharts from '../../components/pool/BarCharts'
 import styled from 'styled-components'
 import { Decimal } from 'decimal.js'
 import { Box } from 'rebass/styled-components'
-import Overview, { OverviewData } from '../../components/pool/Overview'
 import ClaimRewardModal from '../../components/earn/ClaimRewardModal'
 import { shortenAddress, getEtherscanLink } from '../../utils'
 import AprApi from '../../api/apr.api'
@@ -114,7 +113,7 @@ const TimeItem = styled.div<{ isActive?: boolean }>`
   border-radius: 16px;
   cursor: pointer;
   user-select: none;
-  margin-right: 16px;
+  margin-left: 16px;
   background-color: ${({ isActive }) => (isActive ? '#434343' : 'none')};
   &:hover {
     background-color: #434343;
@@ -147,7 +146,7 @@ const GoBackIcon = styled.span`
 const TabWrapper = styled(Row)<{ flexW?: number; left: number }>`
   padding: 2px;
   width: fit-content;
-  background-color: ${({ theme }) => theme.bg5};
+  background-color: #1b1b1f;
   border-radius: 8px;
   position: relative;
   &::after {
@@ -237,21 +236,21 @@ export default function StakingPoolDetail({
     },
     {
       label: 'Swap',
-      value: 'Swaps',
+      value: 'Swap',
       onClick: data => {
         setTransactionType(data.value)
       }
     },
     {
       label: 'Deposit',
-      value: 'Adds',
+      value: 'Deposit',
       onClick: data => {
         setTransactionType(data.value)
       }
     },
     {
       label: 'Withdraw',
-      value: 'Removes',
+      value: 'Withdraw',
       onClick: data => {
         setTransactionType(data.value)
       }
@@ -316,33 +315,6 @@ export default function StakingPoolDetail({
     setXData(xArr)
     setYData(yArr)
   }, [timeIndex, tabIndex, hourChartResult, dayChartResult])
-
-  const viewData: OverviewData[] = [
-    {
-      title: 'TVL',
-      isRise: !!pairMore && pairMore.tvlChangeUSD > 0,
-      amount: pool ? `$${format.numFormat(format.amountFormat(Number(pool.tvl), 2), 2, true)}` : `--`,
-      rate: pairMore ? `${format.numeral(Math.abs(pairMore.tvlChangeUSD), 2)} %` : `--`
-    },
-    {
-      title: 'Volume(24H)',
-      isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
-      amount: pairMore ? `$${format.numFormat(format.amountFormat(pairMore.oneDayVolumeUSD, 2), 2, true)}` : `--`,
-      rate: pairMore ? `${format.numeral(Math.abs(pairMore.volumeChangeUSD), 2)} %` : `--`
-    },
-    {
-      title: 'Fees(24H)',
-      isRise: !!pairMore && pairMore.volumeChangeUSD > 0,
-      amount: pairMore ? `$${format.amountFormat(pairMore.oneDayVolumeUSD * 0.003, 2)}` : `--`,
-      rate: pairMore ? `${format.numeral(Math.abs(pairMore.volumeChangeUSD), 2)} %` : `--`
-    },
-    {
-      title: 'Fees(7d)',
-      isRise: !!pairMore && pairMore.weeklyVolumeChange > 0,
-      amount: pairMore ? `$${format.amountFormat(pairMore.oneWeekVolume, 2)}` : `--`,
-      rate: pairMore ? `${format.numeral(Math.abs(pairMore.weeklyVolumeChange), 2)} %` : `--`
-    }
-  ]
 
   const [aprInfo, setAprInfo] = useState<any>({})
 
@@ -593,7 +565,12 @@ export default function StakingPoolDetail({
         <div className="flex ai-center">
           <TYPE.white fontSize={28} fontWeight={700}>
             <GoBackIcon onClick={() => history.goBack()}>
-              <i className="iconfont font-28 m-r-20 cursor-select font-bold">&#xe61a;</i>
+              <i
+                className="iconfont font-28 m-r-20 cursor-select font-bold hope-icon-common"
+                style={{ width: '28px', height: '28px' }}
+              >
+                &#xe615;
+              </i>
             </GoBackIcon>
             {`${tokenSymbol(chainWETH, pool?.tokens[0]) || '-'}/${tokenSymbol(chainWETH, pool?.tokens[1]) || '-'}`}
           </TYPE.white>
@@ -604,89 +581,119 @@ export default function StakingPoolDetail({
         <AutoColumn style={{ flex: 4 }}>
           <LightCard padding={'30px'} borderRadius={'20px'}>
             <RowBetween>
-              <Row>
+              <Row align="center">
                 <PieCharts
                   data={token0Percent && token1Percent ? [token0Percent, token1Percent] : [50, 50]}
                 ></PieCharts>
-                <div className="m-l-20">
+                <div className="m-l-30">
                   <Row>
                     <Circular></Circular>
                     <CurrencyLogo currency={pool?.tokens[0]} />
                     <TYPE.body marginLeft={9}>
                       {format.amountFormat(pool?.token0Value, 2)} {token0Symbol}
-                      {token0Percent ? ` ${Number(token0Percent).toFixed(2)}%` : '--'}
+                      {token0Percent ? ` (${Number(token0Percent).toFixed(2)}%)` : '--'}
                     </TYPE.body>
+                    {pool && (
+                      <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
+                        1.00 {token0Symbol} = {amountFormat(pool?.token1Price, 2)} {token1Symbol}
+                      </TYPE.body>
+                    )}
                   </Row>
-                  <Row margin={'35px 0 0 0'}>
+                  <Row margin={'16px 0 0 0'}>
                     <Circular color={'#8FFBAE'}></Circular>
                     <CurrencyLogo currency={pool?.tokens[1]} />
                     <TYPE.body marginLeft={9}>
                       {format.amountFormat(pool?.token1Value, 2)} {token1Symbol}
-                      {token1Percent ? ` ${Number(token1Percent).toFixed(2)}%` : '--'}
+                      {token1Percent ? ` (${Number(token1Percent).toFixed(2)}%)` : '--'}
                     </TYPE.body>
+                    {pool && (
+                      <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
+                        1.00 {token1Symbol} = {amountFormat(pool?.token0Price, 2)} {token0Symbol}
+                      </TYPE.body>
+                    )}
                   </Row>
                 </div>
               </Row>
-              <div style={{ width: '325px' }}>
-                <Row>
-                  <TYPE.body>APR</TYPE.body>
-                  <TYPE.green fontSize={30} marginLeft={12} fontFamily={'Arboria-Medium'}>
-                    {numeral(aprInfo.baseApr * 100, 2)}%
-                  </TYPE.green>
-                </Row>
-                <p className="m-t-15 text-normal">Fees APR: {numeral(aprInfo.feeApr * 100, 2)}% </p>
-                {aprInfo.ltApr && <p className="m-t-12 text-normal">Rewards APR: {numeral(aprInfo.ltApr * 100, 2)}%</p>}
-                {aprInfo.ltAmountPerDay && (
-                  <p className="m-t-12 text-normal">
-                    Daily Reward: {dayRewards ? dayRewards?.toFixed(2, { groupSeparator: ',' }) : '0'}
-                    LT
-                  </p>
-                )}
-              </div>
             </RowBetween>
-            {pool && (
-              <Row marginTop={30}>
-                <CurrencyLogo currency={pool?.tokens[1]} />
-                <TYPE.body marginLeft={9} marginRight={40}>
-                  1.00 {token0Symbol} = {amountFormat(pool?.token1Price, 2)} {token1Symbol}
-                </TYPE.body>
-                <CurrencyLogo currency={pool?.tokens[0]} />
-                <TYPE.body marginLeft={9}>
-                  {' '}
-                  1.00 {token1Symbol} = {amountFormat(pool?.token0Price, 2)} {token0Symbol}
-                </TYPE.body>
-              </Row>
-            )}
+
+            <div
+              className="flex p-20 m-t-30"
+              style={{ borderRadius: '10px', backgroundColor: '#33343D', border: '1px solid #3D3E46' }}
+            >
+              <div className="flex-1">
+                <p className="text-medium font-nor text-normal">TVL</p>
+                <p className="font-30 text-medium m-t-16">
+                  {pool ? `$${format.numFormat(format.amountFormat(Number(pool.tvl), 2), 2, true)}` : `--`}
+                </p>
+                <p className="flex jc-between ai-center font-nor m-t-22">
+                  <span className="text-normal">Volume(24H)</span>
+                  <span>
+                    {pairMore
+                      ? `$${format.numFormat(format.amountFormat(pairMore.oneDayVolumeUSD, 2), 2, true)}`
+                      : `--`}
+                  </span>
+                </p>
+                <p className="flex jc-between ai-center font-nor m-t-16">
+                  <span className="text-normal">Fees(24H)</span>
+                  <span>{pairMore ? `$${format.amountFormat(pairMore.oneDayVolumeUSD * 0.003, 2)}` : `--`}</span>
+                </p>
+                <p className="flex jc-between ai-center font-nor m-t-16">
+                  <span className="text-normal">Fees(7d)</span>
+                  <span>{pairMore ? `$${format.amountFormat(pairMore.oneWeekVolume, 2)}` : `--`}</span>
+                </p>
+              </div>
+              <div
+                style={{
+                  width: '1px',
+                  backgroundColor: '#3D3E46',
+                  boxShadow: '0px 4px 4px 0px rgba(0, 0, 0, 0.05)',
+                  margin: '0 20px'
+                }}
+              ></div>
+              <div className="flex-1">
+                <p className="text-medium font-nor text-normal">APR</p>
+                <TYPE.green fontSize={30} marginTop={16} fontFamily={'Arboria-Medium'}>
+                  {numeral(aprInfo.baseApr * 100, 2)}%
+                </TYPE.green>
+                <p className="flex jc-between ai-center font-nor m-t-22">
+                  <span className="text-normal">Fees APR:</span>
+                  <span>{numeral(aprInfo.feeApr * 100, 2)}%</span>
+                </p>
+                <p className="flex jc-between ai-center font-nor m-t-16">
+                  <span className="text-normal">Rewards APR</span>
+                  <span>{aprInfo.ltApr ? `${numeral(aprInfo.ltApr * 100, 2)}%` : `--`}</span>
+                </p>
+                <p className="flex jc-between ai-center font-nor m-t-16">
+                  <span className="text-normal">Daily Reward</span>
+                  <span>{dayRewards ? dayRewards?.toFixed(2, { groupSeparator: ',' }) : `0.00`} LT</span>
+                </p>
+              </div>
+            </div>
           </LightCard>
-          <Overview viewData={viewData} smallSize={true}></Overview>
           <LightCard style={{ marginTop: '30px' }} padding={'30px 30px 20px'} borderRadius={'20px'}>
             <div style={{ height: '435px' }}>
-              <div className="charts-tab">
-                <Row justify={'space-between'} align={'flex-start'}>
-                  <div>
-                    <TabWrapper flexW={33.333} left={tabIndex === 'Volume' ? 0 : tabIndex === 'TVL' ? 33.333 : 66.666}>
-                      <TabItem isActive={tabIndex === 'Volume'} onClick={() => tabChange('Volume')}>
-                        Volume
-                      </TabItem>
-                      <TabItem isActive={tabIndex === 'TVL'} onClick={() => tabChange('TVL')}>
-                        TVL
-                      </TabItem>
-                      <TabItem isActive={tabIndex === 'Fees'} onClick={() => tabChange('Fees')}>
-                        Fees
-                      </TabItem>
-                    </TabWrapper>
-                    <Row justify={'flex-start'} marginTop={20}>
-                      <TimeItem isActive={timeIndex === '24H'} onClick={() => timeChange('24H')}>
-                        24H
-                      </TimeItem>
-                      <TimeItem isActive={timeIndex === '1W'} onClick={() => timeChange('1W')}>
-                        1W
-                      </TimeItem>
-                      <TimeItem isActive={timeIndex === '1M'} onClick={() => timeChange('1M')}>
-                        1M
-                      </TimeItem>
-                    </Row>
-                  </div>
+              <div className="charts-tab flex jc-between ai-center">
+                <TabWrapper flexW={33.333} left={tabIndex === 'Volume' ? 0 : tabIndex === 'TVL' ? 33.333 : 66.666}>
+                  <TabItem isActive={tabIndex === 'Volume'} onClick={() => tabChange('Volume')}>
+                    Volume
+                  </TabItem>
+                  <TabItem isActive={tabIndex === 'TVL'} onClick={() => tabChange('TVL')}>
+                    TVL
+                  </TabItem>
+                  <TabItem isActive={tabIndex === 'Fees'} onClick={() => tabChange('Fees')}>
+                    Fees
+                  </TabItem>
+                </TabWrapper>
+                <Row justify={'flex-end'}>
+                  <TimeItem isActive={timeIndex === '24H'} onClick={() => timeChange('24H')}>
+                    24H
+                  </TimeItem>
+                  <TimeItem isActive={timeIndex === '1W'} onClick={() => timeChange('1W')}>
+                    1W
+                  </TimeItem>
+                  <TimeItem isActive={timeIndex === '1M'} onClick={() => timeChange('1M')}>
+                    1M
+                  </TimeItem>
                 </Row>
               </div>
               {tabIndex === 'TVL' ? (

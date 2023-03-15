@@ -3,6 +3,8 @@ import Table from 'components/antd/Table'
 import { ColumnCenter } from '../../../../components/Column'
 import Circle from '../../../../assets/images/blue-loader.svg'
 
+import Tips from 'components/Tips'
+
 import { useActiveWeb3React } from 'hooks'
 import React, { useCallback, useEffect, useState } from 'react'
 import { useHistory } from 'react-router-dom'
@@ -21,6 +23,7 @@ import { Pagination } from 'antd'
 import { ArrowUpRight } from 'react-feather'
 import { AutoColumn } from '../../../../components/Column'
 import { SymbolLogo } from 'components/CurrencyLogo'
+import { DOCS_URL } from 'constants/config'
 
 function toFixed(val: string | number, length = 2) {
   return format.amountFormat(val, length)
@@ -148,7 +151,12 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       }
     },
     {
-      title: 'Boost',
+      title: (
+        <>
+          Boost{' '}
+          <Tips title="When the number of a user's veLT changes, the values of the Current Boost and Future Boost may become inconsistent. To ensure that the Future Boost takes effect, the user needs to actively update the value."></Tips>
+        </>
+      ),
       dataIndex: 'currentBoost',
       key: 'currentBoost',
       width: 150,
@@ -288,7 +296,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
                 Add Liquidity
               </ButtonPrimary>
               <a
-                href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/usdhope-reserve-pools-hrp/understanding-usdhope-reserve-pools"
+                href={DOCS_URL['ReservePools']}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-center m-t-20 font-nor text-normal flex ai-center jc-center"

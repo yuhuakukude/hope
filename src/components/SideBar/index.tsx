@@ -33,7 +33,7 @@ const Bar = styled('div')`
 `
 
 const SidebarIcon = styled('div')`
-  color: white;
+  color: #a8a8aa;
   font-size: 20px;
   white-space: nowrap;
   padding: 0 40px;
@@ -43,6 +43,7 @@ const SidebarIcon = styled('div')`
 
   :hover {
     cursor: pointer;
+    color: #ffffff;
   }
 `
 
@@ -71,13 +72,27 @@ const LogoText = styled(PrimaryText)`
   font-size: 30px;
 `
 
-const TabBox = styled(Column)``
+const TabBox = styled(Column)<{ top?: number }>`
+  position: relative;
+  &::before {
+    content: ' ';
+    height: 60px;
+    top: ${({ top }) => (top ? top + 'px' : 0)};
+    left: 20px;
+    border-top-left-radius: 30px;
+    border-bottom-left-radius: 30px;
+    position: absolute;
+    width: calc(100% - 20px);
+    transition: all ease 0.25s;
+    background-color: rgba(12, 12, 13, 1);
+  }
+`
 
 export default function SideBar() {
   const location = useLocation()
   const ROUTERS = [
-    { title: 'Portfolio', icon: '&#xe609;', baseRouter: '/portfolio', router: '/portfolio' },
-    { title: 'Staking', icon: '&#xe606;', baseRouter: '/hope', router: '/hope/staking' },
+    { title: 'Portfolio', icon: '&#xe627;', baseRouter: '/portfolio', router: '/portfolio' },
+    { title: 'Staking', icon: '&#xe626;', baseRouter: '/hope', router: '/hope/staking' },
     { title: 'HopeSwap', icon: '&#xe605;', baseRouter: '/swap', router: '/swap/exchange' },
     { title: 'LT & DAO', icon: '&#xe608;', baseRouter: '/dao', router: '/dao/gomboc' }
   ]
@@ -92,32 +107,32 @@ export default function SideBar() {
           <Logo style={{ alignSelf: 'center', marginRight: '5px' }} />
           <LogoText className="sidebar-transition">HOPE</LogoText>
         </div>
-        <TabBox>
+        <TabBox top={currentTab() * 60}>
           {ROUTERS.map(({ title, router, icon }, index) => {
             return (
               <NavLink key={index} to={router}>
                 <SidebarIcon key={index} className={currentTab() === index ? 'SidebarOnSelect' : ''}>
-                  <span className="sidebar-select-arc">
-                    <span className="sidebar-select-arc-mask"></span>
-                  </span>
-                  <Icon className="iconfont" dangerouslySetInnerHTML={{ __html: icon }} />
+                  <Icon className="iconfont font-20" dangerouslySetInnerHTML={{ __html: icon }} />
                   <SidebarText className="sidebar-transition">{title}</SidebarText>
-                  <span className="sidebar-select-arc sidebar-select-arc-2">
-                    <span className="sidebar-select-arc-mask"></span>
-                  </span>
                 </SidebarIcon>
               </NavLink>
             )
           })}
+          <span className="sidebar-select-arc" style={{ top: `${-10 + currentTab() * 60}px` }}>
+            <span className="sidebar-select-arc-mask"></span>
+          </span>
+          <span className="sidebar-select-arc sidebar-select-arc-2" style={{ top: `${60 + currentTab() * 60}px` }}>
+            <span className="sidebar-select-arc-mask"></span>
+          </span>
         </TabBox>
       </Column>
       <Column style={{ width: '100%' }}>
         <AutoColumn gap="10px" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-          <Twitter />
-          <Medium />
-          <Telegram />
-          <Discord />
-          <Email />
+          <Twitter className="icon-link" />
+          <Medium className="icon-link" />
+          <Telegram className="icon-link" />
+          <Discord className="icon-link" />
+          <Email className="icon-link" />
         </AutoColumn>
 
         <AutoColumn gap={'18px'} style={{ marginTop: '30px' }}>

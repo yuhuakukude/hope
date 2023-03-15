@@ -20,6 +20,7 @@ import TransactionConfirmationModal, {
 import './index.scss'
 import { ButtonPrimary } from '../../../../components/Button'
 import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
+import { DOCS_URL } from 'constants/config'
 
 export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (stHope: string, lt: string) => void }) {
   const { account, chainId } = useActiveWeb3React()
@@ -251,7 +252,8 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
               <div className="my-locked-lt-row2">
                 <div className="my-locked-lt-col">
                   <div className="my-locked-lt-title">
-                    Claimable veLT Held Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
+                    Claimable veLT Held Fees{' '}
+                    <Tips title="25% of the platform fees will be distributed among all veLT holders."></Tips>
                   </div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">
@@ -277,7 +279,8 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                 </div>
                 <div className="my-locked-lt-col">
                   <div className="my-locked-lt-title">
-                    Claimable veLT voting Fees <Tips title="Claimable veLT Held Fees Tips"></Tips>
+                    Claimable veLT voting Fees{' '}
+                    <Tips title="All users who voted using veLT as their liquidity mining gauge will participate in the distribution of an additional 25% of the platform's fee revenue."></Tips>
                   </div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">≈ {votingFee.stHope} stHOPE</span>
@@ -314,7 +317,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                 Get veLT
               </ButtonPrimary>
               <a
-                href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt"
+                href={DOCS_URL['LightToken']}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-center m-t-20 font-nor text-normal flex ai-center jc-center"

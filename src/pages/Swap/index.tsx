@@ -471,14 +471,23 @@ export default function Swap({ history }: RouteComponentProps) {
             <AutoColumn justify="space-between">
               <AutoRow justify={isExpertMode ? 'space-between' : 'center'} style={{ padding: '0 1rem' }}>
                 <ArrowWrapper clickable>
-                  <ArrowDownCircle
+                  {/* <ArrowDownCircle
                     size="20"
                     onClick={() => {
                       setApprovalSubmitted(false) // reset 2 step UI for approvals
                       onSwitchTokens()
                     }}
                     color={currencies[Field.INPUT] && currencies[Field.OUTPUT] ? theme.primary1 : theme.text2}
-                  />
+                  /> */}
+                  <i
+                    className="iconfont hope-icon-common font-28"
+                    onClick={() => {
+                      setApprovalSubmitted(false) // reset 2 step UI for approvals
+                      onSwitchTokens()
+                    }}
+                  >
+                    &#xe62f;
+                  </i>
                 </ArrowWrapper>
                 {recipient === null && !showWrap && isExpertMode ? (
                   <LinkStyledButton id="add-recipient-button" onClick={() => onChangeRecipient('')}>

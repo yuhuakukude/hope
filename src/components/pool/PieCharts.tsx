@@ -15,12 +15,12 @@ export default function PieCharts({ data, size }: { data?: any; size?: number })
           silent: true,
           type: 'pie',
           color: ['#E4C989', '#66FFA6'],
-          radius: ['50%', '100%'],
+          radius: ['45%', '100%'],
           avoidLabelOverlap: false,
           itemStyle: {
-            borderRadius: size ? 1 : 5,
+            borderRadius: size ? 1 : 4,
             borderColor: '#26262C',
-            borderWidth: size ? 2 : 5
+            borderWidth: size ? 2 : 4
           },
           label: {
             show: false,
@@ -39,5 +39,5 @@ export default function PieCharts({ data, size }: { data?: any; size?: number })
       window.removeEventListener('resize', () => handleResizeChart(pieChart))
     }
   }, [data, size])
-  return <div style={{ width: `${size ? size : 120}px`, height: `${size ? size : 120}px` }} ref={chartRef} />
+  return <div style={{ width: `${size ? size : 80}px`, height: `${size ? size : 80}px` }} ref={chartRef} />
 }
