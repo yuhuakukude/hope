@@ -106,7 +106,7 @@ export default function LockerEcharts() {
                 }
               },
               axisTick: {
-                show: false
+                alignWithLabel: true
               }
             },
             yAxis: {
