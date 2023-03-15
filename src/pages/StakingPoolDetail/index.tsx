@@ -565,7 +565,12 @@ export default function StakingPoolDetail({
         <div className="flex ai-center">
           <TYPE.white fontSize={28} fontWeight={700}>
             <GoBackIcon onClick={() => history.goBack()}>
-              <i className="iconfont font-28 m-r-20 cursor-select font-bold">&#xe61a;</i>
+              <i
+                className="iconfont font-28 m-r-20 cursor-select font-bold hope-icon-common"
+                style={{ width: '28px', height: '28px' }}
+              >
+                &#xe615;
+              </i>
             </GoBackIcon>
             {`${tokenSymbol(chainWETH, pool?.tokens[0]) || '-'}/${tokenSymbol(chainWETH, pool?.tokens[1]) || '-'}`}
           </TYPE.white>

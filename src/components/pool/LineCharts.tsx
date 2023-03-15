@@ -99,6 +99,7 @@ export default function LineCharts({
           data: yData,
           type: 'line',
           showSymbol: false,
+          smooth: true,
           lineStyle: {
             color: '#E4C989'
           },

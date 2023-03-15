@@ -132,6 +132,7 @@ export default function LockerEcharts() {
               {
                 type: 'line',
                 showSymbol: false,
+                smooth: true,
                 symbolSize: 10,
                 data: valueArr,
                 lineStyle: {
