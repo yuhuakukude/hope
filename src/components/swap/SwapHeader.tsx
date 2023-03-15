@@ -2,7 +2,7 @@ import React from 'react'
 import styled from 'styled-components'
 import { RowBetween } from '../Row'
 import { StyledInternalLink, TYPE } from '../../theme'
-import { Settings } from 'react-feather'
+// import { Settings } from 'react-feather'
 
 const StyledSwapHeader = styled.div`
   padding: 30px 20px 0px 20px;
@@ -12,18 +12,18 @@ const StyledSwapHeader = styled.div`
   color: ${({ theme }) => theme.text2};
 `
 
-const StyledMenuIcon = styled(Settings)`
-  height: 20px;
-  width: 20px;
+// const StyledMenuIcon = styled(Settings)`
+//   height: 20px;
+//   width: 20px;
 
-  > * {
-    stroke: ${({ theme }) => theme.text2};
-  }
+//   > * {
+//     stroke: ${({ theme }) => theme.text2};
+//   }
 
-  :hover {
-    opacity: 0.7;
-  }
-`
+//   :hover {
+//     opacity: 0.7;
+//   }
+// `
 
 export default function SwapHeader() {
   return (
@@ -32,8 +32,9 @@ export default function SwapHeader() {
         <TYPE.white fontSize={20} fontWeight={500}>
           Swap
         </TYPE.white>
-        <StyledInternalLink to={'/swap/settings'}>
-          <StyledMenuIcon />
+        <StyledInternalLink to={'/swap/settings'} style={{ textDecoration: 'none' }}>
+          {/* <StyledMenuIcon /> */}
+          <i className="iconfont font-20 hope-icon-common p-3">&#xe60a;</i>
         </StyledInternalLink>
       </RowBetween>
     </StyledSwapHeader>

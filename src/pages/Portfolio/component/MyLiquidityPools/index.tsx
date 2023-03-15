@@ -21,6 +21,7 @@ import { Pagination } from 'antd'
 import { ArrowUpRight } from 'react-feather'
 import { AutoColumn } from '../../../../components/Column'
 import { SymbolLogo } from 'components/CurrencyLogo'
+import { DOCS_URL } from 'constants/config'
 
 function toFixed(val: string | number, length = 2) {
   return format.amountFormat(val, length)
@@ -288,7 +289,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
                 Add Liquidity
               </ButtonPrimary>
               <a
-                href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/usdhope-reserve-pools-hrp/understanding-usdhope-reserve-pools"
+                href={DOCS_URL['ReservePools']}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-center m-t-20 font-nor text-normal flex ai-center jc-center"

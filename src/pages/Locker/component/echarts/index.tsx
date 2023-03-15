@@ -46,6 +46,11 @@ export default function LockerEcharts() {
             const valItem = new TokenAmount(LT[chainId ?? 1], e.lightLockedTotal).toFixed(2)
             valueArr.unshift(Number(valItem))
           })
+          const minAmount = valueArr.length > 0 ? Math.min(...valueArr) : 0
+          let maxAmount = valueArr.length > 0 ? Math.max(...valueArr) : 1000
+          if (maxAmount > 1000) {
+            maxAmount = maxAmount + (maxAmount - minAmount) / 7
+          }
           setIsHasData(valueArr.length <= 0)
           const option = {
             grid: { top: '6%', bottom: '10%', right: '2%' },
@@ -104,9 +109,10 @@ export default function LockerEcharts() {
             },
             yAxis: {
               type: 'value',
-              min: valueArr.length > 0 ? Math.max(...valueArr) : 0,
-              max: valueArr.length > 0 ? Math.min(...valueArr) : 1000,
+              min: minAmount,
+              max: maxAmount,
               splitNumber: 7,
+
               splitLine: {
                 show: valueArr.length > 0,
                 lineStyle: { color: ['#606266'], width: 1, type: 'solid' }

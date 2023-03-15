@@ -449,7 +449,7 @@ const VotedList = ({
                 <SymbolLogo size={'16px'} symbol={`${token0}`} />
                 <p className="m-l-8">{token0}</p>
               </div>
-              <div className="flex ai-center m-t-">
+              <div className="flex ai-center m-t-12">
                 <SymbolLogo size={'16px'} symbol={`${token1}`} />
                 <p className="m-l-8">{token1}</p>
               </div>
@@ -473,8 +473,8 @@ const VotedList = ({
       render: (text: string, record: any) => {
         return (
           <>
-            <p>{`${allocatedView[record.gauge.id].view} %`}</p>
-            <p>of my voting power</p>
+            <p className="lh1">{`${allocatedView[record.gauge.id].view} %`}</p>
+            <p className="m-t-12 lh1">of my voting power</p>
           </>
         )
       }
@@ -501,8 +501,8 @@ const VotedList = ({
       render: (text: string, record: any) => {
         return (
           <>
-            <p>Future: {allocatedView[record.gauge.id].future}</p>
-            <p>Current: {pointView[record.gauge.id]}</p>
+            <p className="lh1">Future: {allocatedView[record.gauge.id].future}</p>
+            <p className="m-t-12 lh1">Current: {pointView[record.gauge.id]}</p>
           </>
         )
       }
@@ -514,8 +514,8 @@ const VotedList = ({
       render: (text: string, record: any) => {
         return (
           <>
-            <p>≈ {rewardsView[record.gauge.id].view} stHOPE</p>
-            <p>≈ ${rewardsView[record.gauge.id].usdOfValue}</p>
+            <p className="lh1">≈ {rewardsView[record.gauge.id].view} stHOPE</p>
+            <p className="m-t-12 lh1">≈ ${rewardsView[record.gauge.id].usdOfValue}</p>
           </>
         )
       }

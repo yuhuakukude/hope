@@ -19,10 +19,18 @@ export default function usePairsInfo(
   page: number,
   currentPage: number,
   searchType = PAIR_SEARCH.ALL,
-  searchValue = ''
+  searchValue = '',
+  reload: number
 ) {
   const { account, chainId } = useActiveWeb3React()
-  const { result: allPairs, total, loading } = useBasePairs(page, currentPage, searchType, searchValue, account ?? '')
+  const { result: allPairs, total, loading } = useBasePairs(
+    page,
+    currentPage,
+    searchType,
+    searchValue,
+    account ?? '',
+    reload
+  )
   const veltContract = useLockerContract()
   const veltBalance = useSingleCallResult(
     veltContract,

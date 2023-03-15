@@ -217,10 +217,10 @@ export default function FullPositionCard({
 
   const actions: TitleTipsProps[] = [
     {
-      label: 'Manage Positions',
+      label: 'Liquidity Management',
       value: 'Manage Positions',
       onClick: data => {
-        history.push(`/swap/liquidity/manager/${pairInfo.tokens[0].address}/${pairInfo.tokens[1].address}`)
+        history.push(`/swap/liquidity/manager/deposit/${pairInfo.tokens[0].address}/${pairInfo.tokens[1].address}`)
       }
     },
     {

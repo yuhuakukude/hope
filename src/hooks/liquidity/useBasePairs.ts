@@ -17,7 +17,8 @@ export default function useBasePairs(
   currentPage: number,
   searchType: PAIR_SEARCH,
   searchValue = '',
-  account: string
+  account: string,
+  reload: number
 ) {
   const { chainId } = useActiveWeb3React()
   const [result, setResult] = useState<BasePair[]>([])
@@ -46,7 +47,7 @@ export default function useBasePairs(
         console.warn(error)
       }
     })()
-  }, [account, chainId, currentPage, pageSize, searchType, searchValue])
+  }, [account, chainId, currentPage, pageSize, searchType, searchValue, reload])
 
   useEffect(() => {
     ;(async () => {

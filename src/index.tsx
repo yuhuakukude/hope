@@ -1,6 +1,6 @@
 import { createWeb3ReactRoot, Web3ReactProvider } from '@web3-react/core'
 import 'inter-ui'
-import React, { StrictMode } from 'react'
+import React, { Fragment } from 'react'
 import { isMobile } from 'react-device-detect'
 import ReactDOM from 'react-dom'
 import ReactGA from 'react-ga'
@@ -63,7 +63,7 @@ function Updaters() {
 }
 
 ReactDOM.render(
-  <StrictMode>
+  <Fragment>
     <FixedGlobalStyle />
     <Web3ReactProvider getLibrary={getLibrary}>
       <Web3ProviderNetwork getLibrary={getLibrary}>
@@ -82,7 +82,7 @@ ReactDOM.render(
         </Blocklist>
       </Web3ProviderNetwork>
     </Web3ReactProvider>
-  </StrictMode>,
+  </Fragment>,
   document.getElementById('root')
 )
 

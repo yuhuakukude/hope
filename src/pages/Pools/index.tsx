@@ -3,7 +3,7 @@ import styled from 'styled-components'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import Row, { AutoRow, RowBetween, RowFixed } from '../../components/Row'
 import { CustomLightSpinner, ExternalLink, TYPE } from '../../theme'
-import { ButtonOutlined, ButtonPrimary } from '../../components/Button'
+import { ButtonGray, ButtonOutlined, ButtonPrimary } from '../../components/Button'
 import { TabItem, TabWrapper } from '../../components/Tab'
 import usePairsInfo, { PAIR_SEARCH } from '../../hooks/usePairInfo'
 import PoolCard from '../../components/pool/PoolCard'
@@ -21,6 +21,8 @@ import { LT } from '../../constants'
 import { Switch } from 'antd'
 import NoData from '../../assets/images/no_data.png'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
+import useTheme from '../../hooks/useTheme'
+import { DOCS_URL } from 'constants/config'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
@@ -81,6 +83,7 @@ const positionTitles = [
   { value: 'Actions', weight: 0.5 }
 ]
 export default function Pools() {
+  const theme = useTheme()
   const { account, chainId } = useActiveWeb3React()
   const inputRef = useRef<HTMLInputElement>()
   const [searchValue, setSearchValue] = useState('')
@@ -89,7 +92,8 @@ export default function Pools() {
   const [pageSize, setPageSize] = useState<number>(10)
   const toggleWalletModal = useWalletModalToggle()
   const history = useHistory()
-  const { pairInfos, total, loading } = usePairsInfo(pageSize, currentPage, searchType, searchValue)
+  const [reload, setReload] = useState(0)
+  const { pairInfos, total, loading } = usePairsInfo(pageSize, currentPage, searchType, searchValue, reload)
 
   const ltAddress = useMemo(() => {
     return [LT[chainId ?? 1].address.toString()]
@@ -120,7 +124,7 @@ export default function Pools() {
               <ExternalLink
                 style={{ color: 'white', fontSize: '16px', textDecoration: 'none' }}
                 target="_blank"
-                href="https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/usdhope-token"
+                href={DOCS_URL['HopeToken']}
               >
                 <TYPE.link fontSize={14}>Read more about providing liquidity</TYPE.link>
               </ExternalLink>
@@ -153,7 +157,7 @@ export default function Pools() {
               style={{ width: `400px`, fontSize: '16px', textDecoration: 'none' }}
               target="_blank"
               rel="noopener noreferrer"
-              href={`https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/`}
+              href={DOCS_URL['WelcomeToHope']}
             >
               <ButtonOutlined primary mt={20}>
                 <TYPE.link textAlign="center">Learn about providing liquidity</TYPE.link>
@@ -246,7 +250,7 @@ export default function Pools() {
           </TableTitleWrapper>
         </TableWrapper>
       )}
-      {searchType === PAIR_SEARCH.USER_LIQUIDITY && account && (
+      {searchType !== PAIR_SEARCH.ALL && account && (
         <TableWrapper>
           <TableTitleWrapper>
             {positionTitles.map(({ value, weight }, index) => (
@@ -276,7 +280,7 @@ export default function Pools() {
               />
             ))
           ) : (
-            <div style={{ width: '115px', margin: '60px auto' }}>
+            <AutoColumn gap={'15px'} style={{ width: '115px', margin: '60px auto' }}>
               <div
                 style={{
                   width: '60px',
@@ -286,10 +290,13 @@ export default function Pools() {
                   backgroundSize: 'contain'
                 }}
               ></div>
-              <p className="font-nor m-t-15" style={{ color: '#63636A' }}>
+              <p className="font-nor" style={{ color: '#63636A' }}>
                 No data found
               </p>
-            </div>
+              <ButtonGray style={{ color: theme.primary1 }} height={42} mt={15} onClick={() => setReload(reload + 1)}>
+                Reload
+              </ButtonGray>
+            </AutoColumn>
           )}
         </>
       ) : (

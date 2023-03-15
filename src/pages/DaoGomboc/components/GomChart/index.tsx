@@ -32,7 +32,7 @@ const GomChart = ({ votiingData }: GomChartProps) => {
               const num = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.getGaugeWeight))
               const re = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.gaugeRelativeWeight))
               const ra = re.multiply(JSBI.BigInt(100))
-              const rav = ra.toFixed(2)
+              const rav = ra.toFixed(2, { groupSeparator: '' }, 0)
               const item = {
                 name: e.name as string,
                 value: num.toFixed(2),

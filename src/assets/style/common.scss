@@ -440,3 +440,16 @@ a:hover {
   border-radius: 10px !important;
   box-shadow: 0px 2px 10px 0px rgba(0, 0, 0, 0.2) !important;
 }
+
+.hope-icon-common{
+  color: #A8A8AA;
+  border-radius: 6px;
+  &:hover{
+    color: #fff;
+    background-color: #3D3E46;
+  }
+  &:active{
+    color: #fff;
+    background-color: #5A5A5B;
+  }
+}

@@ -67,3 +67,24 @@
   width: calc(100% - 20px);
   background-color: rgba(12, 12, 13, 1);
 }
+
+.icon-link{
+  background-color: #3D3E46;
+  border-radius: 50%;
+  cursor: pointer;
+  path{
+    fill: #A8A8AA;
+  }
+  &:hover{
+    path{
+      fill: #fff;
+     }
+    background-color: #3D3E46;
+  }
+  &:active{
+    path{
+      fill: #fff;
+    }
+    background-color: #5A5A5B;
+  }
+}

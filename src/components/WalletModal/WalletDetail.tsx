@@ -106,7 +106,7 @@ export default function WalletDetail({
             <AutoRowBetween style={{ alignItems: 'center', color: theme.text1 }}>
               {account && <Copy toCopy={account} />}
               <ExternalLink href={`${getEtherscanLink(chainId, account, 'address')}`}>
-                <i className="iconfont" style={{ fontSize: '18px', margin: '0 21px', color: '#fff' }}>
+                <i className="iconfont hope-icon-common" style={{ fontSize: '18px', margin: '0 21px', padding: '5px' }}>
                   &#xe60e;
                 </i>
               </ExternalLink>
@@ -116,10 +116,10 @@ export default function WalletDetail({
                   toggleWalletModal()
                   deactivate()
                 }}
-                className="iconfont"
-                style={{ fontSize: '18px', color: '#fff', cursor: 'pointer' }}
+                className="iconfont hope-icon-common"
+                style={{ fontSize: '18px', cursor: 'pointer', padding: '5px' }}
               >
-                &#xe605;
+                &#xe629;
               </i>
             </AutoRowBetween>
           </div>

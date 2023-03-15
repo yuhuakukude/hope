@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import AddLiquidity from '../AddLiquidity'
 import { RouteComponentProps, useHistory } from 'react-router-dom'
 import AppBody from '../AppBody'
@@ -10,6 +10,10 @@ import { RowBetween, RowFixed } from '../../components/Row'
 import { TabItem, TabWrapper } from '../../components/Tab'
 import RemoveLiquidity from '../RemoveLiquidity'
 import Tips from './component/Tips'
+import { Field as mintField, typeInput as mintTypeInput } from '../../state/mint/actions'
+import { Field as burnField, typeInput as burnTypeInput } from '../../state/burn/actions'
+import { useDispatch } from 'react-redux'
+import { AppDispatch } from '../../state'
 // import { Tooltip } from 'antd'
 // import { Info } from 'react-feather'
 
@@ -33,7 +37,13 @@ export default function LiquidityManager({
   }
 }: RouteComponentProps<{ currencyIdA?: string; currencyIdB?: string }>) {
   const history = useHistory()
+  const dispatch = useDispatch<AppDispatch>()
   const isRemove = history.location.pathname.includes('/withdraw')
+  useEffect(() => {
+    dispatch(mintTypeInput({ field: mintField.CURRENCY_A, typedValue: '', noLiquidity: false }))
+    dispatch(mintTypeInput({ field: mintField.CURRENCY_B, typedValue: '', noLiquidity: false }))
+    dispatch(burnTypeInput({ field: burnField.LIQUIDITY_PERCENT, typedValue: '' }))
+  }, [dispatch])
   return (
     <PageWrapper gap={'50px'}>
       <AddRemoveTabs />
