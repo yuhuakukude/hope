@@ -290,7 +290,6 @@ export function useDerivedUnstakeInfo(
 export interface StakeInfo {
   id: string
   totalStakedBalance: string
-  totalStakedBalanceUSD: string
   pair: {
     id: boolean
     reserveUSD: string
@@ -428,7 +427,6 @@ export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMy
   const query = `{
     poolGauges(first: 500, orderDirection: ${sort}) {
     id
-    totalStakedBalanceUSD
     totalStakedBalance
     pair{
       id
@@ -543,7 +541,6 @@ export async function fetchStakingPool(stakingAddress: string): Promise<PoolInfo
   const query = `{
     poolGauges(where: {id:"${stakingAddress}"}) {
     id
-    totalStakedBalanceUSD
     totalStakedBalance
     pair{
       id
