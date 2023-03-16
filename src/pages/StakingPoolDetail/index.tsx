@@ -593,11 +593,6 @@ export default function StakingPoolDetail({
                       {format.amountFormat(pool?.token0Value, 2)} {token0Symbol}
                       {token0Percent ? ` (${Number(token0Percent).toFixed(2)}%)` : '--'}
                     </TYPE.body>
-                    {pool && (
-                      <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
-                        1.00 {token0Symbol} = {amountFormat(pool?.token1Price, 2)} {token1Symbol}
-                      </TYPE.body>
-                    )}
                   </Row>
                   <Row margin={'16px 0 0 0'}>
                     <Circular color={'#8FFBAE'}></Circular>
@@ -606,6 +601,17 @@ export default function StakingPoolDetail({
                       {format.amountFormat(pool?.token1Value, 2)} {token1Symbol}
                       {token1Percent ? ` (${Number(token1Percent).toFixed(2)}%)` : '--'}
                     </TYPE.body>
+                  </Row>
+                </div>
+                <div>
+                  <Row>
+                    {pool && (
+                      <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
+                        1.00 {token0Symbol} = {amountFormat(pool?.token1Price, 2)} {token1Symbol}
+                      </TYPE.body>
+                    )}
+                  </Row>
+                  <Row margin={'25px 0 0 0'}>
                     {pool && (
                       <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
                         1.00 {token1Symbol} = {amountFormat(pool?.token0Price, 2)} {token0Symbol}
