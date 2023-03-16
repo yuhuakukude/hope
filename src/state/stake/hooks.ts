@@ -424,7 +424,12 @@ export async function fetchTotalAmount(): Promise<any> {
   }
 }
 
-export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMyVote: boolean): Promise<PoolInfo[]> {
+export async function fetchStakeList(
+  chainId: any,
+  account: string,
+  sort: 'asc' | 'desc',
+  isMyVote: boolean
+): Promise<PoolInfo[]> {
   const query = `{
     poolGombocs(first: 500, orderDirection: ${sort}) {
     id
@@ -490,18 +495,8 @@ export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMy
       : response.data.poolGombocs
     const poolInfos = pools.map((pool: StakeInfo) => {
       const stakingRewardAddress = pool.id
-      const token0 = new Token(
-        ChainId.SEPOLIA,
-        pool.pair.token0.id,
-        Number(pool.pair.token0.decimals),
-        pool.pair.token0.symbol
-      )
-      const token1 = new Token(
-        ChainId.SEPOLIA,
-        pool.pair.token1.id,
-        Number(pool.pair.token1.decimals),
-        pool.pair.token1.symbol
-      )
+      const token0 = new Token(chainId, pool.pair.token0.id, Number(pool.pair.token0.decimals), pool.pair.token0.symbol)
+      const token1 = new Token(chainId, pool.pair.token1.id, Number(pool.pair.token1.decimals), pool.pair.token1.symbol)
       const tokens = [token0, token1]
       const token0Amount = tryParseAmount(pool.pair.reserve0, tokens[0])
       const token1Amount = tryParseAmount(pool.pair.reserve1, tokens[1])
@@ -539,7 +534,7 @@ export async function fetchStakeList(account: string, sort: 'asc' | 'desc', isMy
   }
 }
 
-export async function fetchStakingPool(stakingAddress: string): Promise<PoolInfo | undefined> {
+export async function fetchStakingPool(stakingAddress: string, chainId: any): Promise<PoolInfo | undefined> {
   const query = `{
   poolGombocs(where: {id:"${stakingAddress}"}) {
     id
@@ -569,18 +564,8 @@ export async function fetchStakingPool(stakingAddress: string): Promise<PoolInfo
   try {
     const response = await postQuery(SUBGRAPH, query)
     const pool = response.data.poolGombocs[0]
-    const token0 = new Token(
-      ChainId.SEPOLIA,
-      pool.pair.token0.id,
-      Number(pool.pair.token0.decimals),
-      pool.pair.token0.symbol
-    )
-    const token1 = new Token(
-      ChainId.SEPOLIA,
-      pool.pair.token1.id,
-      Number(pool.pair.token1.decimals),
-      pool.pair.token1.symbol
-    )
+    const token0 = new Token(chainId, pool.pair.token0.id, Number(pool.pair.token0.decimals), pool.pair.token0.symbol)
+    const token1 = new Token(chainId, pool.pair.token1.id, Number(pool.pair.token1.decimals), pool.pair.token1.symbol)
     const tokens = [token0, token1]
     const token0Amount = tryParseAmount(pool.pair.reserve0, tokens[0]) as TokenAmount
     const token1Amount = tryParseAmount(pool.pair.reserve1, tokens[1]) as TokenAmount
@@ -778,7 +763,12 @@ export interface TimeInfo {
   dayVolumeChange: number
 }
 
-export async function fetchPairsList(account: string, sort: 'asc' | 'desc', orderBy: string): Promise<GraphPairInfo[]> {
+export async function fetchPairsList(
+  chainId: any,
+  account: string,
+  sort: 'asc' | 'desc',
+  orderBy: string
+): Promise<GraphPairInfo[]> {
   try {
     const utcCurrentTime = dayjs()
     const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
@@ -843,8 +833,8 @@ export async function fetchPairsList(account: string, sort: 'asc' | 'desc', orde
         oneWeekVolume: Number(oneWeekVolume),
         weeklyVolumeChange: Number(weeklyVolumeChange),
         totalVolume: Number(pair.reserveUSD),
-        token0: new Token(ChainId.SEPOLIA, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol),
-        token1: new Token(ChainId.SEPOLIA, pair.token1.id, Number(pair.token1.decimals), pair.token1.symbol),
+        token0: new Token(chainId, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol),
+        token1: new Token(chainId, pair.token1.id, Number(pair.token1.decimals), pair.token1.symbol),
         volume0: Number(pair.volumeToken0),
         volume1: Number(pair.volumeToken1),
         reserve0: Number(pair.reserve0),
@@ -857,14 +847,14 @@ export async function fetchPairsList(account: string, sort: 'asc' | 'desc', orde
   }
 }
 
-export async function fetchPairPool(stakingAddress: string): Promise<PairDetail | undefined> {
+export async function fetchPairPool(stakingAddress: string, chainId: any): Promise<PairDetail | undefined> {
   try {
     const res = await postQuery(SUBGRAPH, PAIR_QUERY({ stakingAddress }))
     const pair = res.data.pairs[0]
 
     const gombocAddress = await GombocApi.getGombocsAddress({ pairAddress: pair.id })
-    const token0 = new Token(ChainId.SEPOLIA, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol)
-    const token1 = new Token(ChainId.SEPOLIA, pair.token1.id, Number(pair.token1.decimals), pair.token1.symbol)
+    const token0 = new Token(chainId, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol)
+    const token1 = new Token(chainId, pair.token1.id, Number(pair.token1.decimals), pair.token1.symbol)
     const tokens = [token0, token1]
     const token0Amount = tryParseAmount(pair.reserve0, tokens[0]) as TokenAmount
     const token1Amount = tryParseAmount(pair.reserve1, tokens[1]) as TokenAmount
