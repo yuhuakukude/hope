@@ -89,7 +89,7 @@ export function useTokenBalancesWithLoadingIndicator(
               return memo
             }, {})
           : {},
-      [address, validatedTokens, stHopeAddress, stHopeBalance?.result, balances]
+      [address, validatedTokens, stHopeAddress, stHopeBalance, balances]
     ),
     anyLoading
   ]

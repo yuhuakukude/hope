@@ -155,7 +155,7 @@ export default function MyHOPEStaking() {
       width: 120,
       align: 'center',
       render: (text: string, record: IStaking) => {
-        const add = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`
+        // const add = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`
         const options: TitleTipsProps[] = [
           {
             label: 'Stake',
@@ -187,7 +187,7 @@ export default function MyHOPEStaking() {
             label: 'Yield Boost',
             value: 'Yield Boost',
             onClick: () => {
-              history.push(`/dao/gomboc?gomboc=${add.toLocaleLowerCase()}`) // TODO Sure
+              history.push(`/dao/locker`) // TODO Sure
             }
           }
         ]
