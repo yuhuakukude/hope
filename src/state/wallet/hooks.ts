@@ -1,12 +1,12 @@
-import { UNI } from './../../constants/index'
+import { ST_HOPE, UNI } from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import ERC20_INTERFACE from '../../constants/abis/erc20'
 import { useAllTokens } from '../../hooks/Tokens'
 import { useActiveWeb3React } from '../../hooks'
-import { useMulticallContract } from '../../hooks/useContract'
+import { useMulticallContract, useStakingContract } from '../../hooks/useContract'
 import { isAddress } from '../../utils'
-import { useSingleContractMultipleData, useMultipleContractSingleData } from '../multicall/hooks'
+import { useSingleContractMultipleData, useMultipleContractSingleData, useSingleCallResult } from '../multicall/hooks'
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
@@ -51,13 +51,22 @@ export function useTokenBalancesWithLoadingIndicator(
   address?: string,
   tokens?: (Token | undefined)[]
 ): [{ [tokenAddress: string]: TokenAmount | undefined }, boolean] {
+  const { chainId } = useActiveWeb3React()
   const validatedTokens: Token[] = useMemo(
     () => tokens?.filter((t?: Token): t is Token => isAddress(t?.address) !== false) ?? [],
     [tokens]
   )
-
+  const stHopeAddress = useMemo(
+    () =>
+      chainId &&
+      validatedTokens.findIndex(token => token.address.toLowerCase() === ST_HOPE[chainId].address.toLowerCase()) !== -1
+        ? ST_HOPE[chainId].address
+        : undefined,
+    [chainId, validatedTokens]
+  )
+  const stHopeContract = useStakingContract(stHopeAddress, true)
   const validatedTokenAddresses = useMemo(() => validatedTokens.map(vt => vt.address), [validatedTokens])
-
+  const stHopeBalance = useSingleCallResult(stHopeContract, 'lpBalanceOf', [address])
   const balances = useMultipleContractSingleData(validatedTokenAddresses, ERC20_INTERFACE, 'balanceOf', [address])
 
   const anyLoading: boolean = useMemo(() => balances.some(callState => callState.loading), [balances])
@@ -67,7 +76,8 @@ export function useTokenBalancesWithLoadingIndicator(
       () =>
         address && validatedTokens.length > 0
           ? validatedTokens.reduce<{ [tokenAddress: string]: TokenAmount | undefined }>((memo, token, i) => {
-              const value = balances?.[i]?.result?.[0]
+              const value =
+                token.address.toLowerCase() === stHopeAddress ? stHopeBalance?.result?.[0] : balances?.[i]?.result?.[0]
               const amount = value ? JSBI.BigInt(value.toString()) : undefined
               if (amount) {
                 memo[token.address] = new TokenAmount(token, amount)
@@ -75,7 +85,7 @@ export function useTokenBalancesWithLoadingIndicator(
               return memo
             }, {})
           : {},
-      [address, validatedTokens, balances]
+      [address, validatedTokens, stHopeAddress, stHopeBalance?.result, balances]
     ),
     anyLoading
   ]
