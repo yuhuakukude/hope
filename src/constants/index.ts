@@ -139,12 +139,6 @@ export const GOM_FEE_DIS_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.HOPE]: '0x02153933E95C54Ceb2433cE28971045D2BDd9FFB'
 }
 
-export const GAS_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E',
-  [ChainId.SEPOLIA]: '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E',
-  [ChainId.HOPE]: '0x277a9D9b9cF8E53D7a45804ec4f0c0E5b807d61E'
-}
-
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
 export const AVERAGE_BLOCK_TIME_IN_SECS = 13
 export const PROPOSAL_LENGTH_IN_BLOCKS = 40_320
@@ -181,7 +175,19 @@ const WETH_ONLY: ChainTokenList = {
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC[ChainId.MAINNET], USDT[ChainId.MAINNET], WBTC]
+  [ChainId.MAINNET]: [
+    ...WETH_ONLY[ChainId.MAINNET],
+    DAI,
+    USDC[ChainId.MAINNET],
+    USDT[ChainId.MAINNET],
+    HOPE[ChainId.MAINNET]
+  ],
+  [ChainId.SEPOLIA]: [
+    ...WETH_ONLY[ChainId.SEPOLIA],
+    USDC[ChainId.SEPOLIA],
+    USDT[ChainId.SEPOLIA],
+    HOPE[ChainId.SEPOLIA]
+  ]
 }
 
 export const ADDITIONAL_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {

@@ -98,7 +98,7 @@ export default function SettingPage() {
   const [singleHopOnly, setSingleHopOnly] = useUserSingleHopOnly()
 
   return (
-    <LightCard width={'fit-content'} borderRadius={'20px'}>
+    <LightCard width={'420px'} borderRadius={'20px'}>
       <Modal
         maxWidth={420}
         width={420}
@@ -155,7 +155,7 @@ export default function SettingPage() {
       {/*  ) : null}*/}
       {/*</StyledMenuButton>*/}
       <MenuFlyout>
-        <AutoColumn gap="lg" style={{ padding: '1rem' }}>
+        <AutoColumn gap="lg" style={{ paddingTop: '10px' }}>
           <RowFixed style={{ cursor: 'pointer' }} onClick={() => history.goBack()}>
             <ArrowLeft />
             <Text ml={13} fontWeight={600} fontSize={16}>
