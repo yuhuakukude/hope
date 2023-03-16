@@ -59,6 +59,12 @@ const WarningWrapper = styled(AutoRow)`
   justify-content: center;
 `
 
+const ErrorWrapper = styled(AutoRow)`
+  border-radius: 8px;
+  background-color: rgba(104, 54, 60, 0.6);
+  padding: 9px;
+`
+
 export default function Swap({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
 
@@ -589,6 +595,17 @@ export default function Swap({ history }: RouteComponentProps) {
             </WarningWrapper>
           )}
 
+          {userHasSpecifiedInputOutput && (swapInputError || (route && priceImpactSeverity > 3 && !isExpertMode)) ? (
+            <ErrorWrapper>
+              <i className="iconfont font-16" style={{ color: '#F6465D', fontWeight: 700 }}>
+                &#xe614;
+              </i>
+              <TYPE.main color={'#F6465D'} ml={'10px'}>
+                {swapInputError ? swapInputError : 'Price Impact Too High'}
+              </TYPE.main>
+            </ErrorWrapper>
+          ) : null}
+
           <BottomGrouping>
             {swapIsUnsupported ? (
               <ButtonPrimary disabled={true}>
@@ -689,11 +706,7 @@ export default function Swap({ history }: RouteComponentProps) {
                     error={isValid && priceImpactSeverity > 2 && !swapCallbackError}
                   >
                     <Text fontSize={16} fontWeight={500}>
-                      {swapInputError
-                        ? swapInputError
-                        : priceImpactSeverity > 3 && !isExpertMode
-                        ? `Price Impact Too High`
-                        : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
+                      {!userHasSpecifiedInputOutput && swapInputError ? swapInputError : `Confirm`}
                     </Text>
                   </ButtonError>
                 )}
