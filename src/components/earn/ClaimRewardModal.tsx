@@ -144,12 +144,17 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
     )
   }, [errorStatus])
 
+  const onDismissFn = () => {
+    setShowConfirm(false)
+    onDismiss()
+  }
+
   return (
     <Modal width={420} maxWidth={420} isOpen={isOpen} onDismiss={onDismiss} maxHeight={90}>
       <ContentWrapper>
         <TransactionConfirmationModal
           isOpen={showConfirm}
-          onDismiss={() => setShowConfirm(false)}
+          onDismiss={() => onDismissFn()}
           attemptingTxn={attemptingTxn}
           hash={txHash}
           content={confirmationContent}
