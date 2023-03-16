@@ -47,7 +47,7 @@ function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippag
             </RowFixed>
           </AutoColumn>
           <RowFixed>
-            <TYPE.black color={theme.text1}>
+            <TYPE.black fontWeight={700} color={theme.text1}>
               {`1 ${trade.executionPrice?.quoteCurrency?.symbol} = ${trade.executionPrice?.toSignificant(6)} ${
                 trade.executionPrice?.baseCurrency?.symbol
               }`}
@@ -71,7 +71,7 @@ function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippag
             </RowFixed>
           </AutoColumn>
           <RowFixed>
-            <TYPE.black color={theme.text1}>
+            <TYPE.black fontWeight={700} color={theme.text1}>
               {isExactIn
                 ? `${slippageAdjustedAmounts[Field.OUTPUT]?.toSignificant(4)} ${trade.outputAmount.currency.symbol}` ??
                   '-'
@@ -109,7 +109,7 @@ function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippag
               <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
             </Tooltip>
           </RowFixed>
-          <TYPE.black color={theme.text1}>
+          <TYPE.black fontWeight={700} color={theme.text1}>
             {realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${trade.inputAmount.currency.symbol}` : '-'}
           </TYPE.black>
         </RowBetween>
