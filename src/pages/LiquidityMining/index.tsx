@@ -1,4 +1,4 @@
-import { Link, RouteComponentProps, useHistory } from 'react-router-dom'
+import { Link, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import { useStakingPool } from '../../hooks/useLPStaking'
 import styled from 'styled-components'
 import { TabItem, TabWrapper } from '../../components/Tab'
@@ -54,10 +54,11 @@ export default function LiquidityMining({
   }
 }: RouteComponentProps<{ stakingRewardAddress?: string }>) {
   const { account, library, chainId } = useActiveWeb3React()
+  const location = useLocation()
   const addTransaction = useTransactionAdder()
   const history = useHistory()
   const { result: pool } = useStakingPool(stakingRewardAddress ?? '')
-  const [staking, setStaking] = useState(true)
+  const [staking, setStaking] = useState(!location.search.includes('type=unstake'))
   const [typedValue, setTypedValue] = useState('')
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [pendingText, setPendingText] = useState('')

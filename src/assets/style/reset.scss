@@ -270,21 +270,21 @@
 // radio
 .ant-radio-checked .ant-radio-inner {
   // background-color: #E4C989;
-  border-color: #E4C989;
+  border-color: #0ECB81;
 }
 
 .ant-radio-wrapper:hover .ant-radio,
 .ant-radio:hover .ant-radio-inner,
 .ant-radio-input:focus+.ant-radio-inner {
-  border-color: #E4C989;
+  border-color: #0ECB81;
 }
 
 .ant-radio-checked::after {
-  border: 1px solid #E4C989;
+  border: 1px solid #0ECB81;
 }
 
 .ant-radio-inner::after {
-  background-color: #E4C989;
+  background-color: #0ECB81;
 }
 
 // ant-pagination
