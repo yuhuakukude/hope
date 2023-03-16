@@ -45,12 +45,14 @@ export function PoolPriceBar({
           %
         </TYPE.white>
       </RowBetween>
-      <RowBetween justify="center">
-        <TYPE.main>Receive LP Token (min)</TYPE.main>
-        <TYPE.white fontWeight={500} pt={1}>
-          {liquidityMinted ? liquidityMinted.toSignificant(6, { groupSeparator: ',' }) : '--'}
-        </TYPE.white>
-      </RowBetween>
+      {liquidityMinted && (
+        <RowBetween justify="center">
+          <TYPE.main>Receive LP Token (min)</TYPE.main>
+          <TYPE.white fontWeight={500} pt={1}>
+            {liquidityMinted ? liquidityMinted.toSignificant(6, { groupSeparator: ',' }) : '--'}
+          </TYPE.white>
+        </RowBetween>
+      )}
     </AutoColumn>
   )
 }
