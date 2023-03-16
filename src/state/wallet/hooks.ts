@@ -59,7 +59,9 @@ export function useTokenBalancesWithLoadingIndicator(
   const stHopeAddress = useMemo(
     () =>
       chainId &&
-      validatedTokens.findIndex(token => token.address.toLowerCase() === ST_HOPE[chainId].address.toLowerCase()) !== -1
+      validatedTokens.findIndex(
+        token => token.address && isAddress(token.address) === isAddress(ST_HOPE[chainId].address)
+      ) !== -1
         ? ST_HOPE[chainId].address
         : undefined,
     [chainId, validatedTokens]
@@ -77,7 +79,9 @@ export function useTokenBalancesWithLoadingIndicator(
         address && validatedTokens.length > 0
           ? validatedTokens.reduce<{ [tokenAddress: string]: TokenAmount | undefined }>((memo, token, i) => {
               const value =
-                token.address.toLowerCase() === stHopeAddress ? stHopeBalance?.result?.[0] : balances?.[i]?.result?.[0]
+                token.address && isAddress(token.address) === isAddress(stHopeAddress)
+                  ? stHopeBalance?.result?.[0]
+                  : balances?.[i]?.result?.[0]
               const amount = value ? JSBI.BigInt(value.toString()) : undefined
               if (amount) {
                 memo[token.address] = new TokenAmount(token, amount)
