@@ -14,7 +14,8 @@ export function usePosition(pair?: Pair) {
     !!totalPoolTokens &&
     !!userPoolBalance &&
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw)
+    JSBI.greaterThanOrEqual(totalPoolTokens.raw, userPoolBalance.raw) &&
+    totalPoolTokens.greaterThan(JSBI.BigInt(0))
       ? [
           pair.getLiquidityValue(pair.token0, totalPoolTokens, userPoolBalance, false),
           pair.getLiquidityValue(pair.token1, totalPoolTokens, userPoolBalance, false)
@@ -48,7 +49,8 @@ export function useStakePosition(pool?: PoolInfo) {
     !!stakedLpAmount &&
     stakedLpAmount.greaterThan('0') &&
     // this condition is a short-circuit in the case where useTokenBalance updates sooner than useTotalSupply
-    JSBI.greaterThanOrEqual(totalStakedAmount.raw, stakedLpAmount.raw)
+    JSBI.greaterThanOrEqual(totalStakedAmount.raw, stakedLpAmount.raw) &&
+    totalStakedAmount.greaterThan(JSBI.BigInt(0))
       ? [
           pool.pair.getLiquidityValue(pool.pair.token0, totalStakedAmount, stakedLpAmount, false),
           pool.pair.getLiquidityValue(pool.pair.token1, totalStakedAmount, stakedLpAmount, false)
