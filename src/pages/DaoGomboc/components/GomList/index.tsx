@@ -237,7 +237,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     if (baseTableData && baseTableData.length > 0) {
       const arr: any = []
       baseTableData.forEach((e: any) => {
-        const nameVal = stakingAddress === e.gomboc ? 'HOPE' : e.name
+        const nameVal = stakingAddress === e.gauge ? 'HOPE' : e.name
         const val = `${searchValue}`.toUpperCase()
         if (`${nameVal}`.includes(val)) {
           arr.push(e)

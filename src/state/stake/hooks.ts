@@ -560,25 +560,9 @@ export async function fetchStakingPool(stakingAddress: string, chainId: any): Pr
 }`
   try {
     const response = await postQuery(SUBGRAPH, query)
-<<<<<<< HEAD
     const pool = response.data.poolGauges[0]
-    const token0 = new Token(
-      ChainId.SEPOLIA,
-      pool.pair.token0.id,
-      Number(pool.pair.token0.decimals),
-      pool.pair.token0.symbol
-    )
-    const token1 = new Token(
-      ChainId.SEPOLIA,
-      pool.pair.token1.id,
-      Number(pool.pair.token1.decimals),
-      pool.pair.token1.symbol
-    )
-=======
-    const pool = response.data.poolGombocs[0]
     const token0 = new Token(chainId, pool.pair.token0.id, Number(pool.pair.token0.decimals), pool.pair.token0.symbol)
     const token1 = new Token(chainId, pool.pair.token1.id, Number(pool.pair.token1.decimals), pool.pair.token1.symbol)
->>>>>>> release
     const tokens = [token0, token1]
     const token0Amount = tryParseAmount(pool.pair.reserve0, tokens[0]) as TokenAmount
     const token1Amount = tryParseAmount(pool.pair.reserve1, tokens[1]) as TokenAmount
