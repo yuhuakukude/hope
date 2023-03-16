@@ -391,7 +391,7 @@ export default function Staking() {
                       <h3 className="text-success font-28 font-bold m-t-10">{format.rate(apyVal)}</h3>
                     </div>
                     <div className="m-l-30">
-                      <p className="text-white font-nor head-total-text">Total Staked </p>
+                      <div className="text-white font-nor flex ai-center">Total Staked</div>
                       <h3 className="text-white font-28 font-bold m-t-10">
                         {lpTotalSupply?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
                       </h3>
