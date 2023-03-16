@@ -25,6 +25,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const { account, chainId } = useActiveWeb3React()
   const [searchValue, setSearchValue] = useState('')
   const [tableData, setTableData] = useState<any>([])
+  const [baseTableData, setBaseTableData] = useState<any>([])
   const [curType, setCurType] = useState('all')
   const stakingAddress = `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
   const argList = useMemo(() => {
@@ -218,8 +219,10 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
           return b.weight - a.weight
         })
         setTableData(res.result)
+        setBaseTableData(res.result)
       } else {
         setTableData([])
+        setBaseTableData([])
       }
     } catch (error) {
       console.log(error)
@@ -231,11 +234,12 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   }
 
   function toSearch() {
-    if (tableData && tableData.length > 0) {
+    if (baseTableData && baseTableData.length > 0) {
       const arr: any = []
-      tableData.forEach((e: any) => {
+      baseTableData.forEach((e: any) => {
+        const nameVal = stakingAddress === e.gomboc ? 'HOPE' : e.name
         const val = `${searchValue}`.toUpperCase()
-        if (`${e.name}`.includes(val)) {
+        if (`${nameVal}`.includes(val)) {
           arr.push(e)
         }
       })

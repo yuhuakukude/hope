@@ -111,7 +111,7 @@ export default function DaoGauge() {
           </div>
           {isNoVelt && (
             <div className="flex m-t-30 ai-center jc-center">
-              <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
+              <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
               <div>
                 <p className="text-white lh15">
                   You need to have LT{' '}
@@ -125,7 +125,7 @@ export default function DaoGauge() {
           )}
           {isShowTip && (
             <div className="flex m-t-30 ai-center jc-center">
-              <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
+              <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
               <div>
                 <p className="text-white lh15">
                   Your lock expires soon. You need to lock at least for two weeks in
@@ -138,7 +138,7 @@ export default function DaoGauge() {
           )}
           {isNoVelt && isWithDraw && (
             <div className="flex m-t-30 ai-center jc-center">
-              <i className="text-primary iconfont m-r-5 font-14">&#xe61e;</i>
+              <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
               <div>
                 <p className="text-white lh15">
                   Your lock has expired, please

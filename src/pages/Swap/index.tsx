@@ -3,20 +3,19 @@ import React, { useCallback, useContext, useEffect, useMemo, useState } from 're
 import { ArrowDownCircle } from 'react-feather'
 import ReactGA from 'react-ga'
 import { Text } from 'rebass'
-import { ThemeContext } from 'styled-components'
+import styled, { ThemeContext } from 'styled-components'
 import AddressInputPanel from '../../components/AddressInputPanel'
 import { ButtonConfirmed, ButtonError, ButtonPrimary } from '../../components/Button'
-import Card, { GreyCard } from '../../components/Card'
+import { GreyCard } from '../../components/Card'
 import { AutoColumn } from '../../components/Column'
 import ConfirmSwapModal from '../../components/swap/ConfirmSwapModal'
 import CurrencyInputPanel from '../../components/CurrencyInputPanel'
 import { SwapPoolTabs } from '../../components/NavigationTabs'
-import Row, { AutoRow, RowBetween } from '../../components/Row'
+import { AutoRow, RowBetween } from '../../components/Row'
 import AdvancedSwapDetailsDropdown from '../../components/swap/AdvancedSwapDetailsDropdown'
 import BetterTradeLink, { DefaultVersionLink } from '../../components/swap/BetterTradeLink'
 import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpactWithoutFee'
 import { ArrowWrapper, BottomGrouping, Dots, SwapCallbackError, Wrapper } from '../../components/swap/styleds'
-import TradePrice from '../../components/swap/TradePrice'
 import TokenWarningModal from '../../components/TokenWarningModal'
 import SwapHeader from '../../components/swap/SwapHeader'
 
@@ -38,20 +37,33 @@ import {
   useSwapState
 } from '../../state/swap/hooks'
 import { useExpertModeManager, useUserSingleHopOnly, useUserSlippageTolerance } from '../../state/user/hooks'
-import { CustomLightSpinner, LinkStyledButton, TYPE } from '../../theme'
+import { CustomLightSpinner, LinkStyledButton, StyledInternalLink, TYPE } from '../../theme'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { computeTradePriceBreakdown, warningSeverity } from '../../utils/prices'
 import AppBody from '../AppBody'
 //import { ClickableText } from '../Pool/styleds'
 import Loader from '../../components/Loader'
 import { useIsTransactionUnsupported } from 'hooks/Trades'
-import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
 import { isTradeBetter } from 'utils/trades'
 import { RouteComponentProps } from 'react-router-dom'
 import spinner from '../../assets/svg/spinner.svg'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
-import { tokenAddress } from '../../utils/currencyId'
+import { currencyId, tokenAddress } from '../../utils/currencyId'
 import { amountFormat } from '../../utils/format'
+
+const WarningWrapper = styled(AutoRow)`
+  margin-top: 20px;
+  border-radius: 8px;
+  background-color: rgba(255, 222, 41, 0.2);
+  padding: 9px;
+  justify-content: center;
+`
+
+const ErrorWrapper = styled(AutoRow)`
+  border-radius: 8px;
+  background-color: rgba(104, 54, 60, 0.6);
+  padding: 9px;
+`
 
 export default function Swap({ history }: RouteComponentProps) {
   const loadedUrlParams = useDefaultsFromURLSearch()
@@ -116,7 +128,6 @@ export default function Swap({ history }: RouteComponentProps) {
   }
   const trade = showWrap ? undefined : tradesByVersion[toggledVersion]
   const defaultTrade = showWrap ? undefined : tradesByVersion[DEFAULT_VERSION]
-  console.log('trade', trade)
   const betterTradeLinkV2: Version | undefined =
     toggledVersion === Version.v1 && isTradeBetter(v1Trade, v2Trade) ? Version.v2 : undefined
 
@@ -129,6 +140,10 @@ export default function Swap({ history }: RouteComponentProps) {
         [Field.INPUT]: independentField === Field.INPUT ? parsedAmount : trade?.inputAmount,
         [Field.OUTPUT]: independentField === Field.OUTPUT ? parsedAmount : trade?.outputAmount
       }
+  const currencyInput = currencies[Field.INPUT]
+  const currencyOutput = currencies[Field.OUTPUT]
+  const inputCurrencyId = currencyInput ? currencyId(currencyInput) : undefined
+  const outputCurrencyId = currencyOutput ? currencyId(currencyOutput) : undefined
 
   const chainWETH = WETH[chainId ?? 1]
   const inputAddress = tokenAddress(chainWETH, currencies.INPUT)?.toLowerCase()
@@ -342,7 +357,7 @@ export default function Swap({ history }: RouteComponentProps) {
   ])
 
   // errors
-  const [showInverted, setShowInverted] = useState<boolean>(false)
+  //const [showInverted, setShowInverted] = useState<boolean>(false)
 
   // warnings on slippage
   const priceImpactSeverity = warningSeverity(priceImpactWithoutFee)
@@ -451,7 +466,7 @@ export default function Swap({ history }: RouteComponentProps) {
               otherCurrency={currencies[Field.OUTPUT]}
               id="swap-currency-input"
             />
-            <TYPE.main textAlign={'right'} fontSize={16}>
+            <TYPE.main textAlign={'right'}>
               {`≈$${
                 inputAddress && priceResult && formattedAmounts[Field.INPUT]
                   ? amountFormat(Number(priceResult[inputAddress]) * Number(formattedAmounts[Field.INPUT]), 2)
@@ -498,7 +513,7 @@ export default function Swap({ history }: RouteComponentProps) {
               otherCurrency={currencies[Field.INPUT]}
               id="swap-currency-output"
             />
-            <TYPE.main textAlign={'right'} fontSize={16}>
+            <TYPE.main textAlign={'right'}>
               {`≈$${
                 outAddress && priceResult && formattedAmounts[Field.OUTPUT]
                   ? amountFormat(Number(priceResult[outAddress]) * Number(formattedAmounts[Field.OUTPUT]), 2)
@@ -522,42 +537,75 @@ export default function Swap({ history }: RouteComponentProps) {
             ) : null}
 
             {showWrap ? null : (
-              <Card padding={showWrap ? '.25rem 1rem 0 1rem' : '1rem'} borderRadius={'20px'}>
-                <AutoColumn gap="8px" style={{ padding: '0 16px' }}>
-                  {Boolean(trade) ? (
-                    <Row justify={'center'}>
-                      <TradePrice
-                        price={trade?.executionPrice}
-                        showInverted={showInverted}
-                        setShowInverted={setShowInverted}
-                      />
-                    </Row>
-                  ) : (
-                    <Text textAlign={'center'} fontWeight={500} fontSize={14} color={theme.text2}>
-                      {swapInputError || (noRoute && userHasSpecifiedInputOutput) ? (
-                        '- -'
-                      ) : (
-                        <>
-                          Fetching best price
-                          <Dots />
-                        </>
-                      )}
-                    </Text>
-                  )}
-                  {/*{allowedSlippage !== INITIAL_ALLOWED_SLIPPAGE && (*/}
-                  {/*  <RowBetween align="center">*/}
-                  {/*    <ClickableText fontWeight={500} fontSize={14} color={theme.text2} onClick={toggleSettings}>*/}
-                  {/*      Slippage Tolerance*/}
-                  {/*    </ClickableText>*/}
-                  {/*    <ClickableText fontWeight={500} fontSize={14} color={theme.text2} onClick={toggleSettings}>*/}
-                  {/*      {allowedSlippage / 100}%*/}
-                  {/*    </ClickableText>*/}
-                  {/*  </RowBetween>*/}
-                  {/*)}*/}
-                </AutoColumn>
-              </Card>
+              <>
+                {Boolean(trade) ? (
+                  // <Row justify={'center'}>
+                  //   <TradePrice
+                  //     price={trade?.executionPrice}
+                  //     showInverted={showInverted}
+                  //     setShowInverted={setShowInverted}
+                  //   />
+                  // </Row>
+                  <AdvancedSwapDetailsDropdown
+                    error={
+                      !currencies[Field.INPUT] || !currencies[Field.OUTPUT]
+                        ? 'Select a token to see more trading details'
+                        : !typedValue
+                        ? 'Enter an amount to see more trading details'
+                        : noRoute
+                        ? ' '
+                        : undefined
+                    }
+                    trade={trade}
+                  />
+                ) : (
+                  <Text textAlign={'center'} fontWeight={500} fontSize={14} color={theme.text2}>
+                    {swapInputError || (noRoute && userHasSpecifiedInputOutput) ? (
+                      ''
+                    ) : (
+                      <>
+                        Fetching best price
+                        <Dots />
+                      </>
+                    )}
+                  </Text>
+                )}
+                {/*{allowedSlippage !== INITIAL_ALLOWED_SLIPPAGE && (*/}
+                {/*  <RowBetween align="center">*/}
+                {/*    <ClickableText fontWeight={500} fontSize={14} color={theme.text2} onClick={toggleSettings}>*/}
+                {/*      Slippage Tolerance*/}
+                {/*    </ClickableText>*/}
+                {/*    <ClickableText fontWeight={500} fontSize={14} color={theme.text2} onClick={toggleSettings}>*/}
+                {/*      {allowedSlippage / 100}%*/}
+                {/*    </ClickableText>*/}
+                {/*  </RowBetween>*/}
+                {/*)}*/}
+              </>
             )}
           </AutoColumn>
+          {noRoute && userHasSpecifiedInputOutput && (
+            <WarningWrapper>
+              <i className="iconfont font-16" style={{ color: '#E4C989', fontWeight: 700 }}>
+                &#xe614;
+              </i>
+              <TYPE.white ml={'10px'}>Insufficient liquidity for this trade. </TYPE.white>
+              <StyledInternalLink to={`/swap/liquidity/manager/deposit/${inputCurrencyId}/${outputCurrencyId}`}>
+                Add Liquidity
+              </StyledInternalLink>
+            </WarningWrapper>
+          )}
+
+          {userHasSpecifiedInputOutput && (swapInputError || (route && priceImpactSeverity > 3 && !isExpertMode)) ? (
+            <ErrorWrapper>
+              <i className="iconfont font-16" style={{ color: '#F6465D', fontWeight: 700 }}>
+                &#xe614;
+              </i>
+              <TYPE.main color={'#F6465D'} ml={'10px'}>
+                {swapInputError ? swapInputError : 'Price Impact Too High'}
+              </TYPE.main>
+            </ErrorWrapper>
+          ) : null}
+
           <BottomGrouping>
             {swapIsUnsupported ? (
               <ButtonPrimary disabled={true}>
@@ -658,11 +706,7 @@ export default function Swap({ history }: RouteComponentProps) {
                     error={isValid && priceImpactSeverity > 2 && !swapCallbackError}
                   >
                     <Text fontSize={16} fontWeight={500}>
-                      {swapInputError
-                        ? swapInputError
-                        : priceImpactSeverity > 3 && !isExpertMode
-                        ? `Price Impact Too High`
-                        : `Swap${priceImpactSeverity > 2 ? ' Anyway' : ''}`}
+                      {!userHasSpecifiedInputOutput && swapInputError ? swapInputError : `Confirm`}
                     </Text>
                   </ButtonError>
                 )}
@@ -676,22 +720,6 @@ export default function Swap({ history }: RouteComponentProps) {
             ) : null}
           </BottomGrouping>
         </Wrapper>
-        {!swapIsUnsupported ? (
-          <AdvancedSwapDetailsDropdown
-            error={
-              !currencies[Field.INPUT] || !currencies[Field.OUTPUT]
-                ? 'Select a token to see more trading details'
-                : !typedValue
-                ? 'Enter an amount to see more trading details'
-                : noRoute
-                ? ' '
-                : undefined
-            }
-            trade={trade}
-          />
-        ) : (
-          <UnsupportedCurrencyFooter show={swapIsUnsupported} currencies={[currencies.INPUT, currencies.OUTPUT]} />
-        )}
       </AppBody>
     </>
   )

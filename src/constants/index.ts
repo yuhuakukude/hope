@@ -177,7 +177,6 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
   ...WETH_ONLY,
   [ChainId.MAINNET]: [
     ...WETH_ONLY[ChainId.MAINNET],
-    DAI,
     USDC[ChainId.MAINNET],
     USDT[ChainId.MAINNET],
     HOPE[ChainId.MAINNET]

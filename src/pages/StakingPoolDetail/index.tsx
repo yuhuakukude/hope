@@ -265,8 +265,8 @@ export default function StakingPoolDetail({
   }
 
   useEffect(() => {
-    const xArr: string[] = []
-    const yArr: string[] = []
+    const xArr: any[] = []
+    const yArr: any[] = []
     let dayRes = dayChartResult
     if (timeIndex === '1W') {
       dayRes = dayChartResult.slice(dayChartResult.length - 7, dayChartResult.length)
@@ -278,35 +278,24 @@ export default function StakingPoolDetail({
     result?.forEach((item: any) => {
       if (timeIndex === '24H') {
         if (tabIndex === 'Volume') {
-          yArr.push(item.hourlyVolumeUSD?.toFixed(2))
+          yArr.push(numeral(item.hourlyVolumeUSD, 2))
         }
         if (tabIndex === 'TVL') {
-          yArr.push(item.reserveUSD?.toFixed(2))
+          yArr.push(numeral(item.reserveUSD, 2))
         }
         if (tabIndex === 'Fees') {
-          yArr.push(
-            new Decimal(item.hourlyVolumeUSD || 0)
-              .mul(new Decimal(0.003))
-              .toNumber()
-              .toFixed(2)
-          )
+          yArr.push(numeral(new Decimal(item.hourlyVolumeUSD || 0).mul(new Decimal(0.003)).toNumber(), 2))
         }
-        // xArr.push(format.formatDate(item.hourStartUnix, 'HH:mm'))
         xArr.push(item.hourStartUnix)
       } else {
         if (tabIndex === 'Volume') {
-          yArr.push(item.dailyVolumeUSD?.toFixed(2))
+          yArr.push(numeral(item.dailyVolumeUSD, 2))
         }
         if (tabIndex === 'TVL') {
-          yArr.push(item.reserveUSD?.toFixed(2))
+          yArr.push(numeral(item.reserveUSD, 2))
         }
         if (tabIndex === 'Fees') {
-          yArr.push(
-            new Decimal(item.dailyVolumeUSD || 0)
-              .mul(new Decimal(0.003))
-              .toNumber()
-              .toFixed(2)
-          )
+          yArr.push(numeral(new Decimal(item.dailyVolumeUSD || 0).mul(new Decimal(0.003)).toNumber(), 2))
         }
         // xArr.push(format.formatDate(item.date, 'YYYY-MM-DD'))
         xArr.push(item.date)
@@ -516,7 +505,9 @@ export default function StakingPoolDetail({
                       </ButtonPrimary>
                       <ButtonOutlined
                         primary
-                        onClick={() => history.push(`/swap/liquidity/mining/${pool?.stakingRewardAddress}`)}
+                        onClick={() =>
+                          history.push(`/swap/liquidity/mining/${pool?.stakingRewardAddress}?type=unstake`)
+                        }
                         height={42}
                       >
                         Unstake
@@ -593,11 +584,6 @@ export default function StakingPoolDetail({
                       {format.amountFormat(pool?.token0Value, 2)} {token0Symbol}
                       {token0Percent ? ` (${Number(token0Percent).toFixed(2)}%)` : '--'}
                     </TYPE.body>
-                    {pool && (
-                      <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
-                        1.00 {token0Symbol} = {amountFormat(pool?.token1Price, 2)} {token1Symbol}
-                      </TYPE.body>
-                    )}
                   </Row>
                   <Row margin={'16px 0 0 0'}>
                     <Circular color={'#8FFBAE'}></Circular>
@@ -606,6 +592,17 @@ export default function StakingPoolDetail({
                       {format.amountFormat(pool?.token1Value, 2)} {token1Symbol}
                       {token1Percent ? ` (${Number(token1Percent).toFixed(2)}%)` : '--'}
                     </TYPE.body>
+                  </Row>
+                </div>
+                <div>
+                  <Row>
+                    {pool && (
+                      <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
+                        1.00 {token0Symbol} = {amountFormat(pool?.token1Price, 2)} {token1Symbol}
+                      </TYPE.body>
+                    )}
+                  </Row>
+                  <Row margin={'25px 0 0 0'}>
                     {pool && (
                       <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
                         1.00 {token1Symbol} = {amountFormat(pool?.token0Price, 2)} {token0Symbol}

@@ -40,7 +40,7 @@ export function useLPTotalLocked() {
 }
 
 export function useLPStakingInfos(sort: 'asc' | 'desc', isMyVote: boolean) {
-  const { account } = useActiveWeb3React()
+  const { chainId, account } = useActiveWeb3React()
   const [result, setResult] = useState<PoolInfo[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -48,7 +48,7 @@ export function useLPStakingInfos(sort: 'asc' | 'desc', isMyVote: boolean) {
     ;(async () => {
       setLoading(true)
       try {
-        const list = await fetchStakeList('0xcbed65db7e177d4875ddf5b67e13326a43a7b03f', sort, isMyVote)
+        const list = await fetchStakeList(chainId ?? 1, '0xcbed65db7e177d4875ddf5b67e13326a43a7b03f', sort, isMyVote)
         const addressList = list.map((e: PoolInfo) => e.id)
         const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
         if (res) {
@@ -64,7 +64,7 @@ export function useLPStakingInfos(sort: 'asc' | 'desc', isMyVote: boolean) {
         setLoading(false)
       }
     })()
-  }, [sort, account, isMyVote])
+  }, [sort, account, isMyVote, chainId])
 
   return {
     loading: loading,
@@ -73,7 +73,7 @@ export function useLPStakingInfos(sort: 'asc' | 'desc', isMyVote: boolean) {
 }
 
 export function useLPStakingPairsInfos(sort: 'asc' | 'desc') {
-  const { account } = useActiveWeb3React()
+  const { chainId, account } = useActiveWeb3React()
   const [result, setResult] = useState<GraphPairInfo[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -81,7 +81,7 @@ export function useLPStakingPairsInfos(sort: 'asc' | 'desc') {
     ;(async () => {
       setLoading(true)
       try {
-        let list = await fetchPairsList(account ?? '', sort, 'trackedReserveETH')
+        let list = await fetchPairsList(chainId ?? 1, account ?? '', sort, 'trackedReserveETH')
         const addressList = list.map((e: GraphPairInfo) => e.address)
         const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
         list = list.map((e: GraphPairInfo) => ({ ...e, ...res.result[e.address] }))
@@ -93,7 +93,7 @@ export function useLPStakingPairsInfos(sort: 'asc' | 'desc') {
         console.warn(error)
       }
     })()
-  }, [sort, account])
+  }, [sort, account, chainId])
 
   return {
     loading: loading,
@@ -102,7 +102,7 @@ export function useLPStakingPairsInfos(sort: 'asc' | 'desc') {
 }
 
 export function useStakingPairPool(address: string) {
-  const { account } = useActiveWeb3React()
+  const { chainId, account } = useActiveWeb3React()
   const [result, setResult] = useState<PairDetail | undefined>(undefined)
   const [pairMore, setPairMore] = useState<PairMore | undefined>(undefined)
 
@@ -113,7 +113,7 @@ export function useStakingPairPool(address: string) {
     ;(async () => {
       setLoading(true)
       try {
-        const pool = await fetchPairPool(address.toLowerCase() ?? '')
+        const pool = await fetchPairPool(address.toLowerCase() ?? '', chainId ?? 1)
         setLoading(false)
         setResult(pool)
       } catch (error) {
@@ -121,7 +121,7 @@ export function useStakingPairPool(address: string) {
         setLoading(false)
       }
     })()
-  }, [account, address])
+  }, [account, address, chainId])
 
   useEffect(() => {
     ;(async () => {
@@ -143,7 +143,7 @@ export function useStakingPairPool(address: string) {
 }
 
 export function useStakingPool(address: string) {
-  const { account } = useActiveWeb3React()
+  const { chainId, account } = useActiveWeb3React()
   const [result, setResult] = useState<PoolInfo | undefined>(undefined)
   const [currentPage, setCurrentPage] = useState(1)
 
@@ -159,7 +159,7 @@ export function useStakingPool(address: string) {
     ;(async () => {
       setLoading(true)
       try {
-        const pool = await fetchStakingPool(address ?? '')
+        const pool = await fetchStakingPool(address ?? '', chainId ?? 1)
         setLoading(false)
         setResult(pool)
       } catch (error) {
@@ -167,7 +167,7 @@ export function useStakingPool(address: string) {
         setLoading(false)
       }
     })()
-  }, [currentPage, account, address])
+  }, [currentPage, account, address, chainId])
 
   return {
     loading: loading,
