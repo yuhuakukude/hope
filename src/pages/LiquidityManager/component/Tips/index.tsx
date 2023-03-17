@@ -27,7 +27,8 @@ export default function Tips() {
   }
   return (
     <Tooltip placement="rightTop" overlayClassName="tips-liq" title={titleNode}>
-      <Info className="font-16 cursor-select tips-circle m-l-10 font-bold" size={18} />
+      <i className="iconfont font-24 hope-icon-common p-2 m-l-5 cursor-select">&#xe631;</i>
+      {/* <Info className="font-16 cursor-select tips-circle m-l-10 font-bold" size={18} /> */}
       {/* <i className="iconfont font-16 cursor-select tips-circle m-l-10 font-bold">&#xe620;</i> */}
     </Tooltip>
   )

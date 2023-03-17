@@ -1,5 +1,5 @@
 import { UnsupportedChainIdError, useWeb3React } from '@web3-react/core'
-import { darken, lighten } from 'polished'
+import { darken } from 'polished'
 import React, { useMemo } from 'react'
 import { Activity } from 'react-feather'
 import { useTranslation } from 'react-i18next'
@@ -45,21 +45,21 @@ const Web3StatusError = styled(Web3StatusGeneric)`
 
 const Web3StatusConnect = styled(Web3StatusGeneric)<{ faded?: boolean }>`
   font-size: 18px;
-  background-color: rgba(73, 73, 73, 1);
+  background-color: #3d3e46;
   :hover,
   :focus {
-    background-color: rgba(30, 30, 30, 1);
+    background-color: #26262c;
   }
 `
 
 const Web3StatusConnected = styled(Web3StatusGeneric)<{ pending?: boolean }>`
-  background-color: ${({ pending, theme }) => (pending ? theme.primary1 : theme.bg6)};
+  background-color: ${({ pending, theme }) => (pending ? theme.primary1 : '#3d3e46')};
   color: ${({ pending, theme }) => (pending ? theme.white : theme.text1)};
   font-weight: 500;
 
   :hover,
   :focus {
-    background-color: ${({ pending, theme }) => (pending ? darken(0.05, theme.primary1) : lighten(0.05, theme.bg2))};
+    background-color: ${({ pending, theme }) => (pending ? darken(0.05, theme.primary1) : '#26262c')};
 
     :focus {
       border: 1px solid ${({ pending, theme }) => (pending ? darken(0.1, theme.primary1) : darken(0.1, theme.bg3))};

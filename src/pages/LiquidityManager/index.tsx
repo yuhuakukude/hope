@@ -4,7 +4,7 @@ import { RouteComponentProps, useHistory } from 'react-router-dom'
 import AppBody from '../AppBody'
 import styled from 'styled-components'
 import { GapColumn } from '../../components/Column'
-import { AddRemoveTabs, StyledMenuIcon } from '../../components/NavigationTabs'
+import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { StyledInternalLink, TYPE } from '../../theme'
 import { RowBetween, RowFixed } from '../../components/Row'
 import { TabItem, TabWrapper } from '../../components/Tab'
@@ -53,8 +53,11 @@ export default function LiquidityManager({
             Liquidity Management
           </TYPE.white>
           <RowFixed className="flex ai-center" align={'center'}>
-            <StyledInternalLink style={{ justifySelf: 'flex-center', height: '16px' }} to={'/swap/settings'}>
-              <StyledMenuIcon style={{ height: 16 }} size={'18px'} />
+            <StyledInternalLink
+              style={{ justifySelf: 'flex-center', height: '20px', textDecoration: 'none' }}
+              to={'/swap/settings'}
+            >
+              <i className="iconfont font-20 hope-icon-common p-3">&#xe60a;</i>
             </StyledInternalLink>
             <Tips />
             {/* <Tooltip

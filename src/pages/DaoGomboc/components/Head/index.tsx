@@ -18,16 +18,14 @@ const Head = () => {
       <div className="flex">
         <div className="flex-1 m-r-30">
           <h2 className="text-white font-bolder font-28">How to get liquidity incentives?</h2>
-          <p className="text-white lh18 m-t-15">
+          <p className="text-white lh18 m-t-15 font-nor">
             Light Protocol liquidity incentives are directed to pools by veLT voters. Stake in these pools to earn
             incentives. Boost with veLT for up to 2.5x extra on pools.
           </p>
           <Button
             type="link"
             onClick={() => {
-              window.open(
-                DOCS_URL['GombocWeights']
-              )!.opener = null
+              window.open(DOCS_URL['GombocWeights'])!.opener = null
             }}
           >
             Learn more

@@ -44,6 +44,25 @@ const GomChart = ({ votiingData }: GomChartProps) => {
           })
           const addr = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
           const option: EChartsOption = {
+            color: [
+              '#534DD1',
+              '#ED6E57',
+              '#FFC96C',
+              '#78BF79',
+              '#54919B',
+              '#2A586E',
+              '#6C3D92',
+              '#BC43CA',
+              '#5470c6',
+              '#91cc75',
+              '#fac858',
+              '#ee6666',
+              '#73c0de',
+              '#3ba272',
+              '#fc8452',
+              '#9a60b4',
+              '#ea7ccc'
+            ],
             tooltip: {
               trigger: 'item',
               textStyle: {
@@ -52,13 +71,15 @@ const GomChart = ({ votiingData }: GomChartProps) => {
               },
               formatter: (params: { name: string; value: number; data: any }) => {
                 return `<div>
-                    <div style="font-size: 14px;">
+                    <div style="font-size: 14px; fontFamily: 'Arboria-Medium'">
                     Gömböc Relative Weight
                     </div>
-                    <div style="font-size: 14px;margin-top: 16px">${params.name}: ${
+                    <div style="font-size: 14px;margin-top: 16px; fontFamily: 'Arboria-Book'">${params.name}: ${
                   addr === params.data.gomboc ? '(stHOPE)' : ''
                 }</div>
-                    <div style="font-size: 18px;margin-top: 8px">${params.value}(${params.data.ravPercent}%)</div>
+                    <div style="font-size: 18px;margin-top: 8px; fontFamily: 'Arboria-Medium'">${params.value}(${
+                  params.data.ravPercent
+                }%)</div>
                   </div>`
               },
               padding: 20,
@@ -80,11 +101,12 @@ const GomChart = ({ votiingData }: GomChartProps) => {
                   distanceToLabelLine: 6,
                   lineHeight: 14,
                   fontSize: 14,
-                  color: '#FFA8A8',
+                  color: '#A8A8AA',
                   rotate: 0,
                   show: true,
                   overflow: 'truncate',
-                  bleedMargin: 10
+                  bleedMargin: 10,
+                  fontFamily: 'Arboria-Book'
                 },
                 labelLine: {
                   length: 25,
@@ -120,7 +142,7 @@ const GomChart = ({ votiingData }: GomChartProps) => {
   return (
     <div className="gom-chart-box">
       <h3 className="font-bolder text-white font-20">Proposed Gömböc Weight Changes</h3>
-      <p className="m-t-20 text-white lh15">
+      <p className="m-t-20 text-white lh15 font-nor">
         Gömböc weights are used to determine how much $LT does each protocol or pool get. You can vote for gömböc weight
         with your veLT ( locked $LT tokens in
         <NavLink to={'/dao/locker'}>
@@ -131,7 +153,7 @@ const GomChart = ({ votiingData }: GomChartProps) => {
       <div className="chart-box m-t-60">
         <div ref={voteChartRef as any} className="voting-chart" id="votingchart" />
       </div>
-      <p className="m-t-10 text-center font-14 m-b-30">
+      <p className="m-t-10 text-center font-nor m-b-30 text-normal">
         Proposed Gömböc Weight Changes taking effect on {nextEffectTime || '--'} UTC
       </p>
     </div>
