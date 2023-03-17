@@ -356,7 +356,7 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
       <div className="gom-vote-box">
         <h3 className="font-bolder text-white font-20">Gauge Weight Vote</h3>
         <p className="m-t-20 text-white lh15">
-          - Your vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.
+          - Each vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.
         </p>
         <p className="m-t-10 text-white lh15">
           - Voting power is set at the time of the vote. If you get more veLT later, resubmit your vote to use your

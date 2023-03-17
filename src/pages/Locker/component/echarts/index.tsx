@@ -193,8 +193,8 @@ export default function LockerEcharts() {
   return (
     <>
       <div className="dao-locker-echarts">
-        <h3 className="text-medium font-20">Weekly LT Lock Ration</h3>
-        <p className="font-nor text-normal m-t-40">Weekly $LT lock ration</p>
+        <h3 className="text-medium font-20">Weekly LT lock ration </h3>
+        <p className="font-nor text-normal m-t-40">Weekly LT lock ration</p>
         <div className="charts-box m-t-20">
           <div style={{ width: '100%', height: '100%' }} ref={chartRef} />
           {isHasData && (
