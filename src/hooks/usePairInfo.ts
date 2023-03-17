@@ -8,6 +8,7 @@ import { STAKING_REWARDS_INTERFACE } from '../constants/abis/staking-rewards'
 import { useGomConContract, useLockerContract, useStakingContract } from './useContract'
 import { LT, STAKING_HOPE_GOMBOC_ADDRESS } from '../constants'
 import useCurrentBlockTimestamp from './useCurrentBlockTimestamp'
+import {Field} from "../state/liquidity/actions";
 
 export enum PAIR_SEARCH {
   ALL,
@@ -18,7 +19,7 @@ export enum PAIR_SEARCH {
 export default function usePairsInfo(
   page: number,
   currentPage: number,
-  searchType = PAIR_SEARCH.ALL,
+  searchType = Field.ALL,
   searchValue = '',
   reload: number
 ) {

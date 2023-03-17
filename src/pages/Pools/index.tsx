@@ -5,7 +5,7 @@ import Row, { AutoRow, RowBetween, RowFixed } from '../../components/Row'
 import { CustomLightSpinner, ExternalLink, TYPE } from '../../theme'
 import { ButtonGray, ButtonOutlined, ButtonPrimary } from '../../components/Button'
 import { TabItem, TabWrapper } from '../../components/Tab'
-import usePairsInfo, { PAIR_SEARCH } from '../../hooks/usePairInfo'
+import usePairsInfo from '../../hooks/usePairInfo'
 import PoolCard from '../../components/pool/PoolCard'
 import FullPositionCard from '../../components/PositionCard'
 import { SearchInput } from '../../components/SearchModal/styleds'
@@ -23,6 +23,8 @@ import NoData from '../../assets/images/no_data.png'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 import useTheme from '../../hooks/useTheme'
 import { DOCS_URL } from 'constants/config'
+import { useLiquiditySearchType } from '../../state/liquidity/hooks'
+import { Field } from '../../state/liquidity/actions'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
@@ -85,15 +87,21 @@ const positionTitles = [
 export default function Pools() {
   const theme = useTheme()
   const { account, chainId } = useActiveWeb3React()
+  const [liquiditySearchType, setLiquiditySearchType] = useLiquiditySearchType()
   const inputRef = useRef<HTMLInputElement>()
   const [searchValue, setSearchValue] = useState('')
-  const [searchType, setSearchType] = useState(PAIR_SEARCH.ALL)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(10)
   const toggleWalletModal = useWalletModalToggle()
   const history = useHistory()
   const [reload, setReload] = useState(0)
-  const { pairInfos, total, loading, isError } = usePairsInfo(pageSize, currentPage, searchType, searchValue, reload)
+  const { pairInfos, total, loading, isError } = usePairsInfo(
+    pageSize,
+    currentPage,
+    liquiditySearchType,
+    searchValue,
+    reload
+  )
 
   const ltAddress = useMemo(() => {
     return [LT[chainId ?? 1].address.toString()]
@@ -189,18 +197,18 @@ export default function Pools() {
             <TabItem
               onClick={() => {
                 setCurrentPage(1)
-                setSearchType(PAIR_SEARCH.ALL)
+                setLiquiditySearchType(Field.ALL)
               }}
-              isActive={searchType === PAIR_SEARCH.ALL}
+              isActive={liquiditySearchType === Field.ALL}
             >
               All
             </TabItem>
             <TabItem
               onClick={() => {
                 setCurrentPage(1)
-                setSearchType(PAIR_SEARCH.USER_LIQUIDITY)
+                setLiquiditySearchType(Field.USER_LIQUIDITY)
               }}
-              isActive={searchType === PAIR_SEARCH.USER_LIQUIDITY || searchType === PAIR_SEARCH.USER_STAKE}
+              isActive={liquiditySearchType === Field.USER_LIQUIDITY || liquiditySearchType === Field.USER_STAKING}
             >
               My Positions
             </TabItem>
@@ -210,10 +218,11 @@ export default function Pools() {
               <AutoRow gap={'12px'}>
                 <TYPE.main>My Farms</TYPE.main>
                 <Switch
+                  checked={liquiditySearchType === Field.USER_STAKING}
                   className="pool-switch"
                   onChange={(e: any) => {
                     setCurrentPage(1)
-                    setSearchType(e ? PAIR_SEARCH.USER_STAKE : PAIR_SEARCH.USER_LIQUIDITY)
+                    setLiquiditySearchType(e ? Field.USER_STAKING : Field.USER_LIQUIDITY)
                   }}
                 />
               </AutoRow>
@@ -239,7 +248,7 @@ export default function Pools() {
           </AutoColumn>
         </RowBetween>
       </AutoRow>
-      {searchType === PAIR_SEARCH.ALL && (
+      {liquiditySearchType === Field.ALL && (
         <TableWrapper>
           <TableTitleWrapper>
             {poolTitles.map(({ value, weight }, index) => (
@@ -250,7 +259,7 @@ export default function Pools() {
           </TableTitleWrapper>
         </TableWrapper>
       )}
-      {searchType !== PAIR_SEARCH.ALL && account && (
+      {liquiditySearchType !== Field.ALL && account && (
         <TableWrapper>
           <TableTitleWrapper>
             {positionTitles.map(({ value, weight }, index) => (
@@ -268,7 +277,7 @@ export default function Pools() {
           <CustomLightSpinner src={Circle} alt="loader" size={'30px'} />
           <TYPE.main mt={20}>Loading</TYPE.main>
         </ColumnCenter>
-      ) : searchType === PAIR_SEARCH.ALL ? (
+      ) : liquiditySearchType === Field.ALL ? (
         <>
           {pairInfos.length > 0 ? (
             pairInfos.map(amountPair => (
@@ -330,23 +339,26 @@ export default function Pools() {
         </>
       )}
       <ColumnCenter style={{ marginTop: 30 }}>
-        {(account || (!account && searchType === PAIR_SEARCH.ALL)) && !loading && pairInfos.length !== 0 && total > 0 && (
-          <Row justify="flex-end">
-            <Pagination
-              showQuickJumper
-              total={total}
-              current={currentPage}
-              pageSize={pageSize}
-              showSizeChanger
-              pageSizeOptions={['5', '10', '20', '30', '40']}
-              onChange={onPagesChange}
-              onShowSizeChange={onPagesChange}
-            />{' '}
-            <span className="m-l-15" style={{ color: '#868790' }}>
-              Total {total}
-            </span>
-          </Row>
-        )}
+        {(account || (!account && liquiditySearchType === Field.ALL)) &&
+          !loading &&
+          pairInfos.length !== 0 &&
+          total > 0 && (
+            <Row justify="flex-end">
+              <Pagination
+                showQuickJumper
+                total={total}
+                current={currentPage}
+                pageSize={pageSize}
+                showSizeChanger
+                pageSizeOptions={['5', '10', '20', '30', '40']}
+                onChange={onPagesChange}
+                onShowSizeChange={onPagesChange}
+              />{' '}
+              <span className="m-l-15" style={{ color: '#868790' }}>
+                Total {total}
+              </span>
+            </Row>
+          )}
       </ColumnCenter>
     </PageWrapper>
   )
