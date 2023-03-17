@@ -4,7 +4,7 @@ import { AutoColumn } from '../../components/Column'
 import NumericalInput from '../../components/NumericalInput'
 import { useActiveWeb3React } from '../../hooks'
 import { Tooltip } from 'antd'
-import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
+import { useETHBalances, useTokenBalance, useStHopeBalance } from '../../state/wallet/hooks'
 import {
   HOPE,
   HOPE_STAKING,
@@ -105,7 +105,7 @@ export default function Staking() {
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
   const hopeBal = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
-  const stHopeBalance = useTokenBalance(account ?? undefined, ST_HOPE[chainId ?? 1])
+  const stHopeBalance = useStHopeBalance()
   const [apyVal, setApyVal] = useState('0')
   const [amount, setAmount] = useState('')
 
