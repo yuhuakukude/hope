@@ -19,8 +19,8 @@ const Head = () => {
         <div className="flex-1 m-r-30">
           <h2 className="text-white font-bolder font-28">How to get liquidity incentives?</h2>
           <p className="text-white lh18 m-t-15 font-nor">
-            Light Protocol liquidity incentives are directed to pools by veLT voters. Stake in these pools to earn
-            incentives. Boost with veLT for up to 2.5x extra on pools.
+            Hope protocol’s liquidity incentives are directed to pools selected by veLT voters. Stake in these pools to
+            earn incentives. Enjoy 2.5x extra on pools when you boost your veLT.
           </p>
           <Button
             type="link"

@@ -356,7 +356,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
       <div className="gom-vote-box font-nor">
         <h3 className="font-bolder text-white font-20">Gömböc Weight Vote</h3>
         <p className="m-t-20 text-white lh15">
-          - Your vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.
+          - Each vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.
         </p>
         <p className="m-t-10 text-white lh15">
           - Voting power is set at the time of the vote. If you get more veLT later, resubmit your vote to use your

@@ -9,8 +9,8 @@ export default function PortfolioHead() {
       <Card isShowBg={true}>
         <div className="portfolio-head-title text-medium">Put your money to work</div>
         <div className="portfolio-head-desc">
-          You can now invest with HOPE & stHOPE to earn LT rewards! Or invest in LightSwap pools to earn exchange fees
-          and pooling rewards!
+          You can now invest HOPE and stHOPE to earn LT rewards! Invest in HopeSwap pools to earn exchange fees and
+          pooling rewards!
         </div>
         <div className="learn-more">
           <a

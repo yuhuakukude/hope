@@ -52,7 +52,7 @@ const GomChart = ({ votiingData }: GomChartProps) => {
               '#54919B',
               '#2A586E',
               '#6C3D92',
-              '#BC43CA',
+              '#BC43CA', // 后面的为echarts颜色库
               '#5470c6',
               '#91cc75',
               '#fac858',

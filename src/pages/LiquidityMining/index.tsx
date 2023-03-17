@@ -232,7 +232,7 @@ export default function LiquidityMining({
           <TYPE.link
             mt={4}
             onClick={() =>
-              history.push(`/swap/liquidity/manager/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
+              history.push(`/swap/liquidity/manager/deposit/${pool?.tokens[0].address}/${pool?.tokens[1].address}`)
             }
             as={Link}
             m={'auto'}
