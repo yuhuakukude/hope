@@ -308,7 +308,7 @@ export default function DaoLocker() {
                 <LockerEcharts></LockerEcharts>
               </div>
               <div className="r m-l-30 flex-2 p-30">
-                <h3 className="text-medium font-20">Lock LT get veLT</h3>
+                <h3 className="text-medium font-20"> Locking LT</h3>
                 {account && (
                   <div className="ava-balance m-t-30">
                     <p className="flex jc-between ai-center font-nor">

@@ -523,17 +523,17 @@ export default function Staking() {
                         <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe62b;</i>
                         <div>
                           <p className="text-white lh15">
-                            The $stHOPE unstake will take 28 days to processing and you can withdraw your $HOPE at any
-                            time after it is completed.
+                            Unstaking stHOPE will take 28 days to process, once done withdrawals of HOPE can be done
+                            anytime after.
                           </p>
-                          <p className="text-white lh15 m-t-5">
+                          {/* <p className="text-white lh15 m-t-5">
                             Note that you do not receive the $LT bonus when you confirm your submission. You can also
                             try{' '}
                             <NavLink to={'/swap/exchange'}>
                               <span className="text-primary">HopeSwap</span>{' '}
                             </NavLink>
                             to convert $stHOPE to $HOPE or other assets quickly.
-                          </p>
+                          </p> */}
                         </div>
                       </div>
                     )}

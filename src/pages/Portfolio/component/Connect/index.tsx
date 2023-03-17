@@ -11,7 +11,7 @@ export default function PortfolioConnect() {
     <div className="portfolio-connect">
       <Card>
         <div className="portfolio-connect-bg"></div>
-        <div className="portfolio-connect-title">Connect to a wallet to view your porfolio.</div>
+        <div className="portfolio-connect-title">Connect to a wallet to view your portfolio. </div>
         <div className="portfolio-connect-button">
           <ButtonPrimary className="portfolio-button" onClick={toggleWalletModal}>
             Connect Wallet

@@ -117,7 +117,7 @@ export default function Pools() {
           <AutoColumn justify={'center'} gap="md">
             <RowBetween>
               <TYPE.white fontSize={16} lineHeight={'24px'}>
-                {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
+                {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing liquidity provided. `}
               </TYPE.white>
             </RowBetween>
             <RowBetween>
@@ -150,7 +150,7 @@ export default function Pools() {
             <EmptyCover src={empty} />
             <RowBetween>
               <TYPE.white fontSize={16} lineHeight={'24px'}>
-                {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
+                {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing liquidity provided. `}
               </TYPE.white>
             </RowBetween>
             <a
