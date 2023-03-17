@@ -156,10 +156,11 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
 
   const subAmount = useMemo(() => {
     let sub = 0
-    if (unUseRateVal && curPower.result && curPower.result.power) {
+    if (curPower.result && curPower.result.power) {
+      const unNum = Number(unUseRateVal) || 0
       const cp = JSBI.BigInt(Number(curPower.result.power))
       const ra = new Percent(cp, JSBI.BigInt(10000))
-      sub = Number(ra.toFixed(2)) + Number(unUseRateVal)
+      sub = new Decimal(Number(ra.toFixed(2))).add(new Decimal(unNum)).toNumber()
     }
     return sub
   }, [unUseRateVal, curPower])
@@ -262,7 +263,6 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   }
 
   useEffect((): any => {
-    console.log(curPowerAmount)
     if (curPowerAmount && curGomAddress) {
       changeAmount(`${curPowerAmount}`)
     } else {
@@ -285,7 +285,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   }
 
   function addValueFn() {
-    const newVal = new Decimal(Number(amount)).add(new Decimal(0.01)).toNumber()
+    const newVal = new Decimal(Number(amount)).add(new Decimal(0.1)).toNumber()
     if (Number(newVal) > Number(100)) {
       changeAmount(`100`)
     } else {
@@ -381,7 +381,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
             <span className="text-normal">Vote weight:</span>
             {account && (
               <p>
-                unallocated votes : {isNoVelt ? '--' : `${unUseRateVal}%`}
+                unallocated votes : {isNoVelt || !curGomAddress ? '--' : `${subAmount}%`}
                 <NavLink to={'/dao/locker'}>
                   <span className="text-primary"> Locker </span>
                 </NavLink>
