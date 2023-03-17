@@ -4,7 +4,7 @@ import { useMemo } from 'react'
 import ERC20_INTERFACE from '../../constants/abis/erc20'
 import { useAllTokens } from '../../hooks/Tokens'
 import { useActiveWeb3React } from '../../hooks'
-import { useMulticallContract, useStakingContract, useStakingHopeGombocContract } from '../../hooks/useContract'
+import { useMulticallContract, useStakingContract, useStakingHopeGaugeContract } from '../../hooks/useContract'
 import { isAddress } from '../../utils'
 import { useSingleContractMultipleData, useMultipleContractSingleData, useSingleCallResult } from '../multicall/hooks'
 
@@ -111,7 +111,7 @@ export function useTokenBalance(account?: string, token?: Token): TokenAmount | 
 
 export function useStHopeBalance() {
   const { account } = useActiveWeb3React()
-  const shgContract = useStakingHopeGombocContract()
+  const shgContract = useStakingHopeGaugeContract()
   const stHopeBalance = useSingleCallResult(shgContract, 'balanceOf', [account ?? undefined])
   return stHopeBalance?.result ? CurrencyAmount.ether(stHopeBalance?.result?.[0]) : undefined
 }
