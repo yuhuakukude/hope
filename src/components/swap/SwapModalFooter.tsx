@@ -1,4 +1,4 @@
-import { Trade, TradeType } from '@uniswap/sdk'
+import { Percent, Trade, TradeType } from '@uniswap/sdk'
 import React, { useContext, useMemo, useState } from 'react'
 import { Repeat } from 'react-feather'
 import { Text } from 'rebass'
@@ -23,13 +23,15 @@ export default function SwapModalFooter({
   onConfirm,
   allowedSlippage,
   swapErrorMessage,
-  disabledConfirm
+  disabledConfirm,
+  feeRate
 }: {
   trade: Trade
   allowedSlippage: number
   onConfirm: () => void
   swapErrorMessage: string | undefined
   disabledConfirm: boolean
+  feeRate: Percent | undefined
 }) {
   const [showInverted, setShowInverted] = useState<boolean>(false)
   const theme = useContext(ThemeContext)
@@ -37,7 +39,10 @@ export default function SwapModalFooter({
     allowedSlippage,
     trade
   ])
-  const { priceImpactWithoutFee, realizedLPFee } = useMemo(() => computeTradePriceBreakdown(trade), [trade])
+  const { priceImpactWithoutFee, realizedLPFee } = useMemo(() => computeTradePriceBreakdown(trade, feeRate), [
+    feeRate,
+    trade
+  ])
   const severity = warningSeverity(priceImpactWithoutFee)
 
   return (

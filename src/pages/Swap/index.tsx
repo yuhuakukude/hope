@@ -43,7 +43,7 @@ import { computeTradePriceBreakdown, warningSeverity } from '../../utils/prices'
 import AppBody from '../AppBody'
 //import { ClickableText } from '../Pool/styleds'
 import Loader from '../../components/Loader'
-import { useIsTransactionUnsupported } from 'hooks/Trades'
+import { useFeeRate, useIsTransactionUnsupported } from 'hooks/Trades'
 import { isTradeBetter } from 'utils/trades'
 import { RouteComponentProps } from 'react-router-dom'
 import spinner from '../../assets/svg/spinner.svg'
@@ -113,6 +113,9 @@ export default function Swap({ history }: RouteComponentProps) {
     currencies,
     inputError: swapInputError
   } = useDerivedSwapInfo()
+
+  const feeRate = useFeeRate(currencies[Field.INPUT], currencies[Field.OUTPUT])
+  console.log('feeRate', feeRate)
 
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
@@ -427,6 +430,7 @@ export default function Swap({ history }: RouteComponentProps) {
         <SwapHeader />
         <Wrapper id="swap-page">
           <ConfirmSwapModal
+            feeRate={feeRate}
             token0USD={`≈$${
               inputAddress && priceResult && formattedAmounts[Field.INPUT]
                 ? amountFormat(Number(priceResult[inputAddress]) * Number(formattedAmounts[Field.INPUT]), 2)
@@ -547,6 +551,7 @@ export default function Swap({ history }: RouteComponentProps) {
                   //   />
                   // </Row>
                   <AdvancedSwapDetailsDropdown
+                    feeRate={feeRate}
                     error={
                       !currencies[Field.INPUT] || !currencies[Field.OUTPUT]
                         ? 'Select a token to see more trading details'
@@ -595,7 +600,9 @@ export default function Swap({ history }: RouteComponentProps) {
             </WarningWrapper>
           )}
 
-          {userHasSpecifiedInputOutput && (swapInputError || (route && priceImpactSeverity > 3 && !isExpertMode)) ? (
+          {account &&
+          userHasSpecifiedInputOutput &&
+          (swapInputError || (route && priceImpactSeverity > 3 && !isExpertMode)) ? (
             <ErrorWrapper>
               <i className="iconfont font-16" style={{ color: '#F6465D', fontWeight: 700 }}>
                 &#xe614;

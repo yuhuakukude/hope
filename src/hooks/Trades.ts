@@ -1,5 +1,5 @@
 import { isTradeBetter } from 'utils/trades'
-import { Currency, CurrencyAmount, Pair, Token, Trade } from '@uniswap/sdk'
+import { Currency, CurrencyAmount, JSBI, Pair, Percent, Token, Trade } from '@uniswap/sdk'
 import flatMap from 'lodash.flatmap'
 import { useMemo } from 'react'
 
@@ -9,12 +9,14 @@ import {
   BETTER_TRADE_LESS_HOPS_THRESHOLD,
   ADDITIONAL_BASES
 } from '../constants'
-import { PairState, usePairs } from '../data/Reserves'
+import { PAIR_INTERFACE, PairState, usePair, usePairs } from '../data/Reserves'
 import { wrappedCurrency } from '../utils/wrappedCurrency'
 
 import { useActiveWeb3React } from './index'
 import { useUnsupportedTokens } from './Tokens'
 import { useUserSingleHopOnly } from 'state/user/hooks'
+import { useMultipleContractSingleData, useSingleCallResult } from '../state/multicall/hooks'
+import { usePairContract } from './useContract'
 
 function useAllCommonPairs(currencyA?: Currency, currencyB?: Currency): Pair[] {
   const { chainId } = useActiveWeb3React()
@@ -176,4 +178,28 @@ export function useIsTransactionUnsupported(currencyIn?: Currency, currencyOut?:
   }
 
   return false
+}
+
+//const BASE_FEE = new Percent(JSBI.BigInt(30), JSBI.BigInt(10000))
+
+export function useFeeRates(trade?: Trade) {
+  const pairAddresses = useMemo(() => {
+    return trade?.route.pairs.map(({ liquidityToken }) => liquidityToken.address) ?? []
+  }, [trade])
+  const results = useMultipleContractSingleData(pairAddresses, PAIR_INTERFACE, 'feeRateNumerator')
+  return results.map(({ result }) =>
+    result?.[0]
+      ? new Percent(JSBI.subtract(JSBI.BigInt(10000), JSBI.BigInt(result?.[0])), JSBI.BigInt(10000))
+      : undefined
+  )
+}
+
+export function useFeeRate(token0?: Currency, token1?: Currency) {
+  const pair = usePair(token0, token1)
+  const contract = usePairContract(pair[1]?.liquidityToken.address)
+  const result = useSingleCallResult(contract, 'feeRateNumerator')?.result
+  console.log('results', result)
+  return result
+    ? new Percent(JSBI.subtract(JSBI.BigInt(10000), JSBI.BigInt(result?.[0])), JSBI.BigInt(10000))
+    : undefined
 }

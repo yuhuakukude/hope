@@ -4,7 +4,7 @@ import { abi as UNI_ABI } from '@uniswap/governance/build/Uni.json'
 import STAKING_REWARDS_ABI from '../constants/abis/ahp/PoolGomboc.json'
 import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build/MerkleDistributor.json'
 import { ChainId, WETH } from '@uniswap/sdk'
-import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
+import { abi as IUniswapV2PairABI } from '../constants/abis/IUniswapV2Pair.json'
 import { useMemo } from 'react'
 import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, PERMIT2_ADDRESS, UNI } from '../constants'
 import {

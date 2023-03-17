@@ -22,9 +22,17 @@ import SwapRoute from './SwapRoute'
 //   color: ${({ theme }) => theme.text1};
 // `
 
-function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippage: number }) {
+function TradeSummary({
+  trade,
+  feeRate,
+  allowedSlippage
+}: {
+  trade: Trade
+  feeRate?: Percent
+  allowedSlippage: number
+}) {
   const theme = useContext(ThemeContext)
-  const { priceImpactWithoutFee, realizedLPFee } = computeTradePriceBreakdown(trade)
+  const { priceImpactWithoutFee, realizedLPFee } = computeTradePriceBreakdown(trade, feeRate)
   const isExactIn = trade.tradeType === TradeType.EXACT_INPUT
   const slippageAdjustedAmounts = computeSlippageAdjustedAmounts(trade, allowedSlippage)
 
@@ -121,16 +129,17 @@ function TradeSummary({ trade, allowedSlippage }: { trade: Trade; allowedSlippag
 export interface AdvancedSwapDetailsProps {
   error?: string
   trade?: Trade
+  feeRate?: Percent
 }
 
-export function AdvancedSwapDetails({ trade, error }: AdvancedSwapDetailsProps) {
+export function AdvancedSwapDetails({ trade, feeRate, error }: AdvancedSwapDetailsProps) {
   const [allowedSlippage] = useUserSlippageTolerance()
 
   return (
     <AutoColumn gap="0px">
       {trade ? (
         <>
-          <TradeSummary trade={trade} allowedSlippage={allowedSlippage} />
+          <TradeSummary feeRate={feeRate} trade={trade} allowedSlippage={allowedSlippage} />
           <>
             <AutoColumn style={{ marginTop: 22 }}>
               <SwapRoute trade={trade} />
