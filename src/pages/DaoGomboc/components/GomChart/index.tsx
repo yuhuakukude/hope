@@ -42,6 +42,15 @@ const GomChart = ({ votiingData }: GomChartProps) => {
               arr.push(item)
             }
           })
+          // for (let index = 0; index < 50; index++) {
+          //   const item: any = {
+          //     name: `dome${index}`,
+          //     value: Math.random() * 10000,
+          //     ravPercent: Math.random() * 10000,
+          //     gomboc: ''
+          //   }
+          //   arr.push(item)
+          // }
           const addr = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
           const option: EChartsOption = {
             color: [

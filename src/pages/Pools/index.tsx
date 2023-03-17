@@ -80,7 +80,7 @@ const positionTitles = [
   { value: 'Boost' },
   { value: 'APR', weight: 1.5 },
   { value: 'Claimable Rewards' },
-  { value: 'Actions', weight: 0.5 }
+  { value: 'Actions', weight: 0.5, alignCenter: true }
 ]
 export default function Pools() {
   const theme = useTheme()
@@ -253,9 +253,9 @@ export default function Pools() {
       {searchType !== PAIR_SEARCH.ALL && account && (
         <TableWrapper>
           <TableTitleWrapper>
-            {positionTitles.map(({ value, weight }, index) => (
+            {positionTitles.map(({ value, weight, alignCenter }, index) => (
               <TableTitle key={index} flex={weight ?? 1}>
-                {value}
+                <p style={{ textAlign: alignCenter ? 'center' : 'left' }}>{value}</p>
               </TableTitle>
             ))}
           </TableTitleWrapper>
