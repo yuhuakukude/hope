@@ -4,7 +4,6 @@ import { darken } from 'polished'
 import { useTranslation } from 'react-i18next'
 import { NavLink, Link as HistoryLink, useHistory } from 'react-router-dom'
 
-import { ArrowLeft } from 'react-feather'
 import { RowFixed } from '../Row'
 // import QuestionHelper from '../QuestionHelper'
 import { Settings } from 'react-feather'
@@ -52,10 +51,6 @@ const ActiveText = styled.div`
   font-size: 20px;
 `
 
-const StyledArrowLeft = styled(ArrowLeft)`
-  color: ${({ theme }) => theme.text1};
-`
-
 export const StyledMenuIcon = styled(Settings)`
   height: 20px;
   width: fit-content;
@@ -90,7 +85,12 @@ export function FindPoolTabs() {
     <Tabs>
       <RowFixed gap={'20px'} style={{ padding: '0rem 1rem 0 40px' }}>
         <HistoryLink to="/swap/pools">
-          <StyledArrowLeft />
+          <i
+            className="iconfont font-28 cursor-select font-bold hope-icon-common"
+            style={{ width: '28px', height: '28px' }}
+          >
+            &#xe615;
+          </i>
         </HistoryLink>
         <ActiveText style={{ marginLeft: 20 }}>Import Pool</ActiveText>
       </RowFixed>
@@ -110,7 +110,12 @@ export function AddRemoveTabs() {
             history.goBack()
           }}
         >
-          <StyledArrowLeft />
+          <i
+            className="iconfont font-28 cursor-select font-bold hope-icon-common"
+            style={{ width: '28px', height: '28px' }}
+          >
+            &#xe615;
+          </i>
         </div>
         <ActiveText style={{ marginLeft: 20 }}>Liquidity Management</ActiveText>
       </RowFixed>
@@ -130,7 +135,12 @@ export function StakeTabs() {
             history.goBack()
           }}
         >
-          <StyledArrowLeft />
+          <i
+            className="iconfont font-28 cursor-select font-bold hope-icon-common"
+            style={{ width: '28px', height: '28px' }}
+          >
+            &#xe615;
+          </i>
         </div>
         <ActiveText style={{ marginLeft: 20 }}>Liquidity Mining</ActiveText>
       </RowFixed>

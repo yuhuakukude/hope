@@ -3,6 +3,7 @@ import styled from 'styled-components'
 import useCopyClipboard from '../../hooks/useCopyClipboard'
 
 import { LinkStyledButton } from '../../theme'
+import { Tooltip } from 'antd'
 
 const CopyIcon = styled(LinkStyledButton)`
   color: ${({ theme }) => theme.text3};
@@ -38,9 +39,11 @@ export default function CopyHelper(props: { toCopy: string; children?: React.Rea
         </TransactionStatusText>
       ) : (
         <TransactionStatusText>
-          <i className="iconfont font-24 hope-icon-common" style={{ padding: '2px' }}>
-            &#xe628;
-          </i>
+          <Tooltip overlayClassName="tips-wallet" title="Copy">
+            <i className="iconfont font-24 hope-icon-common" style={{ padding: '2px' }}>
+              &#xe628;
+            </i>
+          </Tooltip>
         </TransactionStatusText>
       )}
       {isCopied ? '' : props.children}

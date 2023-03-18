@@ -13,7 +13,7 @@ import {
   PERMIT2_ADDRESS,
   ST_HOPE,
   HOPE_TOKEN_ADDRESS,
-  STAKING_HOPE_GOMBOC_ADDRESS
+  STAKING_HOPE_GAUGE_ADDRESS
 } from '../../constants'
 import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
@@ -70,7 +70,7 @@ export default function Staking() {
   const [actionType, setActionType] = useState(ACTION.STAKE)
 
   const addresses = useMemo(() => {
-    return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] ?? '', HOPE_TOKEN_ADDRESS[chainId ?? 1] ?? '']
+    return [STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] ?? '', HOPE_TOKEN_ADDRESS[chainId ?? 1] ?? '']
   }, [chainId])
 
   const { result: priceResult } = useTokenPriceObject(addresses)
@@ -84,8 +84,8 @@ export default function Staking() {
   }, [chainId, priceResult])
   const stHopePrice = useMemo(() => {
     let pr = '0'
-    if (STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] && priceResult) {
-      pr = priceResult[STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
+    if (STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] && priceResult) {
+      pr = priceResult[STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
     }
     return pr
   }, [chainId, priceResult])
@@ -117,7 +117,7 @@ export default function Staking() {
   const { toClaim } = useToClaim()
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
   const stakingAddr = useMemo(() => {
-    return `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+    return `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
   }, [chainId])
   const { currentBoots, futureBoots } = usePairStakeInfo(stakingAddr)
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
@@ -198,7 +198,7 @@ export default function Staking() {
         amount: inputAmount.raw.toString()
       },
       nonce: nonce,
-      spender: STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1],
+      spender: STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1],
       deadline
     }
 
@@ -252,7 +252,7 @@ export default function Staking() {
     onTxStart()
     setClaimPendingText(`claim LT`)
     setActionType(ACTION.CLAIM)
-    toClaim(STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1], claRewards)
+    toClaim(STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1], claRewards)
       .then(hash => {
         setClaimPendingText('')
         onTxSubmitted(hash)
@@ -558,7 +558,7 @@ export default function Staking() {
                       </div>
                     </div>
                     <div className="flex jc-between m-b-20">
-                      <span className="text-normal">Gömböc relative weight</span>
+                      <span className="text-normal">Gauge relative weight</span>
                       <span className="text-white">{format.rate(relWeight)}</span>
                     </div>
                     <div className="flex jc-between m-b-20">

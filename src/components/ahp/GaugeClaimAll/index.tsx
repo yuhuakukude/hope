@@ -12,18 +12,18 @@ export type ITableItem = {
   ltOfReward: string | number
   rewardSymbol: string | number
   usdOfReward: string | number
-  gomboc?: string | number
+  gauge?: string | number
   usdOfExtReward?: string | number
   extRewardList?: { symbol: string | number; amount: string | number; usdOfToken: string | number }[]
 }
-interface GombocClaimProps {
+interface GaugeClaimProps {
   onSubmit: any
   onDismiss: () => void
   total: number
   list: IHeadItem[]
 }
 
-function GombocClaimAll({ onSubmit, onDismiss, total, list }: GombocClaimProps) {
+function GaugeClaimAll({ onSubmit, onDismiss, total, list }: GaugeClaimProps) {
   const { account } = useActiveWeb3React()
   const isEthBalanceInsufficient = useEstimate()
   const [drapIndex, setDrapIndex] = useState(true)
@@ -33,7 +33,7 @@ function GombocClaimAll({ onSubmit, onDismiss, total, list }: GombocClaimProps) 
 
   return (
     <>
-      <div className="gomboc-claim-box staking-claim-box w-100">
+      <div className="gauge-claim-box staking-claim-box w-100">
         <div className="head text-medium font-18">
           Rewards Claim
           <div className="icon-close">
@@ -108,4 +108,4 @@ function GombocClaimAll({ onSubmit, onDismiss, total, list }: GombocClaimProps) 
   )
 }
 
-export default GombocClaimAll
+export default GaugeClaimAll

@@ -436,7 +436,7 @@ export default function StakingPoolDetail({
         <LightCard padding={'0'} borderRadius={'20px'}>
           <CardHeader style={{ padding: '30px' }}>
             <TYPE.white fontSize={18} fontWeight={700}>
-              Liquidity Gömböc
+              Liquidity Gauge
             </TYPE.white>
           </CardHeader>
           {loading && !pool?.stakingRewardAddress ? (
@@ -462,7 +462,7 @@ export default function StakingPoolDetail({
               <AutoColumn style={{ padding: 30 }} gap={'30px'}>
                 <AutoColumn gap={'20px'}>
                   <RowBetween>
-                    <TYPE.main>Gömböc Relative Weight</TYPE.main>
+                    <TYPE.main>Gauge Relative Weight</TYPE.main>
                     <TYPE.white>{relativeWeight ? `${relativeWeight.toFixed(2)}%` : ''}</TYPE.white>
                   </RowBetween>
                   <RowBetween>
@@ -762,10 +762,12 @@ export default function StakingPoolDetail({
             </TabWrapper>
             {showTx ? (
               <>
-                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 30px'}>
+                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 0px'}>
                   <AutoRow>
                     <TableTitle>
-                      <SelectTips options={TransactionType} label={transactionType} />
+                      <div className="p-l-30">
+                        <SelectTips options={TransactionType} label={transactionType} />
+                      </div>
                     </TableTitle>
                     <TableTitle>Total Value</TableTitle>
                     <TableTitle>Token Amount</TableTitle>
@@ -819,7 +821,7 @@ export default function StakingPoolDetail({
               </>
             ) : (
               <>
-                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 30px'}>
+                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 20px'}>
                   <AutoRow>
                     <TableTitle>Contract Address</TableTitle>
                     <TableTitle>Creation Time(UTC)</TableTitle>

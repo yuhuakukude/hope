@@ -7,7 +7,7 @@ const usePrice = () => {
   const [hopePrice, setHopePrice] = useState('')
   const initPrice = useCallback(async () => {
     try {
-      // const address = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLowerCase()
+      // const address = `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLowerCase()
       const addQuery = `{  
         tokens(where: {symbol: "stHOPE"}) {    
           symbol   

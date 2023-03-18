@@ -55,9 +55,20 @@ const Icon = styled('i')`
 `
 
 const MenuText = styled(Text)`
-  color: #ffffff;
+  color: #a8a8aa;
   font-size: 12px;
   text-align: center;
+  cursor: pointer;
+  user-select: none;
+  a {
+    color: #a8a8aa;
+  }
+  &:hover {
+    color: #fff;
+    a {
+      color: #fff;
+    }
+  }
 `
 
 const SidebarText = styled.p`
@@ -93,7 +104,7 @@ export default function SideBar() {
   const ROUTERS = [
     { title: 'Staking', icon: '&#xe626;', baseRouter: '/hope', router: '/hope/staking' },
     { title: 'HopeSwap', icon: '&#xe605;', baseRouter: '/swap', router: '/swap/exchange' },
-    { title: 'LT & DAO', icon: '&#xe608;', baseRouter: '/dao', router: '/dao/gomboc' },
+    { title: 'LT & DAO', icon: '&#xe608;', baseRouter: '/dao', router: '/dao/gauge' },
     { title: 'Portfolio', icon: '&#xe627;', baseRouter: '/portfolio', router: '/portfolio' }
   ]
   const currentTab = useCallback(() => {
@@ -128,28 +139,33 @@ export default function SideBar() {
       </Column>
       <Column style={{ width: '100%' }}>
         <AutoColumn gap="10px" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
-          <Twitter className="icon-link" />
-          <Medium className="icon-link" />
-          <Telegram className="icon-link" />
-          <Discord className="icon-link" />
-          <Email className="icon-link" />
+          <a href="https://twitter.com/hope_ecosystem" target="_blank" rel="noopener noreferrer" className="a-link">
+            <Twitter className="icon-link"></Twitter>
+          </a>
+
+          <a href="https://hope-ecosystem.medium.com/" target="_blank" rel="noopener noreferrer" className="a-link">
+            <Medium className="icon-link"></Medium>
+          </a>
+
+          <Telegram className="icon-link disabled"></Telegram>
+
+          <a href="https://discord.gg/hope-ecosystem" target="_blank" rel="noopener noreferrer" className="a-link">
+            <Discord className="icon-link"></Discord>
+          </a>
+
+          <Email className="icon-link disabled"></Email>
         </AutoColumn>
 
         <AutoColumn gap={'18px'} style={{ marginTop: '30px' }}>
           <MenuText>About</MenuText>
           <MenuText>Docs</MenuText>
           <MenuText>
-            <a
-              href={`${DOC_API}/bug-bounty.html`}
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{ color: '#FFFFFF' }}
-            >
+            <a href={`${DOC_API}/bug-bounty.html`} target="_blank" rel="noopener noreferrer">
               Bug bounty
             </a>
           </MenuText>
         </AutoColumn>
-        <MenuText mt={26} mb={30}>
+        <MenuText mt={26} mb={30} style={{ color: '#A8A8AA', cursor: 'default' }}>
           @2023 Light
         </MenuText>
       </Column>

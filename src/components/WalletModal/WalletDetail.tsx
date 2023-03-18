@@ -21,6 +21,7 @@ import { CustomLightSpinner, ExternalLink } from '../../theme'
 import Copy from '../AccountDetails/Copy'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { setInjectedConnected } from 'utils/isInjectedConnectedPrev'
+import { Tooltip } from 'antd'
 
 export const DivideLine = styled.div`
   border: 0.5px solid ${({ theme }) => theme.bg3};
@@ -106,21 +107,28 @@ export default function WalletDetail({
             <AutoRowBetween style={{ alignItems: 'center', color: theme.text1 }}>
               {account && <Copy toCopy={account} />}
               <ExternalLink href={`${getEtherscanLink(chainId, account, 'address')}`}>
-                <i className="iconfont hope-icon-common" style={{ fontSize: '18px', margin: '0 21px', padding: '5px' }}>
-                  &#xe60e;
-                </i>
+                <Tooltip overlayClassName="tips-wallet" title="Explore">
+                  <i
+                    className="iconfont hope-icon-common"
+                    style={{ fontSize: '18px', margin: '0 21px', padding: '5px' }}
+                  >
+                    &#xe60e;
+                  </i>
+                </Tooltip>
               </ExternalLink>
-              <i
-                onClick={() => {
-                  setInjectedConnected()
-                  toggleWalletModal()
-                  deactivate()
-                }}
-                className="iconfont hope-icon-common"
-                style={{ fontSize: '18px', cursor: 'pointer', padding: '5px' }}
-              >
-                &#xe629;
-              </i>
+              <Tooltip overlayClassName="tips-wallet" title="Disconnect">
+                <i
+                  onClick={() => {
+                    setInjectedConnected()
+                    toggleWalletModal()
+                    deactivate()
+                  }}
+                  className="iconfont hope-icon-common"
+                  style={{ fontSize: '18px', cursor: 'pointer', padding: '5px' }}
+                >
+                  &#xe629;
+                </i>
+              </Tooltip>
             </AutoRowBetween>
           </div>
         )}

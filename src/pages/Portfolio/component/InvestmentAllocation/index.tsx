@@ -67,12 +67,7 @@ export default function InvestmentAllocation({ data }: { data: any }) {
             <div>
               The total value of LT locked into Voting Escrow contract, and the portion of platform fees earned through
               the holding of veLT.{' '}
-              <a
-                className="text-primary"
-                href={DOCS_URL['LightToken']}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
+              <a className="text-primary" href={DOCS_URL['LightToken']} target="_blank" rel="noopener noreferrer">
                 Learn more
               </a>
             </div>

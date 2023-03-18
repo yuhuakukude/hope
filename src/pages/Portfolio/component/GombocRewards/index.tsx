@@ -7,9 +7,9 @@ import SelectTips, { TitleTipsProps } from '../SelectTips'
 import TitleTips from '../TitleTips'
 // import { TokenAmount, JSBI, Token } from '@uniswap/sdk'
 import { Token } from '@uniswap/sdk'
-import { LT, HOPE, STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
+import { LT, HOPE, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 import { useActiveWeb3React } from '../../../../hooks'
-import GombocClaim from '../../../../components/ahp/GombocClaim'
+import GaugeClaim from '../../../../components/ahp/GaugeClaim'
 import { useToClaim, useClaimRewards } from '../../../../hooks/ahp/usePortfolio'
 import format from '../../../../utils/format'
 import TransactionConfirmationModal, {
@@ -48,8 +48,8 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
 
   const curAddress = useMemo(() => {
     let res = ''
-    if (curTableItem && curTableItem?.gomboc) {
-      res = curTableItem?.gomboc
+    if (curTableItem && curTableItem?.gauge) {
+      res = curTableItem?.gauge
     }
     return res
   }, [curTableItem])
@@ -91,7 +91,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
 
   const columns = [
     {
-      title: 'Rewards Gömböc',
+      title: 'Rewards Gauge',
       dataIndex: 'name',
       key: 'name'
     },
@@ -123,7 +123,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
       title: (
         <div>
           Staked
-          <Tips title="Staked refers to the number of LP tokens that have been invested in a Gömböc for liquidity mining. The value of estimated (USD denominated) is calculated using token prices denominated in USD. Prices are fetched either from HopeSwap pools. " />
+          <Tips title="Staked refers to the number of LP tokens that have been invested in a Gauge for liquidity mining. The value of estimated (USD denominated) is calculated using token prices denominated in USD. Prices are fetched either from HopeSwap pools. " />
         </div>
       ),
       dataIndex: 'staked',
@@ -169,21 +169,21 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
       key: 'Actions',
       render: (text: string, record: PortfolioReward) => {
         const options: TitleTipsProps[] = []
-        const hsg = STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLowerCase()
+        const hsg = STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1].toLowerCase()
         if (isNotNull(record.stakeable)) {
           options.push({
             label: 'Stake',
             value: 'Stake',
             onClick: () => {
-              if (record.gomboc === hsg) {
+              if (record.gauge === hsg) {
                 history.push(`/staking`)
               } else {
-                history.push(`/swap/stake/${record.gomboc}`)
+                history.push(`/swap/stake/${record.gauge}`)
               }
             }
           })
         }
-        if (record.gomboc === hsg) {
+        if (record.gauge === hsg) {
           if (stakedVal && Number(stakedVal?.toFixed(2)) > 0) {
             options.push({
               label: 'Unstake',
@@ -199,7 +199,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
               label: 'Unstake',
               value: 'Unstake',
               onClick: () => {
-                history.push(`/swap/withdraw/${record.gomboc}`)
+                history.push(`/swap/withdraw/${record.gauge}`)
               }
             })
           }
@@ -214,7 +214,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
             }
           })
         }
-        if (!(record.gomboc === hsg)) {
+        if (!(record.gauge === hsg)) {
           if (isNotNull(record.stakeable)) {
             options.push({
               label: 'Provide',
@@ -235,7 +235,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
             label: 'Boost',
             value: 'Boost',
             onClick: () => {
-              history.push(`/dao/gomboc?gomboc=${record.gomboc}`)
+              history.push(`/dao/gauge?gauge=${record.gauge}`)
             }
           })
         }
@@ -272,7 +272,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
     setCurToken(LT[chainId ?? 1])
     onTxStart()
     setPendingText(`claim Rewards`)
-    toClaim(STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1])
+    toClaim(STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1])
       .then(hash => {
         setPendingText('')
         onTxSubmitted(hash)
@@ -319,7 +319,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
           message={errorStatus.message}
         />
       ) : (
-        <GombocClaim
+        <GaugeClaim
           onSubmit={(type: string) => {
             claimSubmit(type)
           }}
@@ -333,8 +333,8 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
   const getTitle = useCallback(
     () => (
       <TitleTips
-        title="Gömböc Rewards"
-        desc="Stake the HOPE 、Liquidity Position in Gomboc and receive LT rewards. You can also use veLT to increase LT
+        title="Gauge Rewards"
+        desc="Stake the HOPE 、Liquidity Position in gauge and receive LT rewards. You can also use veLT to increase LT
   yield to a maximum of 2.5x."
         link=""
       />

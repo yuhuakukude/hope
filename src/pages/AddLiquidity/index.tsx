@@ -432,6 +432,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
             />
             <ColumnCenter>
               <PlusCircle size="20" color={theme.text2} />
+              {/* <i className="iconfont font-24 hope-icon-common p-2">&#xe630;</i> */}
             </ColumnCenter>
             <CurrencyInputPanel
               label={' '}

@@ -165,37 +165,6 @@ const BuyHopeNavLink = styled(NavLink)`
   }
 `
 
-// const StyledExternalLink = styled(ExternalLink).attrs({
-//   activeClassName
-// })<{ isActive?: boolean }>`
-//   ${({ theme }) => theme.flexRowNoWrap}
-//   align-items: left;
-//   outline: none;
-//   cursor: pointer;
-//   text-decoration: none;
-//   color: ${({ theme }) => theme.text2};
-//   font-size: 1rem;
-//   padding-bottom: 1rem;
-//   width: fit-content;
-//   margin: 0 12px;
-//   font-weight: 500;
-//
-//   &.${activeClassName} {
-//     font-weight: 600;
-//     border-bottom: 3px solid ${({ theme }) => theme.primary1};
-//     color: ${({ theme }) => theme.text1};
-//   }
-//
-//   :hover,
-//   :focus {
-//     color: ${({ theme }) => darken(0.1, theme.text1)};
-//   }
-//
-//   ${({ theme }) => theme.mediaWidth.upToExtraSmall`
-//       display: none;
-// `}
-// `
-
 export const StyledMenuButton = styled.button`
   position: relative;
   width: 100%;
@@ -222,11 +191,6 @@ export const StyledMenuButton = styled.button`
   }
 `
 
-// const NETWORK_LABELS: { [chainId in ChainId]?: string } = {
-//   [ChainId.SEPOLIA]: 'Sepolia',
-//   [ChainId.HOPE]: 'Hope'
-// }
-
 export default function Header({ headers }: { headers?: HeaderEvent[] }) {
   const { account, chainId } = useActiveWeb3React()
   const { t } = useTranslation()
@@ -247,14 +211,12 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
     }
     if (location?.pathname?.startsWith('/dao')) {
       return [
-        { id: 'hope-nav-link', title: 'Gomboc', router: '/dao/gomboc' },
+        { id: 'hope-nav-link', title: 'Gauge', router: '/dao/gauge' },
         { id: 'pool-nav-link', title: 'Locker', router: '/dao/locker' }
       ]
     }
     return []
   }, [location])
-  // const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
-  // const [isDark] = useDarkModeManager()
 
   const [showUniBalanceModal, setShowUniBalanceModal] = useState(false)
 
@@ -282,31 +244,6 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
                   </StyledNavLink>
                 )
               })}
-              {/*<StyledNavLink id={`swap-nav-link`} to={'/swap'}>*/}
-              {/*  {t('swap')}*/}
-              {/*</StyledNavLink>*/}
-              {/*<StyledNavLink*/}
-              {/*  id={`pool-nav-link`}*/}
-              {/*  to={'/pool'}*/}
-              {/*  isActive={(match, { pathname }) =>*/}
-              {/*    Boolean(match) ||*/}
-              {/*    pathname.startsWith('/add') ||*/}
-              {/*    pathname.startsWith('/remove') ||*/}
-              {/*    pathname.startsWith('/create') ||*/}
-              {/*    pathname.startsWith('/find')*/}
-              {/*  }*/}
-              {/*>*/}
-              {/*  {t('pool')}*/}
-              {/*</StyledNavLink>*/}
-              {/*<StyledNavLink id={`stake-nav-link`} to={'/uni'}>*/}
-              {/*  UNI*/}
-              {/*</StyledNavLink>*/}
-              {/*<StyledNavLink id={`stake-nav-link`} to={'/vote'}>*/}
-              {/*  Vote*/}
-              {/*</StyledNavLink>*/}
-              {/*<StyledExternalLink id={`stake-nav-link`} href={'https://uniswap.info'}>*/}
-              {/*  Charts <span style={{ fontSize: '11px' }}>↗</span>*/}
-              {/*</StyledExternalLink>*/}
             </>
           )}
         </HeaderLinks>
@@ -316,15 +253,6 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
           Buy HOPE
         </BuyHopeNavLink>
         <HeaderElement>
-          {/* <div style={{ width: '24px', height: '24px' }}>
-            {account ? (
-              <img alt={'logo'} src={Matamask} style={{ width: '100%', height: 'auto' }} />
-            ) : (
-              <i className="iconfont" style={{ color: theme.text1, width: '100%', height: '100%' }}>
-                &#xe610;
-              </i>
-            )}
-          </div> */}
           <AccountElement active={!!account} style={{ pointerEvents: 'auto', color: theme.text1, marginRight: '30px' }}>
             {account && (
               <div style={{ paddingLeft: '14px', paddingRight: '14px', display: 'flex', alignItems: 'center' }}>

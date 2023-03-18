@@ -10,7 +10,7 @@ import DoubleCurrencyLogo from '../DoubleLogo'
 import { ExternalLink, TYPE } from '../../theme'
 import { LightCard } from '../Card'
 import { getEtherscanLink } from '../../utils'
-import { ArrowUpRight, ChevronRight } from 'react-feather'
+import { ArrowUpRight } from 'react-feather'
 import { useHistory } from 'react-router-dom'
 import { BasePair } from '../../graph/fetch'
 import { amountFormat, rate, numFormat } from '../../utils/format'
@@ -33,19 +33,9 @@ const ContentRow = styled(RowFixed)<{ weight?: number }>`
   flex: ${({ weight }) => (weight ? weight : 1)};
 `
 
-const ActionIcon = styled(ChevronRight)`
-  width: 24px;
-  height: 24px;
-  padding: 2px;
-  cursor: pointer;
-  &:hover {
-    background-color: ${({ theme }) => theme.bg3};
-  }
-`
-
 const SmallCard = styled(TYPE.white)`
   background-color: ${({ theme }) => theme.bg3};
-  border-radius: 2px;
+  border-radius: 6px;
   font-size: 12px;
   padding: 4px;
 `
@@ -70,13 +60,7 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
   const backgroundColor = useColor(pair?.token0)
 
   return (
-    <StyledPositionCard
-      onClick={() => {
-        history.push(`/swap/liquidity/pool-detail/${pairInfo.liquidityToken.address}`)
-      }}
-      border={border}
-      bgColor={backgroundColor}
-    >
+    <StyledPositionCard border={border} bgColor={backgroundColor}>
       <AutoRow>
         <ContentRow weight={1.5}>
           <DoubleCurrencyLogo margin currency0={currency0} currency1={currency1} size={24} />
@@ -113,7 +97,14 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
           </TYPE.white>
         </ContentRow>
         <ContentRow weight={0.1}>
-          <ActionIcon size={8} />
+          <i
+            className="iconfont font-16 hope-icon-common p-3 m-l-5 cursor-select"
+            onClick={() => {
+              history.push(`/swap/liquidity/pool-detail/${pairInfo.liquidityToken.address}`)
+            }}
+          >
+            &#xe62a;
+          </i>
         </ContentRow>
       </AutoRow>
     </StyledPositionCard>

@@ -11,12 +11,12 @@ import { ButtonPrimary } from '../../../../components/Button'
 import { Link } from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
 
-import { STAKING_HOPE_GOMBOC_ADDRESS, LT_TOKEN_ADDRESS, HOPE_TOKEN_ADDRESS } from '../../../../constants'
+import { STAKING_HOPE_GAUGE_ADDRESS, LT_TOKEN_ADDRESS, HOPE_TOKEN_ADDRESS } from '../../../../constants'
 import ClaimRewards from '../ClaimRewards'
 import { usePairStakeInfo } from 'hooks/usePairInfo'
 import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
 import './index.scss'
-import { ITableItem } from 'components/ahp/GombocClaim'
+import { ITableItem } from 'components/ahp/GaugeClaim'
 import { DOCS_URL } from 'constants/config'
 
 interface IStaking {
@@ -56,12 +56,12 @@ export default function MyHOPEStaking() {
   const { chainId } = useActiveWeb3React()
   const [item, setItem] = useState<ITableItem | null>(null)
   const stakingAddr = useMemo(() => {
-    return `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+    return `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
   }, [chainId])
   const { currentBoots } = usePairStakeInfo(stakingAddr)
   const addresses = useMemo(() => {
     return [
-      STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] ?? '',
+      STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] ?? '',
       LT_TOKEN_ADDRESS[chainId ?? 1] ?? '',
       HOPE_TOKEN_ADDRESS[chainId ?? 1] ?? ''
     ]
@@ -76,8 +76,8 @@ export default function MyHOPEStaking() {
   }, [chainId, priceResult])
   const stHopePrice = useMemo(() => {
     let pr = '0'
-    if (STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] && priceResult) {
-      pr = priceResult[STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
+    if (STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] && priceResult) {
+      pr = priceResult[STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
     }
     return pr
   }, [chainId, priceResult])

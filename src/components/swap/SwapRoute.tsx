@@ -7,6 +7,7 @@ import { unwrappedToken } from 'utils/wrappedCurrency'
 import CurrencyLogo from '../CurrencyLogo'
 import { AutoColumn } from '../Column'
 import { AutoRow } from '../Row'
+import { useFeeRates } from '../../hooks/Trades'
 
 const Dashed = styled.div`
   flex: 1;
@@ -22,11 +23,13 @@ const PercentView = styled(TYPE.gray)`
 `
 
 export default memo(function SwapRoute({ trade }: { trade: Trade }) {
+  const feeRates = useFeeRates(trade)
   return (
     <Flex flexWrap="wrap" width="100%" justifyContent="space-between" alignItems="center">
       {trade.route.path.map((token, i, path) => {
         const isLastItem: boolean = i === path.length - 1
         const currency = unwrappedToken(token)
+        const feeRate = feeRates[i]
         return (
           <Fragment key={i}>
             <Flex alignItems="center">
@@ -41,7 +44,7 @@ export default memo(function SwapRoute({ trade }: { trade: Trade }) {
               <AutoColumn gap={'6px'} justify={'center'} style={{ flex: 1 }}>
                 <AutoRow alignSelf={'self-start'}>
                   <Dashed />
-                  <PercentView>0.3%</PercentView>
+                  <PercentView>{feeRate ? `${feeRate.toFixed(2)}%` : '--'}</PercentView>
                   <Dashed />
                 </AutoRow>
                 <i className="iconfont">&#xe619;</i>

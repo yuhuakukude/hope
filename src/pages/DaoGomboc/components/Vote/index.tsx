@@ -25,12 +25,12 @@ import { Decimal } from 'decimal.js'
 
 interface VoteProps {
   votiingData: any
-  gombocList: any
+  gaugeList: any
   isNoVelt: boolean
   updateTable: () => void
 }
 
-const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, ref: any) => {
+const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref: any) => {
   const { account, chainId } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const gomConContract = useGomConContract()
@@ -47,7 +47,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [pendingText, setPendingText] = useState('')
-  const { pending: isTranPending } = useActionPending(account ? `${account}-${conFnNameEnum.VoteForGombocWeights}` : '')
+  const { pending: isTranPending } = useActionPending(account ? `${account}-${conFnNameEnum.VoteForGaugeWeights}` : '')
 
   const { Option } = Select
   const endDate = dayjs()
@@ -94,12 +94,12 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   }
 
   const selList = useMemo(() => {
-    if (gombocList) {
+    if (gaugeList) {
       const arr: any = []
-      gombocList.forEach((e: any) => {
+      gaugeList.forEach((e: any) => {
         const item = {
           label: e.name,
-          value: e.gomboc
+          value: e.gauge
         }
         arr.push(item)
       })
@@ -107,7 +107,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
     } else {
       return []
     }
-  }, [gombocList])
+  }, [gaugeList])
 
   const lastArg = useMemo(() => {
     let res: any = [undefined]
@@ -222,7 +222,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
     if (isNoVelt) {
       return 'need to LT locked'
     } else if (!curGomAddress) {
-      return 'Select a Gömböc for Vote'
+      return 'Select a Gauge for Vote'
     } else if (!amount) {
       return 'Enter amount'
     } else if (voteInputError) {
@@ -276,8 +276,8 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
   }, [updateTable, txHash, isTranPending])
 
   useEffect(() => {
-    if (selList && selList.length > 0 && searchParams.get('gomboc') && isAddress(searchParams.get('gomboc'))) {
-      setCurGomAddress(`${searchParams?.get('gomboc')}`)
+    if (selList && selList.length > 0 && searchParams.get('gauge') && isAddress(searchParams.get('gauge'))) {
+      setCurGomAddress(`${searchParams?.get('gauge')}`)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selList])
@@ -353,8 +353,8 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
         pendingText={pendingText}
         currencyToAdd={curToken}
       />
-      <div className="gom-vote-box">
-        <h3 className="font-bolder text-white font-20">Gömböc Weight Vote</h3>
+      <div className="gom-vote-box font-nor">
+        <h3 className="font-bolder text-white font-20">Gauge Weight Vote</h3>
         <p className="m-t-20 text-white lh15">
           - Each vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.
         </p>
@@ -399,10 +399,10 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
           </div>
         </div>
         <div className="form-box m-t-20">
-          <p className="text-normal">Select a Gömböc </p>
+          <p className="text-normal">Select a Gauge </p>
           <Select
             value={curGomAddress ? curGomAddress : undefined}
-            placeholder="Select a Gomboc"
+            placeholder="Select a Gauge"
             onChange={(val: string) => {
               changeSel(val)
             }}
@@ -449,7 +449,7 @@ const VoteF = ({ votiingData, gombocList, isNoVelt, updateTable }: VoteProps, re
             </div>
           </div>
           <p className="text-normal m-t-10">
-            {voteAmount || '0.00'} of your voting power will be allocated to this gömböc.
+            {voteAmount || '0.00'} of your voting power will be allocated to this Gauge.
           </p>
           <div className="action-box m-t-40">
             {!account ? (

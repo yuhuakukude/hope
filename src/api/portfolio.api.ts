@@ -2,7 +2,7 @@ import { get } from '../utils/http'
 
 export interface PortfolioReward {
   name: string
-  gomboc: string
+  gauge: string
   apr: string | number
   boost: string
   maxBoost: string
@@ -42,14 +42,14 @@ export enum POOL_TYPE {
   HOPE,
   SWAP
 }
-export interface Gomboc {
+export interface Gauge {
   id: string
   networkId: number
-  gombocType: number
+  gaugeType: number
   poolType: POOL_TYPE
-  gombocTypeName: string
-  gombocAddress: string
-  gombocName: string
+  gaugeTypeName: string
+  gaugeAddress: string
+  gaugeName: string
   ItTokenAddress: string
   ItTokenSymbol: string
   ItTokenName: string
@@ -63,7 +63,7 @@ export interface Gomboc {
   updateAt: string
 }
 export interface Item {
-  gomboc: Gomboc
+  gauge: Gauge
   totalFees: number
   withdrawable: number
 }
@@ -76,7 +76,7 @@ interface Params {
 
 export interface ILiquidityPools {
   name: string
-  gomboc: string
+  gauge: string
   pair: string
   composition: string
   feeRate: string
@@ -114,10 +114,6 @@ export interface ILiquidityPools {
 }
 
 export default class PortfolioApi {
-  //
-  static getOverview(address: string) {
-    return get<PortfolioInfo>('/light/portfolio/gomboc/overview', { params: { address } })
-  }
   static getRewardsList(params: Params) {
     return get<Item[]>('/light/dao/veLT/rewards/list', { params })
   }
@@ -126,6 +122,6 @@ export default class PortfolioApi {
   }
 
   static getLiquidityPools(address: string) {
-    return get<ILiquidityPools[]>('/light/portfolio/gomboc/liquidity/pools', { params: { address } })
+    return get<ILiquidityPools[]>('/light/portfolio/gauge/liquidity/pools', { params: { address } })
   }
 }

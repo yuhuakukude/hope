@@ -3,7 +3,7 @@ import './index.scss'
 import * as echarts from 'echarts'
 import { TitleComponentOption } from 'echarts/components'
 import { PieSeriesOption } from 'echarts/charts'
-import { VELT, STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
+import { VELT, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 import { TokenAmount } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../../hooks'
 import { JSBI } from '@uniswap/sdk'
@@ -28,22 +28,50 @@ const GomChart = ({ votiingData }: GomChartProps) => {
         if (votArr && votArr.length > 0) {
           const arr: { name: string; value: string; ravPercent: string }[] = []
           votArr.forEach((e: any) => {
-            if (e.gaugeController && e.gaugeController.getGombocWeight && e.gaugeController.gombocRelativeWeight) {
-              const num = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.getGombocWeight))
-              const re = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.gombocRelativeWeight))
+            if (e.gaugeController && e.gaugeController.getGaugeWeight && e.gaugeController.gaugeRelativeWeight) {
+              const num = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.getGaugeWeight))
+              const re = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.gaugeRelativeWeight))
               const ra = re.multiply(JSBI.BigInt(100))
               const rav = ra.toFixed(2, { groupSeparator: '' }, 0)
               const item = {
                 name: e.name as string,
                 value: num.toFixed(2),
                 ravPercent: rav,
-                gomboc: e.gomboc
+                gauge: e.gauge
               }
               arr.push(item)
             }
           })
-          const addr = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+          // for (let index = 0; index < 50; index++) {
+          //   const item: any = {
+          //     name: `dome${index}`,
+          //     value: Math.random() * 10000,
+          //     ravPercent: Math.random() * 10000,
+          //     gomboc: ''
+          //   }
+          //   arr.push(item)
+          // }
+          const addr = `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
           const option: EChartsOption = {
+            color: [
+              '#534DD1',
+              '#ED6E57',
+              '#FFC96C',
+              '#78BF79',
+              '#54919B',
+              '#2A586E',
+              '#6C3D92',
+              '#BC43CA', // 后面的为echarts颜色库
+              '#5470c6',
+              '#91cc75',
+              '#fac858',
+              '#ee6666',
+              '#73c0de',
+              '#3ba272',
+              '#fc8452',
+              '#9a60b4',
+              '#ea7ccc'
+            ],
             tooltip: {
               trigger: 'item',
               textStyle: {
@@ -52,13 +80,15 @@ const GomChart = ({ votiingData }: GomChartProps) => {
               },
               formatter: (params: { name: string; value: number; data: any }) => {
                 return `<div>
-                    <div style="font-size: 14px;">
-                    Gömböc Relative Weight
+                    <div style="font-size: 14px; fontFamily: 'Arboria-Medium'">
+                      Gauge Relative Weight
                     </div>
-                    <div style="font-size: 14px;margin-top: 16px">${params.name}: ${
-                  addr === params.data.gomboc ? '(stHOPE)' : ''
+                    <div style="font-size: 14px;margin-top: 16px; fontFamily: 'Arboria-Book'">${params.name}: ${
+                  addr === params.data.gauge ? '(stHOPE)' : ''
                 }</div>
-                    <div style="font-size: 18px;margin-top: 8px">${params.value}(${params.data.ravPercent}%)</div>
+                    <div style="font-size: 18px;margin-top: 8px; fontFamily: 'Arboria-Medium'">${params.value}(${
+                  params.data.ravPercent
+                }%)</div>
                   </div>`
               },
               padding: 20,
@@ -80,11 +110,12 @@ const GomChart = ({ votiingData }: GomChartProps) => {
                   distanceToLabelLine: 6,
                   lineHeight: 14,
                   fontSize: 14,
-                  color: '#FFA8A8',
+                  color: '#A8A8AA',
                   rotate: 0,
                   show: true,
                   overflow: 'truncate',
-                  bleedMargin: 10
+                  bleedMargin: 10,
+                  fontFamily: 'Arboria-Book'
                 },
                 labelLine: {
                   length: 25,
@@ -119,10 +150,10 @@ const GomChart = ({ votiingData }: GomChartProps) => {
 
   return (
     <div className="gom-chart-box">
-      <h3 className="font-bolder text-white font-20">Gömböc Weight Changes</h3>
-      <p className="m-t-20 text-white lh15">
-        Gömböc weights are used to determine how much LT does each protocol or pool get. You can vote for gömböc weights
-        with your veLT ( locked LT tokens in
+      <h3 className="font-bolder text-white font-20">Proposed Gauge Weight Changes</h3>
+      <p className="m-t-20 text-white lh15 font-nor">
+      Gauge weights are used to determine how much $LT does each protocol or pool get. You can vote for Gauge weight
+        with your veLT ( locked $LT tokens in
         <NavLink to={'/dao/locker'}>
           <span className="text-primary"> Locker </span>
         </NavLink>
@@ -131,8 +162,8 @@ const GomChart = ({ votiingData }: GomChartProps) => {
       <div className="chart-box m-t-60">
         <div ref={voteChartRef as any} className="voting-chart" id="votingchart" />
       </div>
-      <p className="m-t-10 text-center font-14 m-b-30">
-        Proposed Gömböc Weight Changes taking effect on {nextEffectTime || '--'} UTC
+      <p className="m-t-10 text-center font-nor m-b-30 text-normal">
+        Proposed Gauge Weight Changes taking effect on {nextEffectTime || '--'} UTC
       </p>
     </div>
   )

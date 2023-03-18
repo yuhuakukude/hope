@@ -21,7 +21,7 @@ export function QUERY_ALL_PAIR() {
 }
 
 export function QUERY_ALL_STAKING() {
-  return `{ poolGombocs(first:100,skip:0){
+  return `{ poolGauges(first:100,skip:0){
                  id
                  pair{
                     id

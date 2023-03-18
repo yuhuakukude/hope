@@ -54,7 +54,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
             headList.push({
               ltOfReward: item.ltOfReward,
               ltTotalReward: item.ltTotalReward,
-              gomboc: item.gomboc,
+              gauge: item.gauge,
               composition: item.composition,
               usdOfReward: item.usdOfReward
             })

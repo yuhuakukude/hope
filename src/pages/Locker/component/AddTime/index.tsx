@@ -157,7 +157,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
         content={confirmationContent}
         pendingText={pendingText}
         currencyToAdd={curToken}
-        isToGomboc={true}
+        isToGauge={true}
       />
       <div className="locker-add-amount-modal flex-1">
         <div className="time-box m-t-30">

@@ -68,6 +68,20 @@
   path{
     fill: #A8A8AA;
   }
+  &.disabled{
+    cursor: no-drop;
+    &:hover{
+      path{
+        fill: #A8A8AA;
+       }
+    }
+    &:active{
+      path{
+        fill: #A8A8AA;
+      }
+      background-color: #3D3E46;
+    }
+  }
   &:hover{
     path{
       fill: #fff;

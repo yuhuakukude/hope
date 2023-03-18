@@ -8,10 +8,10 @@ const AdvancedDetailsFooter = styled.div<{ show: boolean }>`
   color: ${({ theme }) => theme.text2};
 `
 
-export default function AdvancedSwapDetailsDropdown({ trade, ...rest }: AdvancedSwapDetailsProps) {
+export default function AdvancedSwapDetailsDropdown({ trade, feeRate, ...rest }: AdvancedSwapDetailsProps) {
   return (
     <AdvancedDetailsFooter show={Boolean(trade)}>
-      <AdvancedSwapDetails {...rest} trade={trade ?? undefined} />
+      <AdvancedSwapDetails {...rest} feeRate={feeRate} trade={trade ?? undefined} />
     </AdvancedDetailsFooter>
   )
 }
