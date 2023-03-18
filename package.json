@@ -118,12 +118,12 @@
     ]
   },
   "license": "GPL-3.0-or-later",
-  "proxy": "https://sepolia.lteco.cc/",
+  "proxy": "https://dapp-dev1.hivefin.net/",
   "dependencies": {
     "@ethersproject/address": "5.5.0",
     "@types/ms.macro": "^2.0.0",
     "@uniswap/default-token-list": "^2.0.0",
-    "@uniswap/sdk": "Light-Ecosystem/hope-dapp-sdk.git#dev",
+    "@uniswap/sdk": "Light-Ecosystem/hope-dapp-sdk.git",
     "antd": "^3.26.19",
     "axios": "0.18.1",
     "dayjs": "^1.11.7",
@@ -138,3 +138,4 @@
     "sass-loader": "^13.2.0"
   }
 }
+
