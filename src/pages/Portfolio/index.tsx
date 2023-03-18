@@ -13,8 +13,8 @@ import { AutoColumn } from 'components/Column'
 import MyHOPEStaking from './component/MyHOPEStaking'
 import MyLiquidityPools from './component/MyLiquidityPools'
 import MyLockedLTAndProfits from './component/MyLockedLTAndProfits'
-import { useTokenBalance } from '../../state/wallet/hooks'
-import { ST_HOPE, SUBGRAPH } from '../../constants'
+import { useStHopeBalance } from '../../state/wallet/hooks'
+import { SUBGRAPH } from '../../constants'
 import { postQuery } from '../../utils/graph'
 import { useStaking } from 'hooks/ahp/useStaking'
 
@@ -24,8 +24,8 @@ const PageWrapper = styled(AutoColumn)`
 `
 
 export default function Portfolio() {
-  const { account, chainId } = useActiveWeb3React()
-  const stHopeBalance = useTokenBalance(account ?? undefined, ST_HOPE[chainId ?? 1])
+  const { account } = useActiveWeb3React()
+  const stHopeBalance = useStHopeBalance()
   const { claRewards } = useStaking()
   const [stToHope, setStToHope] = useState('0')
   const [ltToHope, setLtToHope] = useState('0')

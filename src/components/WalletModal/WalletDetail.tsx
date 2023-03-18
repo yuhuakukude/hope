@@ -14,8 +14,8 @@ import { PrimaryText } from '../Text'
 import Test1 from 'assets/images/ahp/hope.png'
 import Test2 from 'assets/images/ahp/hope.png'
 import Test3 from 'assets/images/ahp/lt.png'
-import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
-import { HOPE, LT, ST_HOPE } from '../../constants'
+import { useETHBalances, useTokenBalance, useStHopeBalance } from '../../state/wallet/hooks'
+import { HOPE, LT } from '../../constants'
 import Circle from '../../assets/images/blue-loader.svg'
 import { CustomLightSpinner, ExternalLink } from '../../theme'
 import Copy from '../AccountDetails/Copy'
@@ -77,7 +77,7 @@ export default function WalletDetail({
   const theme = useTheme()
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
   const hopeBalance = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
-  const stHopeBalance = useTokenBalance(account ?? undefined, ST_HOPE[chainId ?? 1])
+  const stHopeBalance = useStHopeBalance()
   const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
 
   const fakeIcon = <img src={Avatar} style={{ width: '24px', height: '24px' }} alt="" />

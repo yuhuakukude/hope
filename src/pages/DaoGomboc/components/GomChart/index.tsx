@@ -119,10 +119,10 @@ const GomChart = ({ votiingData }: GomChartProps) => {
 
   return (
     <div className="gom-chart-box">
-      <h3 className="font-bolder text-white font-20">Proposed Gauge Weight Changes</h3>
+      <h3 className="font-bolder text-white font-20">Gauge Weight Changes</h3>
       <p className="m-t-20 text-white lh15">
-        Gauge weights are used to determine how much $LT does each protocol or pool get. You can vote for Gauge weight
-        with your veLT ( locked $LT tokens in
+        Gauge weights are used to determine how much LT does each protocol or pool get. You can vote for Gauge weights
+        with your veLT ( locked LT tokens in
         <NavLink to={'/dao/locker'}>
           <span className="text-primary"> Locker </span>
         </NavLink>

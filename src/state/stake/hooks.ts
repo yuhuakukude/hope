@@ -613,12 +613,12 @@ export async function getBlocksFromTimestamps(timestamps: number[]) {
   }
 
   const fetchedData = await postQuery(BLOCK_SUBGRAPH, GET_BLOCKS(timestamps))
-  const blocks = Object.keys(fetchedData.data)
+  const blocks = Object.keys(fetchedData?.data)
     .filter(block => {
-      return fetchedData.data[block].length > 0
+      return fetchedData?.data[block].length > 0
     })
     .map(block => {
-      return { timestamp: block.split('t')[1], number: fetchedData.data[block][0]['number'] }
+      return { timestamp: block.split('t')[1], number: fetchedData?.data[block][0]['number'] }
     })
   return blocks
 }
@@ -785,11 +785,11 @@ export async function fetchPairsList(
     const w1Res = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, sort, orderBy, oneWeekBlock.number))
 
     const w2Res = await postQuery(SUBGRAPH, PAIR_LIST_QUERY(account, sort, orderBy, twoWeekBlock?.number))
-    const curPairs = curRes.data.pairs
-    const d1Pairs = d1Res.data.pairs
-    const d2Pairs = d2Res.data.pairs
-    const w1Pairs = w1Res.data.pairs
-    const w2Pairs = w2Res.data.pairs
+    const curPairs = curRes?.data.pairs
+    const d1Pairs = d1Res?.data.pairs
+    const d2Pairs = d2Res?.data.pairs
+    const w1Pairs = w1Res?.data.pairs
+    const w2Pairs = w2Res?.data.pairs
     return curPairs.map((pair: any) => {
       const d1Pair = d1Pairs.find((d1pair: any) => {
         return d1pair.id === pair.id
@@ -847,7 +847,7 @@ export async function fetchPairsList(
 export async function fetchPairPool(stakingAddress: string, chainId: any): Promise<PairDetail | undefined> {
   try {
     const res = await postQuery(SUBGRAPH, PAIR_QUERY({ stakingAddress }))
-    const pair = res.data.pairs[0]
+    const pair = res?.data.pairs[0]
 
     const gaugeAddress = await GaugeApi.getGaugeAddress({ pairAddress: pair.id })
     const token0 = new Token(chainId, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol)
@@ -912,7 +912,7 @@ export async function fetchPairMore(stakingAddress: string): Promise<PairMore | 
     const d2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoDayBlock.number, stakingAddress }))
     const w1Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: oneWeekBlock.number, stakingAddress }))
     const w2Res = await postQuery(SUBGRAPH, PAIR_QUERY({ block: twoWeekBlock?.number, stakingAddress }))
-    const pair = res.data.pairs[0]
+    const pair = res?.data.pairs[0]
     const d1Pair = d1Res?.data.pairs[0]
     const d2Pair = d2Res?.data.pairs[0]
     const w1Pair = w1Res?.data.pairs[0]
@@ -977,9 +977,9 @@ export async function fetchGlobalData() {
     const w2Res = await postQuery(SUBGRAPH, GLOBAL_QUERY(twoWeekBlock?.number))
 
     const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
-      d1Res.data.lightswapFactories[0]?.totalLiquidityUSD,
-      d2Res.data.lightswapFactories[0]?.totalLiquidityUSD
+      totalRes?.data.lightswapFactories[0]?.totalLiquidityUSD,
+      d1Res?.data.lightswapFactories[0]?.totalLiquidityUSD,
+      d2Res?.data.lightswapFactories[0]?.totalLiquidityUSD
     )
 
     const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
@@ -1208,23 +1208,23 @@ export async function fetchPairTxs(pairAddress: string, type?: string): Promise<
   try {
     const response = await postQuery(SUBGRAPH, QUERY_TXS_QUERY(type), { allPairs: [pairAddress.toLowerCase()] })
     let result: TxResponse[] = []
-    if (response.data.mints) {
-      result = response.data.mints
+    if (response?.data.mints) {
+      result = response?.data.mints
         .map((item: any) => {
           return { ...item, title: `Add ${item.pair.token0.symbol}-${item.pair.token1.symbol}` }
         })
         .concat(result)
     }
-    if (response.data.burns) {
-      result = response.data.burns
+    if (response?.data.burns) {
+      result = response?.data.burns
         .map((item: any) => {
           return { ...item, title: `Remove ${item.pair.token0.symbol}-${item.pair.token1.symbol}` }
         })
         .concat(result)
     }
-    if (response.data.swaps) {
+    if (response?.data.swaps) {
       result = result.concat(
-        response.data.swaps.map((swap: any) => {
+        response?.data.swaps.map((swap: any) => {
           const swapItem = swap
           const symbolIn = swap.amount0In === '0' ? swap.pair.token1.symbol : swap.pair.token0.symbol
           const symbolOut = swap.amount0In === '0' ? swap.pair.token0.symbol : swap.pair.token1.symbol
@@ -1250,9 +1250,9 @@ export async function fetchPairsTimeInfo(pairs: string[]): Promise<TimeInfo[]> {
     const d1Res = await postQuery(SUBGRAPH, PAIR_TIME_INFO_QUERY(oneDayBlock.number), { pairs })
     const d2Res = await postQuery(SUBGRAPH, PAIR_TIME_INFO_QUERY(twoDayBlock.number), { pairs })
 
-    const curPairs = curRes.data.pairs
-    const d1Pairs = d1Res.data.pairs
-    const d2Pairs = d2Res.data.pairs
+    const curPairs = curRes?.data.pairs
+    const d1Pairs = d1Res?.data.pairs
+    const d2Pairs = d2Res?.data.pairs
     return curPairs.map((pair: any) => {
       const d1Pair = d1Pairs.find((d1pair: any) => {
         return d1pair.id === pair.id
