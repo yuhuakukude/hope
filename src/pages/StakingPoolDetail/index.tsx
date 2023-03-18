@@ -762,10 +762,12 @@ export default function StakingPoolDetail({
             </TabWrapper>
             {showTx ? (
               <>
-                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 30px'}>
+                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 0px'}>
                   <AutoRow>
                     <TableTitle>
-                      <SelectTips options={TransactionType} label={transactionType} />
+                      <div className="p-l-30">
+                        <SelectTips options={TransactionType} label={transactionType} />
+                      </div>
                     </TableTitle>
                     <TableTitle>Total Value</TableTitle>
                     <TableTitle>Token Amount</TableTitle>
@@ -819,7 +821,7 @@ export default function StakingPoolDetail({
               </>
             ) : (
               <>
-                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 30px'}>
+                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 20px'}>
                   <AutoRow>
                     <TableTitle>Contract Address</TableTitle>
                     <TableTitle>Creation Time(UTC)</TableTitle>
