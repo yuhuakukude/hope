@@ -353,7 +353,7 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
         pendingText={pendingText}
         currencyToAdd={curToken}
       />
-      <div className="gom-vote-box">
+      <div className="gom-vote-box font-nor">
         <h3 className="font-bolder text-white font-20">Gauge Weight Vote</h3>
         <p className="m-t-20 text-white lh15">
           - Each vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.

@@ -64,10 +64,13 @@ export default function BarCharts({
       xAxis: {
         type: 'category',
         data: xData,
+        axisTick: {
+          alignWithLabel: true
+        },
         axisLabel: {
-          color: '#ffffff',
+          color: '#A8A8AA',
           fontFamily: 'Arboria-Book',
-          fontSize: 16,
+          fontSize: 14,
           formatter: (value: any) => {
             const formatStr = is24Hour ? 'HH:mm' : 'DD MMM'
             return format.formatDate(value, formatStr)
@@ -78,12 +81,12 @@ export default function BarCharts({
         type: 'value',
         splitLine: {
           show: true,
-          lineStyle: { color: ['#9B8463'], width: 1, dashOffset: 0, type: [10, 4] }
+          lineStyle: { color: ['#3D3E46'], width: 1, dashOffset: 0, type: [10, 4] }
         },
         axisLabel: {
-          color: '#ffffff',
+          color: '#A8A8AA',
           fontFamily: 'Arboria-Book',
-          fontSize: 16,
+          fontSize: 14,
           formatter: (value: any) => {
             return format.numFormat(Number(value), 2)
           }

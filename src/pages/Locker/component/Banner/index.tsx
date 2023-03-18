@@ -19,7 +19,7 @@ export default function LockerBanner() {
               Learn more <i className="iconfont m-l-5 m-t-2">&#xe619;</i>{' '}
             </a>
           </p>
-          <ul className="m-t-20">
+          <ul className="m-t-26">
             <li className="font-nor">- Boost liquidity mining yield up to 2.5x</li>
             <li className="font-nor">- Vote to direct liquidity mining emissions</li>
             <li className="font-nor">- Earn your share of protocol revenue</li>
