@@ -6,7 +6,7 @@ import { useActiveWeb3React } from '../../hooks'
 import { useMultipleContractSingleData } from '../multicall/hooks'
 import { tryParseAmount } from '../swap/hooks'
 import { postQuery } from '../../utils/graph'
-import GombocApi from '../../api/gomboc.api'
+import GaugeApi from '../../api/gauge.api'
 import dayjs from 'dayjs'
 
 export const STAKING_GENESIS = 1600387200
@@ -290,7 +290,6 @@ export function useDerivedUnstakeInfo(
 export interface StakeInfo {
   id: string
   totalStakedBalance: string
-  totalStakedBalanceUSD: string
   pair: {
     id: boolean
     reserveUSD: string
@@ -410,7 +409,7 @@ export interface PairMore {
 
 export async function fetchTotalAmount(): Promise<any> {
   const query = `{  
-    gombocFactories{    
+    gaugeFactories{    
       totalValueLockedUSD
     }
   }
@@ -431,9 +430,8 @@ export async function fetchStakeList(
   isMyVote: boolean
 ): Promise<PoolInfo[]> {
   const query = `{
-    poolGombocs(first: 500, orderDirection: ${sort}) {
+    poolGauges(first: 500, orderDirection: ${sort}) {
     id
-    totalStakedBalanceUSD
     totalStakedBalance
     pair{
       id
@@ -491,8 +489,8 @@ export async function fetchStakeList(
   try {
     const response = await postQuery(SUBGRAPH, isMyVote ? isMyVoteQuery : query)
     const pools = isMyVote
-      ? response?.data.stakedPoolPositions.map((e: any) => ({ ...e.pool }))
-      : response?.data.poolGombocs
+      ? response.data.stakedPoolPositions.map((e: any) => ({ ...e.pool }))
+      : response.data.poolGauges
     const poolInfos = pools.map((pool: StakeInfo) => {
       const stakingRewardAddress = pool.id
       const token0 = new Token(chainId, pool.pair.token0.id, Number(pool.pair.token0.decimals), pool.pair.token0.symbol)
@@ -536,9 +534,8 @@ export async function fetchStakeList(
 
 export async function fetchStakingPool(stakingAddress: string, chainId: any): Promise<PoolInfo | undefined> {
   const query = `{
-  poolGombocs(where: {id:"${stakingAddress}"}) {
+    poolGauges(where: {id:"${stakingAddress}"}) {
     id
-    totalStakedBalanceUSD
     totalStakedBalance
     pair{
       id
@@ -563,7 +560,7 @@ export async function fetchStakingPool(stakingAddress: string, chainId: any): Pr
 }`
   try {
     const response = await postQuery(SUBGRAPH, query)
-    const pool = response?.data.poolGombocs[0]
+    const pool = response.data.poolGauges[0]
     const token0 = new Token(chainId, pool.pair.token0.id, Number(pool.pair.token0.decimals), pool.pair.token0.symbol)
     const token1 = new Token(chainId, pool.pair.token1.id, Number(pool.pair.token1.decimals), pool.pair.token1.symbol)
     const tokens = [token0, token1]
@@ -852,7 +849,7 @@ export async function fetchPairPool(stakingAddress: string, chainId: any): Promi
     const res = await postQuery(SUBGRAPH, PAIR_QUERY({ stakingAddress }))
     const pair = res?.data.pairs[0]
 
-    const gombocAddress = await GombocApi.getGombocsAddress({ pairAddress: pair.id })
+    const gaugeAddress = await GaugeApi.getGaugeAddress({ pairAddress: pair.id })
     const token0 = new Token(chainId, pair.token0.id, Number(pair.token0.decimals), pair.token0.symbol)
     const token1 = new Token(chainId, pair.token1.id, Number(pair.token1.decimals), pair.token1.symbol)
     const tokens = [token0, token1]
@@ -865,7 +862,7 @@ export async function fetchPairPool(stakingAddress: string, chainId: any): Promi
       token1Amount ? (token1Amount as TokenAmount) : new TokenAmount(tokens[1], '0')
     )
     const totalStakedAmount = tryParseAmount(pair.totalStakedBalance, dummyPair.liquidityToken) as TokenAmount
-    const stakingToken = gombocAddress.result ? new Token(11155111, gombocAddress.result, 18, '') : undefined
+    const stakingToken = gaugeAddress.result ? new Token(11155111, gaugeAddress.result, 18, '') : undefined
     const token0Price = pair.token0Price
     const token1Price = pair.token1Price
     return {
@@ -873,7 +870,7 @@ export async function fetchPairPool(stakingAddress: string, chainId: any): Promi
       tvl: Number(pair?.reserveUSD),
       createAt: pair?.createdAtTimestamp,
       txCount: pair?.txCount,
-      stakingRewardAddress: gombocAddress.result,
+      stakingRewardAddress: gaugeAddress.result,
       token0Price: token0Price || '0.00',
       token1Price: token1Price || '0.00',
       pair: dummyPair,

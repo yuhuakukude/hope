@@ -51,8 +51,8 @@ export default function VeLTRewards() {
     if (tableData && tableData.length > 0) {
       const arr: any = []
       tableData.forEach((e: any) => {
-        if (e && e.gomboc && e.gomboc.gombocAddress) {
-          arr.push(e.gomboc.gombocAddress)
+        if (e && e.gauge && e.gauge.gaugeAddress) {
+          arr.push(e.gauge.gaugeAddress)
         }
       })
       res = arr
@@ -73,7 +73,7 @@ export default function VeLTRewards() {
     if (tableData && tableData.length > 0) {
       const item = tableData[index]
       setCurTableItem(item)
-      if (item.gomboc) {
+      if (item.gauge) {
         type = 'item'
       }
     }
@@ -127,7 +127,7 @@ export default function VeLTRewards() {
       setCurToken(ST_HOPE[chainId ?? 1])
       onTxStart()
       setClaimPendingText(`Fees Withdraw`)
-      const arg = (curTableItem.gomboc && curTableItem.gomboc.gombocAddress) || ''
+      const arg = (curTableItem.gauge && curTableItem.gauge.gaugeAddress) || ''
       toGomFeeClaim(arg, amount)
         .then(hash => {
           setClaimPendingText('')
@@ -287,8 +287,8 @@ export default function VeLTRewards() {
             <TitleTips
               link=""
               title="veLT Rewards"
-              desc="veLT holders will receive 25% of all agreed fee income as an reward, as well as a portion of the Gomboc
-              fee income during the voting period if they participate in the weighted vote of a Gomboc."
+              desc="veLT holders will receive 25% of all agreed fee income as an reward, as well as a portion of the gauge
+              fee income during the voting period if they participate in the weighted vote of a gauge."
             />
           </div>
           {JSON.stringify(overviewData) === '{}' ? (

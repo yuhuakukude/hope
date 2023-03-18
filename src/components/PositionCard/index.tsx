@@ -238,7 +238,7 @@ export default function FullPositionCard({
       value: 'Yield Boost',
       isHide: !stakingAddress,
       onClick: data => {
-        history.push(`/dao/gomboc?gomboc=${stakingAddress}`)
+        history.push(`/dao/gauge?gauge=${stakingAddress}`)
       }
     },
     {

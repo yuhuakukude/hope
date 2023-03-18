@@ -243,7 +243,6 @@ export default function LiquidityMining({
       </AutoColumn>
     )
   }
-
   return (
     <PageWrapper gap={'50px'}>
       <TransactionConfirmationModal

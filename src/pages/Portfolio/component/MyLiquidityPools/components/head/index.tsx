@@ -8,7 +8,7 @@ import './index.scss'
 export interface IHeadItem {
   ltOfReward: string | number
   ltTotalReward: string | number
-  gomboc: string
+  gauge: string
   composition: string
   usdOfReward: string | number
 }

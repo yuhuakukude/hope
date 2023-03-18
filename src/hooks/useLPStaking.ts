@@ -24,8 +24,8 @@ export function useLPTotalLocked() {
     ;(async () => {
       try {
         const total = await fetchTotalAmount()
-        if (total && total.gombocFactories && total.gombocFactories.length > 0) {
-          const num = total.gombocFactories[0].totalValueLockedUSD
+        if (total && total.gaugeFactories && total.gaugeFactories.length > 0) {
+          const num = total.gaugeFactories[0].totalValueLockedUSD
           setTotalAmount(num)
         }
       } catch (error) {

@@ -3,11 +3,11 @@ import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
 import { Token } from '@uniswap/sdk'
-import GombocClaim, { ITableItem } from '../../../../components/ahp/GombocClaim'
+import GaugeClaim, { ITableItem } from '../../../../components/ahp/GaugeClaim'
 import { useToClaim, useClaimRewards } from '../../../../hooks/ahp/usePortfolio'
-import { STAKING_HOPE_GOMBOC_ADDRESS, LT, HOPE } from '../../../../constants'
+import { STAKING_HOPE_GAUGE_ADDRESS, LT, HOPE } from '../../../../constants'
 import { useActiveWeb3React } from 'hooks'
-import GombocClaimAll from 'components/ahp/GombocClaimAll'
+import GaugeClaimAll from 'components/ahp/GaugeClaimAll'
 import { getCount, IHeadItem } from '../MyLiquidityPools/components/head'
 
 export default function ClaimRewards({
@@ -64,7 +64,7 @@ export default function ClaimRewards({
     setCurToken(LT[chainId ?? 1])
     onTxStart()
     setPendingText(`claim Rewards`)
-    toClaim(STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]) // TODO
+    toClaim(STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]) // TODO
       .then(hash => {
         setPendingText('')
         onTxSubmitted(hash)
@@ -80,7 +80,7 @@ export default function ClaimRewards({
     setCurToken(LT[chainId ?? 1])
     onTxStart()
     setPendingText(`claim all Rewards`)
-    toClaim(item.map(i => i.gomboc))
+    toClaim(item.map(i => i.gauge))
       .then(hash => {
         setPendingText('')
         onTxSubmitted(hash)
@@ -93,8 +93,8 @@ export default function ClaimRewards({
 
   const curAddress = useMemo(() => {
     let res = ''
-    if (curTableItem && curTableItem?.gomboc) {
-      res = curTableItem?.gomboc
+    if (curTableItem && curTableItem?.gauge) {
+      res = curTableItem?.gauge
     }
     return res
   }, [curTableItem])
@@ -145,9 +145,9 @@ export default function ClaimRewards({
       errorStatus ? (
         <TransactionErrorContent errorCode={errorStatus.code} onDismiss={onDismiss} message={errorStatus.message} />
       ) : Array.isArray(item) ? (
-        <GombocClaimAll total={total} onSubmit={claimAllCallback} onDismiss={onDismiss} list={item} />
+        <GaugeClaimAll total={total} onSubmit={claimAllCallback} onDismiss={onDismiss} list={item} />
       ) : (
-        <GombocClaim
+        <GaugeClaim
           onSubmit={(type: string) => {
             claimSubmit(type)
           }}

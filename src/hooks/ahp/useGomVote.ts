@@ -9,8 +9,8 @@ import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 
 export enum conFnNameEnum {
-  VoteForGombocWeights = 'voteForGombocWeights',
-  BatchVoteForGombocWeights = 'batchVoteForGombocWeights'
+  VoteForGaugeWeights = 'voteForGaugeWeights',
+  BatchVoteForGaugeWeights = 'batchVoteForGaugeWeights'
 }
 
 export function useToVote() {
@@ -22,7 +22,7 @@ export function useToVote() {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [address, amount]
-      const method = conFnNameEnum.VoteForGombocWeights
+      const method = conFnNameEnum.VoteForGaugeWeights
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
@@ -30,9 +30,9 @@ export function useToVote() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Vote to gomboc`,
+            summary: `Vote to gauge`,
             actionTag: {
-              recipient: `${account}-${conFnNameEnum.VoteForGombocWeights}`
+              recipient: `${account}-${conFnNameEnum.VoteForGaugeWeights}`
             }
           })
           return response.hash
@@ -55,7 +55,7 @@ export function useToVoteAll() {
       if (!account) throw new Error('none account')
       if (!contract) throw new Error('none contract')
       const args = [addressList, amountList]
-      const method = conFnNameEnum.BatchVoteForGombocWeights
+      const method = conFnNameEnum.BatchVoteForGaugeWeights
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
@@ -65,7 +65,7 @@ export function useToVoteAll() {
           addTransaction(response, {
             summary: `Refresh All`,
             actionTag: {
-              recipient: `${account}-${conFnNameEnum.BatchVoteForGombocWeights}`
+              recipient: `${account}-${conFnNameEnum.BatchVoteForGaugeWeights}`
             }
           })
           return response.hash

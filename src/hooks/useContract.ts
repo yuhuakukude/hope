@@ -4,7 +4,7 @@ import { abi as UNI_ABI } from '@uniswap/governance/build/Uni.json'
 import STAKING_REWARDS_ABI from '../constants/abis/ahp/PoolGomboc.json'
 import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build/MerkleDistributor.json'
 import { ChainId, WETH } from '@uniswap/sdk'
-import { abi as IUniswapV2PairABI } from '@uniswap/v2-core/build/IUniswapV2Pair.json'
+import { abi as IUniswapV2PairABI } from '../constants/abis/IUniswapV2Pair.json'
 import { useMemo } from 'react'
 import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, PERMIT2_ADDRESS, UNI } from '../constants'
 import {
@@ -24,25 +24,25 @@ import { getContract } from '../utils'
 import { useActiveWeb3React } from './index'
 
 import {
-  STAKING_HOPE_GOMBOC_ADDRESS,
+  STAKING_HOPE_GAUGE_ADDRESS,
   LT_MINTER_ADDRESS,
   TOKEN_SALE_ADDRESS,
   VELT_TOKEN_ADDRESS,
-  GOMBOC_CONTROLLER_ADDRESS,
+  GAUGE_CONTROLLER_ADDRESS,
   LT_TOKEN_ADDRESS,
   FEE_DIS_ADDRESS,
   GOM_FEE_DIS_ADDRESS
 } from '../constants'
-import STAKING_HOPE_GOMBOC_ABI from '../constants/abis/ahp/STAKING_HOPE_GOMBOC.json'
+import STAKING_HOPE_GAUGE_ABI from '../constants/abis/ahp/STAKING_HOPE_GAUGE.json'
 import TOKEN_SALE_ABI from '../constants/abis/ahp/TOKEN_SALE.json'
 import LT_MINTER_ABI from '../constants/abis/ahp/LT_MINTER.json'
 import PERMIT2_ABI from '../constants/abis/ahp/PERMIT2.json'
 import VELT_TOKEN_ABI from '../constants/abis/ahp/VELT_TOKEN.json'
 import LT_TOKEN_ABI from '../constants/abis/ahp/LT_TOKEN.json'
-import GOMBOC_CONTROLLER_ABI from '../constants/abis/ahp/GOMBOC_CONTROLLER.json'
-import POOL_GOMBOC_ABI from '../constants/abis/ahp/POOL_GOMBOC.json'
+import GAUGE_CONTROLLER_ABI from '../constants/abis/ahp/GAUGE_CONTROLLER.json'
+import POOL_GAUGE_ABI from '../constants/abis/ahp/POOL_GAUGE.json'
 import FEE_DIS_ABI from '../constants/abis/ahp/Fee_Distributor.json'
-import GOM_FEE_DIS_ABI from '../constants/abis/ahp/Gomboc_Fee_Distributor.json'
+import GOM_FEE_DIS_ABI from '../constants/abis/ahp/Gauge_Fee_Distributor.json'
 import useENSAddress from './useENSAddress'
 
 // returns null on errors
@@ -149,9 +149,9 @@ export function useSocksController(): Contract | null {
 }
 
 // staking dao
-export function useStakingHopeGombocContract(): Contract | null {
+export function useStakingHopeGaugeContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId && STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1], STAKING_HOPE_GOMBOC_ABI.abi, true)
+  return useContract(chainId && STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1], STAKING_HOPE_GAUGE_ABI.abi, true)
 }
 
 export function useLtMinterContract(): Contract | null {
@@ -166,12 +166,12 @@ export function usePermit2Contract(): Contract | null {
 
 export function useGomConContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId && GOMBOC_CONTROLLER_ADDRESS[chainId ?? 1], GOMBOC_CONTROLLER_ABI.abi, true)
+  return useContract(chainId && GAUGE_CONTROLLER_ADDRESS[chainId ?? 1], GAUGE_CONTROLLER_ABI.abi, true)
 }
 
 // portfolio
 export function usePoolGomContract(address: string): Contract | null {
-  return useContract(address, POOL_GOMBOC_ABI.abi, true)
+  return useContract(address, POOL_GAUGE_ABI.abi, true)
 }
 
 export function useFeeDisContract(): Contract | null {

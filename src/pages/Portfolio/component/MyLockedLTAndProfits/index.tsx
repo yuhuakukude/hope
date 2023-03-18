@@ -8,7 +8,7 @@ import { usePortfolio, toUsdPrice } from '../../../../hooks/ahp/usePortfolio'
 import format from '../../../../utils/format'
 import { useActiveWeb3React } from '../../../../hooks'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
-import { VELT, ST_HOPE, STAKING_HOPE_GOMBOC_ADDRESS } from '../../../../constants'
+import { VELT, ST_HOPE, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 import { Percent, Token } from '@uniswap/sdk'
 import VotedList from '../../../../components/ahp/VotedList'
 import { NavLink, Link } from 'react-router-dom'
@@ -45,13 +45,13 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
   const [votingFee, setVotingFee] = useState<any>({ stHope: '0.00', toUsd: '0.00' })
   const [allData, setAllData] = useState([])
   const addresses = useMemo(() => {
-    return [STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] ?? '']
+    return [STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] ?? '']
   }, [chainId])
   const { result: priceResult } = useTokenPriceObject(addresses)
   const stHopePrice = useMemo(() => {
     let pr = '0'
-    if (STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1] && priceResult) {
-      pr = priceResult[STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
+    if (STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] && priceResult) {
+      pr = priceResult[STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
     }
     return pr
   }, [chainId, priceResult])

@@ -83,7 +83,7 @@ export async function fetchPairs(
       pairs: pairList.map((item: any) => item.id).slice((currentPage - 1) * pageSize, pageSize * currentPage)
     })
     const allStaking = await postQuery(SUBGRAPH, QUERY_ALL_STAKING())
-    const stakings = allStaking.data.poolGombocs
+    const stakings = allStaking.data.poolGauges
     const pairs = pairsResult.data.pairs
       ? pairsResult.data.pairs.map((item: any) => {
           return {

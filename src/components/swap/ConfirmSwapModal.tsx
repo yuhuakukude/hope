@@ -1,4 +1,4 @@
-import { currencyEquals, Trade } from '@uniswap/sdk'
+import { currencyEquals, Percent, Trade } from '@uniswap/sdk'
 import React, { useCallback, useMemo } from 'react'
 import TransactionConfirmationModal, {
   ConfirmationModalContent,
@@ -38,7 +38,8 @@ export default function ConfirmSwapModal({
   txHash,
   showAddToken,
   token0USD,
-  token1USD
+  token1USD,
+  feeRate
 }: {
   isOpen: boolean
   trade: Trade | undefined
@@ -56,6 +57,7 @@ export default function ConfirmSwapModal({
   showAddToken: boolean
   token0USD: string
   token1USD: string
+  feeRate?: Percent
 }) {
   const showAcceptChanges = useMemo(
     () => Boolean(trade && originalTrade && tradeMeaningfullyDiffers(trade, originalTrade)),
@@ -79,6 +81,7 @@ export default function ConfirmSwapModal({
   const modalBottom = useCallback(() => {
     return trade ? (
       <SwapModalFooter
+        feeRate={feeRate}
         onConfirm={onConfirm}
         trade={trade}
         disabledConfirm={showAcceptChanges}
@@ -86,7 +89,7 @@ export default function ConfirmSwapModal({
         allowedSlippage={allowedSlippage}
       />
     ) : null
-  }, [allowedSlippage, onConfirm, showAcceptChanges, swapErrorMessage, trade])
+  }, [allowedSlippage, feeRate, onConfirm, showAcceptChanges, swapErrorMessage, trade])
 
   // text to show while loading
   const pendingText = pendingMessage
