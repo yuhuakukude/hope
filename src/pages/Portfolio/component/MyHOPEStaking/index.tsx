@@ -2,7 +2,7 @@ import Table from 'components/antd/Table'
 import { useActiveWeb3React } from 'hooks'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 import { useStaking } from 'hooks/ahp/useStaking'
-import React, { useCallback, useState, useMemo } from 'react'
+import React, { useState, useCallback, useMemo } from 'react'
 import Card from '../Card'
 import Item from '../Item'
 import SelectTips, { TitleTipsProps } from '../SelectTips'
@@ -12,11 +12,10 @@ import { Link } from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
 
 import { STAKING_HOPE_GAUGE_ADDRESS, LT_TOKEN_ADDRESS, HOPE_TOKEN_ADDRESS } from '../../../../constants'
-import ClaimRewards from '../ClaimRewards'
+import HopeStakingClaim from '../ClaimRewards/hopeStakingClaim'
 import { usePairStakeInfo } from 'hooks/usePairInfo'
 import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
 import './index.scss'
-import { ITableItem } from 'components/ahp/GaugeClaim'
 import { DOCS_URL } from 'constants/config'
 
 interface IStaking {
@@ -54,7 +53,7 @@ function formatPrice(name: string, price?: TokenAmount | CurrencyAmount) {
 export default function MyHOPEStaking() {
   const { stakedVal, unstakedVal, claRewards, unstakingVal } = useStaking()
   const { chainId } = useActiveWeb3React()
-  const [item, setItem] = useState<ITableItem | null>(null)
+  const [item, setItem] = useState(false)
   const stakingAddr = useMemo(() => {
     return `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
   }, [chainId])
@@ -100,6 +99,8 @@ export default function MyHOPEStaking() {
     usdOfUnstaked: getUsdPrice(hopePrice, unstakedVal)
   }
   const history = useHistory()
+
+  const clearItem = useCallback(() => setItem(false), [])
 
   const columns: any = [
     {
@@ -155,7 +156,6 @@ export default function MyHOPEStaking() {
       width: 120,
       align: 'center',
       render: (text: string, record: IStaking) => {
-        // const add = `${STAKING_HOPE_GOMBOC_ADDRESS[chainId ?? 1]}`
         const options: TitleTipsProps[] = [
           {
             label: 'Stake',
@@ -177,10 +177,7 @@ export default function MyHOPEStaking() {
             value: 'Claim Rewards',
             isHide: Number(claRewards?.toFixed(8)) <= 0,
             onClick: () => {
-              setItem({
-                ltOfReward: claRewards?.toExact() || 0,
-                usdOfReward: toUsdPriceOfHope(hopePrice, claRewards)
-              })
+              setItem(true)
             }
           },
           {
@@ -196,11 +193,9 @@ export default function MyHOPEStaking() {
     }
   ]
 
-  const clearItem = useCallback(() => setItem(null), [])
-
   return (
     <>
-      <ClaimRewards item={item} clearItem={clearItem} />
+      <HopeStakingClaim item={item} clearItem={clearItem} />
       <Card title="My HOPE Staking">
         {data.stHOPE !== '--' ? (
           <Table className="my-hope-staking-wrap" columns={columns} dataSource={[data]} pagination={false}></Table>

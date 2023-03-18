@@ -2,39 +2,18 @@ import React, { useCallback, useEffect, useState } from 'react'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
-import { Token, TokenAmount } from '@uniswap/sdk'
+import { Token } from '@uniswap/sdk'
 import { useToClaim } from '../../../../hooks/ahp/usePortfolio'
-import { LT, HOPE } from '../../../../constants'
+import { LT, HOPE, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 import { useActiveWeb3React } from 'hooks'
-import GaugeClaimAll from 'components/ahp/GaugeClaimAll'
 
-export default function ClaimRewards({
-  item,
-  clearItem,
-  totalVal,
-  ltPrice
-}: {
-  item: any
-  clearItem: () => void
-  totalVal: TokenAmount
-  ltPrice: any
-}) {
+export default function ClaimRewards({ item, clearItem }: { item: any; clearItem: () => void }) {
   const { account, chainId } = useActiveWeb3React()
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
-
-  useEffect(() => {
-    if (!item) {
-      return
-    }
-    setTxHash('')
-    setErrorStatus(undefined)
-    setAttemptingTxn(false)
-    setShowConfirm(true)
-  }, [item])
 
   const onTxStart = useCallback(() => {
     setShowConfirm(true)
@@ -57,12 +36,13 @@ export default function ClaimRewards({
   const [claimPendingText, setPendingText] = useState('')
   const { toClaim } = useToClaim()
 
-  const claimAllCallback = useCallback(async () => {
-    if (!account || !Array.isArray(item)) return
+  const claimCallback = useCallback(async () => {
+    if (!account || !item) return
     setCurToken(LT[chainId ?? 1])
     onTxStart()
-    setPendingText(`claim all Rewards`)
-    toClaim(item.map(i => i.gauge))
+    setPendingText(`claim Rewards`)
+    console.log(STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1])
+    toClaim(STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1])
       .then(hash => {
         setPendingText('')
         onTxSubmitted(hash)
@@ -73,6 +53,15 @@ export default function ClaimRewards({
       })
   }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaim, item])
 
+  useEffect(() => {
+    if (!item) {
+      return
+    }
+    setTxHash('')
+    setErrorStatus(undefined)
+    claimCallback()
+  }, [item, claimCallback])
+
   const onDismiss = useCallback(() => {
     setShowConfirm(false)
     clearItem()
@@ -80,18 +69,10 @@ export default function ClaimRewards({
 
   const confirmationContent = useCallback(
     () =>
-      errorStatus ? (
+      errorStatus && (
         <TransactionErrorContent errorCode={errorStatus.code} onDismiss={onDismiss} message={errorStatus.message} />
-      ) : (
-        <GaugeClaimAll
-          ltPrice={ltPrice}
-          total={totalVal}
-          onSubmit={claimAllCallback}
-          onDismiss={onDismiss}
-          list={item}
-        />
       ),
-    [errorStatus, onDismiss, item, claimAllCallback, totalVal, ltPrice]
+    [errorStatus, onDismiss]
   )
 
   return (
