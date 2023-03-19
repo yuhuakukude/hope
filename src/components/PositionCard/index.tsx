@@ -343,7 +343,7 @@ export default function FullPositionCard({
           <AutoColumn gap={'10px'}>
             <TYPE.white>{reward ? `${reward.toFixed(4, { groupSeparator: ',' })} LT` : '--'}</TYPE.white>
             <TYPE.main>
-              ≈ ${reward && ltPrice ? amountFormat(Number(reward?.toExact().toString()) * Number(ltPrice), 2) : '--'}
+              ≈ ${reward && ltPrice ? amountFormat(Number(reward?.toExact().toString()) * Number(ltPrice), 2) : '0'}
             </TYPE.main>
           </AutoColumn>
         </ContentRow>
