@@ -263,19 +263,20 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                       ≈ ${toUsdPrice(claimableFees?.toFixed(2), stHopePrice) || '--'}
                     </span>
                   </div>
-                  <Button
-                    onClick={() => {
-                      withdrawFn('others')
-                    }}
-                    disabled={!(claimableFees && Number(claimableFees.toFixed(2)) > 0)}
-                    className={[
-                      'my-locked-lt-button',
-                      !(claimableFees && Number(claimableFees.toFixed(2)) > 0) ? 'disabled' : ''
-                    ].join(' ')}
-                    type="ghost"
-                  >
-                    Claim All
-                  </Button>
+                  {claimableFees && Number(claimableFees.toFixed(2)) > 0 && (
+                    <Button
+                      onClick={() => {
+                        withdrawFn('others')
+                      }}
+                      className={[
+                        'my-locked-lt-button',
+                        !(claimableFees && Number(claimableFees.toFixed(2)) > 0) ? 'disabled' : ''
+                      ].join(' ')}
+                      type="ghost"
+                    >
+                      Claim All
+                    </Button>
+                  )}
                 </div>
                 <div className="my-locked-lt-col">
                   <div className="my-locked-lt-title">
@@ -286,19 +287,20 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                     <span className="my-locked-lt-value text-medium">≈ {votingFee.stHope} stHOPE</span>
                     <span className="my-locked-lt-value2">≈ ${votingFee.toUsd}</span>
                   </div>
-                  <Button
-                    onClick={() => {
-                      withdrawFn('all')
-                    }}
-                    disabled={!(claimableFees && Number(votingFee.stHope) > 0)}
-                    className={[
-                      'my-locked-lt-button',
-                      !(claimableFees && Number(votingFee.stHope) > 0) ? 'disabled' : ''
-                    ].join(' ')}
-                    type="ghost"
-                  >
-                    Claim All
-                  </Button>
+                  {claimableFees && Number(votingFee.stHope) > 0 && (
+                    <Button
+                      onClick={() => {
+                        withdrawFn('all')
+                      }}
+                      className={[
+                        'my-locked-lt-button',
+                        !(claimableFees && Number(votingFee.stHope) > 0) ? 'disabled' : ''
+                      ].join(' ')}
+                      type="ghost"
+                    >
+                      Claim All
+                    </Button>
+                  )}
                 </div>
               </div>
             </div>
