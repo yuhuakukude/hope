@@ -302,7 +302,7 @@ export default function StakingPoolDetail({
     })
     setXData(xArr)
     setYData(yArr)
-  }, [timeIndex, tabIndex, hourChartResult, dayChartResult])
+  }, [timeIndex, tabIndex, hourChartResult, dayChartResult, pool])
 
   const [aprInfo, setAprInfo] = useState<any>({})
 
