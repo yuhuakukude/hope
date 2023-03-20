@@ -169,7 +169,6 @@ export default function CurrencyList({
     if (breakIndex !== undefined) {
       formatted = [...formatted.slice(0, breakIndex), ...formatted.slice(breakIndex, formatted.length)]
     }
-    console.log('formatted', formatted, breakIndex)
     return formatted
   }, [breakIndex, currencies, showETH])
 

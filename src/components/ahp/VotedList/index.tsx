@@ -22,7 +22,7 @@ import FeesWithdraw from '../FeesWithdraw'
 import { useGomFeeClaim } from '../../../hooks/ahp/usePortfolio'
 import Row from '../../../components/Row'
 import { Decimal } from 'decimal.js'
-import format from '../../../utils/format'
+import format, { formatMessage } from '../../../utils/format'
 import { useHistory } from 'react-router-dom'
 import { SymbolLogo } from 'components/CurrencyLogo'
 
@@ -310,7 +310,7 @@ const VotedList = ({
           setTxHash('')
           setPendingText(``)
           setAttemptingTxn(false)
-          setErrorStatus({ code: error?.code, message: error.message })
+          setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
         })
     },
     [account, toVote, allocatedView]
@@ -336,7 +336,7 @@ const VotedList = ({
         setTxHash('')
         setPendingText(``)
         setAttemptingTxn(false)
-        setErrorStatus({ code: error?.code, message: error.message })
+        setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
       })
   }, [account, toVoteAll, allArg])
 
@@ -355,7 +355,7 @@ const VotedList = ({
     setShowConfirm(true)
     setTxHash('')
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const gomFeeClaimCallback = useCallback(async () => {

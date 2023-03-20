@@ -13,7 +13,7 @@ import { LT } from '../../constants'
 import CurrencyLogo from '../CurrencyLogo'
 import { GreyCard } from '../Card'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
-import { amountFormat } from '../../utils/format'
+import { amountFormat, formatMessage } from '../../utils/format'
 import { useToken } from '../../hooks/Tokens'
 import { Radio } from 'antd'
 import { calculateGasMargin } from '../../utils'
@@ -96,7 +96,7 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
     setTxHash('')
     setPendingText(``)
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const onClaim = useCallback(async () => {

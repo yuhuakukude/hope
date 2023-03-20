@@ -11,7 +11,7 @@ import { LT, HOPE, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 import { useActiveWeb3React } from '../../../../hooks'
 import GaugeClaim from '../../../../components/ahp/GaugeClaim'
 import { useToClaim, useClaimRewards } from '../../../../hooks/ahp/usePortfolio'
-import format from '../../../../utils/format'
+import format, { formatMessage } from '../../../../utils/format'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
@@ -264,7 +264,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
     setShowConfirm(true)
     setTxHash('')
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const claimCallback = useCallback(async () => {

@@ -2,7 +2,7 @@ import React, { useState, useMemo, useCallback } from 'react'
 import { useLocker, useToLocker, conFnNameEnum } from '../../../../hooks/ahp/useLocker'
 import NumericalInput from '../../../../components/NumericalInput'
 import ActionButton from '../../../../components/Button/ActionButton'
-import format from '../../../../utils/format'
+import format, {formatMessage} from '../../../../utils/format'
 import LtIcon from '../../../../assets/images/ahp/lt.png'
 import TransactionConfirmationModal, {
   TransactionErrorContent
@@ -116,7 +116,7 @@ export default function AddAmount() {
     setTxHash('')
     setPendingText(``)
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const onApprove = useCallback(() => {

@@ -53,7 +53,6 @@ class CustomizedBridge extends _Eip1193Bridge {
     }
     try {
       const result = await super.send(method, params)
-      console.debug('result received', method, params, result)
       if (isCallbackForm) {
         callback(null, { result })
       } else {

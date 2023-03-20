@@ -6,6 +6,7 @@ import { Token } from '@uniswap/sdk'
 import { useToClaim } from '../../../../hooks/ahp/usePortfolio'
 import { LT, HOPE, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 import { useActiveWeb3React } from 'hooks'
+import { formatMessage } from '../../../../utils/format'
 
 export default function ClaimRewards({ item, clearItem }: { item: any; clearItem: () => void }) {
   const { account, chainId } = useActiveWeb3React()
@@ -30,7 +31,7 @@ export default function ClaimRewards({ item, clearItem }: { item: any; clearItem
     setShowConfirm(true)
     setTxHash('')
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const [claimPendingText, setPendingText] = useState('')
