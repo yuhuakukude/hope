@@ -23,6 +23,7 @@ import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import './index.scss'
 import useGasPrice from '../../hooks/useGasPrice'
+import { formatMessage } from '../../utils/format'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -150,7 +151,7 @@ export default function BuyHope() {
     setTxHash('')
     setPendingText(``)
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const onApprove = useCallback(() => {

@@ -6,7 +6,7 @@ import NumericalInput from '../../components/NumericalInput'
 import { DatePicker } from 'antd'
 import moment from 'moment'
 import momentTz from 'moment-timezone'
-import format from '../../utils/format'
+import format, { formatMessage } from '../../utils/format'
 import ActionButton from '../../components/Button/ActionButton'
 import { ButtonPrimary } from '../../components/Button'
 import './index.scss'
@@ -202,7 +202,7 @@ export default function DaoLocker() {
     setTxHash('')
     setPendingText(``)
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const onApprove = useCallback(() => {

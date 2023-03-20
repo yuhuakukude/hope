@@ -388,6 +388,7 @@ export interface PoolInfo {
 }
 
 export interface PairDetail extends PoolInfo {
+  feeRate: number
   tvl: number
   createAt: number
   txCount: number
@@ -668,6 +669,7 @@ function PAIR_QUERY({ block, stakingAddress }: { block?: number[]; stakingAddres
       txCount
       totalSupply
       createdAtTimestamp
+      feeRate
       token0 {
         id
         symbol
@@ -867,6 +869,7 @@ export async function fetchPairPool(stakingAddress: string, chainId: any): Promi
     const token1Price = pair.token1Price
     return {
       id: pair.id,
+      feeRate: Number(pair.feeRate),
       tvl: Number(pair?.reserveUSD),
       createAt: pair?.createdAtTimestamp,
       txCount: pair?.txCount,

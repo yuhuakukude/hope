@@ -5,7 +5,7 @@ import Card from '../Card'
 import FeesWithdraw from '../../../../components/ahp/FeesWithdraw'
 import { useLocker } from '../../../../hooks/ahp/useLocker'
 import { usePortfolio, toUsdPrice } from '../../../../hooks/ahp/usePortfolio'
-import format from '../../../../utils/format'
+import format, { formatMessage } from '../../../../utils/format'
 import { useActiveWeb3React } from '../../../../hooks'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
 import { VELT, ST_HOPE, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
@@ -115,7 +115,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
     setShowConfirm(true)
     setTxHash('')
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const getVotingRewards = (stHope: string, toUsd: string) => {

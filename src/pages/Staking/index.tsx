@@ -26,7 +26,7 @@ import {
   useToClaim,
   stakingFnNameEnum
 } from '../../hooks/ahp/useStaking'
-import format from '../../utils/format'
+import format, { formatMessage } from '../../utils/format'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { ButtonPrimary, ButtonOutlined } from '../../components/Button'
 import { tryParseAmount } from '../../state/swap/hooks'
@@ -165,7 +165,7 @@ export default function Staking() {
     setShowConfirm(true)
     setTxHash('')
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const onApprove = useCallback(() => {

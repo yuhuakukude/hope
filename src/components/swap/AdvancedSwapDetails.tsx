@@ -32,7 +32,7 @@ function TradeSummary({
   allowedSlippage: number
 }) {
   const theme = useContext(ThemeContext)
-  const { priceImpactWithoutFee, realizedLPFee } = computeTradePriceBreakdown(trade, feeRate)
+  const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade, feeRate)
   const isExactIn = trade.tradeType === TradeType.EXACT_INPUT
   const slippageAdjustedAmounts = computeSlippageAdjustedAmounts(trade, allowedSlippage)
 
@@ -56,8 +56,8 @@ function TradeSummary({
           </AutoColumn>
           <RowFixed>
             <TYPE.black fontWeight={700} color={theme.text1}>
-              {`1 ${trade.executionPrice?.quoteCurrency?.symbol} = ${trade.executionPrice?.toSignificant(6)} ${
-                trade.executionPrice?.baseCurrency?.symbol
+              {`1 ${trade.executionPrice?.baseCurrency?.symbol} = ${trade.executionPrice?.toSignificant(6)} ${
+                trade.executionPrice?.quoteCurrency?.symbol
               }`}
             </TYPE.black>
           </RowFixed>
@@ -66,7 +66,7 @@ function TradeSummary({
           <AutoColumn gap={'4px'}>
             <RowFixed>
               <TYPE.black fontWeight={400} color={theme.text2}>
-                {isExactIn ? 'Minimum received' : 'Maximum sold'} (slippage
+                {'Minimum received'} (slippage
                 {new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000)).toFixed(2)}%)
               </TYPE.black>
               <Tooltip
@@ -104,23 +104,23 @@ function TradeSummary({
           <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
         </RowBetween>
 
-        <RowBetween>
-          <RowFixed>
-            <TYPE.black fontWeight={400} color={theme.text2}>
-              Liquidity Provider Fee
-            </TYPE.black>
-            <Tooltip
-              className="m-l-5"
-              overlayClassName="tips-question"
-              title="A portion of each trade (0.30%) goes to liquidity providers as a protocol incentive."
-            >
-              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
-            </Tooltip>
-          </RowFixed>
-          <TYPE.black fontWeight={700} color={theme.text1}>
-            {realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${trade.inputAmount.currency.symbol}` : '-'}
-          </TYPE.black>
-        </RowBetween>
+        {/*<RowBetween>*/}
+        {/*  <RowFixed>*/}
+        {/*    <TYPE.black fontWeight={400} color={theme.text2}>*/}
+        {/*      Liquidity Provider Fee*/}
+        {/*    </TYPE.black>*/}
+        {/*    <Tooltip*/}
+        {/*      className="m-l-5"*/}
+        {/*      overlayClassName="tips-question"*/}
+        {/*      title="A portion of each trade (0.30%) goes to liquidity providers as a protocol incentive."*/}
+        {/*    >*/}
+        {/*      <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>*/}
+        {/*    </Tooltip>*/}
+        {/*  </RowFixed>*/}
+        {/*  <TYPE.black fontWeight={700} color={theme.text1}>*/}
+        {/*    {realizedLPFee ? `${realizedLPFee.toSignificant(4)} ${trade.inputAmount.currency.symbol}` : '-'}*/}
+        {/*  </TYPE.black>*/}
+        {/*</RowBetween>*/}
       </AutoColumn>
     </>
   )

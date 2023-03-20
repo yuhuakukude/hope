@@ -6,7 +6,7 @@ import { AutoRow, RowFixed } from '../../components/Row'
 import { CardSection, DataCard, EarnBGImage } from '../../components/earn/styled'
 import Loader from '../../components/Loader'
 import { OutlineCard } from '../../components/Card'
-import format from 'utils/format'
+import format, { formatMessage } from 'utils/format'
 import { useLPStakingInfos, useLPTotalLocked } from '../../hooks/useLPStaking'
 import LTPoolCard from '../../components/earn/LTPoolCard'
 import { PoolInfo } from '../../state/stake/hooks'
@@ -137,7 +137,7 @@ export default function Earn() {
     setTxHash('')
     setPendingText(``)
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const onApproveCallback = useCallback(() => {

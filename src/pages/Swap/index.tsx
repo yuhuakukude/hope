@@ -113,10 +113,7 @@ export default function Swap({ history }: RouteComponentProps) {
     currencies,
     inputError: swapInputError
   } = useDerivedSwapInfo()
-
   const feeRate = useFeeRate(currencies[Field.INPUT], currencies[Field.OUTPUT])
-  console.log('feeRate', feeRate)
-
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
     currencies[Field.OUTPUT],

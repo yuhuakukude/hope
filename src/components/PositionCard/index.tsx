@@ -41,6 +41,9 @@ const StyledPositionCard = styled(LightCard)<{ bgColor: any }>`
   border: none;
   position: relative;
   overflow: hidden;
+  &:hover {
+    background-color: #1b1b1f;
+  }
   &:not(:last-child) {
     border-bottom: 1px solid ${({ theme }) => theme.bg3};
   }

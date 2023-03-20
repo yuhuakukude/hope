@@ -58,7 +58,7 @@ const GaugeClaim = ({ onSubmit, onDismiss, curWithType, allData, itemData }: Gau
                   <Radio value={`item`}>
                     <span className="text-white">veLT voting dividends</span>
                   </Radio>
-                  <Tips title={`Claimable Rewards`} />
+                  <Tips title="All users who voted using veLT as their liquidity mining gauge will participate in the distribution of an additional 25% of the platform's fee revenue." />
                 </div>
                 <div>
                   <p className="text-white text-right">{itemData.value} stHOPE</p>
@@ -72,7 +72,7 @@ const GaugeClaim = ({ onSubmit, onDismiss, curWithType, allData, itemData }: Gau
                   <Radio value={`others`}>
                     <span className="text-white">veLT hold dividends</span>
                   </Radio>
-                  <Tips title={`Claimable Rewards`} />
+                  <Tips title="25% of the platform fees will be distributed among all veLT holders." />
                 </div>
                 <div>
                   <p className="text-white text-right">{itemData.value} stHOPE</p>
@@ -89,7 +89,7 @@ const GaugeClaim = ({ onSubmit, onDismiss, curWithType, allData, itemData }: Gau
                         <Radio value={`all`}>
                           <span className="text-white">veLT voting dividends</span>
                         </Radio>
-                        <Tips title={`Claimable Rewards`} />
+                        <Tips title="All users who voted using veLT as their liquidity mining gauge will participate in the distribution of an additional 25% of the platform's fee revenue." />
                       </div>
                       <div className="flex ai-center">
                         <p className="text-normal text-right">≈ {itemData.value} stHOPE</p>

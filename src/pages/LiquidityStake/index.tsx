@@ -45,6 +45,7 @@ import { useStakingContract } from '../../hooks/useContract'
 import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 import BasePoolInfoCard from '../../components/pool/PoolInfoCard'
 import TotalApr from '../../components/pool/TotalApr'
+import { formatMessage } from '../../utils/format'
 
 const PageWrapper = styled(GapColumn)`
   width: 100%;
@@ -170,7 +171,7 @@ export default function LiquidityStake({
   const onTxError = useCallback(error => {
     setTxHash('')
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
     setShowConfirm(true)
   }, [])
 

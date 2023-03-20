@@ -198,7 +198,7 @@ export function useFeeRate(token0?: Currency, token1?: Currency) {
   const pair = usePair(token0, token1)
   const contract = usePairContract(pair[1]?.liquidityToken.address)
   const result = useSingleCallResult(contract, 'feeRateNumerator')?.result
-  console.log('results', result)
+
   return result
     ? new Percent(JSBI.subtract(JSBI.BigInt(10000), JSBI.BigInt(result?.[0])), JSBI.BigInt(10000))
     : undefined

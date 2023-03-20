@@ -1,5 +1,6 @@
 import { Decimal } from 'decimal.js'
 import moment from 'moment'
+import { CONTRACT_ERROR_CODE } from '../constants/config'
 // rate
 export const rate = (value: string | number | undefined, decimal?: number, isNull?: boolean) => {
   if (value || value === 0) {
@@ -172,6 +173,13 @@ export function getDateForLastOccurence(strDay: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 
   }
   date.setDate(date.getDate() + difference)
   return date
+}
+
+export function formatMessage(message: any) {
+  if (!message) return undefined
+  const code = message.error.message.split(':')[1]?.trim()
+  if (!code) return undefined
+  return CONTRACT_ERROR_CODE[code] ?? undefined
 }
 
 export default {

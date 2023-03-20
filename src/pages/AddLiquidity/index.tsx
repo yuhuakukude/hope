@@ -41,6 +41,7 @@ import { useIsTransactionUnsupported } from 'hooks/Trades'
 import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter'
 import spinner from '../../assets/svg/spinner.svg'
 import { useHistory } from 'react-router-dom'
+import { formatMessage } from '../../utils/format'
 
 const PageWrapper = styled(GapColumn)`
   width: 100%;
@@ -126,7 +127,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
   const onTxError = useCallback(error => {
     setTxHash('')
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
     setShowConfirm(true)
     setPendingText('')
   }, [])

@@ -22,6 +22,7 @@ import TransactionConfirmationModal, {
 
 import { useActionPending } from '../../../../state/transactions/hooks'
 import { Decimal } from 'decimal.js'
+import { formatMessage } from '../../../../utils/format'
 
 import moment from 'moment'
 import format from 'utils/format'
@@ -269,7 +270,7 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
         setShowConfirm(true)
         setPendingText(``)
         setAttemptingTxn(false)
-        setErrorStatus({ code: error?.code, message: error.message })
+        setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
       })
   }, [amount, curGomAddress, account, toVote])
 
