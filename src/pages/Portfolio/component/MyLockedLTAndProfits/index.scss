@@ -48,10 +48,12 @@
       justify-content: center;
       background-color: #3D3E46;
       border: 0.5px solid #5A5A5B;
-      &:hover{
+
+      &:hover {
         background-color: #33333C;
       }
-      &.disabled{
+
+      &.disabled {
         border: 1px solid rgb(61, 62, 70);
         color: rgb(61, 62, 70);
         background-color: transparent;

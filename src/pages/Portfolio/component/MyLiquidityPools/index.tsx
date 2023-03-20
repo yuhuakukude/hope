@@ -6,7 +6,7 @@ import Circle from '../../../../assets/images/blue-loader.svg'
 import Tips from 'components/Tips'
 
 import { useActiveWeb3React } from 'hooks'
-import React, { useCallback, useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState, useMemo } from 'react'
 import { useHistory } from 'react-router-dom'
 import Card from '../Card'
 import ClaimRewards from '../ClaimRewards'
@@ -25,19 +25,37 @@ import { AutoColumn } from '../../../../components/Column'
 import { SymbolLogo } from 'components/CurrencyLogo'
 import { DOCS_URL } from 'constants/config'
 
+import { useMultipleContractSingleData } from 'state/multicall/hooks'
+import { STAKING_REWARDS_INTERFACE } from 'constants/abis/staking-rewards'
+import { LT } from '../../../../constants'
+import { JSBI, TokenAmount } from '@uniswap/sdk'
+import { useTokenPriceObject } from 'hooks/liquidity/useBasePairs'
+import ClaimRewardModal from 'components/earn/ClaimRewardModal'
+
 function toFixed(val: string | number, length = 2) {
   return format.amountFormat(val, length)
 }
 
 export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: number, yfTotal: number) => void }) {
-  const { account } = useActiveWeb3React()
+  const { account, chainId } = useActiveWeb3React()
   const [dataSource, setDataSource] = useState<ILiquidityPools[]>([])
   const [listLoading, setListLoading] = useState<boolean>(false)
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(10)
   const [pageTotal, setPageTotal] = useState<number>(0)
   const [allTableData, setAllTableData] = useState<any>([])
-  const [headData, setHeadData] = useState<IHeadItem[]>([])
+  // const [headData, setHeadData] = useState<IHeadItem[]>([])
+  const [showClaimModal, setShowClaimModal] = useState(false)
+  const [stakingAddress, setStakingAddress] = useState('')
+  const ltAddress = useMemo(() => {
+    return [LT[chainId ?? 1].address.toString()]
+  }, [chainId])
+  const { result: priceResult } = useTokenPriceObject(ltAddress)
+
+  const ltPrice = useMemo(() => {
+    return priceResult ? Number(priceResult[ltAddress[0].toLowerCase()]) : undefined
+  }, [priceResult, ltAddress])
+
   useEffect(() => {
     if (!account) {
       return
@@ -48,19 +66,6 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
         setAllTableData(data.result)
         setPageTotal(data.result.length || 0)
         setDataSource(data.result.slice(0, pageSize))
-        const headList: IHeadItem[] = []
-        data.result.forEach(item => {
-          if (item.ltOfReward && Number(item.ltOfReward) !== 0) {
-            headList.push({
-              ltOfReward: item.ltOfReward,
-              ltTotalReward: item.ltTotalReward,
-              gauge: item.gauge,
-              composition: item.composition,
-              usdOfReward: item.usdOfReward
-            })
-          }
-        })
-        setHeadData(headList)
         let lpTotal = 0
         let yfTotal = 0
         if (data.result && data.result.length > 0) {
@@ -83,6 +88,93 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
     })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account])
+
+  const argAddress = useMemo(() => {
+    const arr: any = []
+    if (allTableData && allTableData.length > 0) {
+      allTableData.forEach((e: any) => {
+        if (e.gauge) {
+          arr.push([e.gauge])
+        }
+      })
+    }
+    return arr
+  }, [allTableData])
+
+  const accountArg = useMemo(() => [account ?? undefined], [account])
+  const rewardAmounts = useMultipleContractSingleData(
+    argAddress,
+    STAKING_REWARDS_INTERFACE,
+    'claimableTokens',
+    accountArg
+  )
+
+  const extraRewardsArg = useMemo(() => [account ?? undefined, LT[chainId ?? 1].address], [account, chainId])
+
+  const extraRewardAmounts = useMultipleContractSingleData(
+    argAddress,
+    STAKING_REWARDS_INTERFACE,
+    'claimableReward',
+    extraRewardsArg
+  )
+
+  const conRewData = useMemo(() => {
+    const obj: any = {}
+    if (argAddress && argAddress.length > 0 && argAddress.length === rewardAmounts.length) {
+      argAddress.forEach((e: any, index: number) => {
+        const reward = rewardAmounts[index]?.result
+        const extraReward = extraRewardAmounts[index]?.result
+        const conReward = new TokenAmount(LT[chainId ?? 1], reward ? reward?.[0].toString() : '0')
+        const conTotalReward = new TokenAmount(
+          LT[chainId ?? 1],
+          reward && extraReward
+            ? JSBI.add(JSBI.BigInt(reward?.[0].toString()), JSBI.BigInt(extraReward?.[0].toString()))
+            : reward
+            ? reward?.[0].toString()
+            : extraReward
+            ? extraReward?.[0].toString()
+            : '0'
+        )
+        const item = {
+          conReward,
+          conTotalReward
+        }
+        obj[e] = item
+      })
+    }
+    return obj
+  }, [argAddress, rewardAmounts, extraRewardAmounts, chainId])
+
+  const headData = useMemo(() => {
+    const arr: any = []
+    if (allTableData && allTableData.length > 0) {
+      allTableData.forEach((e: any, index: number) => {
+        if (e.gauge && conRewData[e.gauge] && conRewData[e.gauge].conReward) {
+          const item: any = {
+            conReward: conRewData[e.gauge].conReward,
+            gauge: e.gauge,
+            composition: e.composition
+          }
+          arr.push(item)
+        }
+      })
+      return arr
+    }
+    return arr
+  }, [conRewData, allTableData])
+
+  const totalVal = useMemo(() => {
+    let num = JSBI.BigInt('0')
+    if (headData && headData.length > 0) {
+      headData.forEach((e: any) => {
+        if (e.conReward) {
+          num = JSBI.add(num, JSBI.BigInt(e.conReward?.raw.toString() ?? '0'))
+        }
+      })
+    }
+    const tNum = new TokenAmount(LT[chainId ?? 1], num ? num : '0')
+    return tNum
+  }, [headData, chainId])
 
   const [item, setItem] = useState<ILiquidityPools | IHeadItem[] | null>(null)
   const history = useHistory()
@@ -197,7 +289,26 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       dataIndex: 'ltTotalReward',
       key: 'ltTotalReward',
       render: (text: string, record: ILiquidityPools) => {
-        return <Item title={toFixed(record.ltTotalReward) + ' LT'} desc={'≈ $' + toFixed(record.usdOfTotalReward)} />
+        if (record.gauge) {
+          return (
+            <Item
+              title={
+                conRewData[record.gauge] && conRewData[record.gauge].conTotalReward
+                  ? `${conRewData[record.gauge].conTotalReward.toFixed(2, { groupSeparator: ',' })} LT`
+                  : '0.00 LT'
+              }
+              desc={
+                conRewData[record.gauge] && ltPrice
+                  ? `≈ $ ${toFixed(
+                      Number(conRewData[record.gauge].conTotalReward?.toExact().toString()) * Number(ltPrice),
+                      2
+                    )}`
+                  : '≈ $ 0.00'
+              }
+            />
+          )
+        }
+        return <Item title={'0.00 LT'} desc={'≈ $ 0.00'} />
       }
     },
     {
@@ -207,12 +318,16 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       align: 'center',
       render: (text: string, record: ILiquidityPools) => {
         const options: TitleTipsProps[] = []
-        if (record.ltOfReward && Number(record.ltOfReward) > 0) {
+        if (
+          conRewData[record.gauge] &&
+          conRewData[record.gauge].conTotalReward &&
+          Number(conRewData[record.gauge].conTotalReward?.toExact().toString()) > 0
+        ) {
           options.push({
             label: 'Claim Rewards',
             value: 'Claim Rewards',
             onClick: () => {
-              setItem(record)
+              setShowClaimModal(true)
             }
           })
         }
@@ -230,7 +345,17 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
             history.push(`/swap/liquidity/pool-detail/${record.pair}`)
           }
         })
-        return <SelectTips options={options} />
+        return (
+          <div
+            onClick={() => {
+              if (record.gauge) {
+                setStakingAddress(record.gauge)
+              }
+            }}
+          >
+            <SelectTips options={options} />
+          </div>
+        )
       }
     }
   ]
@@ -252,7 +377,14 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
 
   return (
     <>
-      <ClaimRewards item={item} clearItem={clearItem} />
+      <ClaimRewards ltPrice={ltPrice} totalVal={totalVal} item={item} clearItem={clearItem} />
+      {stakingAddress && (
+        <ClaimRewardModal
+          isOpen={showClaimModal}
+          onDismiss={() => setShowClaimModal(false)}
+          stakingAddress={stakingAddress}
+        />
+      )}
       <Card title="My Liquidity Pools">
         {listLoading ? (
           <ColumnCenter
@@ -263,7 +395,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
           </ColumnCenter>
         ) : allTableData.length > 0 ? (
           <>
-            <Head data={headData} claimAll={claimAll}></Head>
+            <Head totalVal={totalVal} ltPrice={ltPrice} data={headData} claimAll={claimAll}></Head>
             <Table columns={columns} dataSource={dataSource}></Table>
             {pageTotal > 0 && (
               <Row justify="flex-end" marginTop={12}>

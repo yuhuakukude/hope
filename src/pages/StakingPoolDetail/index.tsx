@@ -196,9 +196,8 @@ export default function StakingPoolDetail({
   //const stakedAmount = useTokenBalance(account ?? undefined, pool?.stakingToken)
 
   const { token0Deposited, token1Deposited, balance } = usePosition(pool?.pair)
-  const { token0Staked, token1Staked, stakedLpAmount } = useStakePosition(pool)
-
-  const userTotalBalance = stakedLpAmount && balance ? stakedLpAmount?.add(balance) : balance
+  const { token0Staked, token1Staked, stakedAmount } = useStakePosition(pool)
+  const userTotalBalance = stakedAmount && balance ? stakedAmount?.add(balance) : balance
   const userToken0 = token0Deposited && token0Staked ? token0Deposited.add(token0Staked) : token0Deposited
   const userToken1 = token1Deposited && token1Staked ? token1Deposited.add(token1Staked) : token1Deposited
   // charts
@@ -388,7 +387,7 @@ export default function StakingPoolDetail({
             </RowBetween>
             <RowBetween>
               <TYPE.main>Staked Position</TYPE.main>
-              <TYPE.white>{stakedLpAmount?.toFixed(4, { groupSeparator: ',' } ?? '0.0000') ?? '0.0000'}</TYPE.white>
+              <TYPE.white>{stakedAmount?.toFixed(4, { groupSeparator: ',' } ?? '0.0000') ?? '0.0000'}</TYPE.white>
             </RowBetween>
             <AutoRowBetween gap={'30px'}>
               <ButtonPrimary
@@ -468,7 +467,7 @@ export default function StakingPoolDetail({
                   <RowBetween>
                     <TYPE.main>My Mining Position</TYPE.main>
                     <TYPE.white>
-                      {stakedLpAmount ? stakedLpAmount.toFixed(4, { groupSeparator: ',' } ?? '0.00') : '--'}
+                      {stakedAmount ? stakedAmount.toFixed(4, { groupSeparator: ',' } ?? '0.00') : '--'}
                     </TYPE.white>
                   </RowBetween>
                   <RowBetween>

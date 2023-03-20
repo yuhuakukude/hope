@@ -6,6 +6,7 @@ import { useActiveWeb3React } from '../../../hooks'
 import { useEstimate } from 'hooks/ahp'
 import format from '../../../utils/format'
 import { IHeadItem } from 'pages/Portfolio/component/MyLiquidityPools/components/head'
+import { TokenAmount } from '@uniswap/sdk'
 
 export type ITableItem = {
   usdOfTotalReward: string | number
@@ -19,11 +20,12 @@ export type ITableItem = {
 interface GaugeClaimProps {
   onSubmit: any
   onDismiss: () => void
-  total: number
-  list: IHeadItem[]
+  total: TokenAmount
+  list: IHeadItem[] | null
+  ltPrice: any
 }
 
-function GaugeClaimAll({ onSubmit, onDismiss, total, list }: GaugeClaimProps) {
+function GaugeClaimAll({ onSubmit, onDismiss, total, list, ltPrice }: GaugeClaimProps) {
   const { account } = useActiveWeb3React()
   const isEthBalanceInsufficient = useEstimate()
   const [drapIndex, setDrapIndex] = useState(true)
@@ -47,7 +49,7 @@ function GaugeClaimAll({ onSubmit, onDismiss, total, list }: GaugeClaimProps) {
                 <div onClick={drapFn} className="radio-box-head flex jc-between">
                   <div className="flex ai-center">Total Claimable Rewards</div>
                   <div className="flex ai-center">
-                    <p className="text-normal text-right">{format.amountFormat(total, 2)} LT</p>
+                    <p className="text-normal text-right">{total?.toFixed(2, { groupSeparator: ',' } ?? '0.00')} LT</p>
                     <i className={drapIndex ? 'iconfont icon-drap ' : 'iconfont icon-drap active'}>&#xe60d;</i>
                   </div>
                 </div>
@@ -63,8 +65,18 @@ function GaugeClaimAll({ onSubmit, onDismiss, total, list }: GaugeClaimProps) {
                                 <div className="currency text-white text-medium">{item.composition}</div>
                               </div>
                               <div>
-                                <p className="text-white text-right">{format.amountFormat(item.ltOfReward, 2)} LT</p>
-                                <p className="text-white text-right">≈ $ {format.amountFormat(item.usdOfReward, 2)}</p>
+                                <p className="text-white text-right">
+                                  {item.conReward?.toFixed(2, { groupSeparator: ',' } ?? '0.00')} LT
+                                </p>
+                                <p className="text-white text-right">
+                                  ≈ ${' '}
+                                  {item.conReward && ltPrice
+                                    ? format.amountFormat(
+                                        Number(item.conReward?.toExact().toString()) * Number(ltPrice),
+                                        2
+                                      )
+                                    : '0.00'}
+                                </p>
                               </div>
                             </div>
                           )}
