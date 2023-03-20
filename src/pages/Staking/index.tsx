@@ -458,10 +458,10 @@ export default function Staking() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex jc-between m-t-30">
+                  {/* <div className="flex jc-between m-t-30">
                     <span className="text-white">Est Transaction Fee</span>
                     <span className="text-white">≈{gas ? CurrencyAmount.ether(gas).toSignificant() : '--'} ETH</span>
-                  </div>
+                  </div> */}
                   <div className="flex jc-between m-t-20">
                     <span className="text-white">Receive </span>
                     <span className="text-white">
