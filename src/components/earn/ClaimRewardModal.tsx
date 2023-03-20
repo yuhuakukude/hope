@@ -38,7 +38,7 @@ enum Reward {
 
 export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: StakingModalProps) {
   const { account, chainId, library } = useActiveWeb3React()
-  const [claimType, setClaimType] = useState<Reward | undefined>(undefined)
+  const [claimType, setClaimType] = useState<Reward | undefined>(Reward.LT)
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [pendingText, setPendingText] = useState('')
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
@@ -164,7 +164,7 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
           <TYPE.mediumHeader>Rewards Claim</TYPE.mediumHeader>
           <CloseIcon onClick={onDismiss} />
         </RowBetween>
-        <Radio.Group onChange={e => setClaimType(e.target.value)}>
+        <Radio.Group onChange={e => setClaimType(e.target.value)} defaultValue={Reward.LT}>
           <AutoColumn style={{ padding: '0 20px 20px  20px' }} gap={'20px'}>
             <AutoColumn gap={'lg'}>
               <RowBetween>

@@ -765,7 +765,7 @@ export default function StakingPoolDetail({
             </TabWrapper>
             {showTx ? (
               <>
-                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 0px'}>
+                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 10px'}>
                   <AutoRow>
                     <TableTitle>
                       <div className="p-l-30">
