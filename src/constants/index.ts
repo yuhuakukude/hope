@@ -31,6 +31,7 @@ type ChainTokenList = {
 export const REWARD_CONTRACT: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: '',
   [ChainId.SEPOLIA]: '',
+  [ChainId.GOERLI]: '',
   [ChainId.HOPE]: ''
 }
 
@@ -49,34 +50,40 @@ export const renBTC = new Token(ChainId.MAINNET, '0xEB4C2781e4ebA804CE9a9803C67d
 export const USDC: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xf9B7E9bb840b7BBf7E0C42724f11121D4D1eFC22', 18, 'USDC', 'USD//C'),
   [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xf9B7E9bb840b7BBf7E0C42724f11121D4D1eFC22', 18, 'USDC', 'USD//C'),
+  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0xf9B7E9bb840b7BBf7E0C42724f11121D4D1eFC22', 18, 'USDC', 'USD//C'),
   [ChainId.HOPE]: new Token(ChainId.HOPE, '0xf9B7E9bb840b7BBf7E0C42724f11121D4D1eFC22', 18, 'USDC', 'USD//C')
 }
 
 export const USDT: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xB2448D911BC792c463AF9ED8cf558a85D97c5Bf1', 6, 'USDT', 'Tether USD'),
   [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xB2448D911BC792c463AF9ED8cf558a85D97c5Bf1', 6, 'USDT', 'Tether USD'),
+  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0xB2448D911BC792c463AF9ED8cf558a85D97c5Bf1', 6, 'USDT', 'Tether USD'),
   [ChainId.HOPE]: new Token(ChainId.HOPE, '0xB2448D911BC792c463AF9ED8cf558a85D97c5Bf1', 6, 'USDT', 'Tether USD')
 }
 
 export const LT: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x7e37d014BFD2E46Cb0D814c1d222C66741D35C4C', 18, 'LT', 'light'),
   [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x7e37d014BFD2E46Cb0D814c1d222C66741D35C4C', 18, 'LT', 'light'),
+  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0x7e37d014BFD2E46Cb0D814c1d222C66741D35C4C', 18, 'LT', 'light'),
   [ChainId.HOPE]: new Token(ChainId.HOPE, '0x7e37d014BFD2E46Cb0D814c1d222C66741D35C4C', 18, 'LT', 'light')
 }
 export const VELT: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x43668eE8faBFbeC7EC954F840c1dEDF8e427d636', 18, 'veLT', 've light'),
   [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x43668eE8faBFbeC7EC954F840c1dEDF8e427d636', 18, 'veLT', 've light'),
+  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0x43668eE8faBFbeC7EC954F840c1dEDF8e427d636', 18, 'veLT', 've light'),
   [ChainId.HOPE]: new Token(ChainId.HOPE, '0x43668eE8faBFbeC7EC954F840c1dEDF8e427d636', 18, 'veLT', 've light')
 }
 export const HOPE: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xa1DE18c3deE324D27be35A8556837b7d81E3e71b', 18, 'HOPE', 'hope'),
   [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xa1DE18c3deE324D27be35A8556837b7d81E3e71b', 18, 'HOPE', 'hope'),
+  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0xa1DE18c3deE324D27be35A8556837b7d81E3e71b', 18, 'HOPE', 'hope'),
   [ChainId.HOPE]: new Token(ChainId.HOPE, '0xa1DE18c3deE324D27be35A8556837b7d81E3e71b', 18, 'HOPE', 'hope')
 }
 
 export const ST_HOPE: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x5737fE3f61F1D42270Da80Db9AC4f0d48CEe114d', 18, 'stHOPE', 'stHOPE'),
   [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x5737fE3f61F1D42270Da80Db9AC4f0d48CEe114d', 18, 'stHOPE', 'stHOPE'),
+  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0x5737fE3f61F1D42270Da80Db9AC4f0d48CEe114d', 18, 'stHOPE', 'stHOPE'),
   [ChainId.HOPE]: new Token(ChainId.HOPE, '0x5737fE3f61F1D42270Da80Db9AC4f0d48CEe114d', 18, 'stHOPE', 'stHOPE')
 }
 
@@ -84,58 +91,69 @@ export const ST_HOPE: { [chainId in ChainId]: Token } = {
 export const PERMIT2_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: '0xa6189939dE5e8681e1131c217E1AC771dEcD8795',
   [ChainId.SEPOLIA]: '0xa6189939dE5e8681e1131c217E1AC771dEcD8795',
+  [ChainId.GOERLI]: '0xa6189939dE5e8681e1131c217E1AC771dEcD8795',
   [ChainId.HOPE]: '0xa6189939dE5e8681e1131c217E1AC771dEcD8795'
 }
 export const GAUGE_CONTROLLER_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0x8342d419566e696e2e911E30025F237DE8fcd893',
   [ChainId.SEPOLIA]: '0x8342d419566e696e2e911E30025F237DE8fcd893',
+  [ChainId.GOERLI]: '0x8342d419566e696e2e911E30025F237DE8fcd893',
   [ChainId.HOPE]: '0x8342d419566e696e2e911E30025F237DE8fcd893'
 }
 export const LT_MINTER_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0xCed12340377CE6440Ecd616157f86d918a6D14cA',
   [ChainId.SEPOLIA]: '0xCed12340377CE6440Ecd616157f86d918a6D14cA',
+  [ChainId.GOERLI]: '0xCed12340377CE6440Ecd616157f86d918a6D14cA',
   [ChainId.HOPE]: '0xCed12340377CE6440Ecd616157f86d918a6D14cA'
 }
 export const TOKEN_SALE_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0xd7Faa8848740E206C46be71F632c0ba6B38c6420',
   [ChainId.SEPOLIA]: '0xd7Faa8848740E206C46be71F632c0ba6B38c6420',
+  [ChainId.GOERLI]: '0xd7Faa8848740E206C46be71F632c0ba6B38c6420',
   [ChainId.HOPE]: '0xd7Faa8848740E206C46be71F632c0ba6B38c6420'
 }
 export const POOL_GAUGE_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0xF238D7FC6d273072E9107C3C87CADC7274B2A333',
   [ChainId.SEPOLIA]: '0xF238D7FC6d273072E9107C3C87CADC7274B2A333',
+  [ChainId.GOERLI]: '0xF238D7FC6d273072E9107C3C87CADC7274B2A333',
   [ChainId.HOPE]: '0xF238D7FC6d273072E9107C3C87CADC7274B2A333'
 }
 export const STAKING_HOPE_GAUGE_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: '0x5737fE3f61F1D42270Da80Db9AC4f0d48CEe114d',
   [ChainId.SEPOLIA]: '0x5737fE3f61F1D42270Da80Db9AC4f0d48CEe114d',
+  [ChainId.GOERLI]: '0x5737fE3f61F1D42270Da80Db9AC4f0d48CEe114d',
   [ChainId.HOPE]: '0x5737fE3f61F1D42270Da80Db9AC4f0d48CEe114d'
 }
 export const VELT_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0x43668eE8faBFbeC7EC954F840c1dEDF8e427d636',
   [ChainId.SEPOLIA]: '0x43668eE8faBFbeC7EC954F840c1dEDF8e427d636',
+  [ChainId.GOERLI]: '0x43668eE8faBFbeC7EC954F840c1dEDF8e427d636',
   [ChainId.HOPE]: '0x43668eE8faBFbeC7EC954F840c1dEDF8e427d636'
 }
 export const LT_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0x7e37d014BFD2E46Cb0D814c1d222C66741D35C4C',
   [ChainId.SEPOLIA]: '0x7e37d014BFD2E46Cb0D814c1d222C66741D35C4C',
+  [ChainId.GOERLI]: '0x7e37d014BFD2E46Cb0D814c1d222C66741D35C4C',
   [ChainId.HOPE]: '0x7e37d014BFD2E46Cb0D814c1d222C66741D35C4C'
 }
 export const HOPE_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0xa1DE18c3deE324D27be35A8556837b7d81E3e71b',
   [ChainId.SEPOLIA]: '0xa1DE18c3deE324D27be35A8556837b7d81E3e71b',
+  [ChainId.GOERLI]: '0xa1DE18c3deE324D27be35A8556837b7d81E3e71b',
   [ChainId.HOPE]: '0xa1DE18c3deE324D27be35A8556837b7d81E3e71b'
 }
 
 export const FEE_DIS_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0x5e750fc94c295fa7A7ff7E2a0e987A5885Cb1f91',
   [ChainId.SEPOLIA]: '0x5e750fc94c295fa7A7ff7E2a0e987A5885Cb1f91',
+  [ChainId.GOERLI]: '0x5e750fc94c295fa7A7ff7E2a0e987A5885Cb1f91',
   [ChainId.HOPE]: '0x5e750fc94c295fa7A7ff7E2a0e987A5885Cb1f91'
 }
 
 export const GOM_FEE_DIS_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0xd7397192643081B6D62aB8Aa7110737FAf88bb17',
   [ChainId.SEPOLIA]: '0xd7397192643081B6D62aB8Aa7110737FAf88bb17',
+  [ChainId.GOERLI]: '0xd7397192643081B6D62aB8Aa7110737FAf88bb17',
   [ChainId.HOPE]: '0xd7397192643081B6D62aB8Aa7110737FAf88bb17'
 }
 
@@ -152,6 +170,7 @@ const UNI_ADDRESS = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984'
 export const UNI: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, UNI_ADDRESS, 18, 'UNI', 'Uniswap'),
   [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, UNI_ADDRESS, 18, 'UNI', 'Uniswap'),
+  [ChainId.GOERLI]: new Token(ChainId.SEPOLIA, UNI_ADDRESS, 18, 'UNI', 'Uniswap'),
   [ChainId.HOPE]: new Token(ChainId.HOPE, UNI_ADDRESS, 18, 'UNI', 'Uniswap')
 }
 
@@ -169,6 +188,7 @@ export const MERKLE_DISTRIBUTOR_ADDRESS: { [chainId in ChainId]?: string } = {
 const WETH_ONLY: ChainTokenList = {
   [ChainId.MAINNET]: [WETH[ChainId.MAINNET]],
   [ChainId.SEPOLIA]: [WETH[ChainId.SEPOLIA]],
+  [ChainId.GOERLI]: [WETH[ChainId.GOERLI]],
   [ChainId.HOPE]: [WETH[ChainId.HOPE]]
 }
 
