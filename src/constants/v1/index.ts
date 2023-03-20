@@ -5,6 +5,7 @@ import V1_FACTORY_ABI from './v1_factory.json'
 
 const V1_FACTORY_ADDRESSES: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: '0xc0a47dFe034B400B47bDaD5FecDa2621de6c4d95',
+  [ChainId.GOERLI]: '0xB4FBF271143F4FBf7B91A5ded31805e42b2208d6',
   [ChainId.SEPOLIA]: '0x9c83dCE8CA20E9aAF9D3efc003b2ea62aBC08351',
   [ChainId.HOPE]: '0xf5D915570BC477f9B8D6C0E980aA81757A3AaC36'
 }

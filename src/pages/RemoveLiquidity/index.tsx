@@ -43,7 +43,7 @@ import { BigNumber } from '@ethersproject/bignumber'
 import { useHistory } from 'react-router-dom'
 import { Divider } from 'antd'
 import { GreyCard } from '../../components/Card'
-import format from 'utils/format'
+import format, { formatMessage } from 'utils/format'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import noData from '../../assets/images/no_data.png'
 
@@ -113,7 +113,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
   const onTxError = useCallback(error => {
     setTxHash('')
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
     setShowConfirm(true)
     setPendingText('')
   }, [])

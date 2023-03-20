@@ -19,6 +19,7 @@ import './index.scss'
 import { useDateForLastOccurence } from 'hooks/useDateForLastOccurence'
 import usePrice from 'hooks/usePrice'
 import { useBlockNumber } from '../../../../state/application/hooks'
+import { formatMessage } from '../../../../utils/format'
 
 export default function VeLTRewards() {
   const { account, chainId } = useActiveWeb3React()
@@ -99,7 +100,7 @@ export default function VeLTRewards() {
     setShowConfirm(true)
     setTxHash('')
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const feeClaimCallback = useCallback(

@@ -282,8 +282,8 @@ export default function StakingPoolDetail({
         if (tabIndex === 'TVL') {
           yArr.push(numeral(item.reserveUSD, 2))
         }
-        if (tabIndex === 'Fees') {
-          yArr.push(numeral(new Decimal(item.hourlyVolumeUSD || 0).mul(new Decimal(0.003)).toNumber(), 2))
+        if (tabIndex === 'Fees' && pool?.feeRate) {
+          yArr.push(numeral(new Decimal(item.hourlyVolumeUSD || 0).mul(new Decimal(pool.feeRate)).toNumber(), 2))
         }
         xArr.push(item.hourStartUnix)
       } else {
@@ -293,8 +293,8 @@ export default function StakingPoolDetail({
         if (tabIndex === 'TVL') {
           yArr.push(numeral(item.reserveUSD, 2))
         }
-        if (tabIndex === 'Fees') {
-          yArr.push(numeral(new Decimal(item.dailyVolumeUSD || 0).mul(new Decimal(0.003)).toNumber(), 2))
+        if (tabIndex === 'Fees' && pool?.feeRate) {
+          yArr.push(numeral(new Decimal(item.dailyVolumeUSD || 0).mul(new Decimal(pool.feeRate)).toNumber(), 2))
         }
         // xArr.push(format.formatDate(item.date, 'YYYY-MM-DD'))
         xArr.push(item.date)
@@ -302,7 +302,7 @@ export default function StakingPoolDetail({
     })
     setXData(xArr)
     setYData(yArr)
-  }, [timeIndex, tabIndex, hourChartResult, dayChartResult])
+  }, [timeIndex, tabIndex, hourChartResult, dayChartResult, pool])
 
   const [aprInfo, setAprInfo] = useState<any>({})
 
@@ -564,7 +564,7 @@ export default function StakingPoolDetail({
             </GoBackIcon>
             {`${tokenSymbol(chainWETH, pool?.tokens[0]) || '-'}/${tokenSymbol(chainWETH, pool?.tokens[1]) || '-'}`}
           </TYPE.white>
-          {pool && <RateTag>0.3%</RateTag>}
+          {pool?.feeRate && <RateTag>{pool.feeRate * 100}%</RateTag>}
         </div>
       </AutoRow>
       <AutoRow style={{ margin: 0 }} padding={'15px 0px'} gap={'15px'} align={''}>
@@ -631,7 +631,11 @@ export default function StakingPoolDetail({
                 </p>
                 <p className="flex jc-between ai-center font-nor m-t-16">
                   <span className="text-normal">Fees(24H)</span>
-                  <span>{pairMore ? `$${format.amountFormat(pairMore.oneDayVolumeUSD * 0.003, 2)}` : `--`}</span>
+                  <span>
+                    {pairMore && pool?.feeRate
+                      ? `$${format.amountFormat(pairMore.oneDayVolumeUSD * pool.feeRate, 2)}`
+                      : `--`}
+                  </span>
                 </p>
                 <p className="flex jc-between ai-center font-nor m-t-16">
                   <span className="text-normal">Fees(7d)</span>
@@ -761,7 +765,7 @@ export default function StakingPoolDetail({
             </TabWrapper>
             {showTx ? (
               <>
-                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 0px'}>
+                <Card marginTop={30} borderRadius={'8px'} backgroundColor={'#33333C'} padding={'13px 10px'}>
                   <AutoRow>
                     <TableTitle>
                       <div className="p-l-30">
@@ -839,7 +843,7 @@ export default function StakingPoolDetail({
                       </ExternalLink>
                     </TableTitle>
                     <TableTitle>{formatUTCDate(pool?.createAt)}</TableTitle>
-                    <TableTitle flex={0.8}>0.30%</TableTitle>
+                    <TableTitle flex={0.8}>{pool?.feeRate ? `${pool.feeRate * 100}%` : '--'}</TableTitle>
                     <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
                       <TableTitle>
                         {pairMore
@@ -865,14 +869,16 @@ export default function StakingPoolDetail({
                     </AutoColumn>
                     <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
                       <TableTitle>
-                        {pairMore ? `≈ $${format.amountFormat(pairMore.totalVolume * 0.003, 2)}` : '--'}
+                        {pairMore && pool?.feeRate
+                          ? `≈ $${format.amountFormat(pairMore.totalVolume * pool.feeRate, 2)}`
+                          : '--'}
                       </TableTitle>
                       <AutoRow gap={'5px'}>
                         <CurrencyLogo currency={pool?.tokens[0]} />
                         <TYPE.main>
-                          {pool?.volume0Amount
+                          {pool?.volume0Amount && pool?.feeRate
                             ? `${format.amountFormat(
-                                Number(pool?.volume0Amount.toFixed(2)) * 0.003,
+                                Number(pool?.volume0Amount.toFixed(2)) * pool.feeRate,
                                 2
                               )} ${token0Symbol}`
                             : '--'}
@@ -881,9 +887,9 @@ export default function StakingPoolDetail({
                       <AutoRow gap={'5px'}>
                         <CurrencyLogo currency={pool?.tokens[1]} />
                         <TYPE.main>
-                          {pool?.volume1Amount
+                          {pool?.volume1Amount && pool?.feeRate
                             ? `${format.amountFormat(
-                                Number(pool?.volume1Amount.toFixed(2)) * 0.003,
+                                Number(pool?.volume1Amount.toFixed(2)) * pool.feeRate,
                                 2
                               )} ${token1Symbol}`
                             : '--'}

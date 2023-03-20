@@ -29,6 +29,7 @@ import { ReactComponent as Warning } from '../../assets/svg/warning.svg'
 import { TYPE } from '../../theme'
 import { ButtonPrimary } from '../Button'
 import { ChainId } from '@uniswap/sdk'
+import { HOME_API } from '../../constants'
 
 import './index.scss'
 
@@ -395,9 +396,25 @@ export default function WalletModal() {
                     }}
                   />
                   <PrimaryText style={{ marginLeft: '8px', lineHeight: '24px' }}>
-                    I have read, understand, and agree to the{' '}
-                    <span style={{ color: theme.primary1 }}>Terms of Service </span>
-                    and <span style={{ color: theme.primary1 }}>Privacy Policy</span>
+                    I have read, understand, and agree to the
+                    <a
+                      href={`${HOME_API}/hope-privacy-policy.pdf`}
+                      style={{ color: theme.primary1 }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {' '}
+                      Terms of Service
+                    </a>{' '}
+                    and{' '}
+                    <a
+                      href={`${HOME_API}/hope-privacy-policy.pdf`}
+                      style={{ color: theme.primary1 }}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      Privacy Policy
+                    </a>
                   </PrimaryText>
                 </div>
                 {isAgreeTermsError && !isAgreeTerms && (

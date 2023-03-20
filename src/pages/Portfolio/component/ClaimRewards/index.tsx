@@ -7,6 +7,7 @@ import { useToClaim } from '../../../../hooks/ahp/usePortfolio'
 import { LT, HOPE } from '../../../../constants'
 import { useActiveWeb3React } from 'hooks'
 import GaugeClaimAll from 'components/ahp/GaugeClaimAll'
+import { formatMessage } from '../../../../utils/format'
 
 export default function ClaimRewards({
   item,
@@ -51,7 +52,7 @@ export default function ClaimRewards({
     setShowConfirm(true)
     setTxHash('')
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const [claimPendingText, setPendingText] = useState('')

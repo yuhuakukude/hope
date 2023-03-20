@@ -22,6 +22,11 @@ import TransactionConfirmationModal, {
 
 import { useActionPending } from '../../../../state/transactions/hooks'
 import { Decimal } from 'decimal.js'
+import { formatMessage } from '../../../../utils/format'
+
+import moment from 'moment'
+import format from 'utils/format'
+import { useLocker } from 'hooks/ahp/useLocker'
 
 interface VoteProps {
   votiingData: any
@@ -48,6 +53,15 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [pendingText, setPendingText] = useState('')
   const { pending: isTranPending } = useActionPending(account ? `${account}-${conFnNameEnum.VoteForGaugeWeights}` : '')
+
+  const { lockerRes } = useLocker()
+  const isShowTip = useMemo(() => {
+    const lockerEndDate = lockerRes?.end
+    if (!lockerEndDate || lockerEndDate === '--') {
+      return false
+    }
+    return moment(format.formatDate(Number(`${lockerEndDate}`))).diff(moment(), 'days') < 7
+  }, [lockerRes])
 
   const { Option } = Select
   const endDate = dayjs()
@@ -221,6 +235,8 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
   const getActionText = useMemo(() => {
     if (isNoVelt) {
       return 'need to LT locked'
+    } else if (isShowTip) {
+      return 'lock expires soon'
     } else if (!curGomAddress) {
       return 'Select a Gauge for Vote'
     } else if (!amount) {
@@ -230,7 +246,7 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
     } else {
       return 'Confirm Vote'
     }
-  }, [voteInputError, amount, curGomAddress, isNoVelt])
+  }, [voteInputError, amount, curGomAddress, isNoVelt, isShowTip])
 
   const toVoteCallback = useCallback(async () => {
     if (!amount || !account) return
@@ -254,7 +270,7 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
         setShowConfirm(true)
         setPendingText(``)
         setAttemptingTxn(false)
-        setErrorStatus({ code: error?.code, message: error.message })
+        setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
       })
   }, [amount, curGomAddress, account, toVote])
 
@@ -403,6 +419,11 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
           <Select
             value={curGomAddress ? curGomAddress : undefined}
             placeholder="Select a Gauge"
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option.props.children ? `${option.props.children}`.toLowerCase().indexOf(input.toLowerCase()) >= 0 : true
+            }
             onChange={(val: string) => {
               changeSel(val)
             }}
@@ -461,7 +482,7 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
                 error={voteInputError}
                 pending={!!pendingText || isTranPending}
                 pendingText={'Waitting'}
-                disableAction={!amount || !curGomAddress || curLastVote || isNoVelt}
+                disableAction={!amount || !curGomAddress || curLastVote || isNoVelt || isShowTip}
                 actionText={getActionText}
                 onAction={toVoteCallback}
               />

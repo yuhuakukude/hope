@@ -113,10 +113,7 @@ export default function Swap({ history }: RouteComponentProps) {
     currencies,
     inputError: swapInputError
   } = useDerivedSwapInfo()
-
   const feeRate = useFeeRate(currencies[Field.INPUT], currencies[Field.OUTPUT])
-  console.log('feeRate', feeRate)
-
   const { wrapType, execute: onWrap, inputError: wrapInputError } = useWrapCallback(
     currencies[Field.INPUT],
     currencies[Field.OUTPUT],
@@ -593,7 +590,9 @@ export default function Swap({ history }: RouteComponentProps) {
               <i className="iconfont font-16" style={{ color: '#E4C989', fontWeight: 700 }}>
                 &#xe614;
               </i>
-              <TYPE.white ml={'10px'}>Insufficient liquidity for this trade. </TYPE.white>
+              <TYPE.white ml={'10px'} mr={'6px'}>
+                Insufficient liquidity for this trade.{' '}
+              </TYPE.white>
               <StyledInternalLink to={`/swap/liquidity/manager/deposit/${inputCurrencyId}/${outputCurrencyId}`}>
                 Add Liquidity
               </StyledInternalLink>

@@ -6,7 +6,7 @@ import moment from 'moment'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
-import format from '../../../../utils/format'
+import format, { formatMessage } from '../../../../utils/format'
 import './index.scss'
 
 import { JSBI, Token, TokenAmount } from '@uniswap/sdk'
@@ -143,7 +143,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
         setAttemptingTxn(false)
         setTxHash('')
         setPendingText(``)
-        setErrorStatus({ code: err?.code, message: err.message })
+        setErrorStatus({ code: err?.code, message: formatMessage(err) ?? err.message })
       })
   }, [account, argTime, chainId, toAddTimeLocker])
 

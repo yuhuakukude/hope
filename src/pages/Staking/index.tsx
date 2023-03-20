@@ -26,7 +26,7 @@ import {
   useToClaim,
   stakingFnNameEnum
 } from '../../hooks/ahp/useStaking'
-import format from '../../utils/format'
+import format, { formatMessage } from '../../utils/format'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { ButtonPrimary, ButtonOutlined } from '../../components/Button'
 import { tryParseAmount } from '../../state/swap/hooks'
@@ -165,7 +165,7 @@ export default function Staking() {
     setShowConfirm(true)
     setTxHash('')
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const onApprove = useCallback(() => {
@@ -458,10 +458,10 @@ export default function Staking() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex jc-between m-t-30">
+                  {/* <div className="flex jc-between m-t-30">
                     <span className="text-white">Est Transaction Fee</span>
                     <span className="text-white">≈{gas ? CurrencyAmount.ether(gas).toSignificant() : '--'} ETH</span>
-                  </div>
+                  </div> */}
                   <div className="flex jc-between m-t-20">
                     <span className="text-white">Receive </span>
                     <span className="text-white">
@@ -566,7 +566,16 @@ export default function Staking() {
                       <span className="text-white">{currentBoots ? currentBoots.toFixed(2) : '--'}x</span>
                     </div>
                     <div className="flex jc-between m-b-20">
-                      <span className="text-normal">My Future Boost</span>
+                      <span className="text-normal">
+                        My Future Boost
+                        <Tooltip
+                          className="m-l-5"
+                          overlayClassName="tips-question"
+                          title="When the number of a user's veLT changes, the values of the Current Boost and Future Boost may become inconsistent. To ensure that the Future Boost takes effect, the user needs to actively update the value."
+                        >
+                          <i className="iconfont font-16 cursor-select tips-circle">&#xe620;</i>
+                        </Tooltip>
+                      </span>
                       <span className="text-white">{futureBoots ? futureBoots.toFixed(2) : '--'}x</span>
                     </div>
                     <div className="flex jc-between ai-center m-b-20">

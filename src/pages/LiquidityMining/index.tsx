@@ -29,6 +29,7 @@ import { StakingTips } from '../LiquidityManager/component/Tips'
 import Loader from '../../components/Loader'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import noData from '../../assets/images/no_data.png'
+import { formatMessage } from '../../utils/format'
 
 const CustomTabWrapper = styled(TabWrapper)`
   width: auto;
@@ -108,7 +109,7 @@ export default function LiquidityMining({
     setTxHash('')
     setPendingText(``)
     setAttemptingTxn(false)
-    setErrorStatus({ code: error?.code, message: error.message })
+    setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
   const onApprove = useCallback(() => {
