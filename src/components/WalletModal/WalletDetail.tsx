@@ -1,7 +1,6 @@
 import Row, { AutoRowBetween } from '../Row'
 import { GapColumn } from '../Column'
 import React from 'react'
-import { NavLink } from 'react-router-dom'
 import Avatar from 'assets/images/metamask-logo.png'
 import { useActiveWeb3React } from '../../hooks'
 import { getEtherscanLink, shortenAddress } from '../../utils'
@@ -143,9 +142,9 @@ export default function WalletDetail({
         <CustomLightSpinner src={Circle} alt="loader" size={'20px'} />
       )}
       <ThemeText style={{ color: theme.text2, marginTop: '16px' }}>ETH Balance</ThemeText>
-      <NavLink style={{ padding: '40px 30px', width: '100%' }} to={'/hope/buy-hope'}>
-        <ButtonPrimary>Buy HOPE</ButtonPrimary>
-      </NavLink>
+      <div style={{ padding: '40px 30px', width: '100%' }}>
+        <ButtonPrimary disabled>Buy HOPE</ButtonPrimary>
+      </div>
       <DivideLine />
       <GapColumn gap={'30px'} style={{ width: '100%', padding: '30px' }}>
         <BalanceDetail

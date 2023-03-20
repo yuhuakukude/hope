@@ -149,21 +149,21 @@ const StyledNavLink = styled(NavLink).attrs({
   }
 `
 
-const BuyHopeNavLink = styled(NavLink)`
-  width: 128px;
-  height: 40px;
-  line-height: 40px;
-  text-align: center;
-  color: #e4c989;
-  font-size: 18px;
-  font-family: Arboria-Medium;
-  border-radius: 10px;
-  background-color: rgba(30, 30, 30, 1);
-  :hover {
-    background-color: #e4c989;
-    color: #26262c;
-  }
-`
+// const BuyHopeNavLink = styled(NavLink)`
+//   width: 128px;
+//   height: 40px;
+//   line-height: 40px;
+//   text-align: center;
+//   color: #e4c989;
+//   font-size: 18px;
+//   font-family: Arboria-Medium;
+//   border-radius: 10px;
+//   background-color: rgba(30, 30, 30, 1);
+//   :hover {
+//     background-color: #e4c989;
+//     color: #26262c;
+//   }
+// `
 
 export const StyledMenuButton = styled.button`
   position: relative;
@@ -204,10 +204,7 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
       ]
     }
     if (location?.pathname?.startsWith('/hope')) {
-      return [
-        { id: 'hope-nav-link', title: 'Staking', router: '/hope/staking' },
-        { id: 'pool-nav-link', title: 'Buy Hope', router: '/hope/buy-hope' }
-      ]
+      return [{ id: 'hope-nav-link', title: 'Staking', router: '/hope/staking' }]
     }
     if (location?.pathname?.startsWith('/dao')) {
       return [
@@ -249,9 +246,9 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
         </HeaderLinks>
       </HeaderRow>
       <HeaderControls>
-        <BuyHopeNavLink id={`buy-hope-nav-link`} to={'/hope/buy-hope'}>
+        {/* <BuyHopeNavLink id={`buy-hope-nav-link`} to={'/hope/buy-hope'}>
           Buy HOPE
-        </BuyHopeNavLink>
+        </BuyHopeNavLink> */}
         <HeaderElement>
           <AccountElement active={!!account} style={{ pointerEvents: 'auto', color: theme.text1, marginRight: '30px' }}>
             {account && (
