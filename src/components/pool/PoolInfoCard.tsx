@@ -17,7 +17,7 @@ export const CardHeader = styled(AutoColumn)`
 
 export default function BasePoolInfoCard({ pool }: { pool?: PoolInfo }) {
   const { token1Deposited, token0Deposited, balance } = usePosition(pool?.pair)
-  const { token0Staked, token1Staked, stakedLpAmount } = useStakePosition(pool)
+  const { token0Staked, token1Staked, stakedAmount } = useStakePosition(pool)
   const tokenAddresses = useMemo(() => {
     return [pool?.tokens[0].address ?? '', pool?.tokens[1].address ?? '']
   }, [pool])
@@ -97,8 +97,8 @@ export default function BasePoolInfoCard({ pool }: { pool?: PoolInfo }) {
           Staked Position
         </TYPE.white>
         <TYPE.white fontWeight={700} fontSize={18}>
-          {stakedLpAmount && pool?.totalSupply
-            ? `${new Percent(stakedLpAmount.raw, pool.totalSupply.raw).toFixed(2, { groupSeparator: ',' })}%`
+          {stakedAmount && pool?.totalSupply
+            ? `${new Percent(stakedAmount.raw, pool.totalSupply.raw).toFixed(2, { groupSeparator: ',' })}%`
             : '--'}
         </TYPE.white>
       </RowBetween>
@@ -110,7 +110,7 @@ export default function BasePoolInfoCard({ pool }: { pool?: PoolInfo }) {
           </RowFixed>
           <TYPE.white fontSize={18}>{`${pool?.tokens[0].symbol}-${pool?.tokens[1].symbol} Pool Token`}</TYPE.white>
         </AutoRow>
-        <TYPE.white>{stakedLpAmount ? stakedLpAmount.toFixed(2, { groupSeparator: ',' }) : '--'}</TYPE.white>
+        <TYPE.white>{stakedAmount ? stakedAmount.toFixed(2, { groupSeparator: ',' }) : '--'}</TYPE.white>
       </RowBetween>
       <RowBetween>
         <AutoRow gap={'10px'}>

@@ -10,8 +10,8 @@ import {
 } from './query'
 import { ChainId, ETHER, Token, TokenAmount } from '@uniswap/sdk'
 import { tryParseAmount } from '../state/swap/hooks'
-import { PAIR_SEARCH } from '../hooks/usePairInfo'
 import { isAddress } from '../utils'
+import { Field } from '../state/liquidity/actions'
 
 export interface BasePair {
   pairAddress: string
@@ -37,17 +37,17 @@ export async function fetchPairs(
   chainId: ChainId,
   pageSize: number,
   currentPage: number,
-  searchType: PAIR_SEARCH,
+  searchType: Field,
   searchValue: string,
   account = ''
 ): Promise<{ pairs: BasePair[]; total: number }> {
   try {
     let pairList = []
-    if (searchType === PAIR_SEARCH.ALL) {
+    if (searchType === Field.ALL) {
       const allPair = await postQuery(SUBGRAPH, QUERY_ALL_PAIR())
       pairList = allPair.data.pairs
     }
-    if (searchType === PAIR_SEARCH.USER_LIQUIDITY) {
+    if (searchType === Field.USER_LIQUIDITY) {
       const userLiquidity = await postQuery(SUBGRAPH, QUERY_USER_LIQUIDITY(account))
       const userStaking = await postQuery(SUBGRAPH, QUERY_USER_STAKING(account))
       pairList = userLiquidity.data.liquidityPositions
@@ -56,7 +56,7 @@ export async function fetchPairs(
       const pairMap = new Map()
       pairList = pairList.filter((item: any) => !pairMap.has(item.id) && pairMap.set(item.id, 1))
     }
-    if (searchType === PAIR_SEARCH.USER_STAKE) {
+    if (searchType === Field.USER_STAKING) {
       const userStaking = await postQuery(SUBGRAPH, QUERY_USER_STAKING(account))
       pairList = userStaking.data.stakedPoolPositions.map((item: any) => item.pool.pair)
     }

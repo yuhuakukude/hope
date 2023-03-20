@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useState } from 'react'
 import { BasePair, fetchPairs, fetchTokensPrice } from '../../graph/fetch'
 import { useActiveWeb3React } from '../index'
-import { PAIR_SEARCH } from '../usePairInfo'
 import AprApi from '../../api/apr.api'
 import { fetchPairsTimeInfo } from '../../state/stake/hooks'
+import { Field } from '../../state/liquidity/actions'
 
 export interface TimeInfoObject {
   [key: string]: {
@@ -15,7 +15,7 @@ export interface TimeInfoObject {
 export default function useBasePairs(
   pageSize: number,
   currentPage: number,
-  searchType: PAIR_SEARCH,
+  searchType: Field,
   searchValue = '',
   account: string,
   reload: number
@@ -33,7 +33,7 @@ export default function useBasePairs(
       try {
         const { pairs, total } = await fetchPairs(chainId ?? 1, pageSize, currentPage, searchType, searchValue, account)
         let res: any = null
-        if (searchType === PAIR_SEARCH.ALL) {
+        if (searchType === Field.ALL) {
           res = await AprApi.getHopeAllFeeApr(pairs.map(item => item.pairAddress).join(','))
         } else {
           res = await AprApi.getUserAllFeeApr(pairs.map(item => item.pairAddress).join(','), account)
@@ -52,7 +52,7 @@ export default function useBasePairs(
   useEffect(() => {
     ;(async () => {
       try {
-        if (searchType === PAIR_SEARCH.ALL && result.length > 0) {
+        if (searchType === Field.ALL && result.length > 0) {
           const infos = await fetchPairsTimeInfo(result.map(({ pairAddress }) => pairAddress.toLowerCase()))
           setTimeInfo(
             infos.reduce((acc, item) => {
