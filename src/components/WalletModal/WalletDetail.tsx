@@ -39,14 +39,16 @@ function BalanceDetail({ data }: { data: BalanceData }) {
   const theme = useTheme()
   return (
     <div style={{ display: 'flex', width: '100%', justifyContent: 'space-between' }}>
-      <Row>
+      <Row flex={1}>
         <img src={data.icon} style={{ width: '24px', height: '24px' }} alt="" />
         <Text style={{ marginLeft: '8px' }} color={theme.text1}>
           {data.name}
         </Text>
         {data.statues && <Text style={{ color: theme.primary1, marginLeft: '8px' }}>{data.statues}</Text>}
       </Row>
-      <p style={{ color: theme.text1 }}>{data.balance}</p>
+      <p className="flex-2" style={{ color: theme.text1, textAlign: 'right' }}>
+        {data.balance}
+      </p>
     </div>
   )
 }

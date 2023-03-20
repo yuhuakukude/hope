@@ -403,6 +403,11 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
           <Select
             value={curGomAddress ? curGomAddress : undefined}
             placeholder="Select a Gauge"
+            showSearch
+            optionFilterProp="children"
+            filterOption={(input, option) =>
+              option.props.children ? `${option.props.children}`.toLowerCase().indexOf(input.toLowerCase()) >= 0 : true
+            }
             onChange={(val: string) => {
               changeSel(val)
             }}

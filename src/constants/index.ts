@@ -5,6 +5,7 @@ import { injected, walletconnect } from '../connectors'
 
 export const SUBGRAPH = 'https://thegraph-sepolia.hivefin.net/subgraphs/name/light-dev/light-subgraph'
 export const DOC_API = 'https://hope-static-test1.hivefin.net'
+export const HOME_API = 'https://hope.money'
 
 export const BLOCK_SUBGRAPH = 'https://hope-dapp-dev1.hivefin.net/subgraphs/name/light-dev/ethereum-blocks'
 
