@@ -15,6 +15,7 @@ import useTheme from '../../hooks/useTheme'
 // import Matamask from 'assets/images/metamask-logo.png'
 import { Text } from 'rebass'
 import { CHAIN_ID_NETWORK_ARGUMENT, FormaticSupportedChains } from '../../connectors/Fortmatic'
+import { FAUCET_URL } from '../../constants'
 
 const HeaderFrame = styled.div`
   display: grid;
@@ -230,7 +231,7 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
         </HeaderLinks>
       </HeaderRow>
       <HeaderControls>
-        <a target="_black" id={`buy-hope-nav-link`} href={'https://hope-faucet-dev1.hivefin.net/'}>
+        <a target="_black" id={`buy-hope-nav-link`} href={FAUCET_URL}>
           faucet
         </a>
         <HeaderElement>
