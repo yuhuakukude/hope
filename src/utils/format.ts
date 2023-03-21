@@ -177,7 +177,7 @@ export function getDateForLastOccurence(strDay: 'Sun' | 'Mon' | 'Tue' | 'Wed' | 
 
 export function formatMessage(message: any) {
   if (!message) return undefined
-  const code = message.error.message.split(':')[1]?.trim()
+  const code = message?.error?.message?.split(':')[1]?.trim()
   if (!code) return undefined
   return CONTRACT_ERROR_CODE[code] ?? undefined
 }
