@@ -936,7 +936,7 @@ export async function fetchPairMore(stakingAddress: string): Promise<PairMore | 
     const [oneWeekTVLUSD] = get2DayPercentChange(pair?.reserveUSD, w1Pair?.reserveUSD ?? '0', w2Pair?.reserveUSD ?? '0')
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
       pair?.volumeUSD,
-      w1Pair?.volumeUSD ?? pair?.volumeUSD,
+      w1Pair?.volumeUSD ?? '0',
       w2Pair?.volumeUSD ?? '0'
     )
 
