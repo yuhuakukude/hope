@@ -1265,8 +1265,8 @@ export async function fetchPairsTimeInfo(pairs: string[]): Promise<TimeInfo[]> {
       })
       const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
         pair?.volumeUSD,
-        d1Pair?.volumeUSD,
-        d2Pair?.volumeUSD
+        d1Pair?.volumeUSD ?? '0',
+        d2Pair?.volumeUSD ?? '0'
       )
 
       return {

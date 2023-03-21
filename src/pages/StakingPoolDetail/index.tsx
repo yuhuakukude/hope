@@ -639,7 +639,11 @@ export default function StakingPoolDetail({
                 </p>
                 <p className="flex jc-between ai-center font-nor m-t-16">
                   <span className="text-normal">Fees(7d)</span>
-                  <span>{pairMore ? `$${format.amountFormat(pairMore.oneWeekVolume, 2)}` : `--`}</span>
+                  <span>
+                    {pairMore && pairMore.oneWeekVolume && pool?.feeRate
+                      ? `$${format.amountFormat(pairMore.oneWeekVolume * pool.feeRate, 2)}`
+                      : `--`}
+                  </span>
                 </p>
               </div>
               <div
