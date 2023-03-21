@@ -72,14 +72,14 @@ const poolTitles = [
   { value: 'TVL' },
   { value: 'Volume (24h)' },
   { value: 'Fees APR' },
-  { value: 'Rewards APR', weight: 1.5 },
-  { value: 'Mining Rewards' },
+  { value: 'Farming APR', weight: 1.5 },
+  { value: 'Daily Farming Rewards' },
   { value: ' ', weight: 0.1 }
 ]
 
 const positionTitles = [
   { value: 'Pools', weight: 1 },
-  { value: 'My Composition' },
+  { value: 'My Deposits' },
   { value: 'LP Tokens' },
   { value: 'Boost' },
   { value: 'APR', weight: 1.5 },

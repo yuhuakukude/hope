@@ -215,7 +215,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
     }
 
     onTxStart(
-      `Supplying ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${
+      `Depositing ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${
         currencies[Field.CURRENCY_A]?.symbol
       } and ${parsedAmounts[Field.CURRENCY_B]?.toSignificant(6)} ${currencies[Field.CURRENCY_B]?.symbol}`
     )
@@ -536,7 +536,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
                     error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
                   >
                     <Text fontSize={16} fontWeight={500}>
-                      {error ?? 'Supply'}
+                      {error ?? 'Deposit'}
                     </Text>
                   </ButtonError>
                 )}

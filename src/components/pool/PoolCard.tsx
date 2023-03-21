@@ -92,9 +92,7 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
           <TYPE.green>{pairData.ltApr ? `${rate((pairData?.ltApr || 0) * 2.5, 2)}` : ''}</TYPE.green>
         </ContentRow>
         <ContentRow>
-          <TYPE.white>
-            {pairData?.ltAmountPerDay ? `${amountFormat(pairData?.ltAmountPerDay, 2)} LT/day` : ''}
-          </TYPE.white>
+          <TYPE.white>{pairData?.ltAmountPerDay ? `${amountFormat(pairData?.ltAmountPerDay, 2)} LT` : ''}</TYPE.white>
         </ContentRow>
         <ContentRow weight={0.1}>
           <i

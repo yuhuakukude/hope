@@ -457,7 +457,7 @@ export default function Swap({ history }: RouteComponentProps) {
           <AutoColumn gap={'sm'}>
             <CurrencyInputPanel
               showCommonBases
-              label={independentField === Field.OUTPUT && !showWrap && trade ? 'Pay (estimated)' : 'Pay'}
+              label={independentField === Field.OUTPUT && !showWrap && trade ? 'Sell (estimated)' : 'Sell'}
               value={formattedAmounts[Field.INPUT]}
               showMaxButton={!atMaxAmountInput}
               currency={currencies[Field.INPUT]}
@@ -645,7 +645,7 @@ export default function Swap({ history }: RouteComponentProps) {
                     'Approved'
                   ) : (
                     <AutoRow gap={'4px'} justify={'center'}>
-                      {'Approve use of ' + currencies[Field.INPUT]?.symbol}
+                      {'Approve ' + currencies[Field.INPUT]?.symbol}
                     </AutoRow>
                   )}
                 </ButtonConfirmed>

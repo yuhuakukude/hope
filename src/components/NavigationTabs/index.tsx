@@ -142,7 +142,7 @@ export function StakeTabs() {
             &#xe615;
           </i>
         </div>
-        <ActiveText style={{ marginLeft: 20 }}>Liquidity Mining</ActiveText>
+        <ActiveText style={{ marginLeft: 20 }}>Liquidity Farming</ActiveText>
       </RowFixed>
     </Tabs>
   )

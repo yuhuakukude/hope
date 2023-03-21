@@ -101,7 +101,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
           <FixedHeightRow>
             <RowFixed>
               <Text fontWeight={700} fontSize={16}>
-                My position
+                My Position
               </Text>
             </RowFixed>
           </FixedHeightRow>
@@ -120,7 +120,7 @@ export function MinimalPositionCard({ pair, showUnwrapped = false, border }: Pos
           </FixedHeightRow>
           <AutoColumn gap="4px">
             <FixedHeightRow>
-              <TYPE.main fontWeight={500}>Your pool share</TYPE.main>
+              <TYPE.main fontWeight={500}>Share of Pool</TYPE.main>
               <Text fontWeight={500}>
                 {poolTokenPercentage ? poolTokenPercentage.toSignificant(2, { groupSeparator: ',' }) + '%' : '-'}
               </Text>
@@ -229,8 +229,8 @@ export default function FullPositionCard({
       }
     },
     {
-      label: 'Liquidity Mining',
-      value: 'Liquidity Mining',
+      label: 'Liquidity Farming',
+      value: 'Liquidity Farming',
       isHide: !stakingAddress,
       onClick: data => {
         history.push(`/swap/liquidity/mining/${stakingAddress}`)
@@ -335,7 +335,7 @@ export default function FullPositionCard({
               <TYPE.white>{rate(feeApr)}</TYPE.white>
             </AutoRow>
             <AutoRow>
-              <TYPE.main>Rewards:&nbsp;</TYPE.main>
+              <TYPE.main>Farming:&nbsp;</TYPE.main>
               <TYPE.white>{rate(RewardsApr)}</TYPE.white>
               {RewardsApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
               <TYPE.green>{RewardsApr ? `${rate(Number(RewardsApr) * Number(maxBoost))}` : ''}</TYPE.green>
