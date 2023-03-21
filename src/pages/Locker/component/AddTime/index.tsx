@@ -164,7 +164,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
         <div className="time-box m-t-30">
           <p className="font-nor text-normal text-center">
             <Skeleton loading={lockerResLoading} width={265}>
-              The maximum increase is {maxWeek >= 2 ? maxWeek : 0} weeks
+              The max. duration you can add is {maxWeek >= 2 ? maxWeek : 0} weeks
             </Skeleton>
           </p>
 
@@ -193,7 +193,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
               new unlock date is {argTime ? format.formatUTCDate(argTime) : '--'} (UTC)
             </p> */}
             <p className="font-nor flex jc-between ai-center">
-              <span className="text-normal">new unlock date is:</span>
+              <span className="text-normal">New unlock date will be:</span>
               <Skeleton loading={lockerResLoading} width={160}>
                 <span className="text-medium">
                   {argTime
@@ -204,7 +204,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
               </Skeleton>
             </p>
             <p className="font-nor flex jc-between ai-center m-t-16">
-              <span className="text-normal">Your starting voting power will be:</span>
+              <span className="text-normal">Your voting power after the lock will be:</span>
               <Skeleton loading={lockerResLoading} width={160}>
                 <span className="text-medium">
                   {afterVeLtAmount

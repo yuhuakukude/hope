@@ -467,7 +467,7 @@ const VotedList = ({
       }
     },
     {
-      title: 'Allocated Votes',
+      title: 'Votes Allocation',
       dataIndex: 'allocated',
       key: 'allocated',
       render: (text: string, record: any) => {
@@ -482,7 +482,7 @@ const VotedList = ({
     {
       title: (
         <>
-          veLT Voting Balance{' '}
+          veLT Balance{' '}
           {isShowAll && allArg && allArg.add && allArg.add.length > 0 && (
             <span
               className="title-button"

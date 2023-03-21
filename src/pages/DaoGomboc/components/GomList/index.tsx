@@ -115,8 +115,8 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const rewardsNode = (text: any, record: any) => {
     return (
       <>
-        <p>Mining Rewards: {getReAmount(text) ? `${getReAmount(text)} LT` : '--'}</p>
-        <p>Fee Rewards: {getFeeAmount(record.feeRewards) ? `${getFeeAmount(record.feeRewards)} stHOPE` : '--'}</p>
+        <p>Farming Rewards: {getReAmount(text) ? `${getReAmount(text)} LT` : '--'}</p>
+        <p>Fees: {getFeeAmount(record.feeRewards) ? `${getFeeAmount(record.feeRewards)} stHOPE` : '--'}</p>
       </>
     )
   }
@@ -290,7 +290,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
                 )}
                 onClick={() => setCurType('my')}
               >
-                My Voted
+                My Votes
               </div>
             </div>
           </div>

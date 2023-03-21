@@ -105,7 +105,7 @@ export default function SideBar() {
     { title: 'Staking', icon: '&#xe626;', baseRouter: '/hope', router: '/hope/staking' },
     { title: 'HopeSwap', icon: '&#xe632;', baseRouter: '/swap', router: '/swap/exchange' },
     { title: 'LT & DAO', icon: '&#xe633;', baseRouter: '/dao', router: '/dao/gauge' },
-    { title: 'Portfolio', icon: '&#xe627;', baseRouter: '/portfolio', router: '/portfolio' }
+    { title: 'My Portfolio', icon: '&#xe627;', baseRouter: '/portfolio', router: '/portfolio' }
   ]
   const currentTab = useCallback(() => {
     return ROUTERS.findIndex(({ baseRouter }) => baseRouter && location.pathname.startsWith(baseRouter))

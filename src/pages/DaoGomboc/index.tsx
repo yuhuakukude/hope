@@ -128,9 +128,9 @@ export default function DaoGauge() {
               <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
               <div>
                 <p className="text-white lh15">
-                  Your lock expires soon. You need to lock at least for two weeks in
+                  Your $LT Lock will expire in 2 weeks. Increase your lock duration in
                   <NavLink to={'/dao/locker'}>
-                    <span className="text-primary"> Locker </span>
+                    <span className="text-primary"> LT Locker </span>
                   </NavLink>
                 </p>
               </div>
