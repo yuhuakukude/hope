@@ -22,6 +22,11 @@ export default function LockerEcharts() {
     async (myChart: any) => {
       try {
         setLoading(true)
+        myChart.showLoading({
+          text: '',
+          color: '#E4C989',
+          maskColor: 'rgba(255, 255, 255, 0)'
+        })
         const res = await LockerApi.getBannerCharts()
         if (res && res.result) {
           setLockTime(res.result.averageOfLockTime || '--')
@@ -51,6 +56,7 @@ export default function LockerEcharts() {
           })
           const minAmount = valueArr.length > 0 ? Math.min(...valueArr) : 0
           setIsHasData(valueArr.length <= 0)
+          myChart.hideLoading()
           const option = {
             grid: { top: '6%', bottom: '10%', right: '2%' },
             visualMap: {
@@ -200,17 +206,15 @@ export default function LockerEcharts() {
         <h3 className="text-medium font-20">Weekly LT lock ration </h3>
         <p className="font-nor text-normal m-t-40">Weekly LT lock ration</p>
         <div className="m-t-20">
-          <Skeleton loading={loading} height={275}>
-            <div className="charts-box">
-              <div style={{ width: '100%', height: '100%' }} ref={chartRef} />
-              {isHasData && (
-                <div className="no-data-box">
-                  <div className="img"></div>
-                  <p>No data</p>
-                </div>
-              )}
-            </div>
-          </Skeleton>
+          <div className="charts-box">
+            <div style={{ width: '100%', height: '100%' }} ref={chartRef} />
+            {isHasData && (
+              <div className="no-data-box">
+                <div className="img"></div>
+                <p>No data</p>
+              </div>
+            )}
+          </div>
         </div>
         <div className="total-box flex jc-between m-t-40">
           <div className="p-r-20 border-line flex-1">
