@@ -23,21 +23,21 @@ export function PoolPriceBar({
     <AutoColumn gap="md">
       <RowBetween justify="center">
         <TYPE.main fontWeight={500} pt={1}>
-          {currencies[Field.CURRENCY_A]?.symbol} Swap Rate
+          {currencies[Field.CURRENCY_A]?.symbol}/{currencies[Field.CURRENCY_B]?.symbol}
         </TYPE.main>
         <TYPE.white>{`1 ${currencies[Field.CURRENCY_A]?.symbol} ≈ ${price?.toSignificant(6, { groupSeparator: ',' }) ??
           '-'} ${currencies[Field.CURRENCY_B]?.symbol}`}</TYPE.white>
       </RowBetween>
       <RowBetween justify="center">
         <TYPE.main fontWeight={500} pt={1}>
-          {currencies[Field.CURRENCY_B]?.symbol} Swap Rate
+          {currencies[Field.CURRENCY_B]?.symbol}/{currencies[Field.CURRENCY_A]?.symbol}
         </TYPE.main>
         <TYPE.white>{`1 ${currencies[Field.CURRENCY_B]?.symbol} ≈ ${price
           ?.invert()
           ?.toSignificant(6, { groupSeparator: ',' }) ?? '-'} ${currencies[Field.CURRENCY_A]?.symbol}`}</TYPE.white>
       </RowBetween>
       <RowBetween justify="center">
-        <TYPE.main>Pool Share</TYPE.main>
+        <TYPE.main>Share of Pool</TYPE.main>
         <TYPE.white fontWeight={500} pt={1}>
           {noLiquidity && price
             ? '100'
@@ -47,7 +47,7 @@ export function PoolPriceBar({
       </RowBetween>
       {liquidityMinted && (
         <RowBetween justify="center">
-          <TYPE.main>Receive LP Token (min)</TYPE.main>
+          <TYPE.main>Min. Received LP Token</TYPE.main>
           <TYPE.white fontWeight={500} pt={1}>
             {liquidityMinted ? liquidityMinted.toSignificant(6, { groupSeparator: ',' }) : '--'}
           </TYPE.white>

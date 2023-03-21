@@ -151,7 +151,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       key: 'name',
       render: (text: string, record: any) => {
         if (record.gauge && stakingAddress === record.gauge) {
-          return <span>Staking $HOPE</span>
+          return <span>Staking HOPE</span>
         } else {
           return <span>{`Pool - ${text}`}</span>
         }

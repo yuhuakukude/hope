@@ -250,7 +250,7 @@ export default function Staking() {
     if (!account) return
     setCurToken(LT[chainId ?? 1])
     onTxStart()
-    setClaimPendingText(`claim LT`)
+    setClaimPendingText(`Claim LT`)
     setActionType(ACTION.CLAIM)
     toClaim(STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1], claRewards)
       .then(hash => {
@@ -363,9 +363,9 @@ export default function Staking() {
               <Col className="gutter-row" span={14}>
                 <div className="flex ai-center">
                   <div>
-                    <h3 className="text-white font-28 font-bolder">Staking $HOPE</h3>
+                    <h3 className="text-white font-28 font-bolder">Stake HOPE</h3>
                     <p className="text-white font-nor m-t-10">
-                      Stake your $HOPE tokens for an annual percentage yield (APY).
+                      Get staking rewards, and use stHOPE across the ecosystem.
                       <a href="/" className="text-primary m-l-15 learn-more">
                         Learn more
                         <i className="iconfont m-l-5 font-14 m-t-2">&#xe619;</i>
@@ -383,7 +383,7 @@ export default function Staking() {
                         <Tooltip
                           className="m-l-5"
                           overlayClassName="tips-question"
-                          title="The APY value is calculated based on the current data, which consists of the reward tokens by hold stHOPE."
+                          title="The shown APY is calculated based on the current gauge weight and token price. "
                         >
                           <i className="iconfont font-16 cursor-select tips-circle">&#xe620;</i>
                         </Tooltip>
@@ -426,7 +426,7 @@ export default function Staking() {
                 </div>
                 <div className="tab-con p-30">
                   <div className="flex jc-between">
-                    <span className="text-normal">{curType === 'stake' ? 'Deposit' : 'Withdraw'}</span>
+                    <span className="text-normal">{curType === 'stake' ? 'Stake' : 'Unstake (It takes 28 days)'}</span>
                     <div className="text-normal">
                       Available:{' '}
                       {curType === 'stake'
@@ -523,8 +523,7 @@ export default function Staking() {
                         <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe62b;</i>
                         <div>
                           <p className="text-white lh15">
-                            Unstaking stHOPE will take 28 days to process, once done withdrawals of HOPE can be done
-                            anytime after.
+                            The unstaking process takes 28 days, and you can withdraw the unstaked HOPE afterward.
                           </p>
                           {/* <p className="text-white lh15 m-t-5">
                             Note that you do not receive the $LT bonus when you confirm your submission. You can also
@@ -543,7 +542,7 @@ export default function Staking() {
             </Col>
             <Col className="gutter-row" span={10}>
               <div>
-                <HopeCard title={'My Value'}>
+                <HopeCard title={'My Assets'}>
                   <div className="card-top p-30">
                     <div className="flex jc-between m-b-20">
                       <div className="coin-box flex ai-center">
@@ -558,7 +557,7 @@ export default function Staking() {
                       </div>
                     </div>
                     <div className="flex jc-between m-b-20">
-                      <span className="text-normal">Gauge relative weight</span>
+                      <span className="text-normal">Current Gauge Weight</span>
                       <span className="text-white">{format.rate(relWeight)}</span>
                     </div>
                     <div className="flex jc-between m-b-20">
@@ -567,7 +566,7 @@ export default function Staking() {
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-normal">
-                        My Future Boost
+                        My Next Boost
                         <Tooltip
                           className="m-l-5"
                           overlayClassName="tips-question"
@@ -579,7 +578,7 @@ export default function Staking() {
                       <span className="text-white">{futureBoots ? futureBoots.toFixed(2) : '--'}x</span>
                     </div>
                     <div className="flex jc-between ai-center m-b-20">
-                      <span className="text-normal">Claimable</span>
+                      <span className="text-normal">Claimable Rewards</span>
                       <div className="flex ai-center">
                         <span className="text-white">
                           {claRewards?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
@@ -598,7 +597,7 @@ export default function Staking() {
                     {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
                       <div className="flex ai-center">
                         <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
-                        <p className="text-normal lh15">You can apply future boost by claiming LT</p>
+                        <p className="text-normal lh15">Claim your rewards to apply your next boost</p>
                       </div>
                     )}
                   </div>
@@ -615,7 +614,7 @@ export default function Staking() {
                       <span className="text-white">{hopeBal?.toFixed(2, { groupSeparator: ',' } ?? '-') || '--'}</span>
                     </div>
                     <div className="flex jc-between">
-                      <span className="text-white">Unstaked</span>
+                      <span className="text-white">Withdrawable</span>
                       <div className="flex ai-center">
                         <span className="text-white">
                           {unstakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}

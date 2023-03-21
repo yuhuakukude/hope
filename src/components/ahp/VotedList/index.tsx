@@ -426,7 +426,7 @@ const VotedList = ({
           }
           return <span>{`Pool - ${token0}/${token1}`}</span>
         }
-        return <span>Staking $HOPE</span>
+        return <span>Staking HOPE</span>
       },
       key: 'id'
     },
