@@ -24,7 +24,7 @@ import { DOCS_URL } from 'constants/config'
 
 export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (stHope: string, lt: string) => void }) {
   const { account, chainId } = useActiveWeb3React()
-  const { lockerRes, veltTotalAmounnt } = useLocker()
+  const { lockerRes, veltTotalAmount } = useLocker()
   const { claimableFees } = usePortfolio()
   const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
   const [curWithType, setCurWithType] = useState<string>('all')
@@ -56,13 +56,13 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
     return pr
   }, [chainId, priceResult])
   useEffect(() => {
-    if (veltTotalAmounnt && veltBalance && veltTotalAmounnt.toFixed(2) && Number(veltTotalAmounnt.toFixed(2)) > 0) {
-      const ra = new Percent(veltBalance?.raw, veltTotalAmounnt?.raw)
+    if (veltTotalAmount && veltBalance && veltTotalAmount.toFixed(2) && Number(veltTotalAmount.toFixed(2)) > 0) {
+      const ra = new Percent(veltBalance?.raw, veltTotalAmount?.raw)
       if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
         setUnUseRateVal(ra.toFixed(2))
       }
     }
-  }, [veltTotalAmounnt, veltBalance, account])
+  }, [veltTotalAmount, veltBalance, account])
 
   const argList = useMemo(() => {
     let res = []

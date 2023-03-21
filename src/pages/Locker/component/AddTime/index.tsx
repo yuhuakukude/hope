@@ -8,6 +8,7 @@ import TransactionConfirmationModal, {
 } from '../../../../components/TransactionConfirmationModal'
 import format, { formatMessage } from '../../../../utils/format'
 import './index.scss'
+import Skeleton from '../../../../components/Skeleton'
 
 import { JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
@@ -38,7 +39,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
   // token
-  const { lockerRes } = useLocker()
+  const { lockerRes, lockerResLoading } = useLocker()
   const { toAddTimeLocker, getVeLtAmount } = useToLocker()
 
   const subWeekFn = () => {
@@ -161,7 +162,12 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
       />
       <div className="locker-add-amount-modal flex-1">
         <div className="time-box m-t-30">
-          <p className="font-nor text-normal text-center">The maximum increase is {maxWeek >= 2 ? maxWeek : 0} weeks</p>
+          <p className="font-nor text-normal text-center">
+            <Skeleton loading={lockerResLoading} width={265}>
+              The maximum increase is {maxWeek >= 2 ? maxWeek : 0} weeks
+            </Skeleton>
+          </p>
+
           <div className="week-box flex ai-center jc-center m-t-26">
             <span className="font-nor text-medium">Add</span>
             <div className="week-input-box m-x-20">
@@ -188,21 +194,25 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
             </p> */}
             <p className="font-nor flex jc-between ai-center">
               <span className="text-normal">new unlock date is:</span>
-              <span className="text-medium">
-                {argTime
-                  ? format.formatUTCDate(argTime)
-                  : format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}{' '}
-                (UTC)
-              </span>
+              <Skeleton loading={lockerResLoading} width={160}>
+                <span className="text-medium">
+                  {argTime
+                    ? format.formatUTCDate(argTime)
+                    : format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}{' '}
+                  (UTC)
+                </span>
+              </Skeleton>
             </p>
             <p className="font-nor flex jc-between ai-center m-t-16">
               <span className="text-normal">Your starting voting power will be:</span>
-              <span className="text-medium">
-                {afterVeLtAmount
-                  ? afterVeLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
-                  : veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}{' '}
-                veLT
-              </span>
+              <Skeleton loading={lockerResLoading} width={160}>
+                <span className="text-medium">
+                  {afterVeLtAmount
+                    ? afterVeLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
+                    : veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}{' '}
+                  veLT
+                </span>
+              </Skeleton>
             </p>
           </div>
         </div>

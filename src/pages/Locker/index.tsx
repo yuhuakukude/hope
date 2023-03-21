@@ -9,6 +9,7 @@ import momentTz from 'moment-timezone'
 import format, { formatMessage } from '../../utils/format'
 import ActionButton from '../../components/Button/ActionButton'
 import { ButtonPrimary } from '../../components/Button'
+import Skeleton from '../../components/Skeleton'
 import './index.scss'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 
@@ -78,7 +79,7 @@ export default function DaoLocker() {
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
   // token
-  const { lockerRes } = useLocker()
+  const { lockerRes, lockerResLoading } = useLocker()
   const { toLocker, getVeLtAmount } = useToLocker()
   const { toWithdraw } = useToWithdraw()
 
@@ -309,49 +310,55 @@ export default function DaoLocker() {
               </div>
               <div className="r m-l-30 flex-2 p-30">
                 <h3 className="text-medium font-20"> Locking LT</h3>
-                {account && (
-                  <div className="ava-balance m-t-30">
-                    <p className="flex jc-between ai-center font-nor">
-                      <span className="text-normal">My LT Balance</span>
-                      <span className="text-medium">
-                        {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} LT
-                      </span>
-                    </p>
-                    <p className="flex jc-between ai-center font-nor m-t-16">
-                      <span className="text-normal">My LT Locked</span>
-                      <p className="flex ai-center">
+                <Skeleton loading={lockerResLoading} height={90} mt={30}>
+                  {account && (
+                    <div className="ava-balance m-t-30">
+                      <p className="flex jc-between ai-center font-nor">
+                        <span className="text-normal">My LT Balance</span>
                         <span className="text-medium">
-                          {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}{' '}
-                          LT
+                          {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} LT
                         </span>
-                        {isWithDraw && !withdrawPendingText && (
-                          <span
-                            className="withdraw text-medium text-primary font-24 m-l-16"
-                            onClick={toWithdrawCallback}
-                          >
-                            Withdraw
-                          </span>
-                        )}
                       </p>
-                    </p>
-                    {lockerRes?.end && lockerRes?.end !== '--' && (
                       <p className="flex jc-between ai-center font-nor m-t-16">
-                        <span className="text-normal">Locked Until :</span>
-                        <span className="text-medium">
-                          {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
-                        </span>
+                        <span className="text-normal">My LT Locked</span>
+                        <p className="flex ai-center">
+                          <span className="text-medium">
+                            {lockerRes?.amount
+                              ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
+                              : '0.00'}{' '}
+                            LT
+                          </span>
+                          {isWithDraw && !withdrawPendingText && (
+                            <span
+                              className="withdraw text-medium text-primary font-24 m-l-16"
+                              onClick={toWithdrawCallback}
+                            >
+                              Withdraw
+                            </span>
+                          )}
+                        </p>
                       </p>
-                    )}
-                  </div>
-                )}
+                      {lockerRes?.end && lockerRes?.end !== '--' && (
+                        <p className="flex jc-between ai-center font-nor m-t-16">
+                          <span className="text-normal">Locked Until :</span>
+                          <span className="text-medium">
+                            {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
+                          </span>
+                        </p>
+                      )}
+                    </div>
+                  )}
+                </Skeleton>
                 {lockerRes?.end && lockerRes?.end !== '--' ? (
                   <div className="add-action-box m-t-30">
                     <div className="add-ava">
                       <p className="flex jc-between font-nor">
                         <span className="text-normal">Balance in Voting Escrow :</span>
-                        <span className="text-medium">
-                          {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
-                        </span>
+                        <Skeleton loading={lockerResLoading} width={160}>
+                          <span className="text-medium">
+                            {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
+                          </span>
+                        </Skeleton>
                       </p>
                     </div>
                     <div
@@ -390,14 +397,16 @@ export default function DaoLocker() {
                     <div className="amout-box">
                       <p className="flex jc-between font-nor">
                         <span className="text-normal">Lock Amount</span>
-                        {account && (
-                          <span className="text-normal">
-                            Available: {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} LT{' '}
-                            <span className="text-primary cursor-select m-l-8" onClick={maxInputFn}>
-                              Max
+                        <Skeleton loading={lockerResLoading} width={160}>
+                          {account && (
+                            <span className="text-normal">
+                              Available: {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} LT{' '}
+                              <span className="text-primary cursor-select m-l-8" onClick={maxInputFn}>
+                                Max
+                              </span>
                             </span>
-                          </span>
-                        )}
+                          )}
+                        </Skeleton>
                       </p>
                       <div className="inp-box m-t-12">
                         <NumericalInput
