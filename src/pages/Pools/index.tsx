@@ -42,10 +42,9 @@ const EmptyProposals = styled.div`
   align-items: center;
 `
 const EmptyCover = styled.img`
-  width: 300px;
+  width: 206px;
   height: 168px;
   height: fit-content;
-  height: auto;
   margin-top: 40px;
 `
 
