@@ -626,7 +626,7 @@ export default function StakingPoolDetail({
                   <span>
                     {pairMore
                       ? `$${format.numFormat(format.amountFormat(pairMore.oneDayVolumeUSD, 2), 2, true)}`
-                      : `--`}
+                      : `$0.00`}
                   </span>
                 </p>
                 <p className="flex jc-between ai-center font-nor m-t-16">
@@ -634,7 +634,7 @@ export default function StakingPoolDetail({
                   <span>
                     {pairMore && pool?.feeRate
                       ? `$${format.amountFormat(pairMore.oneDayVolumeUSD * pool.feeRate, 2)}`
-                      : `--`}
+                      : `$0.00`}
                   </span>
                 </p>
                 <p className="flex jc-between ai-center font-nor m-t-16">
@@ -642,7 +642,7 @@ export default function StakingPoolDetail({
                   <span>
                     {pairMore && pairMore.oneWeekVolume && pool?.feeRate
                       ? `$${format.amountFormat(pairMore.oneWeekVolume * pool.feeRate, 2)}`
-                      : `--`}
+                      : `$0.00`}
                   </span>
                 </p>
               </div>
