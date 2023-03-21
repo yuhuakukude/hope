@@ -675,7 +675,7 @@ export default function StakingPoolDetail({
             </div>
           </LightCard>
           <LightCard style={{ marginTop: '30px' }} padding={'30px 30px 20px'} borderRadius={'20px'}>
-            <div style={{ height: '435px' }}>
+            <div style={{ height: '400px', overflow: 'hidden' }}>
               <div className="charts-tab flex jc-between ai-center">
                 <TabWrapper flexW={33.333} left={tabIndex === 'Volume' ? 0 : tabIndex === 'TVL' ? 33.333 : 66.666}>
                   <TabItem isActive={tabIndex === 'Volume'} onClick={() => tabChange('Volume')}>
