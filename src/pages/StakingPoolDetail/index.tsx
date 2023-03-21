@@ -626,7 +626,7 @@ export default function StakingPoolDetail({
                   <span>
                     {pairMore
                       ? `$${format.numFormat(format.amountFormat(pairMore.oneDayVolumeUSD, 2), 2, true)}`
-                      : `--`}
+                      : `$0.00`}
                   </span>
                 </p>
                 <p className="flex jc-between ai-center font-nor m-t-16">
@@ -634,12 +634,16 @@ export default function StakingPoolDetail({
                   <span>
                     {pairMore && pool?.feeRate
                       ? `$${format.amountFormat(pairMore.oneDayVolumeUSD * pool.feeRate, 2)}`
-                      : `--`}
+                      : `$0.00`}
                   </span>
                 </p>
                 <p className="flex jc-between ai-center font-nor m-t-16">
                   <span className="text-normal">Fees(7d)</span>
-                  <span>{pairMore ? `$${format.amountFormat(pairMore.oneWeekVolume, 2)}` : `--`}</span>
+                  <span>
+                    {pairMore && pairMore.oneWeekVolume && pool?.feeRate
+                      ? `$${format.amountFormat(pairMore.oneWeekVolume * pool.feeRate, 2)}`
+                      : `$0.00`}
+                  </span>
                 </p>
               </div>
               <div
@@ -671,7 +675,7 @@ export default function StakingPoolDetail({
             </div>
           </LightCard>
           <LightCard style={{ marginTop: '30px' }} padding={'30px 30px 20px'} borderRadius={'20px'}>
-            <div style={{ height: '435px' }}>
+            <div style={{ height: '400px', overflow: 'hidden' }}>
               <div className="charts-tab flex jc-between ai-center">
                 <TabWrapper flexW={33.333} left={tabIndex === 'Volume' ? 0 : tabIndex === 'TVL' ? 33.333 : 66.666}>
                   <TabItem isActive={tabIndex === 'Volume'} onClick={() => tabChange('Volume')}>

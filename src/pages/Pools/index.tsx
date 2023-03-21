@@ -12,7 +12,7 @@ import { SearchInput } from '../../components/SearchModal/styleds'
 import { Pagination } from 'antd'
 import { useHistory } from 'react-router-dom'
 import { CardSection } from '../../components/earn/styled'
-import empty from '../../assets/images/empty.png'
+import empty from '../../assets/images/empty2.png'
 import Card from '../../components/Card'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useActiveWeb3React } from '../../hooks'
@@ -33,8 +33,6 @@ const PageWrapper = styled(AutoColumn)`
 `
 
 const EmptyProposals = styled.div`
-  background-color: ${({ theme }) => theme.bg1};
-  border: 1px solid ${({ theme }) => theme.text4};
   margin-top: 30px;
   padding: 30px 12px;
   border-radius: 12px;
@@ -44,9 +42,10 @@ const EmptyProposals = styled.div`
   align-items: center;
 `
 const EmptyCover = styled.img`
-  width: 80%;
+  width: 206px;
+  height: 168px;
   height: fit-content;
-  height: auto;
+  margin-top: 40px;
 `
 
 const TableWrapper = styled(AutoColumn)`
@@ -121,7 +120,7 @@ export default function Pools() {
   function ConnectView() {
     return (
       <EmptyProposals>
-        <CardSection style={{ maxWidth: 580 }} justify={'center'}>
+        <CardSection style={{ maxWidth: 716 }} justify={'center'}>
           <AutoColumn justify={'center'} gap="md">
             <RowBetween>
               <TYPE.white fontSize={16} lineHeight={'24px'}>
@@ -134,7 +133,7 @@ export default function Pools() {
                 target="_blank"
                 href={DOCS_URL['HopeToken']}
               >
-                <TYPE.link fontSize={14}>Read more about providing liquidity</TYPE.link>
+                <TYPE.link fontSize={16}>Read more about providing liquidity</TYPE.link>
               </ExternalLink>
             </RowBetween>
           </AutoColumn>

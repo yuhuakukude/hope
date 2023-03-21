@@ -61,7 +61,7 @@ const GaugeClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: Gauge
                 >
                   <span className="text-white">Claimable Rewards</span>
                 </Radio>
-                <Tips title={`Claimable Rewards`} />
+                <Tips title="LT awards for holding stHOPE or Liquidity Mining." />
               </div>
               <div>
                 <p className="text-white text-right">
@@ -80,7 +80,7 @@ const GaugeClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: Gauge
                     >
                       <span className="text-white">Claimable Rewards</span>
                     </Radio>
-                    <Tips title={`Claimable Rewards`} />
+                    <Tips title="An additional reward for holding a Liquidity Position made up of stHOPE or other special tokens." />
                   </div>
                   <div>
                     <p className="text-normal text-right">≈ ${format.amountFormat(tableItem?.usdOfExtReward, 2)}</p>

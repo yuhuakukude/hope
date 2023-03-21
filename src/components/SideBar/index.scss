@@ -4,6 +4,7 @@
   width: 0;
   transform-origin: left center;
 }
+
 .sidebar-logo {
   white-space: nowrap;
   padding: 35px;
@@ -45,6 +46,7 @@
   // height: 80px;
   position: relative;
   color: #E4C989;
+
   &:hover {
     color: #E4C989 !important;
   }
@@ -61,37 +63,46 @@
 //   background-color: rgba(12, 12, 13, 1);
 // }
 
-.icon-link{
+.icon-link {
   background-color: #3D3E46;
   border-radius: 50%;
   cursor: pointer;
-  path{
+
+  path {
     fill: #A8A8AA;
   }
-  &.disabled{
+
+  &.disabled {
     cursor: no-drop;
-    &:hover{
-      path{
-        fill: #A8A8AA;
-       }
-    }
-    &:active{
-      path{
+
+    &:hover {
+      path {
         fill: #A8A8AA;
       }
+    }
+
+    &:active {
+      path {
+        fill: #A8A8AA;
+      }
+
       background-color: #3D3E46;
     }
   }
-  &:hover{
-    path{
-      fill: #fff;
-     }
-    background-color: #3D3E46;
-  }
-  &:active{
-    path{
+
+  &:hover {
+    path {
       fill: #fff;
     }
+
+    background-color: #3D3E46;
+  }
+
+  &:active {
+    path {
+      fill: #fff;
+    }
+
     background-color: #5A5A5B;
   }
 }

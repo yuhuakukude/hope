@@ -146,7 +146,7 @@ export function useToLocker() {
       JSBI.multiply(JSBI.multiply(JSBI.BigInt(365), JSBI.BigInt(24)), JSBI.BigInt(60)),
       JSBI.BigInt(60)
     )
-    const initStartDate = starDate ? moment(starDate) : moment()
+    const initStartDate = starDate ? moment(starDate).format('YYYY-MM-DD') : moment()
     const lockPeriod = moment(endDate).diff(initStartDate, 'second')
     const veltGetAmount = new TokenAmount(
       VELT[chainId ?? 1],
