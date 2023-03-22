@@ -5,6 +5,7 @@ import * as echarts from 'echarts'
 import { TokenAmount } from '@uniswap/sdk'
 import './index.scss'
 import format from '../../../../utils/format'
+import Skeleton from '../../../../components/Skeleton'
 import { useLocker } from '../../../../hooks/ahp/useLocker'
 import moment from 'moment'
 import { getLTToken } from 'utils/addressHelpers'
@@ -14,11 +15,18 @@ export default function LockerEcharts() {
   const chartRef: any = useRef()
   const [lockTime, setLockTime] = useState<any>('0')
   const [isHasData, setIsHasData] = useState<boolean>(false)
+  const [loading, setLoading] = useState<boolean>(false)
   const [earningsAmount, setEarningsAmount] = useState<any>('0')
-  const { ltTotalAmounnt, veltTotalAmounnt } = useLocker()
+  const { ltTotalAmount, veltTotalAmount, ltTotalAmountLoading, veltTotalAmountLoading } = useLocker()
   const initFn = useCallback(
     async (myChart: any) => {
       try {
+        setLoading(true)
+        myChart.showLoading({
+          text: '',
+          color: '#E4C989',
+          maskColor: 'rgba(255, 255, 255, 0)'
+        })
         const res = await LockerApi.getBannerCharts()
         if (res && res.result) {
           setLockTime(res.result.averageOfLockTime || '--')
@@ -48,6 +56,7 @@ export default function LockerEcharts() {
           })
           const minAmount = valueArr.length > 0 ? Math.min(...valueArr) : 0
           setIsHasData(valueArr.length <= 0)
+          myChart.hideLoading()
           const option = {
             grid: { top: '6%', bottom: '10%', right: '2%' },
             visualMap: {
@@ -163,6 +172,7 @@ export default function LockerEcharts() {
             ]
           }
           myChart.setOption(option)
+          setLoading(false)
         }
       } catch (error) {
         console.log(error)
@@ -193,40 +203,50 @@ export default function LockerEcharts() {
   return (
     <>
       <div className="dao-locker-echarts">
-        <h3 className="text-medium font-20">Weekly LT lock ration </h3>
-        <p className="font-nor text-normal m-t-40">Weekly LT lock ration</p>
-        <div className="charts-box m-t-20">
-          <div style={{ width: '100%', height: '100%' }} ref={chartRef} />
-          {isHasData && (
-            <div className="no-data-box">
-              <div className="img"></div>
-              <p>No data</p>
-            </div>
-          )}
+        <h3 className="text-medium font-20">Total LT Locked in Last 7 Days </h3>
+        <p className="font-nor text-normal m-t-40">Total LT Locked</p>
+        <div className="m-t-20">
+          <div className="charts-box">
+            <div style={{ width: '100%', height: '100%' }} ref={chartRef} />
+            {isHasData && (
+              <div className="no-data-box">
+                <div className="img"></div>
+                <p>No data</p>
+              </div>
+            )}
+          </div>
         </div>
         <div className="total-box flex jc-between m-t-40">
           <div className="p-r-20 border-line flex-1">
             <p className="flex jc-between">
               <span className="text-normal font-nor">Total LT Locked: </span>
-              <span className="text-medium font-nor">
-                {ltTotalAmounnt?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
-              </span>
+              <Skeleton loading={ltTotalAmountLoading} width={68}>
+                <span className="text-medium font-nor">
+                  {ltTotalAmount?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+                </span>
+              </Skeleton>
             </p>
             <p className="flex jc-between m-t-20">
-              <span className="text-normal font-nor">Total veLT Amount : </span>
-              <span className="text-medium font-nor">
-                {veltTotalAmounnt?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
-              </span>
+              <span className="text-normal font-nor">Total veLT Generated: </span>
+              <Skeleton loading={veltTotalAmountLoading} width={68}>
+                <span className="text-medium font-nor">
+                  {veltTotalAmount?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+                </span>
+              </Skeleton>
             </p>
           </div>
           <div className="p-l-20 flex-1">
             <p className="flex jc-between">
-              <span className="text-normal font-nor">Average Lock Time :</span>
-              <span className="text-medium font-nor"> {lockTime} years</span>
+              <span className="text-normal font-nor">Average Lock Duration :</span>
+              <Skeleton loading={loading} width={68}>
+                <span className="text-medium font-nor"> {lockTime} years</span>
+              </Skeleton>
             </p>
             <p className="flex jc-between m-t-20">
-              <span className="text-normal font-nor">Yearly fee earnings per 1 veLT : </span>
-              <span className="text-medium font-nor">{Number(earningsAmount).toFixed(4)}$</span>
+              <span className="text-normal font-nor">Annual Fees Earned by 1 veLT : </span>
+              <Skeleton loading={loading} width={68}>
+                <span className="text-medium font-nor">{format.amountFormat(earningsAmount, 4)}$</span>
+              </Skeleton>
             </p>
           </div>
         </div>

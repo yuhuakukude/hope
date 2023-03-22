@@ -105,12 +105,13 @@ export default function SideBar() {
     { title: 'Staking', icon: '&#xe626;', baseRouter: '/hope', router: '/hope/staking' },
     { title: 'HopeSwap', icon: '&#xe632;', baseRouter: '/swap', router: '/swap/exchange' },
     { title: 'LT & DAO', icon: '&#xe633;', baseRouter: '/dao', router: '/dao/gauge' },
-    { title: 'Portfolio', icon: '&#xe627;', baseRouter: '/portfolio', router: '/portfolio' }
+    { title: 'My Portfolio', icon: '&#xe627;', baseRouter: '/portfolio', router: '/portfolio' }
   ]
   const currentTab = useCallback(() => {
     return ROUTERS.findIndex(({ baseRouter }) => baseRouter && location.pathname.startsWith(baseRouter))
   }, [ROUTERS, location.pathname])
 
+  const currentIndex = currentTab() < 0 ? 0 : currentTab()
   return (
     <Bar id="side-bar">
       <Column style={{ width: '100%' }}>
@@ -118,7 +119,7 @@ export default function SideBar() {
           <Logo style={{ alignSelf: 'center', marginRight: '5px' }} />
           <LogoText className="sidebar-transition">HOPE</LogoText>
         </div>
-        <TabBox top={currentTab() * 60}>
+        <TabBox top={currentIndex * 60}>
           {ROUTERS.map(({ title, router, icon }, index) => {
             return (
               <NavLink key={index} to={router}>
@@ -129,10 +130,10 @@ export default function SideBar() {
               </NavLink>
             )
           })}
-          <span className="sidebar-select-arc" style={{ top: `${-10 + currentTab() * 60}px` }}>
+          <span className="sidebar-select-arc" style={{ top: `${-10 + currentIndex * 60}px` }}>
             <span className="sidebar-select-arc-mask"></span>
           </span>
-          <span className="sidebar-select-arc sidebar-select-arc-2" style={{ top: `${60 + currentTab() * 60}px` }}>
+          <span className="sidebar-select-arc sidebar-select-arc-2" style={{ top: `${60 + currentIndex * 60}px` }}>
             <span className="sidebar-select-arc-mask"></span>
           </span>
         </TabBox>

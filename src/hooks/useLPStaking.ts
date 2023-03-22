@@ -6,7 +6,6 @@ import {
   fetchTotalAmount,
   fetchPairsList,
   fetchPairPool,
-  fetchGlobalData,
   GraphPairInfo,
   PairDetail,
   fetchPairTxs,
@@ -185,32 +184,6 @@ export interface Overview {
   weekFees: number
   weeklyVolumeChange: number
   oneWeekTVLUSD: number
-}
-
-export function useOverviewData() {
-  const [result, setResult] = useState<Overview | undefined>(undefined)
-  const [loading, setLoading] = useState<boolean>(false)
-  // const [total, setTotal] = useState<number>(0)
-
-  useEffect(() => {
-    ;(async () => {
-      setLoading(true)
-      try {
-        const data = await fetchGlobalData()
-        setLoading(false)
-        setResult(data)
-      } catch (error) {
-        setResult(undefined)
-        setLoading(false)
-        console.error('useOverviewData', error)
-      }
-    })()
-  }, [])
-
-  return {
-    loading: loading,
-    result
-  }
 }
 
 export function usePairTxs(pairAddress: string, type?: string) {

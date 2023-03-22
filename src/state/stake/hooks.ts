@@ -1,4 +1,4 @@
-import { ChainId, CurrencyAmount, FACTORY_ADDRESS, JSBI, Pair, Token, TokenAmount, WETH } from '@uniswap/sdk'
+import { ChainId, CurrencyAmount, JSBI, Pair, Token, TokenAmount, WETH } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import { BLOCK_SUBGRAPH, DAI, SUBGRAPH, UNI, WBTC } from '../../constants'
 import { HOPE, USDC, USDT, } from 'constants/constract'
@@ -638,23 +638,6 @@ export const get2DayPercentChange = (valueNow: string, value24HoursAgo: string, 
   return [currentChange, adjustedPercentChange]
 }
 
-function GLOBAL_QUERY(block?: number[]) {
-  return `{
-      lightswapFactories(
-       ${block ? `block: { number: ${block}}` : ``} 
-       where: { id: "${FACTORY_ADDRESS}" }) {
-        id
-        totalVolumeUSD
-        totalVolumeETH
-        untrackedVolumeUSD
-        totalLiquidityUSD
-        totalLiquidityETH
-        txCount
-        pairCount
-      }
-    }`
-}
-
 function PAIR_QUERY({ block, stakingAddress }: { block?: number[]; stakingAddress: string }) {
   return `{
     pairs(${block ? `block: { number: ${block}}` : ``}, where: {id:"${stakingAddress}"}) {
@@ -937,7 +920,7 @@ export async function fetchPairMore(stakingAddress: string): Promise<PairMore | 
     const [oneWeekTVLUSD] = get2DayPercentChange(pair?.reserveUSD, w1Pair?.reserveUSD ?? '0', w2Pair?.reserveUSD ?? '0')
     const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
       pair?.volumeUSD,
-      w1Pair?.volumeUSD ?? pair?.volumeUSD,
+      w1Pair?.volumeUSD ?? '0',
       w2Pair?.volumeUSD ?? '0'
     )
 
@@ -955,68 +938,6 @@ export async function fetchPairMore(stakingAddress: string): Promise<PairMore | 
     }
   } catch (error) {
     console.log('error', error)
-    return undefined
-  }
-}
-
-export async function fetchGlobalData() {
-  try {
-    const utcCurrentTime = dayjs()
-    const utcOneDayBack = utcCurrentTime.subtract(1, 'day').unix()
-    const utcTwoDaysBack = utcCurrentTime.subtract(2, 'day').unix()
-    const utcOneWeekBack = utcCurrentTime.subtract(1, 'week').unix()
-    const utcTwoWeeksBack = utcCurrentTime.subtract(2, 'week').unix()
-    const [oneDayBlock, twoDayBlock, oneWeekBlock, twoWeekBlock] = await getBlocksFromTimestamps([
-      utcOneDayBack,
-      utcTwoDaysBack,
-      utcOneWeekBack,
-      utcTwoWeeksBack
-    ])
-    const totalRes = await postQuery(SUBGRAPH, GLOBAL_QUERY())
-    const d1Res = await postQuery(SUBGRAPH, GLOBAL_QUERY(oneDayBlock.number))
-    const d2Res = await postQuery(SUBGRAPH, GLOBAL_QUERY(twoDayBlock.number))
-
-    const w1Res = await postQuery(SUBGRAPH, GLOBAL_QUERY(oneWeekBlock.number))
-
-    const w2Res = await postQuery(SUBGRAPH, GLOBAL_QUERY(twoWeekBlock?.number))
-
-    const [oneDayTVLUSD, tvlChangeUSD] = get2DayPercentChange(
-      totalRes?.data.lightswapFactories[0]?.totalLiquidityUSD,
-      d1Res?.data.lightswapFactories[0]?.totalLiquidityUSD,
-      d2Res?.data.lightswapFactories[0]?.totalLiquidityUSD
-    )
-
-    const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
-      d1Res.data.lightswapFactories[0]?.totalVolumeUSD,
-      d2Res.data.lightswapFactories[0]?.totalVolumeUSD
-    )
-
-    const [oneWeekVolume, weeklyVolumeChange] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
-      w1Res.data.lightswapFactories[0]?.totalVolumeUSD,
-      w2Res.data.lightswapFactories[0]?.totalVolumeUSD
-    )
-
-    const [oneWeekTVLUSD] = get2DayPercentChange(
-      totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
-      w1Res.data.lightswapFactories[0]?.totalLiquidityUSD,
-      w2Res.data.lightswapFactories[0]?.totalLiquidityUSD
-    )
-    return {
-      tvl: totalRes.data.lightswapFactories[0]?.totalLiquidityUSD,
-      tvlChangeUSD,
-      oneDayTVLUSD,
-      oneWeekTVLUSD,
-      totalVolume: totalRes.data.lightswapFactories[0]?.totalVolumeUSD,
-      oneDayVolumeUSD,
-      volumeChangeUSD,
-      dayFees: oneDayVolumeUSD * 0.003,
-      weekFees: oneWeekVolume * 0.003,
-      weeklyVolumeChange
-    }
-  } catch (error) {
-    console.error('fetchGlobalData', error)
     return undefined
   }
 }
@@ -1266,8 +1187,8 @@ export async function fetchPairsTimeInfo(pairs: string[]): Promise<TimeInfo[]> {
       })
       const [oneDayVolumeUSD, volumeChangeUSD] = get2DayPercentChange(
         pair?.volumeUSD,
-        d1Pair?.volumeUSD,
-        d2Pair?.volumeUSD
+        d1Pair?.volumeUSD ?? '0',
+        d2Pair?.volumeUSD ?? '0'
       )
 
       return {

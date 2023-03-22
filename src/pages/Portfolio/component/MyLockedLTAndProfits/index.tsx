@@ -24,7 +24,7 @@ import { getStakingHopeGaugeAddress, getSTHOPEToken, getVELTToken } from 'utils/
 
 export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (stHope: string, lt: string) => void }) {
   const { account, chainId } = useActiveWeb3React()
-  const { lockerRes, veltTotalAmounnt } = useLocker()
+  const { lockerRes, veltTotalAmount } = useLocker()
   const { claimableFees } = usePortfolio()
   const veltBalance = useTokenBalance(account ?? undefined, getVELTToken(chainId))
   const [curWithType, setCurWithType] = useState<string>('all')
@@ -55,13 +55,13 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
     return pr
   }, [chainId, priceResult])
   useEffect(() => {
-    if (veltTotalAmounnt && veltBalance && veltTotalAmounnt.toFixed(2) && Number(veltTotalAmounnt.toFixed(2)) > 0) {
-      const ra = new Percent(veltBalance?.raw, veltTotalAmounnt?.raw)
+    if (veltTotalAmount && veltBalance && veltTotalAmount.toFixed(2) && Number(veltTotalAmount.toFixed(2)) > 0) {
+      const ra = new Percent(veltBalance?.raw, veltTotalAmount?.raw)
       if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
         setUnUseRateVal(ra.toFixed(2))
       }
     }
-  }, [veltTotalAmounnt, veltBalance, account])
+  }, [veltTotalAmount, veltBalance, account])
 
   const argList = useMemo(() => {
     let res = []
@@ -217,13 +217,13 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
         pendingText={claimPendingText}
         currencyToAdd={curToken}
       />
-      <Card title="My Locked LT & Profits">
+      <Card title="My Locked LT & DAO Rewards">
         {lockerRes?.amount ? (
           <>
             <div className="my-locked-lt-content">
               <div className="my-locked-lt-row">
                 <div className="my-locked-lt-col">
-                  <div className="my-locked-lt-title">Locked LT Amount</div>
+                  <div className="my-locked-lt-title">Total LT Locked</div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">
                       ≈ {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}
@@ -234,16 +234,16 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                   </div>
                 </div>
                 <div className="my-locked-lt-col">
-                  <div className="my-locked-lt-title">Balance in Voting Escrow</div>
+                  <div className="my-locked-lt-title">Current Voting Power</div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">
                       ≈ {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
                     </span>
-                    <span className="my-locked-lt-value2">{unUseRateVal || '0.00'}% share of total</span>
+                    <span className="my-locked-lt-value2">{unUseRateVal || '0.00'}% of Total</span>
                   </div>
                   <NavLink to={'/dao/locker'}>
                     <Button className="my-locked-lt-button" type="ghost">
-                      Increase veLT
+                      Increase voting power
                     </Button>
                   </NavLink>
                 </div>
@@ -251,8 +251,8 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
               <div className="my-locked-lt-row2">
                 <div className="my-locked-lt-col">
                   <div className="my-locked-lt-title">
-                    Claimable veLT Held Fees{' '}
-                    <Tips title="25% of the platform fees will be distributed among all veLT holders."></Tips>
+                    Claimable Revenue Shares{' '}
+                    <Tips title="25% of the platform's revenue will be distributed proportionally among all veLT holders."></Tips>
                   </div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">
@@ -279,8 +279,8 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                 </div>
                 <div className="my-locked-lt-col">
                   <div className="my-locked-lt-title">
-                    Claimable veLT voting Fees{' '}
-                    <Tips title="All users who voted using veLT as their liquidity mining gauge will participate in the distribution of an additional 25% of the platform's fee revenue."></Tips>
+                    Claiming Voting Rewards{' '}
+                    <Tips title="An additional 25% of the platform's revenue will be distributed proportionally among all Gauge voters."></Tips>
                   </div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">≈ {votingFee.stHope} stHOPE</span>

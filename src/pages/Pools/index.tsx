@@ -12,7 +12,9 @@ import { SearchInput } from '../../components/SearchModal/styleds'
 import { Pagination } from 'antd'
 import { useHistory } from 'react-router-dom'
 import { CardSection } from '../../components/earn/styled'
-import empty from '../../assets/images/empty.png'
+import empty1 from '../../assets/images/empty.png'
+import empty2 from '../../assets/images/empty2.png'
+import farmsEmpty from '../../assets/images/farms-empty.png'
 import Card from '../../components/Card'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useActiveWeb3React } from '../../hooks'
@@ -33,8 +35,6 @@ const PageWrapper = styled(AutoColumn)`
 `
 
 const EmptyProposals = styled.div`
-  background-color: ${({ theme }) => theme.bg1};
-  border: 1px solid ${({ theme }) => theme.text4};
   margin-top: 30px;
   padding: 30px 12px;
   border-radius: 12px;
@@ -44,9 +44,10 @@ const EmptyProposals = styled.div`
   align-items: center;
 `
 const EmptyCover = styled.img`
-  width: 80%;
+  width: 206px;
+  height: 168px;
   height: fit-content;
-  height: auto;
+  margin-top: 40px;
 `
 
 const TableWrapper = styled(AutoColumn)`
@@ -63,6 +64,7 @@ const TableTitleWrapper = styled(AutoColumn)`
 const TableTitle = styled(TYPE.main)`
   flex: 1;
   font-size: 14px;
+  font-family: Arboria-Medium;
 `
 
 const poolTitles = [
@@ -70,14 +72,14 @@ const poolTitles = [
   { value: 'TVL' },
   { value: 'Volume (24h)' },
   { value: 'Fees APR' },
-  { value: 'Rewards APR', weight: 1.5 },
-  { value: 'Mining Rewards' },
+  { value: 'Farming APR', weight: 1.5 },
+  { value: 'Daily Farming Rewards' },
   { value: ' ', weight: 0.1 }
 ]
 
 const positionTitles = [
   { value: 'Pools', weight: 1 },
-  { value: 'My Composition' },
+  { value: 'My Deposits' },
   { value: 'LP Tokens' },
   { value: 'Boost' },
   { value: 'APR', weight: 1.5 },
@@ -119,11 +121,13 @@ export default function Pools() {
   function ConnectView() {
     return (
       <EmptyProposals>
-        <CardSection style={{ maxWidth: 580 }} justify={'center'}>
+        <CardSection style={{ maxWidth: 716 }} justify={'center'}>
           <AutoColumn justify={'center'} gap="md">
             <RowBetween>
               <TYPE.white fontSize={16} lineHeight={'24px'}>
-                {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing liquidity provided. `}
+                {liquiditySearchType === Field.USER_STAKING
+                  ? `Stake your liquidity position (LP Token) to earn LT rewards`
+                  : `Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing liquidity provided. `}
               </TYPE.white>
             </RowBetween>
             <RowBetween>
@@ -132,11 +136,13 @@ export default function Pools() {
                 target="_blank"
                 href={DOCS_URL['HopeToken']}
               >
-                <TYPE.link fontSize={14}>Read more about providing liquidity</TYPE.link>
+                {liquiditySearchType !== Field.USER_STAKING && (
+                  <TYPE.link fontSize={16}>Read more about providing liquidity</TYPE.link>
+                )}
               </ExternalLink>
             </RowBetween>
           </AutoColumn>
-          <EmptyCover src={empty} />
+          <EmptyCover src={empty2} />
           <Card padding="40px 40px 0 40px">
             <TYPE.white textAlign="center">Connect to a wallet to view your liquidity.</TYPE.white>
             <ButtonOutlined onClick={toggleWalletModal} margin={'auto'} width={'400px'} mt={'40px'} primary>
@@ -153,10 +159,12 @@ export default function Pools() {
       <EmptyProposals>
         <CardSection style={{ maxWidth: 620 }} justify={'center'}>
           <AutoColumn justify={'center'} gap="lg">
-            <EmptyCover src={empty} />
+            <EmptyCover src={liquiditySearchType === Field.USER_STAKING ? farmsEmpty : empty1} />
             <RowBetween>
               <TYPE.white fontSize={16} lineHeight={'24px'}>
-                {`Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing liquidity provided. `}
+                {liquiditySearchType === Field.USER_STAKING
+                  ? `Stake your liquidity position (LP Token) to earn LT rewards`
+                  : `Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing liquidity provided. `}
               </TYPE.white>
             </RowBetween>
             <a
@@ -166,7 +174,11 @@ export default function Pools() {
               href={DOCS_URL['WelcomeToHope']}
             >
               <ButtonOutlined primary mt={20}>
-                <TYPE.link textAlign="center">Learn about providing liquidity</TYPE.link>
+                <TYPE.link textAlign="center">
+                  {liquiditySearchType !== Field.USER_STAKING
+                    ? 'Learn about providing liquidity'
+                    : 'Learn About Liquidity Farming'}
+                </TYPE.link>
               </ButtonOutlined>
             </a>
           </AutoColumn>
@@ -226,7 +238,7 @@ export default function Pools() {
               </AutoRow>
               <div style={{ width: '440px', margin: 'auto', marginLeft: 40 }}>
                 <div className="flex">
-                  <div style={{ position: 'relative', width: '440px' }} className="flex m-r-20">
+                  <div style={{ position: 'relative', width: '440px' }} className="flex">
                     <SearchInput
                       fontSize={'16px'}
                       padding={'10px 16px 10px 45px'}

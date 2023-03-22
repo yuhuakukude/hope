@@ -226,8 +226,8 @@ export default function LiquidityMining({
         <NoData src={noData} />
         <TYPE.white maxWidth={227} textAlign={'center'}>
           {staking
-            ? 'Sorry, the position you can stake cannot be found, please deposit your position first.'
-            : 'Sorry, the position you can stake cannot be found,  please deposit your position first.'}
+            ? 'Sorry, you have not yet deposited any liquidity.'
+            : 'Sorry, you have not yet deposited any liquidity.'}
         </TYPE.white>
         {staking && (
           <TYPE.link
@@ -265,7 +265,7 @@ export default function LiquidityMining({
         <AutoColumn>
           <RowBetween padding={'30px 20px'}>
             <TYPE.white fontSize={18} fontWeight={700}>
-              Liquidity Mining
+              Liquidity Farming
             </TYPE.white>
             <StakingTips />
           </RowBetween>
@@ -311,7 +311,7 @@ export default function LiquidityMining({
                 showMaxButton={!atMaxAmount}
                 currency={staking ? pool?.lpToken : pool?.stakingToken}
                 pair={dummyPair}
-                label={'Amount'}
+                label={staking ? 'Available for Staking' : 'Available for Unstaking'}
                 disableCurrencySelect={true}
                 customBalanceText={` `}
                 id="stake-liquidity-token"

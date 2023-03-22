@@ -199,7 +199,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       }
     },
     {
-      title: 'My Composition',
+      title: 'My Deposited Liquidity',
       dataIndex: 'token0Balance',
       key: 'token0Balance',
       render: (text: string, record: ILiquidityPools) => {
@@ -254,8 +254,8 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
         return (
           <Item
             type={2}
-            title={<>Currrent: {record.currentBoost || '--'}</>}
-            desc={<>Future: {record.futureBoost || '--'}</>}
+            title={<>Current Cycle: {record.currentBoost || '--'}</>}
+            desc={<>Next Cycle: {record.futureBoost || '--'}</>}
           />
         )
       }
@@ -330,7 +330,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
           })
         }
         options.push({
-          label: 'Yield Boost',
+          label: 'Boost My Rewards',
           value: 'Yield Boost',
           onClick: () => {
             history.push(`/dao/locker`)
@@ -383,7 +383,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
           stakingAddress={stakingAddress}
         />
       )}
-      <Card title="My Liquidity Pools">
+      <Card title="My Deposited Liquidity">
         {listLoading ? (
           <ColumnCenter
             style={{ height: '100%', width: '100%', alignItems: 'center', justifyContent: 'center', marginTop: 50 }}

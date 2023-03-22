@@ -8,6 +8,7 @@ export const DOC_API = `${process.env.REACT_APP_SUBGRAPH}.hivefin.net`
 export const HOME_API = process.env.REACT_APP_HOME_API
 
 export const BLOCK_SUBGRAPH = process.env.REACT_APP_BLOCK_SUBGRAPH ?? ''
+export const FAUCET_URL = 'https://faucet-sepolia.lteco.cc/'
 
 export const timeframeOptions = {
   WEEK: '1 week',

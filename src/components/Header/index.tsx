@@ -15,6 +15,7 @@ import useTheme from '../../hooks/useTheme'
 // import Matamask from 'assets/images/metamask-logo.png'
 import { Text } from 'rebass'
 import { CHAIN_ID_NETWORK_ARGUMENT, FormaticSupportedChains } from '../../connectors/Fortmatic'
+import { FAUCET_URL } from '../../constants'
 
 const HeaderFrame = styled.div`
   display: grid;
@@ -149,22 +150,6 @@ const StyledNavLink = styled(NavLink).attrs({
   }
 `
 
-const BuyHopeNavLink = styled(NavLink)`
-  width: 128px;
-  height: 40px;
-  line-height: 40px;
-  text-align: center;
-  color: #e4c989;
-  font-size: 18px;
-  font-family: Arboria-Medium;
-  border-radius: 10px;
-  background-color: rgba(30, 30, 30, 1);
-  :hover {
-    background-color: #e4c989;
-    color: #26262c;
-  }
-`
-
 export const StyledMenuButton = styled.button`
   position: relative;
   width: 100%;
@@ -204,15 +189,12 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
       ]
     }
     if (location?.pathname?.startsWith('/hope')) {
-      return [
-        { id: 'hope-nav-link', title: 'Staking', router: '/hope/staking' },
-        { id: 'pool-nav-link', title: 'Buy Hope', router: '/hope/buy-hope' }
-      ]
+      return [{ id: 'hope-nav-link', title: 'Staking', router: '/hope/staking' }]
     }
     if (location?.pathname?.startsWith('/dao')) {
       return [
         { id: 'hope-nav-link', title: 'Gauge', router: '/dao/gauge' },
-        { id: 'pool-nav-link', title: 'Locker', router: '/dao/locker' }
+        { id: 'pool-nav-link', title: 'LT Locker', router: '/dao/locker' }
       ]
     }
     return []
@@ -249,9 +231,9 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
         </HeaderLinks>
       </HeaderRow>
       <HeaderControls>
-        <BuyHopeNavLink id={`buy-hope-nav-link`} to={'/hope/buy-hope'}>
-          Buy HOPE
-        </BuyHopeNavLink>
+        <a target="_black" id={`buy-hope-nav-link`} href={FAUCET_URL}>
+          faucet
+        </a>
         <HeaderElement>
           <AccountElement active={!!account} style={{ pointerEvents: 'auto', color: theme.text1, marginRight: '30px' }}>
             {account && (

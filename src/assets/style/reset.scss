@@ -545,3 +545,19 @@
     bottom: -1;
   }
 }
+
+#buy-hope-nav-link {
+  width: 128px;
+  height: 40px;
+  line-height: 40px;
+  text-align: center;
+  color: #e4c989;
+  font-size: 18px;
+  font-family: Arboria-Medium;
+  border-radius: 10px;
+  background-color: rgba(30, 30, 30, 1);
+  :hover {
+    background-color: #e4c989;
+    color: #26262c;
+  }
+}

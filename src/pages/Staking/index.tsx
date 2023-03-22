@@ -249,7 +249,7 @@ export default function Staking() {
     if (!account) return
     setCurToken(getLTToken(chainId))
     onTxStart()
-    setClaimPendingText(`claim LT`)
+    setClaimPendingText(`Claim LT`)
     setActionType(ACTION.CLAIM)
     toClaim(getStakingHopeGaugeAddress(chainId), claRewards)
       .then(hash => {
@@ -362,9 +362,9 @@ export default function Staking() {
               <Col className="gutter-row" span={14}>
                 <div className="flex ai-center">
                   <div>
-                    <h3 className="text-white font-28 font-bolder">Staking $HOPE</h3>
+                    <h3 className="text-white font-28 font-bolder">Stake HOPE</h3>
                     <p className="text-white font-nor m-t-10">
-                      Stake your $HOPE tokens for an annual percentage yield (APY).
+                      Get staking rewards, and use stHOPE across the ecosystem.
                       <a href="/" className="text-primary m-l-15 learn-more">
                         Learn more
                         <i className="iconfont m-l-5 font-14 m-t-2">&#xe619;</i>
@@ -382,7 +382,7 @@ export default function Staking() {
                         <Tooltip
                           className="m-l-5"
                           overlayClassName="tips-question"
-                          title="The APY value is calculated based on the current data, which consists of the reward tokens by hold stHOPE."
+                          title="The shown APY is calculated based on the current gauge weight and token price. "
                         >
                           <i className="iconfont font-16 cursor-select tips-circle">&#xe620;</i>
                         </Tooltip>
@@ -425,7 +425,7 @@ export default function Staking() {
                 </div>
                 <div className="tab-con p-30">
                   <div className="flex jc-between">
-                    <span className="text-normal">{curType === 'stake' ? 'Deposit' : 'Withdraw'}</span>
+                    <span className="text-normal">{curType === 'stake' ? 'Stake' : 'Unstake (It takes 28 days)'}</span>
                     <div className="text-normal">
                       Available:{' '}
                       {curType === 'stake'
@@ -522,8 +522,7 @@ export default function Staking() {
                         <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe62b;</i>
                         <div>
                           <p className="text-white lh15">
-                            Unstaking stHOPE will take 28 days to process, once done withdrawals of HOPE can be done
-                            anytime after.
+                            The unstaking process takes 28 days, and you can withdraw the unstaked HOPE afterward.
                           </p>
                           {/* <p className="text-white lh15 m-t-5">
                             Note that you do not receive the $LT bonus when you confirm your submission. You can also
@@ -542,7 +541,7 @@ export default function Staking() {
             </Col>
             <Col className="gutter-row" span={10}>
               <div>
-                <HopeCard title={'My Value'}>
+                <HopeCard title={'My Assets'}>
                   <div className="card-top p-30">
                     <div className="flex jc-between m-b-20">
                       <div className="coin-box flex ai-center">
@@ -556,17 +555,17 @@ export default function Staking() {
                         <span className="text-normal m-l-5"> your yield up to 2.5x</span>
                       </div>
                     </div>
-                    <div className="flex jc-between m-b-20">
+                    <div className="flex jc-between m-b-20 font-nor">
                       <span className="text-normal">Gauge relative weight</span>
-                      <span className="text-white">{format.rate(relWeight)}</span>
+                      <span className="text-white text-medium">{format.rate(relWeight)}</span>
                     </div>
-                    <div className="flex jc-between m-b-20">
+                    <div className="flex jc-between m-b-20 font-nor">
                       <span className="text-normal">My Current Boost</span>
-                      <span className="text-white">{currentBoots ? currentBoots.toFixed(2) : '--'}x</span>
+                      <span className="text-white text-medium">{currentBoots ? currentBoots.toFixed(2) : '--'}x</span>
                     </div>
-                    <div className="flex jc-between m-b-20">
+                    <div className="flex jc-between m-b-20 font-nor">
                       <span className="text-normal">
-                        My Future Boost
+                        My Next Boost
                         <Tooltip
                           className="m-l-5"
                           overlayClassName="tips-question"
@@ -575,12 +574,12 @@ export default function Staking() {
                           <i className="iconfont font-16 cursor-select tips-circle">&#xe620;</i>
                         </Tooltip>
                       </span>
-                      <span className="text-white">{futureBoots ? futureBoots.toFixed(2) : '--'}x</span>
+                      <span className="text-white text-medium">{futureBoots ? futureBoots.toFixed(2) : '--'}x</span>
                     </div>
-                    <div className="flex jc-between ai-center m-b-20">
-                      <span className="text-normal">Claimable</span>
+                    <div className="flex jc-between ai-center m-b-20 font-nor">
+                      <span className="text-normal">Claimable Rewards</span>
                       <div className="flex ai-center">
-                        <span className="text-white">
+                        <span className="text-white text-medium">
                           {claRewards?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
                         </span>
                         {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
@@ -597,7 +596,7 @@ export default function Staking() {
                     {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
                       <div className="flex ai-center">
                         <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
-                        <p className="text-normal lh15">You can apply future boost by claiming LT</p>
+                        <p className="text-normal lh15">Claim your rewards to apply your next boost</p>
                       </div>
                     )}
                   </div>
@@ -607,16 +606,20 @@ export default function Staking() {
                         <div className="hope-icon"></div>
                         <div className="currency font-nor text-medium m-l-12">HOPE</div>
                       </div>
-                      <span className="text-white">≈ ${toUsdPrice(hopeBal?.toFixed(2), hopePrice) || '--'}</span>
+                      <span className="text-normal text-medium">
+                        ≈ ${toUsdPrice(hopeBal?.toFixed(2), hopePrice) || '--'}
+                      </span>
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-white">Available</span>
-                      <span className="text-white">{hopeBal?.toFixed(2, { groupSeparator: ',' } ?? '-') || '--'}</span>
+                      <span className="text-white text-medium">
+                        {hopeBal?.toFixed(2, { groupSeparator: ',' } ?? '-') || '--'}
+                      </span>
                     </div>
                     <div className="flex jc-between">
-                      <span className="text-white">Unstaked</span>
+                      <span className="text-white">Withdrawable</span>
                       <div className="flex ai-center">
-                        <span className="text-white">
+                        <span className="text-white text-medium">
                           {unstakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
                         </span>
                         {account && unstakedVal && Number(unstakedVal.toFixed(2)) > 0 && (
@@ -632,19 +635,19 @@ export default function Staking() {
                         <div className="hope-icon"></div>
                         <div className="currency font-nor text-medium m-l-12">stHOPE</div>
                       </div>
-                      <span className="text-white">
+                      <span className="text-normal text-medium">
                         ≈ ${toUsdPrice(stHopeBalance?.toFixed(2), stHopePrice) || '--'}
                       </span>
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-white">Available</span>
-                      <span className="text-white">
+                      <span className="text-white text-medium">
                         {stakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
                       </span>
                     </div>
                     <div className="flex jc-between">
                       <span className="text-white">Unstaking</span>
-                      <span className="text-white">
+                      <span className="text-white text-medium">
                         {unstakingVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
                       </span>
                     </div>

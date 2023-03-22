@@ -27,6 +27,7 @@ import moment from 'moment'
 import format from 'utils/format'
 import { useLocker } from 'hooks/ahp/useLocker'
 import { getVELTToken } from 'utils/addressHelpers'
+import { useHistory } from 'react-router-dom'
 
 interface VoteProps {
   votiingData: any
@@ -41,6 +42,7 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
   const gomConContract = useGomConContract()
   const { toVote } = useToVote()
   const location = useLocation()
+  const history = useHistory()
   const searchParams = new URLSearchParams(location.search)
   const veLTToken = useMemo(() => getVELTToken(chainId), [chainId])
   const [curToken, setCurToken] = useState<Token | undefined>(veLTToken)
@@ -67,7 +69,7 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
   const { Option } = Select
   const endDate = dayjs()
     .add(10, 'day')
-    .format('YYYY-MM-DD')
+    .format('YYYY-MM-DD 00:00')
   const [amount, setAmount] = useState('')
   const [curGomAddress, setCurGomAddress] = useState('')
   const [endTimeData, setEndTimeData] = useState({
@@ -255,7 +257,7 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
     setShowConfirm(true)
     setAttemptingTxn(true)
     setTxHash('')
-    setPendingText(`${amount}% of your voting power`)
+    setPendingText(`Vote with ${amount}% voting power`)
     const argAmount = Math.floor(Number(amount) * 100)
     toVote(curGomAddress, argAmount)
       .then((hash: any) => {
@@ -359,6 +361,10 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
     [errorStatus]
   )
 
+  const goLocker = () => {
+    history.push(`/dao/locker`)
+  }
+
   return (
     <>
       <TransactionConfirmationModal
@@ -371,21 +377,25 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
         currencyToAdd={curToken}
       />
       <div className="gom-vote-box font-nor">
-        <h3 className="font-bolder text-white font-20">Gauge Weight Vote</h3>
+        <h3 className="font-bolder text-white font-20">Vote for A Gauge</h3>
         <p className="m-t-20 text-white lh15">
           - Each vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.
         </p>
         <p className="m-t-10 text-white lh15">
-          - Voting power is set at the time of the vote. If you get more veLT later, resubmit your vote to use your
-          increased power.
+          - Your voting power is fixed once your cast your vote. You can resubmit your vote later with more veLT to
+          increase your voting power.
         </p>
         <p className="m-t-10 text-white lh15">
-          - Votes are time locked for 10 days. If you vote now, no edits can be made until{' '}
-          <span className="text-primary">{endDate}</span>.
+          - All votes are subjected to a 10-day cooling period. If you vote now, no new votes can be made until{' '}
+          <span className="text-primary">{endDate}</span> UTC.
         </p>
         <div className="text-center text-normal m-t-20 flex jc-center ai-center">
-          Voting period ends
-          <Tooltip className="m-l-5" overlayClassName="tips-question" title="Voting period ends.">
+          Voting cycle ends in:
+          <Tooltip
+            className="m-l-5"
+            overlayClassName="tips-question"
+            title="There are currently 7 days in every voting cycle."
+          >
             <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
           </Tooltip>
         </div>
@@ -470,13 +480,15 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
               <span className="input-tip">% of your voting power</span>
             </div>
           </div>
-          <p className="text-normal m-t-10">
-            {voteAmount || '0.00'} of your voting power will be allocated to this Gauge.
-          </p>
+          <p className="text-normal m-t-10">{voteAmount || '0.00'} to this gauge.</p>
           <div className="action-box m-t-40">
             {!account ? (
               <ButtonPrimary className="hp-button-primary" onClick={toggleWalletModal}>
                 Connect Wallet
+              </ButtonPrimary>
+            ) : isNoVelt ? (
+              <ButtonPrimary className="hp-button-primary" onClick={goLocker}>
+                Get veLT to vote
               </ButtonPrimary>
             ) : (
               <ActionButton
