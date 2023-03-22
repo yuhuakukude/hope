@@ -7,14 +7,16 @@ import { PortisConnector } from '@web3-react/portis-connector'
 import { FortmaticConnector } from './Fortmatic'
 import { NetworkConnector } from './NetworkConnector'
 import UNISWAP_LOGO_URL from '../assets/svg/logo.svg'
+import { ChainId } from '@uniswap/sdk'
 
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL
-const TEST_NETWORK_URL = process.env.REACT_APP_TEST_NETWORK_URL
+// const TEST_NETWORK_URL = process.env.REACT_APP_TEST_NETWORK_URL
 const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY
 const PORTIS_ID = process.env.REACT_APP_PORTIS_ID
 const WALLETCONNECT_BRIDGE_URL = process.env.REACT_APP_WALLETCONNECT_BRIDGE_URL
 
 export const NETWORK_CHAIN_ID: number = parseInt(process.env.REACT_APP_CHAIN_ID ?? '1')
+
 
 if (typeof NETWORK_URL === 'undefined') {
   throw new Error(`REACT_APP_NETWORK_URL must be a defined environment variable`)
@@ -30,18 +32,19 @@ export function getNetworkLibrary(): Web3Provider {
 }
 
 export const injected = new InjectedConnector({
-  supportedChainIds: [11155111, 1337]
+  supportedChainIds: [NETWORK_CHAIN_ID ?? ChainId.MAINNET]
 })
 
 // mainnet only
 export const walletconnect = new WalletConnectConnector({
   rpc: {
-    11155111:
-      TEST_NETWORK_URL ??
-      'https://rpc.ankr.com/eth_sepolia/128bdedab70a53096c6b5132d94384254aee84b8491502b928ab6c08652a7b78'
+    1: NETWORK_URL,
+    5: NETWORK_URL,
+    11155111: NETWORK_URL,
+    1337: NETWORK_URL
   },
-  supportedChainIds: [11155111],
-  chainId: 11155111,
+  supportedChainIds: [NETWORK_CHAIN_ID],
+  chainId: NETWORK_CHAIN_ID,
   bridge: WALLETCONNECT_BRIDGE_URL,
   qrcode: true
 })

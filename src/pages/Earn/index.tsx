@@ -14,7 +14,6 @@ import StakingModal, { STAKE_ACTION } from '../../components/earn/StakingModal'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { TransactionResponse } from '@ethersproject/providers'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
-import { PERMIT2_ADDRESS } from '../../constants'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { useActiveWeb3React } from '../../hooks'
 import { CurrencyAmount } from '@uniswap/sdk'
@@ -32,6 +31,7 @@ import { ButtonPrimary } from '../../components/Button'
 import { useAllTokenBalances } from '../../state/wallet/hooks'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import { DOCS_URL } from 'constants/config'
+import { getPermit2Address } from 'utils/addressHelpers'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -104,7 +104,7 @@ export default function Earn() {
 
   const typedAmount = tryParseAmount(typedValue, poolInfo?.lpToken)
 
-  const [approvalState, approveCallback] = useApproveCallback(typedAmount, PERMIT2_ADDRESS[chainId ?? 1])
+  const [approvalState, approveCallback] = useApproveCallback(typedAmount, getPermit2Address(chainId))
 
   const stakingContract = useStakingContract(poolInfo?.stakingRewardAddress, true)
 
@@ -214,7 +214,7 @@ export default function Earn() {
       spender: poolInfo.stakingRewardAddress,
       deadline
     }
-    const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
+    const { domain, types, values } = getPermitData(permit, getPermit2Address(chainId), chainId)
     library
       .getSigner(account)
       ._signTypedData(domain, types, values)

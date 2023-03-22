@@ -6,14 +6,8 @@ import { useActiveWeb3React } from '../../hooks'
 import { Tooltip } from 'antd'
 import { useETHBalances, useTokenBalance, useStHopeBalance } from '../../state/wallet/hooks'
 import {
-  HOPE,
   HOPE_STAKING,
   HOPE_UNSTAKING,
-  LT,
-  PERMIT2_ADDRESS,
-  ST_HOPE,
-  HOPE_TOKEN_ADDRESS,
-  STAKING_HOPE_GAUGE_ADDRESS
 } from '../../constants'
 import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
@@ -46,6 +40,7 @@ import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 import { useActionPending } from '../../state/transactions/hooks'
 import { usePairStakeInfo } from '../../hooks/usePairInfo'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
+import { getHOPEToken, getHopeTokenAddress, getLTToken, getPermit2Address, getStakingHopeGaugeAddress, getSTHOPEToken } from 'utils/addressHelpers'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1340px;
@@ -62,30 +57,34 @@ enum ACTION {
 
 export default function Staking() {
   const { account, chainId, library } = useActiveWeb3React()
+  const hopeToken = useMemo(() => getHOPEToken(chainId), [chainId])
   const toggleWalletModal = useWalletModalToggle()
   const gasPrice = useGasPrice()
   const [curType, setStakingType] = useState('stake')
   const { search } = useLocation()
-  const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
+  const [curToken, setCurToken] = useState<Token | undefined>(hopeToken)
   const [actionType, setActionType] = useState(ACTION.STAKE)
 
+  // address
+  const permit2Address = useMemo(() => getPermit2Address(chainId), [chainId])
+
   const addresses = useMemo(() => {
-    return [STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] ?? '', HOPE_TOKEN_ADDRESS[chainId ?? 1] ?? '']
+    return [getStakingHopeGaugeAddress(chainId) ?? '', getHopeTokenAddress(chainId) ?? '']
   }, [chainId])
 
   const { result: priceResult } = useTokenPriceObject(addresses)
 
   const hopePrice = useMemo(() => {
     let pr = '0'
-    if (HOPE_TOKEN_ADDRESS[chainId ?? 1] && priceResult) {
-      pr = priceResult[`${HOPE_TOKEN_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()]
+    if (getHopeTokenAddress(chainId) && priceResult) {
+      pr = priceResult[`${getHopeTokenAddress(chainId)}`.toLocaleLowerCase()]
     }
     return pr
   }, [chainId, priceResult])
   const stHopePrice = useMemo(() => {
     let pr = '0'
-    if (STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] && priceResult) {
-      pr = priceResult[STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
+    if (getStakingHopeGaugeAddress(chainId) && priceResult) {
+      pr = priceResult[getStakingHopeGaugeAddress(chainId).toLocaleLowerCase()]
     }
     return pr
   }, [chainId, priceResult])
@@ -104,20 +103,20 @@ export default function Staking() {
 
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
-  const hopeBal = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
+  const hopeBal = useTokenBalance(account ?? undefined, hopeToken)
   const stHopeBalance = useStHopeBalance()
   const [apyVal, setApyVal] = useState('0')
   const [amount, setAmount] = useState('')
 
-  const inputAmount = tryParseAmount(amount, HOPE[chainId ?? 1]) as TokenAmount | undefined
+  const inputAmount = tryParseAmount(amount, hopeToken) as TokenAmount | undefined
   const { stakedVal, lpTotalSupply, unstakedVal, claRewards, unstakingVal, gomRelativeWeigh } = useStaking()
   const { toStaked } = useToStaked()
   const { toUnStaked } = useToUnStaked()
   const { toWithdraw } = useToWithdraw()
   const { toClaim } = useToClaim()
-  const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
+  const [approvalState, approveCallback] = useApproveCallback(inputAmount, permit2Address)
   const stakingAddr = useMemo(() => {
-    return `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+    return `${getStakingHopeGaugeAddress(chainId)}`.toLocaleLowerCase()
   }, [chainId])
   const { currentBoots, futureBoots } = usePairStakeInfo(stakingAddr)
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
@@ -172,7 +171,7 @@ export default function Staking() {
     setActionType(ACTION.STAKE)
     setCurToken(undefined)
     onTxStart()
-    setStakePendingText(`Approve ${HOPE[chainId ?? 1].symbol}`)
+    setStakePendingText(`Approve ${hopeToken.symbol}`)
     approveCallback()
       .then((response: TransactionResponse | undefined) => {
         setStakePendingText('')
@@ -182,11 +181,11 @@ export default function Staking() {
         setStakePendingText('')
         onTxError(error)
       })
-  }, [approveCallback, chainId, onTxError, onTxStart, onTxSubmitted])
+  }, [approveCallback, hopeToken, onTxError, onTxStart, onTxSubmitted])
 
   const stakingCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
-    setCurToken(ST_HOPE[chainId ?? 1])
+    setCurToken(getSTHOPEToken(chainId))
     onTxStart()
     setActionType(ACTION.STAKE)
     const deadline = toDeadline(PERMIT_EXPIRATION)
@@ -194,15 +193,15 @@ export default function Staking() {
 
     const permit: Permit = {
       permitted: {
-        token: HOPE[chainId ?? 1].address,
+        token: hopeToken.address,
         amount: inputAmount.raw.toString()
       },
       nonce: nonce,
-      spender: STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1],
+      spender: getStakingHopeGaugeAddress(chainId),
       deadline
     }
 
-    const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
+    const { domain, types, values } = getPermitData(permit, getPermit2Address(chainId), chainId)
     setStakePendingText(`Approve HOPE`)
 
     library
@@ -226,7 +225,7 @@ export default function Staking() {
         setStakePendingText('')
         onTxError(error)
       })
-  }, [account, inputAmount, library, chainId, onTxStart, toStaked, onTxSubmitted, onTxError])
+  }, [account, inputAmount, library, chainId, hopeToken, onTxStart, toStaked, onTxSubmitted, onTxError])
 
   const unStakingCallback = useCallback(async () => {
     if (!amount || !account || !inputAmount) return
@@ -248,11 +247,11 @@ export default function Staking() {
 
   const claimCallback = useCallback(async () => {
     if (!account) return
-    setCurToken(LT[chainId ?? 1])
+    setCurToken(getLTToken(chainId))
     onTxStart()
     setClaimPendingText(`claim LT`)
     setActionType(ACTION.CLAIM)
-    toClaim(STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1], claRewards)
+    toClaim(getStakingHopeGaugeAddress(chainId), claRewards)
       .then(hash => {
         setClaimPendingText('')
         onTxSubmitted(hash)
@@ -265,7 +264,7 @@ export default function Staking() {
 
   const toWithdrawCallback = useCallback(async () => {
     if (!account) return
-    setCurToken(HOPE[chainId ?? 1])
+    setCurToken(hopeToken)
     onTxStart()
     setActionType(ACTION.WITHDRAW)
     setWithdrawPendingText('Withdraw')
@@ -278,7 +277,7 @@ export default function Staking() {
         setWithdrawPendingText('')
         onTxError(error)
       })
-  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toWithdraw])
+  }, [account, hopeToken, onTxError, onTxStart, onTxSubmitted, toWithdraw])
 
   function toMax() {
     const balance = curType === 'stake' ? hopeBal?.toFixed(2) : stakedVal?.toFixed(2)

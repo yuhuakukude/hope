@@ -17,19 +17,22 @@ import { JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../../hooks'
 import { tryParseAmount } from '../../../../state/swap/hooks'
 import { useActionPending } from '../../../../state/transactions/hooks'
-import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS } from '../../../../constants'
 import { ApprovalState, useApproveCallback } from '../../../../hooks/useApproveCallback'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../../../permit2/domain'
+import { getLTToken, getPermit2Address, getVELTToken, getVELTTokenAddress } from 'utils/addressHelpers'
 
 export default function AddAmount() {
   const [amount, setAmount] = useState('')
   const { account, chainId, library } = useActiveWeb3React()
-  const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
-  const inputAmount = tryParseAmount(amount, LT[chainId ?? 1]) as TokenAmount | undefined
+  const ltToken = useMemo(() => getLTToken(chainId), [chainId])
+  const veLTToken = useMemo(() => getVELTToken(chainId), [chainId])
+  const permit2Address = useMemo(() => getPermit2Address(chainId), [chainId])
+  const ltBalance = useTokenBalance(account ?? undefined, ltToken)
+  const inputAmount = tryParseAmount(amount, ltToken) as TokenAmount | undefined
   const [txHash, setTxHash] = useState<string>('')
   const [pendingText, setPendingText] = useState('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
-  const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
+  const veltBalance = useTokenBalance(account ?? undefined, veLTToken)
   const { pending: isLocerkAmountPending } = useActionPending(
     account ? `${account}-${conFnNameEnum.IncreaseAmount}` : ''
   )
@@ -38,8 +41,8 @@ export default function AddAmount() {
   )
 
   // token api
-  const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
-  const [curToken, setCurToken] = useState<Token | undefined>(LT[chainId ?? 1])
+  const [approvalState, approveCallback] = useApproveCallback(inputAmount, permit2Address)
+  const [curToken, setCurToken] = useState<Token | undefined>(ltToken)
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -52,7 +55,7 @@ export default function AddAmount() {
   const isMaxDisabled = useMemo(() => {
     let flag = false
     if (amount && ltBalance) {
-      const payAmout = (tryParseAmount(amount, LT[chainId ?? 1]) as TokenAmount | undefined) || ''
+      const payAmout = (tryParseAmount(amount, getLTToken(chainId)) as TokenAmount | undefined) || ''
       flag = ltBalance?.lessThan(payAmout)
     }
     return flag
@@ -64,7 +67,7 @@ export default function AddAmount() {
     }
     const velt = getVeLtAmount(amount, format.formatDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD'))
     const res = new TokenAmount(
-      VELT[chainId ?? 1],
+      getVELTToken(chainId),
       JSBI.add(JSBI.BigInt(veltBalance?.raw.toString() ?? '0'), JSBI.BigInt(velt?.raw.toString() ?? '0'))
     )
     return res
@@ -134,7 +137,7 @@ export default function AddAmount() {
 
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
-    setCurToken(VELT[chainId ?? 1])
+    setCurToken(getVELTToken(chainId))
     setPendingText(`Lock LT`)
     onTxStart()
 
@@ -142,15 +145,15 @@ export default function AddAmount() {
     const nonce = ethers.utils.randomBytes(32)
     const permit: Permit = {
       permitted: {
-        token: LT[chainId ?? 1].address,
+        token: getVELTTokenAddress(chainId),
         amount: inputAmount.raw.toString()
       },
       nonce: nonce,
-      spender: VELT_TOKEN_ADDRESS[chainId ?? 1] || '',
+      spender: getVELTTokenAddress(chainId) || '',
       deadline
     }
 
-    const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
+    const { domain, types, values } = getPermitData(permit, permit2Address, chainId)
     library
       .getSigner(account)
       ._signTypedData(domain, types, values)
@@ -182,7 +185,8 @@ export default function AddAmount() {
     onTxStart,
     toAddAmountLocker,
     afterVeLtAmount,
-    veltBalance
+    veltBalance,
+    permit2Address
   ])
 
   return (

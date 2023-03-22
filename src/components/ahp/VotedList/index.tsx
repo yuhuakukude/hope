@@ -6,7 +6,7 @@ import { Pagination } from 'antd'
 import { Token, JSBI, Percent } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../hooks'
 import { TokenAmount } from '@uniswap/sdk'
-import { VELT, SUBGRAPH, STAKING_HOPE_GAUGE_ADDRESS, ST_HOPE } from '../../../constants'
+import { SUBGRAPH } from '../../../constants'
 import { useToVote, useToVoteAll } from '../../../hooks/ahp/useGomVote'
 // import format from '../../../utils/format'
 import { useSingleContractMultipleData } from '../../../state/multicall/hooks'
@@ -25,6 +25,7 @@ import { Decimal } from 'decimal.js'
 import format, { formatMessage } from '../../../utils/format'
 import { useHistory } from 'react-router-dom'
 import { SymbolLogo } from 'components/CurrencyLogo'
+import { getStakingHopeGaugeAddress, getSTHOPEToken, getVELTToken } from 'utils/addressHelpers'
 
 const VotedList = ({
   getVotingRewards,
@@ -46,15 +47,14 @@ const VotedList = ({
   const [pageSize, setPageSize] = useState<number>(10)
   const [pageTotal, setPageTotal] = useState<number>(0)
   const history = useHistory()
-  const addresses = useMemo(() => {
-    return [STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]]
-  }, [chainId])
+  const addresses = useMemo(() => [getStakingHopeGaugeAddress(chainId)], [chainId])
+  const veltToken = useMemo(() => getVELTToken(chainId), [chainId])
   const { result: priceResult } = useTokenPrice(addresses)
-  const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
+  const [curToken, setCurToken] = useState<Token | undefined>(veltToken)
   const { toVote } = useToVote()
   const { toVoteAll } = useToVoteAll()
   const { toGomFeeClaim } = useGomFeeClaim()
-  const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
+  const veltBalance = useTokenBalance(account ?? undefined, veltToken)
 
   const isNoVelt = useMemo(() => {
     let res = false
@@ -137,7 +137,7 @@ const VotedList = ({
         let usdOfValue = ''
         let value = ''
         if (e.result) {
-          const tn = new TokenAmount(ST_HOPE[chainId ?? 1], JSBI.BigInt(Number(e.result)) ?? '0')
+          const tn = new TokenAmount(getSTHOPEToken(chainId), JSBI.BigInt(Number(e.result)) ?? '0')
           view = tn.toFixed(2, { groupSeparator: ',' } ?? '0.00')
           value = tn.toFixed(2)
           if (priceResult && priceResult[0] && priceResult[0].price) {
@@ -235,7 +235,7 @@ const VotedList = ({
           const num = JSBI.lessThan(JSBI.BigInt(Number(sub)), JSBI.BigInt('0'))
             ? JSBI.BigInt('0')
             : JSBI.BigInt(Number(sub))
-          const tn = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(Number(num)) ?? '0')
+          const tn = new TokenAmount(getVELTToken(chainId), JSBI.BigInt(Number(num)) ?? '0')
           const ftn = tn.toFixed(2, { groupSeparator: ',' })
           const addr = tableData[index]?.gauge.id
           res[addr] = ftn
@@ -360,7 +360,7 @@ const VotedList = ({
 
   const gomFeeClaimCallback = useCallback(async () => {
     if (!account) return
-    setCurToken(ST_HOPE[chainId ?? 1])
+    setCurToken(getSTHOPEToken(chainId))
     onTxStart()
     setPendingText(`Fees Withdraw`)
     const arg = curTableItem.gauge.id

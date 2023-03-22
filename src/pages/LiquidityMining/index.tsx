@@ -6,7 +6,7 @@ import { AutoColumn, GapColumn } from '../../components/Column'
 import AppBody from '../AppBody'
 import { TYPE } from '../../theme'
 import { AutoRow, RowBetween } from '../../components/Row'
-import React, { useCallback, useState } from 'react'
+import React, { useCallback, useMemo, useState } from 'react'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { useActiveWeb3React } from '../../hooks'
@@ -20,7 +20,6 @@ import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import { ethers } from 'ethers'
-import { PERMIT2_ADDRESS } from '../../constants'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { useStakingContract } from '../../hooks/useContract'
 import { useTransactionAdder } from '../../state/transactions/hooks'
@@ -30,6 +29,7 @@ import Loader from '../../components/Loader'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import noData from '../../assets/images/no_data.png'
 import { formatMessage } from '../../utils/format'
+import { getPermit2Address } from 'utils/addressHelpers'
 
 const CustomTabWrapper = styled(TabWrapper)`
   width: auto;
@@ -69,7 +69,7 @@ export default function LiquidityMining({
   const dummyPair = pool
     ? new Pair(new TokenAmount(pool.tokens[0], '0'), new TokenAmount(pool.tokens[1], '0'))
     : undefined
-
+  const permit2Address = useMemo(() => getPermit2Address(chainId), [chainId])
   // wrapped onUserInput to clear signatures
   const onUserInput = useCallback((typedValue: string) => {
     setTypedValue(typedValue)
@@ -87,7 +87,7 @@ export default function LiquidityMining({
 
   const [approvalState, approveCallback] = useApproveCallback(
     staking ? parsedAmount : undefined,
-    PERMIT2_ADDRESS[chainId ?? 1]
+    permit2Address
   )
 
   const stakingContract = useStakingContract(stakingRewardAddress, true)
@@ -186,7 +186,7 @@ export default function LiquidityMining({
       spender: pool.stakingRewardAddress,
       deadline
     }
-    const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
+    const { domain, types, values } = getPermitData(permit, permit2Address, chainId)
     library
       .getSigner(account)
       ._signTypedData(domain, types, values)
@@ -204,7 +204,7 @@ export default function LiquidityMining({
       .catch(error => {
         onTxError(error)
       })
-  }, [account, parsedAmount, library, chainId, pool, onTxStart, onStake, onTxSubmitted, onTxError])
+  }, [account, parsedAmount, library, chainId, pool, permit2Address, onTxStart, onStake, onTxSubmitted, onTxError])
 
   const onUnstakeCallback = useCallback(async () => {
     if (!account || !parsedAmount || !library || !chainId || !pool) return

@@ -7,7 +7,6 @@ import SelectTips, { TitleTipsProps } from '../SelectTips'
 import TitleTips from '../TitleTips'
 // import { TokenAmount, JSBI, Token } from '@uniswap/sdk'
 import { Token } from '@uniswap/sdk'
-import { LT, HOPE, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 import { useActiveWeb3React } from '../../../../hooks'
 import GaugeClaim from '../../../../components/ahp/GaugeClaim'
 import { useToClaim, useClaimRewards } from '../../../../hooks/ahp/usePortfolio'
@@ -21,6 +20,7 @@ import { useHistory } from 'react-router-dom'
 
 import { Contract } from '@ethersproject/contracts'
 import { usePairContract } from '../../../../hooks/useContract'
+import { getHOPEToken, getLTToken, getStakingHopeGaugeAddress } from 'utils/addressHelpers'
 
 export const isNotNull = (val: string | number | null) => {
   return val && Number(val) !== 0
@@ -31,8 +31,12 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
   const history = useHistory()
   const { toClaim } = useToClaim()
   const { stakedVal } = useStaking()
+  // address
+  const stakingHopeGaugeAddress = useMemo(() => getStakingHopeGaugeAddress(chainId), [chainId])
+  const ltToken = useMemo(() => getLTToken(chainId), [chainId])
+
   const [curTableItem, setCurTableItem]: any = useState({})
-  const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
+  const [curToken, setCurToken] = useState<Token | undefined>(getHOPEToken(chainId))
   const [claimPendingText, setPendingText] = useState('')
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -45,6 +49,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
   const [curLpAddress, setCurLpAddress] = useState<string>('')
   const [baseLink, setBaseLink] = useState<string>('')
   const pairContract: Contract | null = usePairContract(curLpAddress)
+  
 
   const curAddress = useMemo(() => {
     let res = ''
@@ -169,7 +174,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
       key: 'Actions',
       render: (text: string, record: PortfolioReward) => {
         const options: TitleTipsProps[] = []
-        const hsg = STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1].toLowerCase()
+        const hsg = stakingHopeGaugeAddress.toLowerCase()
         if (isNotNull(record.stakeable)) {
           options.push({
             label: 'Stake',
@@ -269,10 +274,10 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
 
   const claimCallback = useCallback(async () => {
     if (!account) return
-    setCurToken(LT[chainId ?? 1])
+    setCurToken(ltToken)
     onTxStart()
     setPendingText(`claim Rewards`)
-    toClaim(STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1])
+    toClaim(stakingHopeGaugeAddress)
       .then(hash => {
         setPendingText('')
         onTxSubmitted(hash)
@@ -281,11 +286,11 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
         setPendingText('')
         onTxError(error)
       })
-  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaim])
+  }, [account, stakingHopeGaugeAddress, onTxError, onTxStart, onTxSubmitted, toClaim])
 
   const claimRewardsCallback = useCallback(async () => {
     if (!account) return
-    setCurToken(LT[chainId ?? 1])
+    setCurToken(ltToken)
     onTxStart()
     setPendingText(`claim Rewards`)
     toClaimRewards()
@@ -297,7 +302,7 @@ export default function Rewards({ data }: { data: PortfolioReward[] }) {
         setPendingText('')
         onTxError(error)
       })
-  }, [account, chainId, onTxError, onTxStart, onTxSubmitted, toClaimRewards])
+  }, [account, ltToken, onTxError, onTxStart, onTxSubmitted, toClaimRewards])
 
   const claimSubmit = useCallback(
     (type: string) => {

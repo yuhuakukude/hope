@@ -1,5 +1,6 @@
 import { ChainId, CurrencyAmount, ETHER, Percent, Route, TokenAmount, Trade } from '@uniswap/sdk'
-import { DAI, USDC } from '../constants'
+import { DAI } from '../constants'
+import { USDC } from 'constants/constract'
 import { MockV1Pair } from '../data/V1'
 import v1SwapArguments from './v1SwapArguments'
 

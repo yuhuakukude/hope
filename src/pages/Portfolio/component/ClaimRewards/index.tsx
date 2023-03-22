@@ -4,10 +4,10 @@ import TransactionConfirmationModal, {
 } from '../../../../components/TransactionConfirmationModal'
 import { Token, TokenAmount } from '@uniswap/sdk'
 import { useToClaim } from '../../../../hooks/ahp/usePortfolio'
-import { LT, HOPE } from '../../../../constants'
 import { useActiveWeb3React } from 'hooks'
 import GaugeClaimAll from 'components/ahp/GaugeClaimAll'
 import { formatMessage } from '../../../../utils/format'
+import { getHOPEToken, getLTToken } from 'utils/addressHelpers'
 
 export default function ClaimRewards({
   item,
@@ -25,7 +25,7 @@ export default function ClaimRewards({
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
-  const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
+  const [curToken, setCurToken] = useState<Token | undefined>(getHOPEToken(chainId))
 
   useEffect(() => {
     if (!item) {
@@ -60,7 +60,7 @@ export default function ClaimRewards({
 
   const claimAllCallback = useCallback(async () => {
     if (!account || !Array.isArray(item)) return
-    setCurToken(LT[chainId ?? 1])
+    setCurToken(getLTToken(chainId))
     onTxStart()
     setPendingText(`claim all Rewards`)
     toClaim(item.map(i => i.gauge))

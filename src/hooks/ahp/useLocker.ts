@@ -4,7 +4,6 @@ import { useLockerContract, useGomConContract } from '../useContract'
 import { useActiveWeb3React } from '../index'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 import moment from 'moment'
-import { LT, VELT } from '../../constants'
 import { CurrencyAmount } from '@uniswap/sdk'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
@@ -12,6 +11,7 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { tryParseAmount } from '../../state/swap/hooks'
 import format from '../../utils/format'
 import momentTz from 'moment-timezone'
+import { getLTToken, getVELTToken } from 'utils/addressHelpers'
 
 export enum conFnNameEnum {
   CreateLock = 'createLock',
@@ -139,7 +139,7 @@ export function useToLocker() {
 
   const { chainId } = useActiveWeb3React()
   const getVeLtAmount = (amount: string, endDate: any, starDate?: any) => {
-    if (!amount || !endDate || !LT || !chainId) {
+    if (!amount || !endDate || !chainId) {
       return undefined
     }
     const year = JSBI.multiply(
@@ -149,11 +149,11 @@ export function useToLocker() {
     const initStartDate = starDate ? moment(starDate).format('YYYY-MM-DD') : moment()
     const lockPeriod = moment(endDate).diff(initStartDate, 'second')
     const veltGetAmount = new TokenAmount(
-      VELT[chainId ?? 1],
+      getVELTToken(chainId),
       JSBI.divide(
         JSBI.divide(
           JSBI.multiply(
-            JSBI.BigInt(tryParseAmount(amount, LT[chainId ?? 1])?.raw.toString() ?? '0'),
+            JSBI.BigInt(tryParseAmount(amount, getLTToken(chainId))?.raw.toString() ?? '0'),
             JSBI.BigInt(lockPeriod)
           ),
           year

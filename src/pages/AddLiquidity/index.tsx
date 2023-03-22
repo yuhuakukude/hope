@@ -1,7 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Currency, currencyEquals, ETHER, TokenAmount, WETH } from '@uniswap/sdk'
-import React, { useCallback, useContext, useState } from 'react'
+import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { PlusCircle } from 'react-feather'
 import { Text } from 'rebass'
 import styled, { ThemeContext } from 'styled-components'
@@ -17,7 +17,6 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { AutoRow, RowBetween, RowFlat } from '../../components/Row'
 
-import { ROUTER_ADDRESS } from '../../constants'
 import { PairState } from '../../data/Reserves'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
@@ -42,6 +41,7 @@ import UnsupportedCurrencyFooter from 'components/swap/UnsupportedCurrencyFooter
 import spinner from '../../assets/svg/spinner.svg'
 import { useHistory } from 'react-router-dom'
 import { formatMessage } from '../../utils/format'
+import { getRouterAddress } from 'utils/addressHelpers'
 
 const PageWrapper = styled(GapColumn)`
   width: 100%;
@@ -51,6 +51,7 @@ const PageWrapper = styled(GapColumn)`
 
 export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA?: string; currencyIdB?: string }) {
   const { account, chainId, library } = useActiveWeb3React()
+  const routerAddress = useMemo(() => getRouterAddress(chainId), [chainId])
   const history = useHistory()
   const theme = useContext(ThemeContext)
   const currencyA = useCurrency(currencyIdA)
@@ -148,8 +149,8 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
   }, [])
 
   // check whether the user has approved the router on the tokens
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS)
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS)
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], routerAddress)
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], routerAddress)
 
   const approveCallback = useCallback(
     (symbol: string, approve: () => Promise<TransactionResponse | undefined>) => {

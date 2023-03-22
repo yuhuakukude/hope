@@ -8,7 +8,6 @@ import { usePortfolio, toUsdPrice } from '../../../../hooks/ahp/usePortfolio'
 import format, { formatMessage } from '../../../../utils/format'
 import { useActiveWeb3React } from '../../../../hooks'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
-import { VELT, ST_HOPE, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 import { Percent, Token } from '@uniswap/sdk'
 import VotedList from '../../../../components/ahp/VotedList'
 import { NavLink, Link } from 'react-router-dom'
@@ -21,12 +20,13 @@ import './index.scss'
 import { ButtonPrimary } from '../../../../components/Button'
 import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
 import { DOCS_URL } from 'constants/config'
+import { getStakingHopeGaugeAddress, getSTHOPEToken, getVELTToken } from 'utils/addressHelpers'
 
 export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (stHope: string, lt: string) => void }) {
   const { account, chainId } = useActiveWeb3React()
   const { lockerRes, veltTotalAmounnt } = useLocker()
   const { claimableFees } = usePortfolio()
-  const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
+  const veltBalance = useTokenBalance(account ?? undefined, getVELTToken(chainId))
   const [curWithType, setCurWithType] = useState<string>('all')
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -36,7 +36,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [claimPendingText, setClaimPendingText] = useState('')
-  const [curToken, setCurToken] = useState<Token | undefined>(ST_HOPE[chainId ?? 1])
+  const [curToken, setCurToken] = useState<Token | undefined>(getSTHOPEToken(chainId))
 
   const { toFeeClaim } = useFeeClaim()
   const { toGomFeeManyClaim } = useGomFeeManyClaim()
@@ -44,14 +44,13 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
   const [unUseRateVal, setUnUseRateVal] = useState<string>('')
   const [votingFee, setVotingFee] = useState<any>({ stHope: '0.00', toUsd: '0.00' })
   const [allData, setAllData] = useState([])
-  const addresses = useMemo(() => {
-    return [STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] ?? '']
-  }, [chainId])
+  const addresses = useMemo(() => [getStakingHopeGaugeAddress(chainId) ?? ''], [chainId])
   const { result: priceResult } = useTokenPriceObject(addresses)
   const stHopePrice = useMemo(() => {
     let pr = '0'
-    if (STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] && priceResult) {
-      pr = priceResult[STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
+    const stakingAddress = getStakingHopeGaugeAddress(chainId)
+    if (stakingAddress && priceResult) {
+      pr = priceResult[stakingAddress.toLocaleLowerCase()]
     }
     return pr
   }, [chainId, priceResult])
@@ -140,7 +139,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
   const feeClaimCallback = useCallback(
     async (amount: string) => {
       if (!account) return
-      setCurToken(ST_HOPE[chainId ?? 1])
+      setCurToken(getSTHOPEToken(chainId))
       onTxStart()
       setClaimPendingText(`Fees Withdraw`)
       toFeeClaim(amount)
@@ -159,7 +158,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
   const gomFeeManyClaimCallback = useCallback(
     async (amount: string) => {
       if (!account) return
-      setCurToken(ST_HOPE[chainId ?? 1])
+      setCurToken(getSTHOPEToken(chainId))
       onTxStart()
       setClaimPendingText(`Fees Withdraw`)
       toGomFeeManyClaim(argList, amount)

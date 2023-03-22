@@ -4,9 +4,9 @@ import TransactionConfirmationModal, {
 } from '../../../../components/TransactionConfirmationModal'
 import { Token } from '@uniswap/sdk'
 import { useToClaim } from '../../../../hooks/ahp/usePortfolio'
-import { LT, HOPE, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 import { useActiveWeb3React } from 'hooks'
 import { formatMessage } from '../../../../utils/format'
+import { getLTToken, getHOPEToken, getStakingHopeGaugeAddress } from 'utils/addressHelpers'
 
 export default function ClaimRewards({ item, clearItem }: { item: any; clearItem: () => void }) {
   const { account, chainId } = useActiveWeb3React()
@@ -14,7 +14,7 @@ export default function ClaimRewards({ item, clearItem }: { item: any; clearItem
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
-  const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
+  const [curToken, setCurToken] = useState<Token | undefined>(getHOPEToken(chainId))
 
   const onTxStart = useCallback(() => {
     setShowConfirm(true)
@@ -39,11 +39,10 @@ export default function ClaimRewards({ item, clearItem }: { item: any; clearItem
 
   const claimCallback = useCallback(async () => {
     if (!account || !item) return
-    setCurToken(LT[chainId ?? 1])
+    setCurToken(getLTToken(chainId))
     onTxStart()
     setPendingText(`claim Rewards`)
-    console.log(STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1])
-    toClaim(STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1])
+    toClaim(getStakingHopeGaugeAddress(chainId))
       .then(hash => {
         setPendingText('')
         onTxSubmitted(hash)

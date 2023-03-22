@@ -8,11 +8,11 @@ import Card from '../Card'
 import Tips from 'components/Tips'
 import Modal from 'components/antd/Modal'
 import TitleTips from '../TitleTips'
-import { HOPE } from '../../../../constants'
 import { useActiveWeb3React } from '../../../../hooks'
 import { useTokenPrice } from '../../../../hooks/liquidity/useBasePairs'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 import { DOCS_URL } from 'constants/config'
+import { getHopeTokenAddress } from 'utils/addressHelpers'
 // import Button from 'components/antd/Button'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
@@ -26,9 +26,7 @@ type IOptionItem = {
 
 export default function InvestmentAllocation({ data }: { data: any }) {
   const { chainId } = useActiveWeb3React()
-  const addresses = useMemo(() => {
-    return [HOPE[chainId ?? 1].address]
-  }, [chainId])
+  const addresses = useMemo(() => [getHopeTokenAddress(chainId)], [chainId])
   const { result: priceResult } = useTokenPrice(addresses)
   const [allocations, setAllocations] = useState<IOptionItem[]>([])
 

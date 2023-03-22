@@ -17,13 +17,14 @@ import { useETHBalances, useTokenBalance } from '../../state/wallet/hooks'
 import { useBuyHopeContract } from '../../hooks/useContract'
 import { useSingleCallResult } from '../../state/multicall/hooks'
 import { tryParseAmount } from '../../state/swap/hooks'
-import { BUY_HOPE_GAS, HOPE, PERMIT2_ADDRESS, TOKEN_SALE_ADDRESS, USDC, USDT } from '../../constants'
+import { BUY_HOPE_GAS } from '../../constants'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
 import './index.scss'
 import useGasPrice from '../../hooks/useGasPrice'
 import { formatMessage } from '../../utils/format'
+import {getTokenSaleAddress, getHOPEToken, getUSDCToken, getUSDTToken, getPermit2Address} from 'utils/addressHelpers'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1280px;
@@ -43,6 +44,12 @@ export default function BuyHope() {
   const gasPrice = useGasPrice()
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
 
+  // address
+  const hopeToken = useMemo(() => getHOPEToken(chainId), [chainId])
+  const usdtAddress = useMemo(() => getUSDTToken(chainId), [chainId])
+  const usdcAddress = useMemo(() => getUSDCToken(chainId), [chainId])
+  const permit2Address = useMemo(() => getPermit2Address(chainId), [chainId])
+
   // state
   const [currencyModalFlag, setCurrencyModalFlag] = useState(false)
   const [inputBorder, setInputBorder] = useState('')
@@ -50,7 +57,7 @@ export default function BuyHope() {
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [typed, setType] = useState('')
   const [typedType, setTypedType] = useState<TYPE>(TYPE.TOP_INPUT)
-  const [payToken, setPayToken] = useState<Token>(USDT[chainId ?? 1])
+  const [payToken, setPayToken] = useState<Token>(usdtAddress)
 
   const [pendingText, setPendingText] = useState('')
 
@@ -60,13 +67,13 @@ export default function BuyHope() {
 
   const rateObj = useSingleCallResult(buyHopeContract, 'currencys', [payToken.symbol])
 
-  const [curToken, setCurToken] = useState<Token | undefined>(HOPE[chainId ?? 1])
+  const [curToken, setCurToken] = useState<Token | undefined>(hopeToken)
 
   const formattedAmounts = useMemo(() => {
     let resOf = ''
     if (typedType === TYPE.TOP_INPUT && rateObj?.result?.rate && typed) {
       resOf = new TokenAmount(
-        HOPE[chainId ?? 1],
+        hopeToken,
         JSBI.divide(
           JSBI.multiply(
             JSBI.BigInt(tryParseAmount(typed, payToken)?.raw.toString() ?? '0'),
@@ -74,14 +81,14 @@ export default function BuyHope() {
           ),
           JSBI.BigInt(1000)
         )
-      ).toSignificant(HOPE[chainId ?? 1].decimals)
+      ).toSignificant(hopeToken.decimals)
     }
     if (typedType === TYPE.BOTTOM_INPUT && rateObj?.result?.rate && typed) {
       resOf = new TokenAmount(
         payToken,
         JSBI.divide(
           JSBI.multiply(
-            JSBI.BigInt(tryParseAmount(typed, HOPE[chainId ?? 1])?.raw.toString() ?? '0'),
+            JSBI.BigInt(tryParseAmount(typed, hopeToken)?.raw.toString() ?? '0'),
             JSBI.BigInt(1000)
           ),
           JSBI.BigInt(rateObj?.result?.rate?.toString())
@@ -105,8 +112,8 @@ export default function BuyHope() {
       : {
           topValue: typed
             ? new TokenAmount(
-                HOPE[chainId ?? 1],
-                tryParseAmount(resOf, HOPE[chainId ?? 1])?.raw.toString() ?? '0'
+                hopeToken,
+                tryParseAmount(resOf, hopeToken)?.raw.toString() ?? '0'
               ).toFixed(2, undefined, 0)
             : '',
           bottomValue: typed
@@ -119,7 +126,7 @@ export default function BuyHope() {
       return undefined
     }
     return new TokenAmount(
-      HOPE[chainId ?? 1],
+      hopeToken,
       JSBI.divide(
         JSBI.multiply(
           JSBI.BigInt(tryParseAmount('1', payToken)?.raw.toString() ?? '0'),
@@ -128,11 +135,11 @@ export default function BuyHope() {
         JSBI.BigInt(1000)
       )
     )
-  }, [rateObj, chainId, payToken])
+  }, [rateObj, payToken, hopeToken])
 
   const payAmount = tryParseAmount(formattedAmounts.topValue, payToken)
 
-  const [approvalState, approveCallback] = useApproveCallback(payAmount, PERMIT2_ADDRESS[chainId ?? 1])
+  const [approvalState, approveCallback] = useApproveCallback(payAmount, permit2Address)
 
   const onTxStart = useCallback(() => {
     setShowConfirm(true)
@@ -192,10 +199,11 @@ export default function BuyHope() {
 
   const buyHopeCallback = useCallback(async () => {
     if (!account || !payAmount || !library || !chainId || !payToken.symbol) return
-    setCurToken(HOPE[chainId ?? 1])
+    setCurToken(hopeToken)
     setPendingText(`Approve ${payToken.symbol}`)
 
     onTxStart()
+    const tokenSaleAddress = getTokenSaleAddress(chainId)
     // sign
     const deadline = toDeadline(PERMIT_EXPIRATION)
     const nonce = ethers.utils.randomBytes(32)
@@ -205,10 +213,10 @@ export default function BuyHope() {
         amount: payAmount.raw.toString()
       },
       nonce: nonce,
-      spender: TOKEN_SALE_ADDRESS[chainId ?? 1] || '',
+      spender: tokenSaleAddress || '',
       deadline
     }
-    const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
+    const { domain, types, values } = getPermitData(permit, permit2Address, chainId)
     library
       .getSigner(account)
       ._signTypedData(domain, types, values)
@@ -227,7 +235,7 @@ export default function BuyHope() {
       .catch(error => {
         onTxError(error)
       })
-  }, [account, payAmount, library, chainId, payToken, onTxStart, formattedAmounts, toBuyHope, onTxSubmitted, onTxError])
+  }, [account, payAmount, library, chainId, payToken, hopeToken, permit2Address, onTxStart, formattedAmounts, toBuyHope, onTxSubmitted, onTxError])
 
   const balanceAmount = useTokenBalance(account ?? undefined, payToken)
 
@@ -420,7 +428,7 @@ export default function BuyHope() {
         {currencyModalFlag && (
           <SelectCurrency
             isOpen={currencyModalFlag}
-            supportedTokens={[USDT[chainId ?? 1], USDC[chainId ?? 1]]}
+            supportedTokens={[usdtAddress, usdcAddress]}
             selectToken={payToken}
             onTokenSelect={token => setPayToken(token)}
             onCloseModel={() => setCurrencyModalFlag(false)}

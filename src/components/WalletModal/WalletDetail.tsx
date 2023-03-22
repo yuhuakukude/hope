@@ -1,6 +1,6 @@
 import Row, { AutoRowBetween } from '../Row'
 import { GapColumn } from '../Column'
-import React from 'react'
+import React, { useMemo } from 'react'
 import { NavLink } from 'react-router-dom'
 import Avatar from 'assets/images/metamask-logo.png'
 import { useActiveWeb3React } from '../../hooks'
@@ -15,13 +15,13 @@ import Test1 from 'assets/images/ahp/hope.png'
 import Test2 from 'assets/images/ahp/hope.png'
 import Test3 from 'assets/images/ahp/lt.png'
 import { useETHBalances, useTokenBalance, useStHopeBalance } from '../../state/wallet/hooks'
-import { HOPE, LT } from '../../constants'
 import Circle from '../../assets/images/blue-loader.svg'
 import { CustomLightSpinner, ExternalLink } from '../../theme'
 import Copy from '../AccountDetails/Copy'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { setInjectedConnected } from 'utils/isInjectedConnectedPrev'
 import { Tooltip } from 'antd'
+import { getHOPEToken, getLTToken } from 'utils/addressHelpers'
 
 export const DivideLine = styled.div`
   border: 0.5px solid ${({ theme }) => theme.bg3};
@@ -76,12 +76,14 @@ export default function WalletDetail({
   setShowTransaction: (showTransaction: boolean) => void
 }) {
   const { account, chainId, deactivate } = useActiveWeb3React()
+  const hopeToken = useMemo(() => getHOPEToken(chainId), [chainId])
+  const ltToken = useMemo(() => getLTToken(chainId), [chainId])
   const toggleWalletModal = useWalletModalToggle()
   const theme = useTheme()
   const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
-  const hopeBalance = useTokenBalance(account ?? undefined, HOPE[chainId ?? 1])
+  const hopeBalance = useTokenBalance(account ?? undefined, hopeToken)
   const stHopeBalance = useStHopeBalance()
-  const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
+  const ltBalance = useTokenBalance(account ?? undefined, ltToken)
 
   const fakeIcon = <img src={Avatar} style={{ width: '24px', height: '24px' }} alt="" />
   return (

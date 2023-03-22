@@ -1,4 +1,3 @@
-import { LT } from '../../constants'
 import React, { useEffect, useCallback, useState } from 'react'
 import { TYPE } from '../../theme'
 import { AutoColumn } from '../../components/Column'
@@ -9,6 +8,7 @@ import { ColumnCenter } from '../../components/Column'
 import { useActiveWeb3React } from '../../hooks'
 import AprApi from '../../api/apr.api'
 import format from '../../utils/format'
+import { getLTToken } from 'utils/addressHelpers'
 
 export default function TotalApr({ address }: { address?: string }) {
   const { chainId } = useActiveWeb3React()
@@ -48,7 +48,7 @@ export default function TotalApr({ address }: { address?: string }) {
             <TYPE.mediumHeader>Mint Rewards :</TYPE.mediumHeader>
             <AutoRow width={'auto'} gap={'10px'}>
               <TYPE.mediumHeader>LT</TYPE.mediumHeader>
-              <CurrencyLogo currency={LT[chainId ?? 1]} />
+              <CurrencyLogo currency={getLTToken(chainId)} />
             </AutoRow>
           </RowBetween>
         </AutoColumn>

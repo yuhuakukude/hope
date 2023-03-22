@@ -12,9 +12,9 @@ import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { useSingleCallResult } from '../../state/multicall/hooks'
 import { JSBI, Percent, TokenAmount } from '@uniswap/sdk'
-import { LT } from '../../constants'
 import { useStakingContract } from '../../hooks/useContract'
 import format from 'utils/format'
+import { getLTToken } from 'utils/addressHelpers'
 import { useActionPending } from '../../state/transactions/hooks'
 import spinner from '../../assets/svg/spinner.svg'
 
@@ -43,7 +43,7 @@ export default function LTPoolCard({
   const userLiquidityUnstaked = useTokenBalance(account ?? undefined, pool.lpToken)
   const stakedAmount = useTokenBalance(account ?? undefined, pool.stakingToken)
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
-  const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
+  const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(getLTToken(chainId), earnedRes?.result?.[0]) : undefined
   // const totalRes = useSingleCallResult(stakingContract, 'integrateFraction', [account ?? undefined])
   return (
     <Wrapper>
