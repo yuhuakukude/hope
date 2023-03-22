@@ -203,8 +203,8 @@ export default function LockerEcharts() {
   return (
     <>
       <div className="dao-locker-echarts">
-        <h3 className="text-medium font-20">Weekly LT lock ration </h3>
-        <p className="font-nor text-normal m-t-40">Weekly LT lock ration</p>
+        <h3 className="text-medium font-20">Total LT Locked in Last 7 Days </h3>
+        <p className="font-nor text-normal m-t-40">Total LT Locked</p>
         <div className="m-t-20">
           <div className="charts-box">
             <div style={{ width: '100%', height: '100%' }} ref={chartRef} />
@@ -227,7 +227,7 @@ export default function LockerEcharts() {
               </Skeleton>
             </p>
             <p className="flex jc-between m-t-20">
-              <span className="text-normal font-nor">Total veLT Amount : </span>
+              <span className="text-normal font-nor">Total veLT Generated: </span>
               <Skeleton loading={veltTotalAmountLoading} width={68}>
                 <span className="text-medium font-nor">
                   {veltTotalAmount?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
@@ -237,13 +237,13 @@ export default function LockerEcharts() {
           </div>
           <div className="p-l-20 flex-1">
             <p className="flex jc-between">
-              <span className="text-normal font-nor">Average Lock Time :</span>
+              <span className="text-normal font-nor">Average Lock Duration :</span>
               <Skeleton loading={loading} width={68}>
                 <span className="text-medium font-nor"> {lockTime} years</span>
               </Skeleton>
             </p>
             <p className="flex jc-between m-t-20">
-              <span className="text-normal font-nor">Yearly fee earnings per 1 veLT : </span>
+              <span className="text-normal font-nor">Annual Fees Earned by 1 veLT : </span>
               <Skeleton loading={loading} width={68}>
                 <span className="text-medium font-nor">{format.amountFormat(earningsAmount, 4)}$</span>
               </Skeleton>

@@ -245,9 +245,9 @@ export default function DaoLocker() {
       ._signTypedData(domain, types, values)
       .then(signature => {
         setPendingText(
-          `Lock ${veLtAmount
+          `Lock ${inputAmount.toSignificant()} LT for ${veLtAmount
             ?.toFixed(2, { groupSeparator: ',' })
-            .toString()} veLT with ${inputAmount.toSignificant()} LT`
+            .toString()} veLT`
         )
         toLocker(inputAmount, lockTimeArg, nonce, deadline, signature, veLtAmount)
           .then(hash => {
@@ -353,7 +353,7 @@ export default function DaoLocker() {
                   <div className="add-action-box m-t-30">
                     <div className="add-ava">
                       <p className="flex jc-between font-nor">
-                        <span className="text-normal">Balance in Voting Escrow :</span>
+                        <span className="text-normal">Current Voting Power :</span>
                         <Skeleton loading={lockerResLoading} width={160}>
                           <span className="text-medium">
                             {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
@@ -386,7 +386,7 @@ export default function DaoLocker() {
                         ].join(' ')}
                         onClick={() => setAddTabIndex('time')}
                       >
-                        Increase Lock Time
+                        Increase Lock Duration
                       </div>
                     </div>
                     {addTabIndex === 'amount' && <AddAmount></AddAmount>}
@@ -452,7 +452,7 @@ export default function DaoLocker() {
                       ))}
                     </div>
                     <p className="m-t-30 font-nor flex jc-between">
-                      <span className="text-normal">Your starting voting power will be:</span>
+                      <span className="text-normal">Your voting power after the lock will be:</span>
                       <span className="text-medium">
                         {veLtAmount ? veLtAmount.toFixed(2, { groupSeparator: ',' }, 0) : '0.00'} veLT
                       </span>
