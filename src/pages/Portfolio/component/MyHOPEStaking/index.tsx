@@ -104,7 +104,7 @@ export default function MyHOPEStaking() {
 
   const columns: any = [
     {
-      title: 'Protocol',
+      title: 'Assets',
       dataIndex: 'Protocol',
       key: 'Protocol',
       render: () => 'HOPE Staking'
@@ -118,7 +118,7 @@ export default function MyHOPEStaking() {
       }
     },
     {
-      title: 'Balance',
+      title: 'Staked',
       dataIndex: 'stHOPE',
       key: 'stHOPE',
       render: (text: string, record: IStaking) => {
@@ -196,7 +196,7 @@ export default function MyHOPEStaking() {
   return (
     <>
       <HopeStakingClaim item={item} clearItem={clearItem} />
-      <Card title="My HOPE Staking">
+      <Card title="My Single-Sided Staking">
         {data.stHOPE !== '--' ? (
           <Table className="my-hope-staking-wrap" columns={columns} dataSource={[data]} pagination={false}></Table>
         ) : (

@@ -2,13 +2,14 @@ import React, { useState, useMemo, useCallback } from 'react'
 import { useLocker, useToLocker, conFnNameEnum } from '../../../../hooks/ahp/useLocker'
 import NumericalInput from '../../../../components/NumericalInput'
 import ActionButton from '../../../../components/Button/ActionButton'
-import format, {formatMessage} from '../../../../utils/format'
+import format, { formatMessage } from '../../../../utils/format'
 import LtIcon from '../../../../assets/images/ahp/lt.png'
 import TransactionConfirmationModal, {
   TransactionErrorContent
 } from '../../../../components/TransactionConfirmationModal'
 import './index.scss'
 import { Decimal } from 'decimal.js'
+import Skeleton from '../../../../components/Skeleton'
 
 import { ethers } from 'ethers'
 import { TransactionResponse } from '@ethersproject/providers'
@@ -46,7 +47,7 @@ export default function AddAmount() {
   const [attemptingTxn, setAttemptingTxn] = useState(false) // clicked confirm
 
   // token
-  const { lockerRes } = useLocker()
+  const { lockerRes, lockerResLoading } = useLocker()
   const { toAddAmountLocker, getVeLtAmount } = useToLocker()
 
   const isMaxDisabled = useMemo(() => {
@@ -200,12 +201,14 @@ export default function AddAmount() {
       <div className="locker-add-amount-modal flex-1">
         <div className="amout-box">
           <p className="flex jc-end font-nor m-t-40">
-            <span className="text-normal">
-              Available: {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}
-              <span className="text-primary cursor-select m-l-8" onClick={maxInputFn}>
-                Max
+            <Skeleton loading={lockerResLoading} width={160}>
+              <span className="text-normal">
+                Available: {ltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}
+                <span className="text-primary cursor-select m-l-8" onClick={maxInputFn}>
+                  Max
+                </span>
               </span>
-            </span>
+            </Skeleton>
           </p>
           <div className="inp-box m-t-12">
             <NumericalInput

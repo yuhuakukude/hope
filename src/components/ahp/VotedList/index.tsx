@@ -426,7 +426,7 @@ const VotedList = ({
           }
           return <span>{`Pool - ${token0}/${token1}`}</span>
         }
-        return <span>Staking $HOPE</span>
+        return <span>Staking HOPE</span>
       },
       key: 'id'
     },
@@ -467,7 +467,7 @@ const VotedList = ({
       }
     },
     {
-      title: 'Allocated Votes',
+      title: 'Votes Allocation',
       dataIndex: 'allocated',
       key: 'allocated',
       render: (text: string, record: any) => {
@@ -482,7 +482,7 @@ const VotedList = ({
     {
       title: (
         <>
-          veLT Voting Balance{' '}
+          veLT Balance{' '}
           {isShowAll && allArg && allArg.add && allArg.add.length > 0 && (
             <span
               className="title-button"
@@ -501,8 +501,8 @@ const VotedList = ({
       render: (text: string, record: any) => {
         return (
           <>
-            <p className="lh1">Future: {allocatedView[record.gauge.id].future}</p>
-            <p className="m-t-12 lh1">Current: {pointView[record.gauge.id]}</p>
+            <p className="lh1">Next Cycle: {allocatedView[record.gauge.id].future}</p>
+            <p className="m-t-12 lh1">Current Cycle: {pointView[record.gauge.id]}</p>
           </>
         )
       }

@@ -341,7 +341,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
       throw new Error('Attempting to confirm without approval or a signature. Please contact support.')
     }
     onTxStart(
-      `Removing ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${currencyA?.symbol} and ${parsedAmounts[
+      `Withdrawing ${parsedAmounts[Field.CURRENCY_A]?.toSignificant(6)} ${currencyA?.symbol} and ${parsedAmounts[
         Field.CURRENCY_B
       ]?.toSignificant(6)} ${currencyB?.symbol}`
     )
@@ -376,7 +376,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
           onTxEnd(response?.hash)
           addTransaction(response, {
             summary:
-              'Remove ' +
+              'Withdraw ' +
               parsedAmounts[Field.CURRENCY_A]?.toSignificant(3) +
               ' ' +
               currencyA?.symbol +
@@ -565,7 +565,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
         />
       ) : (
         <ConfirmationModalContent
-          title={'You will receive'}
+          title={`You'll Receive`}
           onDismiss={handleDismissConfirmation}
           topContent={modalHeader}
           bottomContent={modalBottom}
@@ -714,7 +714,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                       error={!isValid && !!parsedAmounts[Field.CURRENCY_A] && !!parsedAmounts[Field.CURRENCY_B]}
                     >
                       <Text fontSize={16} fontWeight={500}>
-                        {error || 'Remove'}
+                        {error || 'Withdraw'}
                       </Text>
                     </ButtonError>
                   </RowBetween>
@@ -768,7 +768,9 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
               {pair && (
                 <AutoColumn gap={'10px'}>
                   <RowBetween>
-                    <TYPE.main>{currencyA?.symbol} Swap Rate</TYPE.main>
+                    <TYPE.main>
+                      {currencyB?.symbol}/{currencyA?.symbol}
+                    </TYPE.main>
                     <div>
                       1 {currencyA?.symbol} ≈{' '}
                       {tokenA ? pair.priceOf(tokenA).toSignificant(6, { groupSeparator: ',' }) : '-'}{' '}
@@ -776,7 +778,9 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                     </div>
                   </RowBetween>
                   <RowBetween>
-                    <TYPE.main>{currencyA?.symbol} Swap Rate</TYPE.main>
+                    <TYPE.main>
+                      {currencyA?.symbol}/{currencyB?.symbol}
+                    </TYPE.main>
                     <div>
                       1 {currencyB?.symbol} ≈{' '}
                       {tokenB ? pair.priceOf(tokenB).toSignificant(6, { groupSeparator: ',' }) : '-'}{' '}

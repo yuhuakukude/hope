@@ -160,7 +160,7 @@ export function CurrencySearch({
     <ContentWrapper>
       <PaddedColumn gap="16px">
         <RowBetween>
-          <Text fontWeight={500} fontSize={16}>
+          <Text fontWeight={500} fontSize={16} className="text-medium">
             Select a token
           </Text>
           <CloseIcon onClick={onDismiss} />

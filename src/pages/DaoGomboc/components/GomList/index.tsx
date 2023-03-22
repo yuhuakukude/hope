@@ -106,8 +106,8 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const weightNode = (text: any, record: any) => {
     return (
       <>
-        <p>This Period: {getViewAmount(text) ? `${getViewAmount(text)} %` : '--'}</p>
-        <p>Next Period: {getViewAmount(record.nextWeight) ? `${getViewAmount(record.nextWeight)} %` : '--'}</p>
+        <p>Current Cycle: {getViewAmount(text) ? `${getViewAmount(text)} %` : '--'}</p>
+        <p>Next Cycle: {getViewAmount(record.nextWeight) ? `${getViewAmount(record.nextWeight)} %` : '--'}</p>
       </>
     )
   }
@@ -115,8 +115,8 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const rewardsNode = (text: any, record: any) => {
     return (
       <>
-        <p>Mining Rewards: {getReAmount(text) ? `${getReAmount(text)} LT` : '--'}</p>
-        <p>Fee Rewards: {getFeeAmount(record.feeRewards) ? `${getFeeAmount(record.feeRewards)} stHOPE` : '--'}</p>
+        <p>Farming Rewards: {getReAmount(text) ? `${getReAmount(text)} LT` : '--'}</p>
+        <p>Fees: {getFeeAmount(record.feeRewards) ? `${getFeeAmount(record.feeRewards)} stHOPE` : '--'}</p>
       </>
     )
   }
@@ -151,7 +151,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       key: 'name',
       render: (text: string, record: any) => {
         if (record.gauge && stakingAddress === record.gauge) {
-          return <span>Staking $HOPE</span>
+          return <span>Staking HOPE</span>
         } else {
           return <span>{`Pool - ${text}`}</span>
         }
@@ -196,7 +196,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       key: 'weight'
     },
     {
-      title: 'Rewards(Last Period)',
+      title: 'Rewards (Last Cycle)',
       dataIndex: 'ltRewards',
       render: rewardsNode,
       sorter: (a: any, b: any) => a.ltRewards - b.ltRewards,
@@ -290,7 +290,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
                 )}
                 onClick={() => setCurType('my')}
               >
-                My Voted
+                My Votes
               </div>
             </div>
           </div>

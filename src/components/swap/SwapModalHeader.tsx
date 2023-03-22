@@ -81,7 +81,7 @@ export default function SwapModalHeader({
             <Tooltip
               className="m-l-5"
               overlayClassName="tips-question"
-              title="The amount you expect to receive at the current market price.You may receive less or more if the market price changes while your transaction is pending."
+              title="The amount you expect to receive at the current market price. You may receive less or more if the market price changes while your transaction is pending."
             >
               <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
             </Tooltip>

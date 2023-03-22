@@ -17,7 +17,7 @@ const Head = () => {
     <div className="gom-head-box">
       <div className="flex">
         <div className="flex-1 m-r-30">
-          <h2 className="text-white font-bolder font-28">How to get liquidity incentives?</h2>
+          <h2 className="text-white font-bolder font-28">How to maximize my LT rewards?</h2>
           <p className="text-white lh18 m-t-15 font-nor">
             Hope protocol’s liquidity incentives are directed to pools selected by veLT voters. Stake in these pools to
             earn incentives. Enjoy 2.5x extra on pools when you boost your veLT.
@@ -48,13 +48,13 @@ const Head = () => {
             <div className="flex jc-center">
               <img className="head-img" src={headImg3} alt="" />
             </div>
-            <p className="text-center text-white m-t-30">Get a boost</p>
+            <p className="text-center text-white m-t-30">Get Boosted</p>
           </div>
           <div className="flex-1">
             <div className="flex jc-center">
               <img className="head-img" src={headImg4} alt="" />
             </div>
-            <p className="text-center text-white m-t-30">Claim anytime</p>
+            <p className="text-center text-white m-t-30">Claim Anytime</p>
           </div>
         </div>
       </div>

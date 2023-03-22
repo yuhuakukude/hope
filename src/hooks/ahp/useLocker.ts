@@ -24,8 +24,8 @@ export function useLocker() {
   const lockerContract = useLockerContract()
   const gomConContract = useGomConContract()
   const lockerRes = useSingleCallResult(lockerContract, 'locked', [account ?? undefined])
-  const ltTotalAmounnt = useSingleCallResult(lockerContract, 'supply', [])
-  const veltTotalAmounnt = useSingleCallResult(lockerContract, 'totalSupply', [])
+  const ltTotalAmount = useSingleCallResult(lockerContract, 'supply', [])
+  const veltTotalAmount = useSingleCallResult(lockerContract, 'totalSupply', [])
   const votePowerAmount = useSingleCallResult(gomConContract, 'voteUserPower', [account ?? undefined])
 
   return {
@@ -43,9 +43,13 @@ export function useLocker() {
               : `${lockerRes?.result?.end}`
         }
       : undefined,
-    ltTotalAmounnt: ltTotalAmounnt?.result ? CurrencyAmount.ether(ltTotalAmounnt?.result?.[0]) : undefined,
-    veltTotalAmounnt: veltTotalAmounnt?.result ? CurrencyAmount.ether(veltTotalAmounnt?.result?.[0]) : undefined,
-    votePowerAmount: votePowerAmount?.result ? Number(votePowerAmount?.result) : undefined
+    lockerResLoading: lockerRes.loading,
+    ltTotalAmount: ltTotalAmount?.result ? CurrencyAmount.ether(ltTotalAmount?.result?.[0]) : undefined,
+    veltTotalAmount: veltTotalAmount?.result ? CurrencyAmount.ether(veltTotalAmount?.result?.[0]) : undefined,
+    votePowerAmount: votePowerAmount?.result ? Number(votePowerAmount?.result) : undefined,
+    ltTotalAmountLoading: ltTotalAmount.loading,
+    veltTotalAmountLoading: veltTotalAmount.loading,
+    votePowerAmountLoading: votePowerAmount.loading
   }
 }
 
