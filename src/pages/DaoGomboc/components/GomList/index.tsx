@@ -106,8 +106,8 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const weightNode = (text: any, record: any) => {
     return (
       <>
-        <p>This Period: {getViewAmount(text) ? `${getViewAmount(text)} %` : '--'}</p>
-        <p>Next Period: {getViewAmount(record.nextWeight) ? `${getViewAmount(record.nextWeight)} %` : '--'}</p>
+        <p>Current Cycle: {getViewAmount(text) ? `${getViewAmount(text)} %` : '--'}</p>
+        <p>Next Cycle: {getViewAmount(record.nextWeight) ? `${getViewAmount(record.nextWeight)} %` : '--'}</p>
       </>
     )
   }
@@ -196,7 +196,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       key: 'weight'
     },
     {
-      title: 'Rewards(Last Period)',
+      title: 'Rewards (Last Cycle)',
       dataIndex: 'ltRewards',
       render: rewardsNode,
       sorter: (a: any, b: any) => a.ltRewards - b.ltRewards,

@@ -501,8 +501,8 @@ const VotedList = ({
       render: (text: string, record: any) => {
         return (
           <>
-            <p className="lh1">Future: {allocatedView[record.gauge.id].future}</p>
-            <p className="m-t-12 lh1">Current: {pointView[record.gauge.id]}</p>
+            <p className="lh1">Next Cycle: {allocatedView[record.gauge.id].future}</p>
+            <p className="m-t-12 lh1">Current Cycle: {pointView[record.gauge.id]}</p>
           </>
         )
       }

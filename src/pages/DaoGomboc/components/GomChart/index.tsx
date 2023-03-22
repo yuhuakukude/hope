@@ -150,20 +150,23 @@ const GomChart = ({ votiingData }: GomChartProps) => {
 
   return (
     <div className="gom-chart-box">
-      <h3 className="font-bolder text-white font-20">Proposed Gauge Weight Changes</h3>
+      <h3 className="font-bolder text-white font-20">Gauge Weights</h3>
       <p className="m-t-20 text-white lh15 font-nor">
-      Gauge weights are used to determine how much $LT does each protocol or pool get. You can vote for Gauge weight
-        with your veLT ( locked $LT tokens in
+        The distribution of $LT rewards between pools and protocols is governed by Gauge Weights, which will be updated
+        every voting cycle (currently set to one week).
+      </p>
+      <p className="m-t-20 text-white lh15 font-nor">
+        You can vote for specific Gauges with veLT ( obtainable after locking LT in{' '}
         <NavLink to={'/dao/locker'}>
-          <span className="text-primary"> Locker </span>
-        </NavLink>
-        ).
+          <span className="text-primary"> LT Locker </span>
+        </NavLink>{' '}
+        ), and get voting rewards.
       </p>
       <div className="chart-box m-t-60">
         <div ref={voteChartRef as any} className="voting-chart" id="votingchart" />
       </div>
       <p className="m-t-10 text-center font-nor m-b-30 text-normal">
-        Proposed Gauge Weight Changes taking effect on {nextEffectTime || '--'} UTC
+        Gauge Weights during the next voting cycle, taking effect on {nextEffectTime || '--'} UTC
       </p>
     </div>
   )

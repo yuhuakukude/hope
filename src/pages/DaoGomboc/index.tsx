@@ -113,13 +113,7 @@ export default function DaoGauge() {
             <div className="flex m-t-30 ai-center jc-center">
               <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
               <div>
-                <p className="text-white lh15">
-                  You need to have LT{' '}
-                  <NavLink to={'/dao/locker'}>
-                    <span className="text-primary">Locker</span>
-                  </NavLink>{' '}
-                  in Locker in order to vote for Gauge weights
-                </p>
+                <p className="text-white lh15">You need to lock your LT for veLT in order to vote for Gauges.</p>
               </div>
             </div>
           )}
@@ -128,7 +122,7 @@ export default function DaoGauge() {
               <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
               <div>
                 <p className="text-white lh15">
-                  Your $LT Lock will expire in 2 weeks. Increase your lock duration in
+                  Your LT Lock will expire in 2 weeks. Increase your lock duration in
                   <NavLink to={'/dao/locker'}>
                     <span className="text-primary"> LT Locker </span>
                   </NavLink>
