@@ -247,6 +247,9 @@ export default function WalletModal() {
                 subheader={null}
                 link={'https://metamask.io/'}
                 icon={MetamaskIcon}
+                onClick={() => {
+                  toggleWalletModal()
+                }}
               />
             )
           } else {
