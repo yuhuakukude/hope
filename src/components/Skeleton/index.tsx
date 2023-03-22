@@ -21,6 +21,7 @@ interface Props {
   ml?: number
   mr?: number
   mb?: number
+  radius?: string
 }
 
 const SkeletonBox = styled.span<{
@@ -30,6 +31,7 @@ const SkeletonBox = styled.span<{
   ml?: number
   mr?: number
   mb?: number
+  radius?: string
 }>`
   display: block;
   width: ${({ width }) => (width ? `${width}px` : '100%')};
@@ -46,7 +48,7 @@ const SkeletonBox = styled.span<{
     color-stop(37%, #33343d),
     color-stop(63%, #3d3e46)
   );
-  border-radius: 4px;
+  border-radius: ${({ radius }) => (radius ? `${radius}` : '4px')};
   background: linear-gradient(90deg, #3d3e46 25%, #33343d 37%, #3d3e46 63%);
   background-size: 400% 100%;
   -webkit-animation: skeleton-loading 1.4s ease infinite;
@@ -62,9 +64,9 @@ const SkeletonBox = styled.span<{
 `
 
 // eslint-disable-next-line react/prop-types
-export default function Skeleton({ loading, children, width, height, mt, ml, mr, mb }: Props) {
+export default function Skeleton({ loading, children, width, height, mt, ml, mr, mb, radius }: Props) {
   return loading ? (
-    <SkeletonBox width={width} height={height} mt={mt} ml={ml} mr={mr} mb={mb}></SkeletonBox>
+    <SkeletonBox width={width} height={height} mt={mt} ml={ml} mr={mr} mb={mb} radius={radius}></SkeletonBox>
   ) : (
     <>{children}</>
   )
