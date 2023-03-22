@@ -1,6 +1,6 @@
 import React from 'react'
 import styled from 'styled-components'
-import { Box } from 'rebass/styled-components'
+// import { Box } from 'rebass/styled-components'
 
 // const Card = styled(Box)<{ width?: string; padding?: string; border?: string; borderRadius?: string }>`
 //   width: ${({ width }) => width ?? '100%'};
@@ -23,7 +23,7 @@ interface Props {
   mb?: number
 }
 
-const SkeletonBox = styled(Box)<{
+const SkeletonBox = styled.span<{
   width?: number
   height?: number
   mt?: number
@@ -31,6 +31,7 @@ const SkeletonBox = styled(Box)<{
   mr?: number
   mb?: number
 }>`
+  display: block;
   width: ${({ width }) => (width ? `${width}px` : '100%')};
   height: ${({ height }) => (height ? `${height}px` : '16px')};
   margin-top: ${({ mt }) => (mt ? `${mt}px` : '0')};

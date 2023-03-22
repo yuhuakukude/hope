@@ -26,6 +26,7 @@ interface GaugeClaimProps {
 }
 
 function GaugeClaimAll({ onSubmit, onDismiss, total, list, ltPrice }: GaugeClaimProps) {
+  console.log(list)
   const { account } = useActiveWeb3React()
   const isEthBalanceInsufficient = useEstimate()
   const [drapIndex, setDrapIndex] = useState(true)
@@ -61,14 +62,14 @@ function GaugeClaimAll({ onSubmit, onDismiss, total, list, ltPrice }: GaugeClaim
                         <>
                           {item && (
                             <div key={index} className="flex jc-between m-b-10">
-                              <div className="">
+                              <div className="font-nor text-medium">
                                 <div className="currency text-white text-medium">{item.composition}</div>
                               </div>
                               <div>
-                                <p className="text-white text-right">
+                                <p className="text-white text-right font-nor lh1">
                                   {item.conReward?.toFixed(2, { groupSeparator: ',' } ?? '0.00')} LT
                                 </p>
-                                <p className="text-white text-right">
+                                <p className="text-normal text-right lh1 m-t-12">
                                   ≈ ${' '}
                                   {item.conReward && ltPrice
                                     ? format.amountFormat(

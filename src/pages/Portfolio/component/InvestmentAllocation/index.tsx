@@ -93,8 +93,8 @@ export default function InvestmentAllocation({ data }: { data: any }) {
         },
         formatter: (params: { name: string; value: number; percent: number }) => {
           return `<div>
-                    <div style="font-size: 14px;margin-top: 16px">${params.name}: </div>
-                    <div style="font-size: 18px;margin-top: 8px">(${params.percent}%)</div>
+                    <div style="font-size: 14px;font-family: Arboria-Book;">${params.name}: </div>
+                    <div style="font-size: 18px;margin-top: 8px;font-family: Arboria-Bold;">(${params.percent}%)</div>
                   </div>`
         },
         padding: 20,
@@ -113,8 +113,9 @@ export default function InvestmentAllocation({ data }: { data: any }) {
           top: 'bottom',
           data: listData.slice(0, (listData.length / 2) | 0),
           textStyle: {
-            color: '#fff',
-            fontSize: 16
+            color: '#A8A8AA',
+            fontSize: 16,
+            fontFamily: 'Arboria-Book'
           }
         },
         {
@@ -123,12 +124,13 @@ export default function InvestmentAllocation({ data }: { data: any }) {
           itemGap: 30,
           icon: 'circle',
           orient: 'vertical',
-          left: 'right',
+          left: '50%',
           top: 'bottom',
           data: listData.slice((listData.length / 2) | 0),
           textStyle: {
-            color: '#fff',
-            fontSize: 16
+            color: '#A8A8AA',
+            fontSize: 16,
+            fontFamily: 'Arboria-Book'
           }
         }
       ],
@@ -209,7 +211,17 @@ export default function InvestmentAllocation({ data }: { data: any }) {
           </div>
         </div>
       </Card>
-      <Modal width="500px" visible={visibleMap} onCancel={() => setVisibleMap(false)} forceRender>
+      <Modal
+        width="500px"
+        visible={visibleMap}
+        onCancel={() => setVisibleMap(false)}
+        forceRender
+        closeIcon={
+          <i className="iconfont close-icon font-18" style={{ color: '#fff' }}>
+            &#xe612;
+          </i>
+        }
+      >
         <div className="investment-allocation-wrap">
           <div className="investment-allocation-map" ref={investmentRef as any}></div>
         </div>
