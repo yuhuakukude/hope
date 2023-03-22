@@ -146,7 +146,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
 
   const columns: any = [
     {
-      title: 'Gauge',
+      title: 'Gauges',
       dataIndex: 'name',
       key: 'name',
       render: (text: string, record: any) => {

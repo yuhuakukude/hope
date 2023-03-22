@@ -159,7 +159,7 @@ export default function AddAmount() {
         const getVeLtArg = new Decimal(afterVeLtAmount?.toFixed(2) || '0')
           .sub(new Decimal(veltBalance?.toFixed(2) || '0'))
           .toNumber()
-        setPendingText(`Lock ${format.amountFormat(getVeLtArg, 2)} veLT with ${inputAmount.toSignificant()} LT`)
+        setPendingText(`Lock ${inputAmount.toSignificant()} LT for ${format.amountFormat(getVeLtArg, 2)} veLT`)
         toAddAmountLocker(inputAmount, nonce, deadline, signature, getVeLtArg)
           .then(hash => {
             onTxSubmitted(hash)
