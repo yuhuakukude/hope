@@ -126,12 +126,15 @@ export default function AddAmount() {
     setPendingText(`Approve LT`)
     approveCallback()
       .then((response: TransactionResponse | undefined) => {
-        onTxSubmitted(response?.hash)
+        setShowConfirm(true)
+        setPendingText(``)
+        setAttemptingTxn(false)
+        response?.hash && setTxHash(response?.hash)
       })
       .catch(error => {
         onTxError(error)
       })
-  }, [approveCallback, onTxError, onTxStart, onTxSubmitted])
+  }, [approveCallback, onTxError, onTxStart])
 
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
