@@ -129,7 +129,7 @@ export function useToLocker() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Lock Time to ${format.formatUTCDate(argTime)}`,
+            summary: `Lock Time to ${format.formatUTCDate(argTime, 'YYYY-MM-DD')}`,
             actionTag: {
               recipient: `${account}-${conFnNameEnum.IncreaseUnlockTime}`
             }
