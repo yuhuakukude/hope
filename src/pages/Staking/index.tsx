@@ -313,6 +313,12 @@ export default function Staking() {
   }, [init])
 
   useEffect(() => {
+    if (account) {
+      setAmount('')
+    }
+  }, [account])
+
+  useEffect(() => {
     if (search) {
       setStakingType('unstake')
     }

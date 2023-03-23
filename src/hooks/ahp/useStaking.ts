@@ -154,7 +154,7 @@ export function useToClaim() {
           from: account
         }).then((response: TransactionResponse) => {
           addTransaction(response, {
-            summary: `Claim ${claRewards?.toFixed(2, { groupSeparator: ',' })} LT`,
+            summary: `Claim To Reward`,
             actionTag: {
               recipient: `${account}-${stakingFnNameEnum.Mint}`
             }
