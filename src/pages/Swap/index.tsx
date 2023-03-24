@@ -711,7 +711,7 @@ export default function Swap({ history }: RouteComponentProps) {
                     disabled={!isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!swapCallbackError}
                   >
                     <Text fontSize={16} fontWeight={500}>
-                      {!userHasSpecifiedInputOutput && swapInputError ? swapInputError : `Confirm`}
+                      {!userHasSpecifiedInputOutput && swapInputError ? swapInputError : `Swap`}
                     </Text>
                   </ButtonError>
                 )}

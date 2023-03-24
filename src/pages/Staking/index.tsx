@@ -4,11 +4,7 @@ import { AutoColumn } from '../../components/Column'
 import NumericalInput from '../../components/NumericalInput'
 import { useActiveWeb3React } from '../../hooks'
 import { Tooltip } from 'antd'
-import { useETHBalances, useTokenBalance, useStHopeBalance } from '../../state/wallet/hooks'
-import {
-  HOPE_STAKING,
-  HOPE_UNSTAKING,
-} from '../../constants'
+import { useTokenBalance, useStHopeBalance } from '../../state/wallet/hooks'
 import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
 import HopeCard from '../../components/ahp/card'
@@ -26,7 +22,7 @@ import { ButtonPrimary, ButtonOutlined } from '../../components/Button'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
 import ActionButton from '../../components/Button/ActionButton'
-import { CurrencyAmount, Token, TokenAmount } from '@uniswap/sdk'
+import { Token, TokenAmount } from '@uniswap/sdk'
 import './index.scss'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../../components/TransactionConfirmationModal'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../permit2/domain'
@@ -34,13 +30,12 @@ import { ethers } from 'ethers'
 import { NavLink } from 'react-router-dom'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useLocation } from 'react-router-dom'
-import useGasPrice from '../../hooks/useGasPrice'
-import JSBI from 'jsbi'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 import { useActionPending } from '../../state/transactions/hooks'
 import { usePairStakeInfo } from '../../hooks/usePairInfo'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 import { getHOPEToken, getHopeTokenAddress, getLTToken, getPermit2Address, getStakingHopeGaugeAddress, getSTHOPEToken } from 'utils/addressHelpers'
+import { useEstimate } from '../../hooks/ahp'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1340px;
@@ -59,7 +54,7 @@ export default function Staking() {
   const { account, chainId, library } = useActiveWeb3React()
   const hopeToken = useMemo(() => getHOPEToken(chainId), [chainId])
   const toggleWalletModal = useWalletModalToggle()
-  const gasPrice = useGasPrice()
+  const isEthBalanceInsufficient = useEstimate()
   const [curType, setStakingType] = useState('stake')
   const { search } = useLocation()
   const [curToken, setCurToken] = useState<Token | undefined>(hopeToken)
@@ -119,13 +114,6 @@ export default function Staking() {
     return `${getStakingHopeGaugeAddress(chainId)}`.toLocaleLowerCase()
   }, [chainId])
   const { currentBoots, futureBoots } = usePairStakeInfo(stakingAddr)
-  const userEthBalance = useETHBalances(account ? [account] : [])?.[account ?? '']
-  const gas = useMemo(() => {
-    if (!gasPrice) return undefined
-    return curType === 'stake'
-      ? JSBI.multiply(gasPrice, JSBI.BigInt(HOPE_STAKING))
-      : JSBI.multiply(gasPrice, JSBI.BigInt(HOPE_UNSTAKING))
-  }, [curType, gasPrice])
 
   const stakeInputError = useMemo(() => {
     if (hopeBal && inputAmount && hopeBal?.lessThan(inputAmount)) {
@@ -457,10 +445,6 @@ export default function Staking() {
                       </div>
                     </div>
                   </div>
-                  {/* <div className="flex jc-between m-t-30">
-                    <span className="text-white">Est Transaction Fee</span>
-                    <span className="text-white">≈{gas ? CurrencyAmount.ether(gas).toSignificant() : '--'} ETH</span>
-                  </div> */}
                   <div className="flex jc-between m-t-20">
                     <span className="text-white">Receive </span>
                     <span className="text-white">
@@ -505,7 +489,7 @@ export default function Staking() {
                     )}
                   </div>
                   <div className="staking-tip">
-                    {gas && userEthBalance && userEthBalance?.lessThan(CurrencyAmount.ether(gas)) && (
+                    {account && isEthBalanceInsufficient && (
                       <div className="flex m-t-15">
                         <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe62b;</i>
                         <div>

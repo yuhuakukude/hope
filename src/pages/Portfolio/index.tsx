@@ -40,6 +40,9 @@ export default function Portfolio() {
   }
 
   const allData = useMemo(() => {
+    if (!account) {
+      return
+    }
     const getLtHope = getTokenToHope(lockerLt || '0', ltToHope)
     const getSthopeHope = getTokenToHope(stHopeProfits || '0', stToHope)
     const profits = new Decimal(getLtHope)
@@ -63,7 +66,7 @@ export default function Portfolio() {
         .toNumber()
         .toFixed(3)
     }
-  }, [stHopeBalance, stToHope, ltToHope, lockerLt, stHopeProfits, lpData, claRewards])
+  }, [stHopeBalance, stToHope, ltToHope, lockerLt, stHopeProfits, lpData, claRewards, account])
 
   const getTokenPrice = useCallback(async () => {
     try {

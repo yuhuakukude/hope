@@ -78,9 +78,8 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
                 .toNumber()
             }
           })
-          getLpData && getLpData(lpTotal, yfTotal)
         }
-
+        getLpData && getLpData(lpTotal, yfTotal)
         setListLoading(false)
       }
     })

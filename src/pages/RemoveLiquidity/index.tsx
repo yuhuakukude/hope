@@ -679,7 +679,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                     onMax={() => onUserInput(Field.LIQUIDITY_PERCENT, '100')}
                     showMaxButton={!atMaxAmount}
                     currency={currencyB}
-                    label={'Output'}
+                    label={''}
                     onCurrencySelect={handleSelectCurrencyB}
                     id="remove-liquidity-tokenb"
                   />

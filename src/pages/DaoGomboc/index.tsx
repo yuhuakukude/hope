@@ -117,7 +117,7 @@ export default function DaoGauge() {
               </div>
             </div>
           )}
-          {isShowTip && (
+          {!isNoVelt && isShowTip && (
             <div className="flex m-t-30 ai-center jc-center">
               <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
               <div>
