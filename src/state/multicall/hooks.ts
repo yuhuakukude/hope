@@ -127,7 +127,6 @@ function toCallState(
   fragment: FunctionFragment | undefined,
   latestBlockNumber: number | undefined
 ): CallState {
-  let loading = true
   if (!callResult) return INVALID_CALL_STATE
   const { valid, data, blockNumber } = callResult
   if (!valid) return INVALID_CALL_STATE
@@ -139,10 +138,8 @@ function toCallState(
   if (success && data) {
     try {
       result = contractInterface.decodeFunctionResult(fragment, data)
-      loading = false
     } catch (error) {
       console.debug('Result data parsing failed', fragment, data)
-      loading = false
       return {
         valid: true,
         loading: false,
@@ -154,7 +151,7 @@ function toCallState(
   }
   return {
     valid: true,
-    loading: loading,
+    loading: false,
     syncing,
     result: result,
     error: !success

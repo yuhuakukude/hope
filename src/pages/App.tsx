@@ -4,7 +4,7 @@ import styled from 'styled-components'
 import GoogleAnalyticsReporter from '../components/analytics/GoogleAnalyticsReporter'
 import Header from '../components/Header'
 import Polling from '../components/Header/Polling'
-import URLWarning from '../components/Header/URLWarning'
+// import URLWarning from '../components/Header/URLWarning'
 import Popups from '../components/Popups'
 import Web3ReactManager from '../components/Web3ReactManager'
 import DarkModeQueryParamReader from '../theme/DarkModeQueryParamReader'
@@ -101,7 +101,7 @@ export default function App() {
         <PageWrapper>
           <SideBar />
           <AppWrapper>
-            <URLWarning />
+            {/* <URLWarning /> */}
             <HeaderWrapper>
               <Header />
             </HeaderWrapper>

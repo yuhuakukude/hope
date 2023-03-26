@@ -413,7 +413,7 @@ const VotedList = ({
 
   const columns: any = [
     {
-      title: 'Gauge',
+      title: 'Gauges',
       dataIndex: 'id',
       render: (text: string, record: any) => {
         if (record.gauge && record.gauge.pair) {

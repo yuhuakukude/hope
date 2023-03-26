@@ -126,12 +126,15 @@ export default function AddAmount() {
     setPendingText(`Approve LT`)
     approveCallback()
       .then((response: TransactionResponse | undefined) => {
-        onTxSubmitted(response?.hash)
+        setShowConfirm(true)
+        setPendingText(``)
+        setAttemptingTxn(false)
+        response?.hash && setTxHash(response?.hash)
       })
       .catch(error => {
         onTxError(error)
       })
-  }, [approveCallback, onTxError, onTxStart, onTxSubmitted])
+  }, [approveCallback, onTxError, onTxStart])
 
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
@@ -159,7 +162,7 @@ export default function AddAmount() {
         const getVeLtArg = new Decimal(afterVeLtAmount?.toFixed(2) || '0')
           .sub(new Decimal(veltBalance?.toFixed(2) || '0'))
           .toNumber()
-        setPendingText(`Lock ${format.amountFormat(getVeLtArg, 2)} veLT with ${inputAmount.toSignificant()} LT`)
+        setPendingText(`Lock ${inputAmount.toSignificant()} LT for ${format.amountFormat(getVeLtArg, 2)} veLT`)
         toAddAmountLocker(inputAmount, nonce, deadline, signature, getVeLtArg)
           .then(hash => {
             onTxSubmitted(hash)
