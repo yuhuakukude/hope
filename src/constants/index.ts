@@ -198,6 +198,17 @@ export const SUPPORTED_NETWORKS: {
     },
     rpcUrls: ['https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
     blockExplorerUrls: ['https://goerli.etherscan.io']
+  },
+  [ChainId.HOPE]: {
+    chainId: '0x539',
+    chainName: 'Hope',
+    nativeCurrency: {
+      name: 'Hope',
+      symbol: 'HOPE',
+      decimals: 18
+    },
+    rpcUrls: ['https://ganache-test2.hivefin.net'],
+    blockExplorerUrls: ['https://sepolia.etherscan.io']
   }
 }
 
