@@ -89,6 +89,20 @@ export const GOM_FEE_DIS_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.HOPE]: '0x325CB1DB2b6B3fB4Bb2e28412cE62248a916E373'
 }
 
+export const FAUCET_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D',
+  [ChainId.SEPOLIA]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D',
+  [ChainId.GOERLI]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D',
+  [ChainId.HOPE]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D'
+}
+
+export const DAI_TOKEN_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf',
+  [ChainId.SEPOLIA]: '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf',
+  [ChainId.GOERLI]: '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf',
+  [ChainId.HOPE]: '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf'
+}
+
 export const GOVERNANCE_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F',
   [ChainId.GOERLI]: '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F',
@@ -142,4 +156,11 @@ export const ST_HOPE: { [chainId in ChainId]: Token } = {
   [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, STAKING_HOPE_GAUGE_ADDRESS[ChainId.SEPOLIA], 18, 'stHOPE', 'stHOPE'),
   [ChainId.GOERLI]: new Token(ChainId.GOERLI, STAKING_HOPE_GAUGE_ADDRESS[ChainId.GOERLI], 18, 'stHOPE', 'stHOPE'),
   [ChainId.HOPE]: new Token(ChainId.HOPE, STAKING_HOPE_GAUGE_ADDRESS[ChainId.HOPE], 18, 'stHOPE', 'stHOPE')
+}
+
+export const DAI: { [chainId in ChainId]: Token } = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, DAI_TOKEN_ADDRESS[ChainId.MAINNET], 18, 'DAI', 'Dai Stablecoin'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, DAI_TOKEN_ADDRESS[ChainId.SEPOLIA], 18, 'DAI', 'Dai Stablecoin'),
+  [ChainId.GOERLI]: new Token(ChainId.GOERLI, DAI_TOKEN_ADDRESS[ChainId.GOERLI], 18, 'DAI', 'Dai Stablecoin'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, DAI_TOKEN_ADDRESS[ChainId.HOPE], 18, 'DAI', 'Dai Stablecoin')
 }

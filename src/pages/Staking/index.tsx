@@ -34,7 +34,14 @@ import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 import { useActionPending } from '../../state/transactions/hooks'
 import { usePairStakeInfo } from '../../hooks/usePairInfo'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
-import { getHOPEToken, getHopeTokenAddress, getLTToken, getPermit2Address, getStakingHopeGaugeAddress, getSTHOPEToken } from 'utils/addressHelpers'
+import {
+  getHOPEToken,
+  getHopeTokenAddress,
+  getLTToken,
+  getPermit2Address,
+  getStakingHopeGaugeAddress,
+  getSTHOPEToken
+} from 'utils/addressHelpers'
 import { useEstimate } from '../../hooks/ahp'
 
 const PageWrapper = styled(AutoColumn)`

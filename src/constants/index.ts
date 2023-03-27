@@ -8,7 +8,6 @@ export const DOC_API = process.env.REACT_APP_DOC_API ?? ''
 export const HOME_API = process.env.REACT_APP_HOME_API
 
 export const BLOCK_SUBGRAPH = process.env.REACT_APP_BLOCK_SUBGRAPH ?? ''
-export const FAUCET_URL = 'https://faucet-sepolia.lteco.cc/'
 
 export const timeframeOptions = {
   WEEK: '1 week',
@@ -41,7 +40,7 @@ export const REWARD_CONTRACT: { [chainId in ChainId]: string } = {
 }
 
 export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth')
-export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin')
+export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin') 
 // export const USDC = new Token(ChainId.SEPOLIA, '0xf9B7E9bb840b7BBf7E0C42724f11121D4D1eFC22', 18, 'USDC', 'USD//C')
 // export const USDT = new Token(ChainId.SEPOLIA, '0xB2448D911BC792c463AF9ED8cf558a85D97c5Bf1', 6, 'USDT', 'Tether USD')
 export const WBTC = new Token(ChainId.MAINNET, '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 8, 'WBTC', 'Wrapped BTC')

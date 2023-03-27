@@ -31,11 +31,11 @@ import { ModalProvider } from '../context/ModalContext'
 import SettingPage from './Settings'
 import StakingPoolDetail from './StakingPoolDetail'
 import LiquidityStake from './LiquidityStake'
-import TestComponent from './TestComponent'
 import Pools from './Pools'
 import LiquidityManager from './LiquidityManager'
 import { RedirectDuplicateTokenIds, RedirectOldAddLiquidityPathStructure } from './LiquidityManager/redirects'
 import LiquidityMining from './LiquidityMining'
+import Faucet from './Faucet'
 
 import '../utils/resetCurrencyAmount'
 
@@ -161,7 +161,7 @@ export default function App() {
                   <Route exact strict path="/staking" component={Staking} />
                   <Route exact strict path="/buy-hope" component={BuyHope} />
                   <Route exact strict path="/portfolio" component={Portfolio} />
-                  <Route exact strict path="/test" component={TestComponent} />
+                  <Route exact strict path="/faucet" component={Faucet} />
                   <Route component={RedirectPathToSwapOnly} />
                 </Switch>
               </Web3ReactManager>

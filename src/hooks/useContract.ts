@@ -23,6 +23,7 @@ import { V1_EXCHANGE_ABI, V1_FACTORY_ABI, V1_FACTORY_ADDRESSES } from '../consta
 import { getContract } from '../utils'
 import { useActiveWeb3React } from './index'
 import { getGovernanceAddress } from 'utils/addressHelpers'
+
 import {
   getStakingHopeGaugeAddress,
   getLtMinterAddress,
@@ -33,7 +34,8 @@ import {
   getFeeDisAddress,
   getGomFeeDisAddress,
   getPermit2Address,
- } from 'utils/addressHelpers'
+  getFaucetAddress
+} from 'utils/addressHelpers'
 import STAKING_HOPE_GAUGE_ABI from '../constants/abis/ahp/STAKING_HOPE_GAUGE.json'
 import TOKEN_SALE_ABI from '../constants/abis/ahp/TOKEN_SALE.json'
 import LT_MINTER_ABI from '../constants/abis/ahp/LT_MINTER.json'
@@ -44,6 +46,7 @@ import GAUGE_CONTROLLER_ABI from '../constants/abis/ahp/GAUGE_CONTROLLER.json'
 import POOL_GAUGE_ABI from '../constants/abis/ahp/POOL_GAUGE.json'
 import FEE_DIS_ABI from '../constants/abis/ahp/Fee_Distributor.json'
 import GOM_FEE_DIS_ABI from '../constants/abis/ahp/Gauge_Fee_Distributor.json'
+import FAUCET_ABI from '../constants/abis/ahp/tokenFaucet.json'
 import useENSAddress from './useENSAddress'
 
 // returns null on errors
@@ -217,4 +220,9 @@ export function useGasPriceContract(): Contract | null {
   const { address } = useENSAddress('fast-gas-gwei.data.eth')
 
   return useContract(address ?? undefined, CHAIN_DATA_ABI, true)
+}
+
+export function useFaucetContract(withSignerIfPossible?: boolean): Contract | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(getFaucetAddress(chainId), FAUCET_ABI, withSignerIfPossible)
 }
