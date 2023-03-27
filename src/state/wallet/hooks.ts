@@ -1,4 +1,4 @@
-import { ST_HOPE, UNI } from './../../constants/index'
+import { UNI } from './../../constants/index'
 import { Currency, CurrencyAmount, ETHER, JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useMemo } from 'react'
 import ERC20_INTERFACE from '../../constants/abis/erc20'
@@ -7,6 +7,7 @@ import { useActiveWeb3React } from '../../hooks'
 import { useMulticallContract, useStakingContract, useStakingHopeGaugeContract } from '../../hooks/useContract'
 import { isAddress } from '../../utils'
 import { useSingleContractMultipleData, useMultipleContractSingleData, useSingleCallResult } from '../multicall/hooks'
+import { getStakingHopeGaugeAddress } from 'utils/addressHelpers'
 
 /**
  * Returns a map of the given addresses to their eventually consistent ETH balances.
@@ -60,9 +61,9 @@ export function useTokenBalancesWithLoadingIndicator(
     () =>
       chainId &&
       validatedTokens.findIndex(
-        token => token.address && isAddress(token.address) === isAddress(ST_HOPE[chainId].address)
+        token => token.address && isAddress(token.address) === isAddress(getStakingHopeGaugeAddress(chainId))
       ) !== -1
-        ? ST_HOPE[chainId].address
+        ? getStakingHopeGaugeAddress(chainId)
         : undefined,
     [chainId, validatedTokens]
   )

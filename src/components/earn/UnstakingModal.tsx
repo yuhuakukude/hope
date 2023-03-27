@@ -15,7 +15,7 @@ import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import { useSingleCallResult } from '../../state/multicall/hooks'
 import { TokenAmount } from '@uniswap/sdk'
-import { LT } from '../../constants'
+import { getLTToken } from 'utils/addressHelpers'
 
 const ContentWrapper = styled(AutoColumn)`
   width: 100%;
@@ -33,7 +33,7 @@ export default function UnstakingModal({ isOpen, onDismiss, stakingInfo }: Staki
   const stakingContract = useStakingContract(stakingInfo.stakingRewardAddress)
   const stakedAmount = useTokenBalance(account ?? undefined, stakingInfo.lpToken)
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
-  const earnedAmount = new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0] ?? '0')
+  const earnedAmount = new TokenAmount(getLTToken(chainId), earnedRes?.result?.[0] ?? '0')
   // monitor call to help UI loading state
   const addTransaction = useTransactionAdder()
   const [hash, setHash] = useState<string | undefined>()

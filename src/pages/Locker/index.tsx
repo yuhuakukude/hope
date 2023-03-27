@@ -16,7 +16,6 @@ import TransactionConfirmationModal, { TransactionErrorContent } from '../../com
 import { ethers } from 'ethers'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useActiveWeb3React } from '../../hooks'
-import { LT, VELT, PERMIT2_ADDRESS, VELT_TOKEN_ADDRESS } from '../../constants'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { Token, TokenAmount } from '@uniswap/sdk'
 import { useTokenBalance } from '../../state/wallet/hooks'
@@ -30,6 +29,7 @@ import { useWalletModalToggle } from '../../state/application/hooks'
 import { useEstimate } from '../../hooks/ahp'
 import { useActionPending } from '../../state/transactions/hooks'
 import LtIcon from '../../assets/images/ahp/lt.png'
+import { getLTToken, getLTTokenAddress, getPermit2Address, getVELTToken, getVELTTokenAddress } from 'utils/addressHelpers'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -64,15 +64,18 @@ export default function DaoLocker() {
 
   const { account, chainId, library } = useActiveWeb3React()
 
+  const ltToken = useMemo(() => getLTToken(chainId), [chainId])
+  const veLTToken = useMemo(() => getVELTToken(chainId), [chainId])
+  const permit2Address = useMemo(() => getPermit2Address(chainId), [chainId])
   const isEthBalanceInsufficient = useEstimate()
-  const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
-  const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
-  const inputAmount = tryParseAmount(amount, LT[chainId ?? 1]) as TokenAmount | undefined
+  const ltBalance = useTokenBalance(account ?? undefined, ltToken)
+  const veltBalance = useTokenBalance(account ?? undefined, veLTToken)
+  const inputAmount = tryParseAmount(amount, ltToken) as TokenAmount | undefined
   const { pending: isLockerPending } = useActionPending(account ? `${account}-${conFnNameEnum.CreateLock}` : '')
 
   // token api
-  const [approvalState, approveCallback] = useApproveCallback(inputAmount, PERMIT2_ADDRESS[chainId ?? 1])
-  const [curToken, setCurToken] = useState<Token | undefined>(LT[chainId ?? 1])
+  const [approvalState, approveCallback] = useApproveCallback(inputAmount, permit2Address)
+  const [curToken, setCurToken] = useState<Token | undefined>(ltToken)
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -152,7 +155,7 @@ export default function DaoLocker() {
   const isMaxDisabled = useMemo(() => {
     let flag = false
     if (amount && ltBalance) {
-      const payAmout = (tryParseAmount(amount, LT[chainId ?? 1]) as TokenAmount | undefined) || ''
+      const payAmout = (tryParseAmount(amount, getLTToken(chainId)) as TokenAmount | undefined) || ''
       flag = ltBalance?.lessThan(payAmout)
     }
     return flag
@@ -222,7 +225,7 @@ export default function DaoLocker() {
 
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId || !lockTimeArg) return
-    setCurToken(VELT[chainId ?? 1])
+    setCurToken(getVELTToken(chainId))
     setPendingText(`Lock LT`)
     onTxStart()
     setActionType(ACTION.LOCKER)
@@ -231,15 +234,15 @@ export default function DaoLocker() {
     const nonce = ethers.utils.randomBytes(32)
     const permit: Permit = {
       permitted: {
-        token: LT[chainId ?? 1].address,
+        token: getLTTokenAddress(chainId),
         amount: inputAmount.raw.toString()
       },
       nonce: nonce,
-      spender: VELT_TOKEN_ADDRESS[chainId ?? 1] || '',
+      spender: getVELTTokenAddress(chainId) || '',
       deadline
     }
 
-    const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
+    const { domain, types, values } = getPermitData(permit, permit2Address, chainId)
     library
       .getSigner(account)
       ._signTypedData(domain, types, values)
@@ -265,11 +268,11 @@ export default function DaoLocker() {
         onTxError(error)
         throw error
       })
-  }, [account, inputAmount, library, chainId, veLtAmount, lockTimeArg, toLocker, onTxStart, onTxSubmitted, onTxError])
+  }, [account, inputAmount, library, chainId, permit2Address, veLtAmount, lockTimeArg, toLocker, onTxStart, onTxSubmitted, onTxError])
 
   const toWithdrawCallback = useCallback(async () => {
     if (!account) return
-    setCurToken(LT[chainId ?? 1])
+    setCurToken(getLTToken(chainId))
     onTxStart()
     setActionType(ACTION.WITHDRAW)
     setWithdrawPendingText('Withdraw LT')

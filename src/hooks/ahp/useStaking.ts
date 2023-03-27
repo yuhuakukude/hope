@@ -4,13 +4,13 @@ import { useStakingHopeGaugeContract, useLtMinterContract } from '../useContract
 import { useActiveWeb3React } from '../index'
 import JSBI from 'jsbi'
 import { CurrencyAmount } from '@uniswap/sdk'
-import { STAKING_HOPE_GAUGE_ADDRESS } from '../../constants'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useBlockNumber } from '../../state/application/hooks'
 import { useTimestampFromBlock } from 'hooks/useTimestampFromBlock'
 import { useGomConContract } from '../useContract'
+import { getStakingHopeGaugeAddress } from 'utils/addressHelpers'
 
 export enum stakingFnNameEnum {
   Mint = 'mint',
@@ -31,10 +31,10 @@ export function useStaking() {
   const claRewards = useSingleCallResult(shgContract, 'claimableTokens', [account ?? undefined])
   const mintedVal = useSingleCallResult(ltMinterContract, 'minted', [
     account ?? undefined,
-    STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]
+    getStakingHopeGaugeAddress(chainId)
   ])
   const gomRelativeWeigh = useSingleCallResult(gomContract, 'gaugeRelativeWeight', [
-    STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1],
+    getStakingHopeGaugeAddress(chainId),
     time
   ])
 

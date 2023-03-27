@@ -15,6 +15,7 @@ import useTheme from '../../hooks/useTheme'
 // import Matamask from 'assets/images/metamask-logo.png'
 import { Text } from 'rebass'
 import { CHAIN_ID_NETWORK_ARGUMENT, FormaticSupportedChains } from '../../connectors/Fortmatic'
+import { REACT_APP_FAUCET_VISIBLE } from 'connectors'
 
 const HeaderFrame = styled.div`
   display: grid;
@@ -201,6 +202,8 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
 
   const [showUniBalanceModal, setShowUniBalanceModal] = useState(false)
 
+  console.log(process.env)
+
   return (
     <HeaderFrame>
       <Modal isOpen={showUniBalanceModal} onDismiss={() => setShowUniBalanceModal(false)}>
@@ -230,9 +233,11 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
         </HeaderLinks>
       </HeaderRow>
       <HeaderControls>
-        <StyledNavLink id={`buy-hope-nav-link`} to="/faucet">
-          Faucet
-        </StyledNavLink>
+        {REACT_APP_FAUCET_VISIBLE === '1' && (
+          <StyledNavLink id={`buy-hope-nav-link`} to="/faucet">
+            Faucet
+          </StyledNavLink>
+        )}
         <HeaderElement>
           <AccountElement active={!!account} style={{ pointerEvents: 'auto', color: theme.text1, marginRight: '30px' }}>
             {account && (

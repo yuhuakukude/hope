@@ -9,7 +9,6 @@ import { useLtMinterContract, useStakingContract } from '../../hooks/useContract
 import { useActiveWeb3React } from '../../hooks'
 import { useSingleCallResult, useSingleContractMultipleData } from '../../state/multicall/hooks'
 import { TokenAmount } from '@uniswap/sdk'
-import { LT } from '../../constants'
 import CurrencyLogo from '../CurrencyLogo'
 import { GreyCard } from '../Card'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
@@ -20,6 +19,7 @@ import { calculateGasMargin } from '../../utils'
 import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from '../../state/transactions/hooks'
 import TransactionConfirmationModal, { TransactionErrorContent } from '../TransactionConfirmationModal'
+import { getLTToken, getLTTokenAddress } from 'utils/addressHelpers'
 
 const ContentWrapper = styled(AutoColumn)`
   width: 100%;
@@ -49,12 +49,12 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
   const addTransaction = useTransactionAdder()
 
   const earnedRes = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])
-  const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], earnedRes?.result?.[0]) : undefined
+  const earnedAmount = earnedRes?.result?.[0] ? new TokenAmount(getLTToken(chainId), earnedRes?.result?.[0]) : undefined
   const ltRewards = useSingleCallResult(stakingContract, 'claimableReward', [
     account ?? undefined,
-    LT[chainId ?? 1].address
+    getLTTokenAddress(chainId)
   ])
-  const ltRewardsAmount = ltRewards?.result?.[0] ? new TokenAmount(LT[chainId ?? 1], ltRewards?.result?.[0]) : undefined
+  const ltRewardsAmount = ltRewards?.result?.[0] ? new TokenAmount(getLTToken(chainId), ltRewards?.result?.[0]) : undefined
   const totalRewards = ltRewardsAmount && earnedAmount ? earnedAmount.add(ltRewardsAmount) : undefined
   const contract = claimType === Reward.LT ? ltMinterContract : stakingContract
   const method = claimType === Reward.LT ? 'mint' : 'claimRewards'
@@ -74,9 +74,7 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
     rewardArgs
   )
 
-  const ltAddress = useMemo(() => {
-    return [LT[chainId ?? 1].address.toString().toLowerCase()]
-  }, [chainId])
+  const ltAddress = useMemo(() => [getLTTokenAddress(chainId)], [chainId])
   const { result: priceResult } = useTokenPriceObject(ltAddress)
 
   const onTxStart = useCallback(() => {
@@ -183,7 +181,7 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
                 </AutoRow>
                 <RowBetween padding={'16px'} height={48}>
                   <RowFixed>
-                    <CurrencyLogo size={'16px'} currency={LT[chainId ?? 1]} />
+                    <CurrencyLogo size={'16px'} currency={getLTToken(chainId)} />
                     <TYPE.white ml={'8px'}>{earnedAmount?.toFixed(2, { groupSeparator: ',' }) ?? '--'}LT</TYPE.white>
                   </RowFixed>
                   <TYPE.white>

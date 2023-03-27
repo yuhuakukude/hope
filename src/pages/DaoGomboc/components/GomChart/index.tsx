@@ -3,11 +3,11 @@ import './index.scss'
 import * as echarts from 'echarts'
 import { TitleComponentOption } from 'echarts/components'
 import { PieSeriesOption } from 'echarts/charts'
-import { VELT, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 import { TokenAmount } from '@uniswap/sdk'
 import { useActiveWeb3React } from '../../../../hooks'
 import { JSBI } from '@uniswap/sdk'
 import { NavLink } from 'react-router-dom'
+import { getStakingHopeGaugeAddress, getVELTToken } from 'utils/addressHelpers'
 interface GomChartProps {
   votiingData: any
 }
@@ -27,10 +27,11 @@ const GomChart = ({ votiingData }: GomChartProps) => {
         const votArr = votiingData.votingList
         if (votArr && votArr.length > 0) {
           const arr: { name: string; value: string; ravPercent: string }[] = []
+          const veLTToken = getVELTToken(chainId)
           votArr.forEach((e: any) => {
             if (e.gaugeController && e.gaugeController.getGaugeWeight && e.gaugeController.gaugeRelativeWeight) {
-              const num = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.getGaugeWeight))
-              const re = new TokenAmount(VELT[chainId ?? 1], JSBI.BigInt(e.gaugeController.gaugeRelativeWeight))
+              const num = new TokenAmount(veLTToken, JSBI.BigInt(e.gaugeController.getGaugeWeight))
+              const re = new TokenAmount(veLTToken, JSBI.BigInt(e.gaugeController.gaugeRelativeWeight))
               const ra = re.multiply(JSBI.BigInt(100))
               const rav = ra.toFixed(2, { groupSeparator: '' }, 0)
               const item = {
@@ -51,7 +52,7 @@ const GomChart = ({ votiingData }: GomChartProps) => {
           //   }
           //   arr.push(item)
           // }
-          const addr = `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+          const addr = `${getStakingHopeGaugeAddress(chainId)}`.toLocaleLowerCase()
           const option: EChartsOption = {
             color: [
               '#534DD1',

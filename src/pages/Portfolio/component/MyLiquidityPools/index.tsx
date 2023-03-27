@@ -27,10 +27,10 @@ import { DOCS_URL } from 'constants/config'
 
 import { useMultipleContractSingleData } from 'state/multicall/hooks'
 import { STAKING_REWARDS_INTERFACE } from 'constants/abis/staking-rewards'
-import { LT } from '../../../../constants'
 import { JSBI, TokenAmount } from '@uniswap/sdk'
 import { useTokenPriceObject } from 'hooks/liquidity/useBasePairs'
 import ClaimRewardModal from 'components/earn/ClaimRewardModal'
+import { getLTToken, getLTTokenAddress } from 'utils/addressHelpers'
 
 function toFixed(val: string | number, length = 2) {
   return format.amountFormat(val, length)
@@ -47,9 +47,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
   // const [headData, setHeadData] = useState<IHeadItem[]>([])
   const [showClaimModal, setShowClaimModal] = useState(false)
   const [stakingAddress, setStakingAddress] = useState('')
-  const ltAddress = useMemo(() => {
-    return [LT[chainId ?? 1].address.toString()]
-  }, [chainId])
+  const ltAddress = useMemo(() => [getLTTokenAddress(chainId)], [chainId])
   const { result: priceResult } = useTokenPriceObject(ltAddress)
 
   const ltPrice = useMemo(() => {
@@ -108,7 +106,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
     accountArg
   )
 
-  const extraRewardsArg = useMemo(() => [account ?? undefined, LT[chainId ?? 1].address], [account, chainId])
+  const extraRewardsArg = useMemo(() => [account ?? undefined, getLTTokenAddress(chainId)], [account, chainId])
 
   const extraRewardAmounts = useMultipleContractSingleData(
     argAddress,
@@ -123,9 +121,9 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       argAddress.forEach((e: any, index: number) => {
         const reward = rewardAmounts[index]?.result
         const extraReward = extraRewardAmounts[index]?.result
-        const conReward = new TokenAmount(LT[chainId ?? 1], reward ? reward?.[0].toString() : '0')
+        const conReward = new TokenAmount(getLTToken(chainId), reward ? reward?.[0].toString() : '0')
         const conTotalReward = new TokenAmount(
-          LT[chainId ?? 1],
+          getLTToken(chainId),
           reward && extraReward
             ? JSBI.add(JSBI.BigInt(reward?.[0].toString()), JSBI.BigInt(extraReward?.[0].toString()))
             : reward
@@ -171,7 +169,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
         }
       })
     }
-    const tNum = new TokenAmount(LT[chainId ?? 1], num ? num : '0')
+    const tNum = new TokenAmount(getLTToken(chainId), num ? num : '0')
     return tNum
   }, [headData, chainId])
 

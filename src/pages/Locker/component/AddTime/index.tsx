@@ -13,17 +13,19 @@ import Skeleton from '../../../../components/Skeleton'
 import { JSBI, Token, TokenAmount } from '@uniswap/sdk'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
 import { useActiveWeb3React } from '../../../../hooks'
-import { LT, VELT } from '../../../../constants'
 import { useActionPending } from '../../../../state/transactions/hooks'
+import { getLTToken, getVELTToken } from 'utils/addressHelpers'
 
 export default function AddTime({ maxWeek }: { maxWeek: number }) {
   const [weekNumber, setWeekNumber] = useState(maxWeek < 2 ? 0 : 2)
   const { account, chainId } = useActiveWeb3React()
-  const ltBalance = useTokenBalance(account ?? undefined, LT[chainId ?? 1])
+  const ltToken = useMemo(() => getLTToken(chainId), [chainId])
+  const veltToken = useMemo(() => getVELTToken(chainId), [chainId])
+  const ltBalance = useTokenBalance(account ?? undefined, ltToken)
   const [txHash, setTxHash] = useState<string>('')
   const [pendingText, setPendingText] = useState('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
-  const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
+  const veltBalance = useTokenBalance(account ?? undefined, veltToken)
   const { pending: isLocerkTimePending } = useActionPending(
     account ? `${account}-${conFnNameEnum.IncreaseUnlockTime}` : ''
   )
@@ -32,7 +34,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
   )
 
   // token api
-  const [curToken, setCurToken] = useState<Token | undefined>(LT[chainId ?? 1])
+  const [curToken, setCurToken] = useState<Token | undefined>(ltToken)
 
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -120,7 +122,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
       format.formatDate(Number(`${lockerRes?.end}`))
     )
     const res = new TokenAmount(
-      VELT[chainId ?? 1],
+      getVELTToken(chainId),
       JSBI.add(JSBI.BigInt(veltBalance?.raw.toString() ?? '0'), JSBI.BigInt(velt?.raw.toString() ?? '0'))
     )
     return res
@@ -128,7 +130,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
 
   const lockerCallback = useCallback(async () => {
     if (!account || !chainId) return
-    setCurToken(VELT[chainId ?? 1])
+    setCurToken(getVELTToken(chainId))
     setPendingText(`Lock LT`)
     setShowConfirm(true)
     setAttemptingTxn(true)

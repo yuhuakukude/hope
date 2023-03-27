@@ -8,13 +8,13 @@ import { ButtonPrimary } from '../../../../components/Button'
 import GaugeApi from '../../../../api/gauge.api'
 import { useActiveWeb3React } from '../../../../hooks'
 import { TokenAmount } from '@uniswap/sdk'
-import { LT, ST_HOPE, STAKING_HOPE_GAUGE_ADDRESS } from '../../../../constants'
 
 import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
 import { useGomConContract } from '../../../../hooks/useContract'
 import VotedList from '../../../../components/ahp/VotedList'
 
 import { SymbolLogo } from 'components/CurrencyLogo'
+import { getLTToken, getStakingHopeGaugeAddress, getSTHOPEToken } from 'utils/addressHelpers'
 
 interface ListProps {
   toSetSelGom: (gauge: string) => void
@@ -27,7 +27,8 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const [tableData, setTableData] = useState<any>([])
   const [baseTableData, setBaseTableData] = useState<any>([])
   const [curType, setCurType] = useState('all')
-  const stakingAddress = `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
+  const stakingAddress = useMemo(() => 
+    `${getStakingHopeGaugeAddress(chainId)}`.toLocaleLowerCase(), [chainId])
   const argList = useMemo(() => {
     let res: any = []
     const arr: any = []
@@ -41,6 +42,9 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     }
     return res
   }, [tableData, account])
+  // addreess
+  const ltToken = useMemo(() => getLTToken(chainId), [chainId])
+  const stHopeToken = useMemo(() => getSTHOPEToken(chainId), [chainId])
 
   const lastVoteData = useSingleContractMultipleData(gomConContract, 'lastUserVote', argList)
   const isTimeDis = useMemo(() => {
@@ -62,7 +66,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   function getViewAmount(value: any) {
     let res = ''
     if (value && value !== '0') {
-      const ta = new TokenAmount(LT[chainId ?? 1], JSBI.BigInt(value))
+      const ta = new TokenAmount(ltToken, JSBI.BigInt(value))
       const ra = ta.multiply(JSBI.BigInt(100))
       if (ra.toFixed(2) && Number(ra.toFixed(2)) > 0) {
         res = `${ra.toFixed(2, { groupSeparator: '' }, 0)}`
@@ -74,7 +78,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   function getReAmount(value: any) {
     let res = ''
     if (value && value !== '0') {
-      const ta = new TokenAmount(LT[chainId ?? 1], JSBI.BigInt(value))
+      const ta = new TokenAmount(ltToken, JSBI.BigInt(value))
       if (ta.toFixed(2) && Number(ta.toFixed(2)) > 0) {
         res = `${ta.toFixed(2, { groupSeparator: '' }, 0)}`
       }
@@ -85,7 +89,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   function getFeeAmount(value: any) {
     let res = ''
     if (value && value !== '0') {
-      const ta = new TokenAmount(ST_HOPE[chainId ?? 1], JSBI.BigInt(value))
+      const ta = new TokenAmount(stHopeToken, JSBI.BigInt(value))
       if (ta.toFixed(2) && Number(ta.toFixed(2)) > 0) {
         res = `${ta.toFixed(2, { groupSeparator: '' }, 0)}`
       }

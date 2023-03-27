@@ -1,6 +1,5 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react'
 import LockerApi from '../../../../api/locker.api'
-import { LT } from '../../../../constants'
 import { useActiveWeb3React } from '../../../../hooks'
 import * as echarts from 'echarts'
 import { TokenAmount } from '@uniswap/sdk'
@@ -9,6 +8,7 @@ import format from '../../../../utils/format'
 import Skeleton from '../../../../components/Skeleton'
 import { useLocker } from '../../../../hooks/ahp/useLocker'
 import moment from 'moment'
+import { getLTToken } from 'utils/addressHelpers'
 
 export default function LockerEcharts() {
   const { chainId } = useActiveWeb3React()
@@ -51,7 +51,7 @@ export default function LockerEcharts() {
           )
           arr.forEach((e: any) => {
             dateArr.unshift(e.snapshotDate)
-            const valItem = new TokenAmount(LT[chainId ?? 1], e.lightLockedTotal).toFixed(2)
+            const valItem = new TokenAmount(getLTToken(chainId), e.lightLockedTotal).toFixed(2)
             valueArr.unshift(Number(valItem))
           })
           const minAmount = valueArr.length > 0 ? Math.min(...valueArr) : 0

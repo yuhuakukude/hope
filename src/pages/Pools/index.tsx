@@ -19,7 +19,6 @@ import Card from '../../components/Card'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useActiveWeb3React } from '../../hooks'
 import Circle from '../../assets/images/blue-loader.svg'
-import { LT } from '../../constants'
 import { Switch } from 'antd'
 import NoData from '../../assets/images/no_data.png'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
@@ -27,6 +26,7 @@ import useTheme from '../../hooks/useTheme'
 import { DOCS_URL } from 'constants/config'
 import { useLiquiditySearchType } from '../../state/liquidity/hooks'
 import { Field } from '../../state/liquidity/actions'
+import { getLTTokenAddress } from 'utils/addressHelpers'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
@@ -105,9 +105,7 @@ export default function Pools() {
     reload
   )
 
-  const ltAddress = useMemo(() => {
-    return [LT[chainId ?? 1].address.toString()]
-  }, [chainId])
+  const ltAddress = useMemo(() => [getLTTokenAddress(chainId)], [chainId])
   const { result: priceResult } = useTokenPriceObject(ltAddress)
   const handleSearchInput = (event: any) => {
     const input = event.target.value

@@ -8,7 +8,7 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { CurrencyAmount, Token } from '@uniswap/sdk'
 import { useTokenBalances } from 'state/wallet/hooks'
-import { USDC, USDT, HOPE, DAI_FAUCET } from '../../constants'
+import { getUSDCToken, getUSDTToken, getHOPEToken, getDAIToken } from 'utils/addressHelpers'
 
 import './index.scss'
 import { message } from 'antd'
@@ -77,13 +77,16 @@ function useAvailableBalance(account?: string) {
 export default function Faucet() {
   const [dataSource, setDataSource] = useState<Token[]>([])
   const { account, chainId } = useActiveWeb3React()
-
+  const USDCToken = useMemo(() => getUSDCToken(chainId), [chainId])
+  const USDTToken = useMemo(() => getUSDTToken(chainId), [chainId])
+  const HOPEToken = useMemo(() => getHOPEToken(chainId), [chainId])
+  const DAIToken = useMemo(() => getDAIToken(chainId), [chainId])
   useEffect(() => {
     if (!chainId) {
       return
     }
-    setDataSource([USDC[chainId], USDT[chainId], HOPE[chainId], DAI_FAUCET[chainId]])
-  }, [chainId])
+    setDataSource([USDCToken, USDTToken, HOPEToken, DAIToken])
+  }, [chainId, USDCToken, USDTToken, HOPEToken, DAIToken])
 
   const requestToken = useFaucet()
 

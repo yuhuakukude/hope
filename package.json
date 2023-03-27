@@ -93,8 +93,16 @@
   },
   "scripts": {
     "start": "react-scripts start",
+    "start:test2": "dotenv -e .env.test react-scripts start",
+    "start:beta1": "dotenv -e .env.beta1 react-scripts start",
+    "start:beta2": "dotenv -e .env.beta1 react-scripts start",
     "start:service-worker": "yarn build && yarn serve -s build",
     "build": "react-scripts build",
+    "build:dev": "dotenv -e .env.development react-scripts build",
+    "build:test": "dotenv -e .env.development react-scripts build",
+    "build:test2": "dotenv -e .env.test react-scripts build",
+    "build:beta1": "dotenv -e .env.beta1 react-scripts build",
+    "build:beta2": "dotenv -e .env.beta2 react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject",
     "integration-test": "start-server-and-test 'serve build -l 3000' http://localhost:3000 'cypress run'"
@@ -128,6 +136,7 @@
     "axios": "0.18.1",
     "dayjs": "^1.11.7",
     "decimal.js": "^10.4.3",
+    "dotenv-cli": "^7.1.0",
     "echarts": "^5.4.1",
     "eth-permit": "^0.2.3",
     "ethers": "5.5.0",
@@ -138,4 +147,3 @@
     "sass-loader": "^13.2.0"
   }
 }
-

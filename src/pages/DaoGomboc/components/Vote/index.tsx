@@ -8,7 +8,6 @@ import { useActiveWeb3React } from '../../../../hooks'
 import { useWalletModalToggle } from '../../../../state/application/hooks'
 import { useTokenBalance } from '../../../../state/wallet/hooks'
 import { useGomConContract } from '../../../../hooks/useContract'
-import { VELT } from '../../../../constants'
 import Select from 'components/antd/Select'
 import { useToVote, conFnNameEnum } from '../../../../hooks/ahp/useGomVote'
 import { JSBI, Percent, Token } from '@uniswap/sdk'
@@ -27,6 +26,7 @@ import { formatMessage } from '../../../../utils/format'
 import moment from 'moment'
 import format from 'utils/format'
 import { useLocker } from 'hooks/ahp/useLocker'
+import { getVELTToken } from 'utils/addressHelpers'
 import { useHistory } from 'react-router-dom'
 
 interface VoteProps {
@@ -44,8 +44,9 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
   const location = useLocation()
   const history = useHistory()
   const searchParams = new URLSearchParams(location.search)
-  const [curToken, setCurToken] = useState<Token | undefined>(VELT[chainId ?? 1])
-  const veLtBal = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
+  const veLTToken = useMemo(() => getVELTToken(chainId), [chainId])
+  const [curToken, setCurToken] = useState<Token | undefined>(veLTToken)
+  const veLtBal = useTokenBalance(account ?? undefined, veLTToken)
   const [voteAmount, setVoteAmount] = useState('')
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)

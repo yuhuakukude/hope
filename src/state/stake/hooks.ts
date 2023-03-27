@@ -1,6 +1,7 @@
 import { ChainId, CurrencyAmount, JSBI, Pair, Token, TokenAmount, WETH } from '@uniswap/sdk'
 import { useMemo } from 'react'
-import { BLOCK_SUBGRAPH, DAI, HOPE, SUBGRAPH, UNI, USDC, USDT, WBTC } from '../../constants'
+import { BLOCK_SUBGRAPH, DAI, SUBGRAPH, UNI, WBTC } from '../../constants'
+import { HOPE, USDC, USDT, } from 'constants/constract'
 import { STAKING_REWARDS_INTERFACE } from '../../constants/abis/staking-rewards'
 import { useActiveWeb3React } from '../../hooks'
 import { useMultipleContractSingleData } from '../multicall/hooks'

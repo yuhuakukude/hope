@@ -6,7 +6,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk'
 import { abi as IUniswapV2PairABI } from '../constants/abis/IUniswapV2Pair.json'
 import { useMemo } from 'react'
-import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, PERMIT2_ADDRESS, UNI, FAUCET_ADDRESS } from '../constants'
+import { MERKLE_DISTRIBUTOR_ADDRESS, UNI } from '../constants'
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS
@@ -22,18 +22,20 @@ import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../constants/multicall'
 import { V1_EXCHANGE_ABI, V1_FACTORY_ABI, V1_FACTORY_ADDRESSES } from '../constants/v1'
 import { getContract } from '../utils'
 import { useActiveWeb3React } from './index'
-import Faucet_ABI from '../constants/abis/ahp/tokenFaucet.json'
+import { getGovernanceAddress } from 'utils/addressHelpers'
 
 import {
-  STAKING_HOPE_GAUGE_ADDRESS,
-  LT_MINTER_ADDRESS,
-  TOKEN_SALE_ADDRESS,
-  VELT_TOKEN_ADDRESS,
-  GAUGE_CONTROLLER_ADDRESS,
-  LT_TOKEN_ADDRESS,
-  FEE_DIS_ADDRESS,
-  GOM_FEE_DIS_ADDRESS
-} from '../constants'
+  getStakingHopeGaugeAddress,
+  getLtMinterAddress,
+  getTokenSaleAddress,
+  getVELTTokenAddress,
+  getGaugeControllerAddress,
+  getLTTokenAddress,
+  getFeeDisAddress,
+  getGomFeeDisAddress,
+  getPermit2Address,
+  getFaucetAddress
+} from 'utils/addressHelpers'
 import STAKING_HOPE_GAUGE_ABI from '../constants/abis/ahp/STAKING_HOPE_GAUGE.json'
 import TOKEN_SALE_ABI from '../constants/abis/ahp/TOKEN_SALE.json'
 import LT_MINTER_ABI from '../constants/abis/ahp/LT_MINTER.json'
@@ -44,6 +46,7 @@ import GAUGE_CONTROLLER_ABI from '../constants/abis/ahp/GAUGE_CONTROLLER.json'
 import POOL_GAUGE_ABI from '../constants/abis/ahp/POOL_GAUGE.json'
 import FEE_DIS_ABI from '../constants/abis/ahp/Fee_Distributor.json'
 import GOM_FEE_DIS_ABI from '../constants/abis/ahp/Gauge_Fee_Distributor.json'
+import FAUCET_ABI from '../constants/abis/ahp/tokenFaucet.json'
 import useENSAddress from './useENSAddress'
 
 // returns null on errors
@@ -128,7 +131,8 @@ export function useMerkleDistributorContract(): Contract | null {
 }
 
 export function useGovernanceContract(): Contract | null {
-  return useContract(GOVERNANCE_ADDRESS, GOVERNANCE_ABI, true)
+  const { chainId } = useActiveWeb3React()
+  return useContract(getGovernanceAddress(chainId), GOVERNANCE_ABI, true)
 }
 
 export function useUniContract(): Contract | null {
@@ -152,22 +156,22 @@ export function useSocksController(): Contract | null {
 // staking dao
 export function useStakingHopeGaugeContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId && STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1], STAKING_HOPE_GAUGE_ABI.abi, true)
+  return useContract(getStakingHopeGaugeAddress(chainId), STAKING_HOPE_GAUGE_ABI.abi, true)
 }
 
 export function useLtMinterContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId && LT_MINTER_ADDRESS[chainId], LT_MINTER_ABI.abi, true)
+  return useContract(getLtMinterAddress(chainId), LT_MINTER_ABI.abi, true)
 }
 
 export function usePermit2Contract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId && PERMIT2_ADDRESS[chainId ?? 1], PERMIT2_ABI.abi, true)
+  return useContract(getPermit2Address(chainId), PERMIT2_ABI.abi, true)
 }
 
 export function useGomConContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId && GAUGE_CONTROLLER_ADDRESS[chainId ?? 1], GAUGE_CONTROLLER_ABI.abi, true)
+  return useContract(getGaugeControllerAddress(chainId), GAUGE_CONTROLLER_ABI.abi, true)
 }
 
 // portfolio
@@ -177,29 +181,29 @@ export function usePoolGomContract(address: string): Contract | null {
 
 export function useFeeDisContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId && FEE_DIS_ADDRESS[chainId ?? 1], FEE_DIS_ABI.abi, true)
+  return useContract(getFeeDisAddress(chainId), FEE_DIS_ABI.abi, true)
 }
 
 export function useGomFeeDisContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId && GOM_FEE_DIS_ADDRESS[chainId ?? 1], GOM_FEE_DIS_ABI.abi, true)
+  return useContract(getGomFeeDisAddress(chainId), GOM_FEE_DIS_ABI.abi, true)
 }
 
 // buy hope
 export function useBuyHopeContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId && TOKEN_SALE_ADDRESS[chainId], TOKEN_SALE_ABI.abi, true)
+  return useContract(getTokenSaleAddress(chainId), TOKEN_SALE_ABI.abi, true)
 }
 
 // Locker
 export function useLockerContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId && VELT_TOKEN_ADDRESS[chainId], VELT_TOKEN_ABI.abi, true)
+  return useContract(getVELTTokenAddress(chainId), VELT_TOKEN_ABI.abi, true)
 }
 
 export function useLTContract(): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(chainId && LT_TOKEN_ADDRESS[chainId], LT_TOKEN_ABI.abi, true)
+  return useContract(getLTTokenAddress(chainId), LT_TOKEN_ABI.abi, true)
 }
 
 const CHAIN_DATA_ABI = [
@@ -218,8 +222,7 @@ export function useGasPriceContract(): Contract | null {
   return useContract(address ?? undefined, CHAIN_DATA_ABI, true)
 }
 
-
 export function useFaucetContract(withSignerIfPossible?: boolean): Contract | null {
   const { chainId } = useActiveWeb3React()
-  return useContract(FAUCET_ADDRESS[chainId!], Faucet_ABI, withSignerIfPossible)
+  return useContract(getFaucetAddress(chainId), FAUCET_ABI, withSignerIfPossible)
 }

@@ -6,7 +6,6 @@ import { AutoColumn } from '../../components/Column'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import { TYPE, ExternalLink } from '../../theme'
 import Card, { GreyCard, LightCard } from '../../components/Card'
-import { LT } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { ButtonOutlined, ButtonPrimary } from '../../components/Button'
 import { CardHeader } from '../../components/pool/PoolInfoCard'
@@ -34,6 +33,7 @@ import { JSBI, WETH } from '@uniswap/sdk'
 import { tokenId, tokenSymbol } from '../../utils/currencyId'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 import Loader from '../../components/Loader'
+import { getLTToken } from 'utils/addressHelpers'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -314,7 +314,7 @@ export default function StakingPoolDetail({
     }
   }, [address])
 
-  const dayRewards = aprInfo.ltAmountPerDay ? tryParseAmount(aprInfo.ltAmountPerDay, LT[chainId ?? 1]) : undefined
+  const dayRewards = aprInfo.ltAmountPerDay ? tryParseAmount(aprInfo.ltAmountPerDay, getLTToken(chainId)) : undefined
 
   useEffect(() => {
     initFn()

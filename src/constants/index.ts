@@ -1,12 +1,13 @@
 import { ChainId, JSBI, Percent, Token, WETH } from '@uniswap/sdk'
 import { AbstractConnector } from '@web3-react/abstract-connector'
+import { injected, walletconnect, NETWORK_CHAIN_ID } from '../connectors'
+import { USDC, USDT, HOPE, GOVERNANCE_ADDRESS, TIMELOCK_ADDRESS } from './constract'
 
-import { injected, walletconnect } from '../connectors'
+export const SUBGRAPH = process.env.REACT_APP_SUBGRAPH ?? ''
+export const DOC_API = process.env.REACT_APP_DOC_API ?? ''
+export const HOME_API = process.env.REACT_APP_HOME_API
 
-export const SUBGRAPH = 'https://thegraph-sepolia.hivefin.net/subgraphs/name/light-dev/light-subgraph'
-export const DOC_API = 'https://hope-static-test1.hivefin.net'
-export const HOME_API = 'https://hope.money'
-export const BLOCK_SUBGRAPH = 'https://hope-dapp-dev1.hivefin.net/subgraphs/name/light-dev/ethereum-blocks'
+export const BLOCK_SUBGRAPH = process.env.REACT_APP_BLOCK_SUBGRAPH ?? ''
 
 export const timeframeOptions = {
   WEEK: '1 week',
@@ -17,7 +18,10 @@ export const timeframeOptions = {
   ALL_TIME: 'All time'
 }
 
-export const ROUTER_ADDRESS = '0x86950D519b14e226B00FB0eE6700f93a1b7113A0'
+// Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
+export const AVERAGE_BLOCK_TIME_IN_SECS = 13
+export const PROPOSAL_LENGTH_IN_BLOCKS = 40_320
+export const PROPOSAL_LENGTH_IN_SECS = AVERAGE_BLOCK_TIME_IN_SECS * PROPOSAL_LENGTH_IN_BLOCKS
 
 export const ZERO_ADDRESS = '0x0000000000000000000000000000000000000000'
 
@@ -46,140 +50,6 @@ export const FRAX = new Token(ChainId.MAINNET, '0x853d955aCEf822Db058eb8505911ED
 export const FXS = new Token(ChainId.MAINNET, '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0', 18, 'FXS', 'Frax Share')
 export const renBTC = new Token(ChainId.MAINNET, '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D', 8, 'renBTC', 'renBTC')
 
-// hope about token
-export const USDC: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xf9B7E9bb840b7BBf7E0C42724f11121D4D1eFC22', 18, 'USDC', 'USD//C'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xf9B7E9bb840b7BBf7E0C42724f11121D4D1eFC22', 18, 'USDC', 'USD//C'),
-  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0xf9B7E9bb840b7BBf7E0C42724f11121D4D1eFC22', 18, 'USDC', 'USD//C'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xf9B7E9bb840b7BBf7E0C42724f11121D4D1eFC22', 18, 'USDC', 'USD//C')
-}
-
-export const USDT: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xB2448D911BC792c463AF9ED8cf558a85D97c5Bf1', 6, 'USDT', 'Tether USD'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xB2448D911BC792c463AF9ED8cf558a85D97c5Bf1', 6, 'USDT', 'Tether USD'),
-  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0xB2448D911BC792c463AF9ED8cf558a85D97c5Bf1', 6, 'USDT', 'Tether USD'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xB2448D911BC792c463AF9ED8cf558a85D97c5Bf1', 6, 'USDT', 'Tether USD')
-}
-
-export const LT: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x6c041E1e79cdcBEB84A58689385D06c68c884C54', 18, 'LT', 'light'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x6c041E1e79cdcBEB84A58689385D06c68c884C54', 18, 'LT', 'light'),
-  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0x6c041E1e79cdcBEB84A58689385D06c68c884C54', 18, 'LT', 'light'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x6c041E1e79cdcBEB84A58689385D06c68c884C54', 18, 'LT', 'light')
-}
-export const VELT: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x8e2801f8fAD29439EF313B56b265059cD36c7996', 18, 'veLT', 've light'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x8e2801f8fAD29439EF313B56b265059cD36c7996', 18, 'veLT', 've light'),
-  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0x8e2801f8fAD29439EF313B56b265059cD36c7996', 18, 'veLT', 've light'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x8e2801f8fAD29439EF313B56b265059cD36c7996', 18, 'veLT', 've light')
-}
-export const HOPE: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xc262Ff6DFff1568B6689707F383245912Af6480a', 18, 'HOPE', 'hope'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xc262Ff6DFff1568B6689707F383245912Af6480a', 18, 'HOPE', 'hope'),
-  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0xc262Ff6DFff1568B6689707F383245912Af6480a', 18, 'HOPE', 'hope'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xc262Ff6DFff1568B6689707F383245912Af6480a', 18, 'HOPE', 'hope')
-}
-
-export const ST_HOPE: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0xE83A67878C0a7B4941fb032a56A709c132C2feB3', 18, 'stHOPE', 'stHOPE'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0xE83A67878C0a7B4941fb032a56A709c132C2feB3', 18, 'stHOPE', 'stHOPE'),
-  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0xE83A67878C0a7B4941fb032a56A709c132C2feB3', 18, 'stHOPE', 'stHOPE'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0xE83A67878C0a7B4941fb032a56A709c132C2feB3', 18, 'stHOPE', 'stHOPE')
-}
-
-// staking buyhope dao about address
-export const PERMIT2_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: '0x706531ffd11Dc3B11bEE310bBBb8a0a2bCCd5e18',
-  [ChainId.SEPOLIA]: '0x706531ffd11Dc3B11bEE310bBBb8a0a2bCCd5e18',
-  [ChainId.GOERLI]: '0x706531ffd11Dc3B11bEE310bBBb8a0a2bCCd5e18',
-  [ChainId.HOPE]: '0x706531ffd11Dc3B11bEE310bBBb8a0a2bCCd5e18'
-}
-export const GAUGE_CONTROLLER_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0x2A948A6EDdBeA5e846112186A9941FFA80f40d04',
-  [ChainId.SEPOLIA]: '0x2A948A6EDdBeA5e846112186A9941FFA80f40d04',
-  [ChainId.GOERLI]: '0x2A948A6EDdBeA5e846112186A9941FFA80f40d04',
-  [ChainId.HOPE]: '0x2A948A6EDdBeA5e846112186A9941FFA80f40d04'
-}
-export const LT_MINTER_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0x6e9A3F96D4ca3aA51aFFb88c3564451686d531Af',
-  [ChainId.SEPOLIA]: '0x6e9A3F96D4ca3aA51aFFb88c3564451686d531Af',
-  [ChainId.GOERLI]: '0x6e9A3F96D4ca3aA51aFFb88c3564451686d531Af',
-  [ChainId.HOPE]: '0x6e9A3F96D4ca3aA51aFFb88c3564451686d531Af'
-}
-export const TOKEN_SALE_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0x331bf6DCDD5B21ed2D4bC570941aC1898A271405',
-  [ChainId.SEPOLIA]: '0x331bf6DCDD5B21ed2D4bC570941aC1898A271405',
-  [ChainId.GOERLI]: '0x331bf6DCDD5B21ed2D4bC570941aC1898A271405',
-  [ChainId.HOPE]: '0x331bf6DCDD5B21ed2D4bC570941aC1898A271405'
-}
-export const POOL_GAUGE_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0x3af926B2adb21aaA7d0B603336992229F82Cd66E',
-  [ChainId.SEPOLIA]: '0x3af926B2adb21aaA7d0B603336992229F82Cd66E',
-  [ChainId.GOERLI]: '0x3af926B2adb21aaA7d0B603336992229F82Cd66E',
-  [ChainId.HOPE]: '0x3af926B2adb21aaA7d0B603336992229F82Cd66E'
-}
-export const STAKING_HOPE_GAUGE_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: '0xE83A67878C0a7B4941fb032a56A709c132C2feB3',
-  [ChainId.SEPOLIA]: '0xE83A67878C0a7B4941fb032a56A709c132C2feB3',
-  [ChainId.GOERLI]: '0xE83A67878C0a7B4941fb032a56A709c132C2feB3',
-  [ChainId.HOPE]: '0xE83A67878C0a7B4941fb032a56A709c132C2feB3'
-}
-export const VELT_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0x8e2801f8fAD29439EF313B56b265059cD36c7996',
-  [ChainId.SEPOLIA]: '0x8e2801f8fAD29439EF313B56b265059cD36c7996',
-  [ChainId.GOERLI]: '0x8e2801f8fAD29439EF313B56b265059cD36c7996',
-  [ChainId.HOPE]: '0x8e2801f8fAD29439EF313B56b265059cD36c7996'
-}
-export const LT_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0x6c041E1e79cdcBEB84A58689385D06c68c884C54',
-  [ChainId.SEPOLIA]: '0x6c041E1e79cdcBEB84A58689385D06c68c884C54',
-  [ChainId.GOERLI]: '0x6c041E1e79cdcBEB84A58689385D06c68c884C54',
-  [ChainId.HOPE]: '0x6c041E1e79cdcBEB84A58689385D06c68c884C54'
-}
-export const HOPE_TOKEN_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0xc262Ff6DFff1568B6689707F383245912Af6480a',
-  [ChainId.SEPOLIA]: '0xc262Ff6DFff1568B6689707F383245912Af6480a',
-  [ChainId.GOERLI]: '0xc262Ff6DFff1568B6689707F383245912Af6480a',
-  [ChainId.HOPE]: '0xc262Ff6DFff1568B6689707F383245912Af6480a'
-}
-
-export const FEE_DIS_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0x3bFe889C0bFE9236B362D3Bb5A357E0273C297c1',
-  [ChainId.SEPOLIA]: '0x3bFe889C0bFE9236B362D3Bb5A357E0273C297c1',
-  [ChainId.GOERLI]: '0x3bFe889C0bFE9236B362D3Bb5A357E0273C297c1',
-  [ChainId.HOPE]: '0x3bFe889C0bFE9236B362D3Bb5A357E0273C297c1'
-}
-
-export const GOM_FEE_DIS_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0x325CB1DB2b6B3fB4Bb2e28412cE62248a916E373',
-  [ChainId.SEPOLIA]: '0x325CB1DB2b6B3fB4Bb2e28412cE62248a916E373',
-  [ChainId.GOERLI]: '0x325CB1DB2b6B3fB4Bb2e28412cE62248a916E373',
-  [ChainId.HOPE]: '0x325CB1DB2b6B3fB4Bb2e28412cE62248a916E373'
-}
-
-export const DAI_FAUCET: { [chainId in ChainId]: Token } = {
-  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf', 18, 'DAI', 'Dai Stablecoin'),
-  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf', 18, 'DAI', 'Dai Stablecoin'),
-  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0xDCb57BF51089C01BdC2B1b8BC02A2d7E62353E1A', 18, 'DAI', 'Dai Stablecoin'),
-  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf', 18, 'DAI', 'Dai Stablecoin')
-}
-
-export const FAUCET_ADDRESS: { [chainId in ChainId]?: string } = {
-  [ChainId.MAINNET]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D',
-  [ChainId.SEPOLIA]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D',
-  [ChainId.GOERLI]: '0x89190c0CB7AD5591c349d080DF40663dA9c3d83b',
-  [ChainId.HOPE]: '0x89190c0CB7AD5591c349d080DF40663dA9c3d83b'
-}
-
-// Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
-export const AVERAGE_BLOCK_TIME_IN_SECS = 13
-export const PROPOSAL_LENGTH_IN_BLOCKS = 40_320
-export const PROPOSAL_LENGTH_IN_SECS = AVERAGE_BLOCK_TIME_IN_SECS * PROPOSAL_LENGTH_IN_BLOCKS
-
-export const GOVERNANCE_ADDRESS = '0x5e4be8Bc9637f0EAA1A755019e06A68ce081D58F'
-
-export const TIMELOCK_ADDRESS = '0x1a9C8182C09F50C8318d769245beA52c32BE35BC'
-
 const UNI_ADDRESS = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984'
 export const UNI: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, UNI_ADDRESS, 18, 'UNI', 'Uniswap'),
@@ -190,8 +60,8 @@ export const UNI: { [chainId in ChainId]: Token } = {
 
 export const COMMON_CONTRACT_NAMES: { [address: string]: string } = {
   [UNI_ADDRESS]: 'UNI',
-  [GOVERNANCE_ADDRESS]: 'Governance',
-  [TIMELOCK_ADDRESS]: 'Timelock'
+  [GOVERNANCE_ADDRESS[NETWORK_CHAIN_ID as ChainId]]: 'Governance',
+  [TIMELOCK_ADDRESS[NETWORK_CHAIN_ID as ChainId]]: 'Timelock'
 }
 
 // TODO: specify merkle distributor for mainnet
@@ -220,7 +90,9 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     USDC[ChainId.SEPOLIA],
     USDT[ChainId.SEPOLIA],
     HOPE[ChainId.SEPOLIA]
-  ]
+  ],
+  [ChainId.GOERLI]: [...WETH_ONLY[ChainId.GOERLI], USDC[ChainId.GOERLI], USDT[ChainId.GOERLI], HOPE[ChainId.GOERLI]],
+  [ChainId.HOPE]: [...WETH_ONLY[ChainId.HOPE], USDC[ChainId.HOPE], USDT[ChainId.HOPE], HOPE[ChainId.HOPE]]
 }
 
 export const ADDITIONAL_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {
@@ -302,8 +174,8 @@ export const SUPPORTED_NETWORKS: {
       symbol: 'ETH',
       decimals: 18
     },
-    rpcUrls: ['https://sepolia.infura.io/v3/f338fa7411a945db8bed616683b2ade5'],
-    blockExplorerUrls: ['https://sepolia.etherscan.io']
+    rpcUrls: ['https://mainnet.infura.io/v3/f338fa7411a945db8bed616683b2ade5'],
+    blockExplorerUrls: ['https://etherscan.io']
   },
   [ChainId.SEPOLIA]: {
     chainId: '0xaa36a7',
@@ -315,6 +187,17 @@ export const SUPPORTED_NETWORKS: {
     },
     rpcUrls: ['https://sepolia.infura.io/v3/f338fa7411a945db8bed616683b2ade5'],
     blockExplorerUrls: ['https://sepolia.etherscan.io']
+  },
+  [ChainId.GOERLI]: {
+    chainId: '0x5',
+    chainName: 'Gerli',
+    nativeCurrency: {
+      name: 'Gerli',
+      symbol: 'ETH',
+      decimals: 18
+    },
+    rpcUrls: ['https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
+    blockExplorerUrls: ['https://goerli.etherscan.io']
   }
 }
 

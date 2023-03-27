@@ -11,12 +11,12 @@ import { ButtonPrimary } from '../../../../components/Button'
 import { Link } from 'react-router-dom'
 import { useHistory } from 'react-router-dom'
 
-import { STAKING_HOPE_GAUGE_ADDRESS, LT_TOKEN_ADDRESS, HOPE_TOKEN_ADDRESS } from '../../../../constants'
 import HopeStakingClaim from '../ClaimRewards/hopeStakingClaim'
 import { usePairStakeInfo } from 'hooks/usePairInfo'
 import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
 import './index.scss'
 import { DOCS_URL } from 'constants/config'
+import { getHopeTokenAddress, getLTTokenAddress, getStakingHopeGaugeAddress } from 'utils/addressHelpers'
 
 interface IStaking {
   stHOPE: string
@@ -54,36 +54,34 @@ export default function MyHOPEStaking() {
   const { stakedVal, unstakedVal, claRewards, unstakingVal } = useStaking()
   const { chainId } = useActiveWeb3React()
   const [item, setItem] = useState(false)
-  const stakingAddr = useMemo(() => {
-    return `${STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()
-  }, [chainId])
+  const stakingAddr = useMemo(() => `${getStakingHopeGaugeAddress(chainId)}`.toLocaleLowerCase(), [chainId])
   const { currentBoots } = usePairStakeInfo(stakingAddr)
   const addresses = useMemo(() => {
     return [
-      STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] ?? '',
-      LT_TOKEN_ADDRESS[chainId ?? 1] ?? '',
-      HOPE_TOKEN_ADDRESS[chainId ?? 1] ?? ''
+      getStakingHopeGaugeAddress(chainId) ?? '',
+      getLTTokenAddress(chainId) ?? '',
+      getHopeTokenAddress(chainId) ?? ''
     ]
   }, [chainId])
   const { result: priceResult } = useTokenPriceObject(addresses)
   const hopePrice = useMemo(() => {
     let pr = '0'
-    if (HOPE_TOKEN_ADDRESS[chainId ?? 1] && priceResult) {
-      pr = priceResult[`${HOPE_TOKEN_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()]
+    if (getHopeTokenAddress(chainId) && priceResult) {
+      pr = priceResult[`${getHopeTokenAddress(chainId)}`.toLocaleLowerCase()]
     }
     return pr
   }, [chainId, priceResult])
   const stHopePrice = useMemo(() => {
     let pr = '0'
-    if (STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1] && priceResult) {
-      pr = priceResult[STAKING_HOPE_GAUGE_ADDRESS[chainId ?? 1].toLocaleLowerCase()]
+    if (stakingAddr && priceResult) {
+      pr = priceResult[stakingAddr]
     }
     return pr
-  }, [chainId, priceResult])
+  }, [priceResult, stakingAddr])
   const lpPrice = useMemo(() => {
     let pr = '0'
-    if (LT_TOKEN_ADDRESS[chainId ?? 1] && priceResult) {
-      pr = priceResult[`${LT_TOKEN_ADDRESS[chainId ?? 1]}`.toLocaleLowerCase()]
+    if (getLTTokenAddress(chainId) && priceResult) {
+      pr = priceResult[`${getLTTokenAddress(chainId)}`.toLocaleLowerCase()]
     }
     return pr
   }, [chainId, priceResult])

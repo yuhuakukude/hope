@@ -8,7 +8,7 @@ import { Decimal } from 'decimal.js'
 import PortfolioApi, { DetailInfo } from 'api/portfolio.api'
 import FeesWithdraw from '../../../../components/ahp/FeesWithdraw'
 import { Token } from '@uniswap/sdk'
-import { ST_HOPE, SUBGRAPH } from '../../../../constants'
+import { SUBGRAPH } from '../../../../constants'
 import { postQuery } from '../../../../utils/graph'
 import { useActiveWeb3React } from '../../../../hooks'
 import TransactionConfirmationModal, {
@@ -20,12 +20,14 @@ import { useDateForLastOccurence } from 'hooks/useDateForLastOccurence'
 import usePrice from 'hooks/usePrice'
 import { useBlockNumber } from '../../../../state/application/hooks'
 import { formatMessage } from '../../../../utils/format'
+import { getSTHOPEToken } from 'utils/addressHelpers'
 
 export default function VeLTRewards() {
   const { account, chainId } = useActiveWeb3React()
   const blockNumber = useBlockNumber()
   const [curWithType, setCurWithType] = useState<string>('item') // item others all
   const hopePrice = usePrice()
+  const stHopeToken = useMemo(() => getSTHOPEToken(chainId), [chainId])
   const [platformFees, setPlatformFees] = useState('')
   // modal and loading
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
@@ -34,7 +36,7 @@ export default function VeLTRewards() {
   const [txHash, setTxHash] = useState<string>('')
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const [claimPendingText, setClaimPendingText] = useState('')
-  const [curToken, setCurToken] = useState<Token | undefined>(ST_HOPE[chainId ?? 1])
+  const [curToken, setCurToken] = useState<Token | undefined>(stHopeToken)
 
   // argtime
   const { startTimestamp, endTimestamp } = useDateForLastOccurence()
@@ -106,7 +108,7 @@ export default function VeLTRewards() {
   const feeClaimCallback = useCallback(
     async (amount: string) => {
       if (!account) return
-      setCurToken(ST_HOPE[chainId ?? 1])
+      setCurToken(stHopeToken)
       onTxStart()
       setClaimPendingText(`Fees Withdraw`)
       toFeeClaim(amount)
@@ -119,13 +121,13 @@ export default function VeLTRewards() {
           onTxError(error)
         })
     },
-    [account, chainId, onTxError, onTxStart, onTxSubmitted, toFeeClaim]
+    [account, stHopeToken, onTxError, onTxStart, onTxSubmitted, toFeeClaim]
   )
 
   const gomFeeClaimCallback = useCallback(
     async (amount: string) => {
       if (!account) return
-      setCurToken(ST_HOPE[chainId ?? 1])
+      setCurToken(stHopeToken)
       onTxStart()
       setClaimPendingText(`Fees Withdraw`)
       const arg = (curTableItem.gauge && curTableItem.gauge.gaugeAddress) || ''
@@ -139,13 +141,13 @@ export default function VeLTRewards() {
           onTxError(error)
         })
     },
-    [account, chainId, onTxError, onTxStart, onTxSubmitted, toGomFeeClaim, curTableItem]
+    [account, stHopeToken, onTxError, onTxStart, onTxSubmitted, toGomFeeClaim, curTableItem]
   )
 
   const gomFeeManyClaimCallback = useCallback(
     async (amount: string) => {
       if (!account) return
-      setCurToken(ST_HOPE[chainId ?? 1])
+      setCurToken(stHopeToken)
       onTxStart()
       setClaimPendingText(`Fees Withdraw`)
       toGomFeeManyClaim(argList, amount)
@@ -158,7 +160,7 @@ export default function VeLTRewards() {
           onTxError(error)
         })
     },
-    [account, chainId, onTxError, onTxStart, onTxSubmitted, toGomFeeManyClaim, argList]
+    [account, stHopeToken, onTxError, onTxStart, onTxSubmitted, toGomFeeManyClaim, argList]
   )
 
   const initTable = useCallback(async () => {

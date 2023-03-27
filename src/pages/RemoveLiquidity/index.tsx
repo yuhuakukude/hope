@@ -18,7 +18,6 @@ import { MinimalPositionCard } from '../../components/PositionCard'
 import Row, { RowBetween, RowFixed } from '../../components/Row'
 import Slider from '../../components/Slider'
 import CurrencyLogo from '../../components/CurrencyLogo'
-import { ROUTER_ADDRESS } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import { usePairContract } from '../../hooks/useContract'
@@ -46,6 +45,7 @@ import { GreyCard } from '../../components/Card'
 import format, { formatMessage } from 'utils/format'
 import { useTokenBalance } from '../../state/wallet/hooks'
 import noData from '../../assets/images/no_data.png'
+import { getRouterAddress } from 'utils/addressHelpers'
 
 const PageWrapper = styled(ColumnCenter)`
   width: 100%;
@@ -65,6 +65,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
     currencyB,
     chainId
   ])
+  const routerAddress = useMemo(() => getRouterAddress(chainId),[chainId])
   const history = useHistory()
   const theme = useContext(ThemeContext)
 
@@ -138,7 +139,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
 
   // allowance handling
   const [signatureData, setSignatureData] = useState<{ v: number; r: string; s: string; deadline: number } | null>(null)
-  const [approval, approveCallback, token] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], ROUTER_ADDRESS)
+  const [approval, approveCallback, token] = useApproveCallback(parsedAmounts[Field.LIQUIDITY], routerAddress)
 
   const handleApprove = useCallback(() => {
     onTxStart(`Approve ${token?.symbol}`)
@@ -190,7 +191,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
     ]
     const message = {
       owner: account,
-      spender: ROUTER_ADDRESS,
+      spender: routerAddress,
       value: liquidityAmount.raw.toString(),
       nonce: nonce.toHexString(),
       deadline: deadline.toNumber()

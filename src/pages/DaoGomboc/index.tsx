@@ -9,11 +9,11 @@ import GomList from './components/GomList'
 import GaugeApi from '../../api/gauge.api'
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
-import { VELT } from '../../constants'
 import moment from 'moment'
 import format from '../../utils/format'
 import { useLocker } from '../../hooks/ahp/useLocker'
 import { NavLink } from 'react-router-dom'
+import { getVELTToken } from 'utils/addressHelpers'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -39,7 +39,7 @@ export default function DaoGauge() {
   const isWithDraw = useMemo(() => {
     return lockerRes?.end === '--' && lockerRes?.amount
   }, [lockerRes])
-  const veltBalance = useTokenBalance(account ?? undefined, VELT[chainId ?? 1])
+  const veltBalance = useTokenBalance(account ?? undefined, getVELTToken(chainId))
   const isNoVelt = useMemo(() => {
     let res = false
     if (veltBalance && Number(veltBalance.toFixed(2)) <= 0) {

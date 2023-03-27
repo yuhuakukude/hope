@@ -14,7 +14,7 @@
 // const KLEROS_LIST = 't2crtokens.eth'
 // const GEMINI_LIST = 'https://www.gemini.com/uniswap/manifest.json'
 
-const HOPE_TOKEN_LIST = 'https://dapp-dev1.hivefin.net/v1/light/dao/base/getAllCoins'
+const HOPE_TOKEN_LIST = process.env.REACT_APP_HOPE_TOKEN_LIST ?? ''
 
 export const UNSUPPORTED_LIST_URLS: string[] = []
 

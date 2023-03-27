@@ -1,7 +1,7 @@
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
 import { Currency, ETHER, JSBI, TokenAmount, WETH } from '@uniswap/sdk'
-import React, { useCallback, useContext, useState } from 'react'
+import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { PlusCircle } from 'react-feather'
 import { RouteComponentProps } from 'react-router-dom'
 import { Text } from 'rebass'
@@ -18,7 +18,6 @@ import DoubleCurrencyLogo from '../../components/DoubleLogo'
 import { AddRemoveTabs, StyledMenuIcon } from '../../components/NavigationTabs'
 import Row, { AutoRowBetween, RowBetween, RowFixed, RowFlat } from '../../components/Row'
 
-import { PERMIT2_ADDRESS, ROUTER_ADDRESS } from '../../constants'
 import { useActiveWeb3React } from '../../hooks'
 import { useCurrency } from '../../hooks/Tokens'
 import { ApprovalState, useApproveCallback } from '../../hooks/useApproveCallback'
@@ -46,6 +45,7 @@ import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 import BasePoolInfoCard from '../../components/pool/PoolInfoCard'
 import TotalApr from '../../components/pool/TotalApr'
 import { formatMessage } from '../../utils/format'
+import { getPermit2Address, getRouterAddress } from 'utils/addressHelpers'
 
 const PageWrapper = styled(GapColumn)`
   width: 100%;
@@ -128,6 +128,9 @@ export default function LiquidityStake({
     maxStakeAmountInput && setStakeType(maxStakeAmountInput.toExact())
   }, [maxStakeAmountInput])
 
+  const permit2Address = useMemo(() => getPermit2Address(chainId), [chainId])
+  const routerAddress = useMemo(() => getRouterAddress(chainId), [chainId])
+
   // txn values
   const deadline = useTransactionDeadline() // custom from users settings
   const [allowedSlippage] = useUserSlippageTolerance() // custom from users
@@ -161,10 +164,10 @@ export default function LiquidityStake({
   )
 
   // check whether the user has approved the router on the tokens
-  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], ROUTER_ADDRESS)
-  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], ROUTER_ADDRESS)
+  const [approvalA, approveACallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_A], routerAddress)
+  const [approvalB, approveBCallback] = useApproveCallback(parsedAmounts[Field.CURRENCY_B], routerAddress)
 
-  const [approvalLP, approveLPCallback] = useApproveCallback(stakeTypeAmount, PERMIT2_ADDRESS[chainId ?? 1])
+  const [approvalLP, approveLPCallback] = useApproveCallback(stakeTypeAmount, permit2Address)
 
   const addTransaction = useTransactionAdder()
 
@@ -220,7 +223,7 @@ export default function LiquidityStake({
       deadline
     }
 
-    const { domain, types, values } = getPermitData(permit, PERMIT2_ADDRESS[chainId ?? 1], chainId)
+    const { domain, types, values } = getPermitData(permit, permit2Address, chainId)
     onTxStart(`Approve HOPE`)
 
     library
@@ -261,7 +264,8 @@ export default function LiquidityStake({
     pool,
     stakeType,
     stakeTypeAmount,
-    stakingContract
+    stakingContract,
+    permit2Address
   ])
 
   const addCallback = useCallback(() => {
