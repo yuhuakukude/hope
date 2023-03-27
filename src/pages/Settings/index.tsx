@@ -65,7 +65,7 @@ const StyledCloseIcon = styled(X)`
 // `
 
 const MenuFlyout = styled.span`
-  padding: 0px 0px 200px 0px;
+  padding: 0px 10px 20px 10px;
   width: fit-content;
   border-radius: 12px;
   display: flex;
