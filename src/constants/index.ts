@@ -6,7 +6,6 @@ import { injected, walletconnect } from '../connectors'
 export const SUBGRAPH = 'https://thegraph-sepolia.hivefin.net/subgraphs/name/light-dev/light-subgraph'
 export const DOC_API = 'https://hope-static-test1.hivefin.net'
 export const HOME_API = 'https://hope.money'
-export const FAUCET_URL = 'https://faucet-sepolia.lteco.cc/'
 export const BLOCK_SUBGRAPH = 'https://hope-dapp-dev1.hivefin.net/subgraphs/name/light-dev/ethereum-blocks'
 
 export const timeframeOptions = {
@@ -37,7 +36,7 @@ export const REWARD_CONTRACT: { [chainId in ChainId]: string } = {
 }
 
 export const AMPL = new Token(ChainId.MAINNET, '0xD46bA6D942050d489DBd938a2C909A5d5039A161', 9, 'AMPL', 'Ampleforth')
-export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin')
+export const DAI = new Token(ChainId.MAINNET, '0x6B175474E89094C44Da98b954EedeAC495271d0F', 18, 'DAI', 'Dai Stablecoin') 
 // export const USDC = new Token(ChainId.SEPOLIA, '0xf9B7E9bb840b7BBf7E0C42724f11121D4D1eFC22', 18, 'USDC', 'USD//C')
 // export const USDT = new Token(ChainId.SEPOLIA, '0xB2448D911BC792c463AF9ED8cf558a85D97c5Bf1', 6, 'USDT', 'Tether USD')
 export const WBTC = new Token(ChainId.MAINNET, '0x2260FAC5E5542a773Aa44fBCfeDf7C193bc2C599', 8, 'WBTC', 'Wrapped BTC')
@@ -156,6 +155,20 @@ export const GOM_FEE_DIS_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.SEPOLIA]: '0x325CB1DB2b6B3fB4Bb2e28412cE62248a916E373',
   [ChainId.GOERLI]: '0x325CB1DB2b6B3fB4Bb2e28412cE62248a916E373',
   [ChainId.HOPE]: '0x325CB1DB2b6B3fB4Bb2e28412cE62248a916E373'
+}
+
+export const DAI_FAUCET: { [chainId in ChainId]: Token } = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf', 18, 'DAI', 'Dai Stablecoin'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf', 18, 'DAI', 'Dai Stablecoin'),
+  [ChainId.GOERLI]: new Token(ChainId.GOERLI, '0xDCb57BF51089C01BdC2B1b8BC02A2d7E62353E1A', 18, 'DAI', 'Dai Stablecoin'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf', 18, 'DAI', 'Dai Stablecoin')
+}
+
+export const FAUCET_ADDRESS: { [chainId in ChainId]?: string } = {
+  [ChainId.MAINNET]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D',
+  [ChainId.SEPOLIA]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D',
+  [ChainId.GOERLI]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D',
+  [ChainId.HOPE]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D'
 }
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time

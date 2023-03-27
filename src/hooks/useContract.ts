@@ -6,7 +6,7 @@ import { abi as MERKLE_DISTRIBUTOR_ABI } from '@uniswap/merkle-distributor/build
 import { ChainId, WETH } from '@uniswap/sdk'
 import { abi as IUniswapV2PairABI } from '../constants/abis/IUniswapV2Pair.json'
 import { useMemo } from 'react'
-import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, PERMIT2_ADDRESS, UNI } from '../constants'
+import { GOVERNANCE_ADDRESS, MERKLE_DISTRIBUTOR_ADDRESS, PERMIT2_ADDRESS, UNI, FAUCET_ADDRESS } from '../constants'
 import {
   ARGENT_WALLET_DETECTOR_ABI,
   ARGENT_WALLET_DETECTOR_MAINNET_ADDRESS
@@ -22,6 +22,7 @@ import { MULTICALL_ABI, MULTICALL_NETWORKS } from '../constants/multicall'
 import { V1_EXCHANGE_ABI, V1_FACTORY_ABI, V1_FACTORY_ADDRESSES } from '../constants/v1'
 import { getContract } from '../utils'
 import { useActiveWeb3React } from './index'
+import Faucet_ABI from '../constants/abis/ahp/tokenFaucet.json'
 
 import {
   STAKING_HOPE_GAUGE_ADDRESS,
@@ -215,4 +216,10 @@ export function useGasPriceContract(): Contract | null {
   const { address } = useENSAddress('fast-gas-gwei.data.eth')
 
   return useContract(address ?? undefined, CHAIN_DATA_ABI, true)
+}
+
+
+export function useFaucetContract(withSignerIfPossible?: boolean): Contract | null {
+  const { chainId } = useActiveWeb3React()
+  return useContract(FAUCET_ADDRESS[chainId!], Faucet_ABI, withSignerIfPossible)
 }

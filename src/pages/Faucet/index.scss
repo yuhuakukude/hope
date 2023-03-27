@@ -1,0 +1,44 @@
+.faucet-wrap {
+  width: 100%;
+
+  .faucet-title {
+    color: #fff;
+    font-size: 24px;
+    font-weight: bold;
+  }
+
+  .faucet-desc {
+    margin: 30px 0;
+    display: flex;
+    align-items: center;
+    color: #fff;
+    font-size: 18px;
+    justify-content: space-between;
+    box-sizing: border-box;
+    padding: 20px 10px;
+    border: 1px solid rgb(61, 62, 70);
+    border-radius: 5px;
+
+    .faucet-balance {
+      margin-left: 5px;
+    }
+
+    img {
+      vertical-align: text-top;
+    }
+  }
+
+  .faucet-footer {
+    text-align: right;
+
+    .hope-button-wrap {
+      width: 100%;
+
+      .ant-btn {
+        display: block;
+      }
+    }
+
+  }
+
+}
