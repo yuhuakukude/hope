@@ -99,7 +99,7 @@ export const FAUCET_ADDRESS: { [chainId in ChainId]: string } = {
 export const DAI_TOKEN_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.MAINNET]: '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf',
   [ChainId.SEPOLIA]: '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf',
-  [ChainId.GOERLI]: '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf',
+  [ChainId.GOERLI]: '0x5B71dC777A8aDCba065A644e30BBEeB8fCca273f',
   [ChainId.HOPE]: '0x06DBf77E62Bdc9F5697ca6d696C1dC8B8923fdFf'
 }
 
