@@ -4,7 +4,7 @@ import { injected, walletconnect, NETWORK_CHAIN_ID } from '../connectors'
 import { USDC, USDT, HOPE, GOVERNANCE_ADDRESS, TIMELOCK_ADDRESS } from './constract'
 
 export const SUBGRAPH = process.env.REACT_APP_SUBGRAPH ?? ''
-export const DOC_API = `${process.env.REACT_APP_SUBGRAPH}.hivefin.net`
+export const DOC_API = process.env.REACT_APP_DOC_API ?? ''
 export const HOME_API = process.env.REACT_APP_HOME_API
 
 export const BLOCK_SUBGRAPH = process.env.REACT_APP_BLOCK_SUBGRAPH ?? ''
@@ -51,8 +51,6 @@ export const FRAX = new Token(ChainId.MAINNET, '0x853d955aCEf822Db058eb8505911ED
 export const FXS = new Token(ChainId.MAINNET, '0x3432B6A60D23Ca0dFCa7761B7ab56459D9C964D0', 18, 'FXS', 'Frax Share')
 export const renBTC = new Token(ChainId.MAINNET, '0xEB4C2781e4ebA804CE9a9803C67d0893436bB27D', 8, 'renBTC', 'renBTC')
 
-
-
 const UNI_ADDRESS = '0x1f9840a85d5aF5bf1D1762F925BDADdC4201F984'
 export const UNI: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, UNI_ADDRESS, 18, 'UNI', 'Uniswap'),
@@ -94,18 +92,8 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     USDT[ChainId.SEPOLIA],
     HOPE[ChainId.SEPOLIA]
   ],
-  [ChainId.GOERLI]: [
-    ...WETH_ONLY[ChainId.GOERLI],
-    USDC[ChainId.GOERLI],
-    USDT[ChainId.GOERLI],
-    HOPE[ChainId.GOERLI]
-  ],
-  [ChainId.HOPE]: [
-    ...WETH_ONLY[ChainId.HOPE],
-    USDC[ChainId.HOPE],
-    USDT[ChainId.HOPE],
-    HOPE[ChainId.HOPE]
-  ]
+  [ChainId.GOERLI]: [...WETH_ONLY[ChainId.GOERLI], USDC[ChainId.GOERLI], USDT[ChainId.GOERLI], HOPE[ChainId.GOERLI]],
+  [ChainId.HOPE]: [...WETH_ONLY[ChainId.HOPE], USDC[ChainId.HOPE], USDT[ChainId.HOPE], HOPE[ChainId.HOPE]]
 }
 
 export const ADDITIONAL_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {
