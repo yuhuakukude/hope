@@ -20,7 +20,13 @@ import { tryParseAmount } from '../../../../state/swap/hooks'
 import { useActionPending } from '../../../../state/transactions/hooks'
 import { ApprovalState, useApproveCallback } from '../../../../hooks/useApproveCallback'
 import { getPermitData, Permit, PERMIT_EXPIRATION, toDeadline } from '../../../../permit2/domain'
-import { getLTToken, getPermit2Address, getVELTToken, getVELTTokenAddress } from 'utils/addressHelpers'
+import {
+  getLTToken,
+  getPermit2Address,
+  getVELTToken,
+  getVELTTokenAddress,
+  getLTTokenAddress
+} from 'utils/addressHelpers'
 
 export default function AddAmount() {
   const [amount, setAmount] = useState('')
@@ -149,7 +155,7 @@ export default function AddAmount() {
     const nonce = ethers.utils.randomBytes(32)
     const permit: Permit = {
       permitted: {
-        token: getVELTTokenAddress(chainId),
+        token: getLTTokenAddress(chainId),
         amount: inputAmount.raw.toString()
       },
       nonce: nonce,
