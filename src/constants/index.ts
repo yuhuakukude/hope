@@ -167,8 +167,8 @@ export const DAI_FAUCET: { [chainId in ChainId]: Token } = {
 export const FAUCET_ADDRESS: { [chainId in ChainId]?: string } = {
   [ChainId.MAINNET]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D',
   [ChainId.SEPOLIA]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D',
-  [ChainId.GOERLI]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D',
-  [ChainId.HOPE]: '0xf61Fa39fb137710B4383e0F1268bb1b09c6A7E8D'
+  [ChainId.GOERLI]: '0x89190c0CB7AD5591c349d080DF40663dA9c3d83b',
+  [ChainId.HOPE]: '0x89190c0CB7AD5591c349d080DF40663dA9c3d83b'
 }
 
 // Block time here is slightly higher (~1s) than average in order to avoid ongoing proposals past the displayed time
