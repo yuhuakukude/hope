@@ -24,7 +24,7 @@ const FancyButton = styled.button`
   height: 40px;
   border-radius: 10px;
   font-size: 1rem;
-  width: 78px;
+  width: 68px;
   border: 1px solid ${({ theme }) => theme.bg3};
   outline: none;
   background: ${({ theme }) => theme.bg1};
@@ -43,7 +43,7 @@ const Option = styled(FancyButton)<{ active: boolean }>`
     cursor: pointer;
   }
   background-color: ${({ active, theme }) => active && theme.primary1};
-  color: ${({ active, theme }) => (active ? theme.white : theme.text1)};
+  color: ${({ active, theme }) => (active ? theme.black : theme.text1)};
 `
 
 const Input = styled.input`
