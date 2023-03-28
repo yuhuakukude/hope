@@ -2,6 +2,7 @@ import React, { useEffect, useState, useCallback, useMemo } from 'react'
 import PortfolioConnect from './component/Connect'
 import PortfolioHead from './component/Head'
 import InvestmentAllocation from './component/InvestmentAllocation'
+import PortfolioApi from 'api/portfolio.api'
 
 import './index.scss'
 import { Decimal } from 'decimal.js'
@@ -9,7 +10,9 @@ import { useActiveWeb3React } from 'hooks'
 import styled from 'styled-components'
 import { AutoColumn } from 'components/Column'
 import MyHOPEStaking from './component/MyHOPEStaking'
-import MyLiquidityPools from './component/MyLiquidityPools'
+// import MyLiquidityPools from './component/MyLiquidityPools'
+import MyDepositedLiquidity from './component/MyDepositedLiquidity'
+
 import MyLockedLTAndProfits from './component/MyLockedLTAndProfits'
 import { useStHopeBalance } from '../../state/wallet/hooks'
 import { SUBGRAPH } from '../../constants'
@@ -103,15 +106,42 @@ export default function Portfolio() {
     }
   }, [])
 
-  function setLpTotal(lpTotal: number, yfTotal: number) {
-    setLpData({ lpTotal, yfTotal })
-  }
+  // function setLpTotal(lpTotal: number, yfTotal: number) {
+  //   setLpData({ lpTotal, yfTotal })
+  // }
 
   useEffect(() => {
     if (account) {
       getTokenPrice()
     }
   }, [account, getTokenPrice])
+
+  useEffect(() => {
+    if (!account) {
+      return
+    }
+    PortfolioApi.getLiquidityPools(account).then(data => {
+      if (data.success && data.result) {
+        let lpTotal = 0
+        let yfTotal = 0
+        if (data.result && data.result.length > 0) {
+          data.result.forEach(e => {
+            if (e.hopeOfStakableLpBalance) {
+              lpTotal = new Decimal(lpTotal).add(new Decimal(Number(e.hopeOfStakableLpBalance))).toNumber()
+            }
+            if (e.hopeOfStakedLpBalance && e.hopeOfTotalReward) {
+              yfTotal = new Decimal(yfTotal)
+                .add(new Decimal(Number(e.hopeOfStakedLpBalance)))
+                .add(new Decimal(Number(e.hopeOfTotalReward)))
+                .toNumber()
+            }
+          })
+        }
+        setLpData({ lpTotal, yfTotal })
+      }
+    })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [account])
 
   const getAllVoting = (stHope: string, lt: string) => {
     setLockerLt(lt)
@@ -128,7 +158,8 @@ export default function Portfolio() {
           <>
             <InvestmentAllocation data={allData} />
             {<MyHOPEStaking />}
-            <MyLiquidityPools getLpData={setLpTotal} />
+            <MyDepositedLiquidity />
+            {/* <MyLiquidityPools getLpData={setLpTotal} /> */}
             {stHopeBalance && <MyLockedLTAndProfits getAllVoting={getAllVoting} />}
           </>
         )}

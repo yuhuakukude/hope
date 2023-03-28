@@ -7,7 +7,7 @@ import { useMultipleContractSingleData, useSingleCallResult } from '../state/mul
 import { STAKING_REWARDS_INTERFACE } from '../constants/abis/staking-rewards'
 import { useGomConContract, useLockerContract, useStakingContract } from './useContract'
 import useCurrentBlockTimestamp from './useCurrentBlockTimestamp'
-import {Field} from "../state/liquidity/actions";
+import { Field } from '../state/liquidity/actions'
 import { getLTToken, getLTTokenAddress, getStakingHopeGaugeAddress } from 'utils/addressHelpers'
 
 export enum PAIR_SEARCH {
@@ -157,6 +157,7 @@ export default function usePairsInfo(
               ? ltReward?.[0].toString()
               : '0'
           ),
+          miningRewards: new TokenAmount(getLTToken(chainId), reward ? reward?.[0].toString() : '0'),
           futureBoots,
           currentBoots,
           feeRate: pair.feeRate,

@@ -26,7 +26,6 @@ interface GaugeClaimProps {
 }
 
 function GaugeClaimAll({ onSubmit, onDismiss, total, list, ltPrice }: GaugeClaimProps) {
-  console.log(list)
   const { account } = useActiveWeb3React()
   const isEthBalanceInsufficient = useEstimate()
   const [drapIndex, setDrapIndex] = useState(true)
