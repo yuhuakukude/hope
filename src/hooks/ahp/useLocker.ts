@@ -64,7 +64,6 @@ export function useToLocker() {
       if (amount.equalTo(JSBI.BigInt('0'))) throw new Error('amount is un support')
       if (!date) throw new Error('none date')
       const args = [amount.raw.toString(), date, NONCE, DEADLINE, sigVal]
-      console.log(args)
       const method = conFnNameEnum.CreateLock
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
@@ -93,7 +92,6 @@ export function useToLocker() {
       if (amount.equalTo(JSBI.BigInt('0'))) throw new Error('amount is un support')
       const args = [amount.raw.toString(), NONCE, DEADLINE, sigVal]
       const method = conFnNameEnum.IncreaseAmount
-      console.log('args', args)
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
@@ -121,7 +119,6 @@ export function useToLocker() {
       if (!argTime) throw new Error('none Locker Time')
       const args = [argTime]
       const method = conFnNameEnum.IncreaseUnlockTime
-      console.log('args', args)
       return contract.estimateGas[method](...args, { from: account }).then(estimatedGasLimit => {
         return contract[method](...args, {
           gasLimit: calculateGasMargin(estimatedGasLimit),
@@ -150,7 +147,9 @@ export function useToLocker() {
       JSBI.multiply(JSBI.multiply(JSBI.BigInt(365), JSBI.BigInt(24)), JSBI.BigInt(60)),
       JSBI.BigInt(60)
     )
-    const initStartDate = starDate ? moment(starDate).format('YYYY-MM-DD') : moment()
+    const initStartDate = starDate
+      ? moment(starDate).format('YYYY-MM-DD HH:mm:ss')
+      : moment().format('YYYY-MM-DD HH:mm:ss')
     const lockPeriod = moment(endDate).diff(initStartDate, 'second')
     const veltGetAmount = new TokenAmount(
       getVELTToken(chainId),

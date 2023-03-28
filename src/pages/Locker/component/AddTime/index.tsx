@@ -118,7 +118,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
     }
     const velt = getVeLtAmount(
       lockerRes?.amount.toFixed(2) ?? '0',
-      format.formatDate(Number(`${argTime}`), 'YYYY-MM-DD'),
+      format.formatDate(Number(`${argTime}`)),
       format.formatDate(Number(`${lockerRes?.end}`))
     )
     const res = new TokenAmount(

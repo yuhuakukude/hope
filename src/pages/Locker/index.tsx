@@ -29,7 +29,13 @@ import { useWalletModalToggle } from '../../state/application/hooks'
 import { useEstimate } from '../../hooks/ahp'
 import { useActionPending } from '../../state/transactions/hooks'
 import LtIcon from '../../assets/images/ahp/lt.png'
-import { getLTToken, getLTTokenAddress, getPermit2Address, getVELTToken, getVELTTokenAddress } from 'utils/addressHelpers'
+import {
+  getLTToken,
+  getLTTokenAddress,
+  getPermit2Address,
+  getVELTToken,
+  getVELTTokenAddress
+} from 'utils/addressHelpers'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -148,7 +154,6 @@ export default function DaoLocker() {
     )
     const lastEndTime = format.formatDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')
     const todayDiffEnd = moment(maxEndTime).diff(moment(lastEndTime), 'days')
-    console.log(maxEndTime.format('YYYY-MM-DD'), lastEndTime, todayDiffEnd)
     return Math.floor(todayDiffEnd / 7)
   }, [lockerRes])
 
@@ -268,7 +273,19 @@ export default function DaoLocker() {
         onTxError(error)
         throw error
       })
-  }, [account, inputAmount, library, chainId, permit2Address, veLtAmount, lockTimeArg, toLocker, onTxStart, onTxSubmitted, onTxError])
+  }, [
+    account,
+    inputAmount,
+    library,
+    chainId,
+    permit2Address,
+    veLtAmount,
+    lockTimeArg,
+    toLocker,
+    onTxStart,
+    onTxSubmitted,
+    onTxError
+  ])
 
   const toWithdrawCallback = useCallback(async () => {
     if (!account) return

@@ -38,6 +38,7 @@ export default function AddAmount() {
   const inputAmount = tryParseAmount(amount, ltToken) as TokenAmount | undefined
   const [txHash, setTxHash] = useState<string>('')
   const [pendingText, setPendingText] = useState('')
+  const [isToGaugeFlag, setIsToGaugeFlag] = useState<boolean>(false)
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
   const veltBalance = useTokenBalance(account ?? undefined, veLTToken)
   const { pending: isLocerkAmountPending } = useActionPending(
@@ -72,7 +73,7 @@ export default function AddAmount() {
     if (!lockerRes?.end || lockerRes?.end === '--' || !amount) {
       return undefined
     }
-    const velt = getVeLtAmount(amount, format.formatDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD'))
+    const velt = getVeLtAmount(amount, format.formatDate(Number(`${lockerRes?.end}`)))
     const res = new TokenAmount(
       getVELTToken(chainId),
       JSBI.add(JSBI.BigInt(veltBalance?.raw.toString() ?? '0'), JSBI.BigInt(velt?.raw.toString() ?? '0'))
@@ -130,6 +131,7 @@ export default function AddAmount() {
   }, [])
 
   const onApprove = useCallback(() => {
+    setIsToGaugeFlag(false)
     setCurToken(undefined)
     onTxStart()
     setPendingText(`Approve LT`)
@@ -147,6 +149,7 @@ export default function AddAmount() {
 
   const lockerCallback = useCallback(async () => {
     if (!account || !inputAmount || !library || !chainId) return
+    setIsToGaugeFlag(true)
     setCurToken(getVELTToken(chainId))
     setPendingText(`Lock LT`)
     onTxStart()
@@ -209,7 +212,7 @@ export default function AddAmount() {
         content={confirmationContent}
         pendingText={pendingText}
         currencyToAdd={curToken}
-        isToGauge={true}
+        isToGauge={isToGaugeFlag}
       />
       <div className="locker-add-amount-modal flex-1">
         <div className="amout-box">
