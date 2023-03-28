@@ -17,7 +17,9 @@ const WALLETCONNECT_BRIDGE_URL = process.env.REACT_APP_WALLETCONNECT_BRIDGE_URL
 export const REACT_APP_FAUCET_VISIBLE = process.env.REACT_APP_FAUCET_VISIBLE
 
 export const NETWORK_CHAIN_ID: number = parseInt(process.env.REACT_APP_CHAIN_ID ?? '1')
-
+export const SUPPORT_CHAIN_ID = process.env.REACT_APP_SUPPORT_CHAIN_ID?.split(',').map(id => parseInt(id ?? '1')) || [
+  NETWORK_CHAIN_ID
+]
 
 if (typeof NETWORK_URL === 'undefined') {
   throw new Error(`REACT_APP_NETWORK_URL must be a defined environment variable`)
@@ -44,7 +46,7 @@ export const walletconnect = new WalletConnectConnector({
     11155111: NETWORK_URL,
     1337: NETWORK_URL
   },
-  supportedChainIds: [NETWORK_CHAIN_ID],
+  supportedChainIds: SUPPORT_CHAIN_ID,
   chainId: NETWORK_CHAIN_ID,
   bridge: WALLETCONNECT_BRIDGE_URL,
   qrcode: true

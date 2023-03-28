@@ -95,7 +95,7 @@
     "start": "react-scripts start",
     "start:test2": "dotenv -e .env.test react-scripts start",
     "start:beta1": "dotenv -e .env.beta1 react-scripts start",
-    "start:beta2": "dotenv -e .env.beta1 react-scripts start",
+    "start:beta2": "dotenv -e .env.beta2 react-scripts start",
     "start:service-worker": "yarn build && yarn serve -s build",
     "build": "react-scripts build",
     "build:dev1": "dotenv -e .env.development react-scripts build",

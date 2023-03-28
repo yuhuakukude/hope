@@ -202,8 +202,6 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
 
   const [showUniBalanceModal, setShowUniBalanceModal] = useState(false)
 
-  console.log(process.env)
-
   return (
     <HeaderFrame>
       <Modal isOpen={showUniBalanceModal} onDismiss={() => setShowUniBalanceModal(false)}>
