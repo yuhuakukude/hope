@@ -4,7 +4,6 @@ import { AutoColumn, ColumnCenter } from '../../components/Column'
 import Row, { AutoRow, RowBetween, RowFixed } from '../../components/Row'
 import { CustomLightSpinner, ExternalLink, TYPE } from '../../theme'
 import { ButtonGray, ButtonOutlined, ButtonPrimary } from '../../components/Button'
-import { TabItem, TabWrapper } from '../../components/Tab'
 import usePairsInfo from '../../hooks/usePairInfo'
 import PoolCard from '../../components/pool/PoolCard'
 import FullPositionCard from '../../components/PositionCard'
@@ -43,6 +42,48 @@ const EmptyProposals = styled.div`
   justify-content: center;
   align-items: center;
 `
+
+const TabWrapper = styled(Row)<{ flexW?: number; left: number }>`
+  padding: 2px;
+  width: fit-content;
+  background-color: #1b1b1f;
+  border-radius: 8px;
+  position: relative;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: ${({ left }) => (left ? `${left}%` : '0')};
+    height: 100%;
+    width: ${({ flexW }) => (flexW ? `${flexW}%` : '50%')};
+    border-radius: 8px;
+    background-color: #3d3e46;
+    box-sizing: border-box;
+    transition: all ease 0.25s;
+    border: 2px solid #1b1b1f;
+  }
+`
+
+const TabItem = styled.div<{ isActive?: boolean }>`
+  color: ${({ isActive, theme }) => (isActive ? theme.text1 : '#a8a8aa')};
+  width: 118px;
+  height: 38px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: Arboria-Medium;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  z-index: 2;
+  // background: ${({ isActive, theme }) => (isActive ? theme.bg3 : theme.bg5)};
+  text-align: center;
+  line-height: 38px;
+
+  &:hover {
+    color: ${({ theme }) => theme.text1};
+  }
+`
+
 const EmptyCover = styled.img`
   width: 206px;
   height: 168px;
@@ -203,7 +244,7 @@ export default function Pools() {
       　
       <AutoRow mt={30}>
         <RowBetween>
-          <TabWrapper>
+          <TabWrapper left={liquiditySearchType === Field.ALL ? 0 : 50}>
             <TabItem
               onClick={() => {
                 setCurrentPage(1)
