@@ -6,8 +6,7 @@ import styled from 'styled-components'
 import { GapColumn } from '../../components/Column'
 import { AddRemoveTabs } from '../../components/NavigationTabs'
 import { StyledInternalLink, TYPE } from '../../theme'
-import { RowBetween, RowFixed } from '../../components/Row'
-import { TabItem, TabWrapper } from '../../components/Tab'
+import Row, { RowBetween, RowFixed } from '../../components/Row'
 import RemoveLiquidity from '../RemoveLiquidity'
 import Tips from './component/Tips'
 import { Field as mintField, typeInput as mintTypeInput } from '../../state/mint/actions'
@@ -23,13 +22,46 @@ const PageWrapper = styled(GapColumn)`
   justify-content: center;
 `
 
-const CustomTabWrapper = styled(TabWrapper)`
-  width: auto;
+const CustomTabWrapper = styled(Row)<{ flexW?: number; left: number }>`
+  padding: 2px;
+  width: fit-content;
+  background-color: #1b1b1f;
+  border-radius: 8px;
+  position: relative;
   margin: 0 20px;
-`
-const CustomTab = styled(TabItem)`
   width: auto;
-  flex: 1;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: ${({ left }) => (left ? `${left}%` : '0')};
+    height: 100%;
+    width: ${({ flexW }) => (flexW ? `${flexW}%` : '50%')};
+    border-radius: 8px;
+    background-color: #3d3e46;
+    box-sizing: border-box;
+    transition: all ease 0.25s;
+    border: 2px solid #1b1b1f;
+  }
+`
+const CustomTab = styled.div<{ isActive?: boolean }>`
+  color: ${({ isActive, theme }) => (isActive ? theme.text1 : '#a8a8aa')};
+  width: 50%;
+  height: 38px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: Arboria-Medium;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  z-index: 2;
+  // background: ${({ isActive, theme }) => (isActive ? theme.bg3 : theme.bg5)};
+  text-align: center;
+  line-height: 38px;
+
+  &:hover {
+    color: ${({ theme }) => theme.text1};
+  }
 `
 export default function LiquidityManager({
   match: {
@@ -87,7 +119,7 @@ export default function LiquidityManager({
             </Tooltip> */}
           </RowFixed>
         </RowBetween>
-        <CustomTabWrapper>
+        <CustomTabWrapper left={!isRemove ? 0 : 50}>
           <CustomTab
             onClick={() =>
               history.replace(

@@ -1,11 +1,10 @@
 import { Link, RouteComponentProps, useHistory, useLocation } from 'react-router-dom'
 import { useStakingPool } from '../../hooks/useLPStaking'
 import styled from 'styled-components'
-import { TabItem, TabWrapper } from '../../components/Tab'
 import { AutoColumn, GapColumn } from '../../components/Column'
 import AppBody from '../AppBody'
 import { TYPE } from '../../theme'
-import { AutoRow, RowBetween } from '../../components/Row'
+import Row, { AutoRow, RowBetween } from '../../components/Row'
 import React, { useCallback, useMemo, useState } from 'react'
 import CurrencyLogo from '../../components/CurrencyLogo'
 import { useTokenBalance } from '../../state/wallet/hooks'
@@ -31,13 +30,46 @@ import noData from '../../assets/images/no_data.png'
 import { formatMessage } from '../../utils/format'
 import { getPermit2Address } from 'utils/addressHelpers'
 
-const CustomTabWrapper = styled(TabWrapper)`
-  width: auto;
+const CustomTabWrapper = styled(Row)<{ flexW?: number; left: number }>`
+  padding: 2px;
+  width: fit-content;
+  background-color: #1b1b1f;
+  border-radius: 8px;
+  position: relative;
   margin: 0 20px;
-`
-const CustomTab = styled(TabItem)`
   width: auto;
-  flex: 1;
+  &::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: ${({ left }) => (left ? `${left}%` : '0')};
+    height: 100%;
+    width: ${({ flexW }) => (flexW ? `${flexW}%` : '50%')};
+    border-radius: 8px;
+    background-color: #3d3e46;
+    box-sizing: border-box;
+    transition: all ease 0.25s;
+    border: 2px solid #1b1b1f;
+  }
+`
+const CustomTab = styled.div<{ isActive?: boolean }>`
+  color: ${({ isActive, theme }) => (isActive ? theme.text1 : '#a8a8aa')};
+  width: 50%;
+  height: 38px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-family: Arboria-Medium;
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+  z-index: 2;
+  // background: ${({ isActive, theme }) => (isActive ? theme.bg3 : theme.bg5)};
+  text-align: center;
+  line-height: 38px;
+
+  &:hover {
+    color: ${({ theme }) => theme.text1};
+  }
 `
 const PageWrapper = styled(GapColumn)`
   width: 100%;
@@ -85,10 +117,7 @@ export default function LiquidityMining({
     maxAmountInput && onUserInput(maxAmountInput.toExact())
   }, [maxAmountInput, onUserInput])
 
-  const [approvalState, approveCallback] = useApproveCallback(
-    staking ? parsedAmount : undefined,
-    permit2Address
-  )
+  const [approvalState, approveCallback] = useApproveCallback(staking ? parsedAmount : undefined, permit2Address)
 
   const stakingContract = useStakingContract(stakingRewardAddress, true)
 
@@ -269,7 +298,7 @@ export default function LiquidityMining({
             </TYPE.white>
             <StakingTips />
           </RowBetween>
-          <CustomTabWrapper>
+          <CustomTabWrapper left={staking ? 0 : 50}>
             <CustomTab
               onClick={() => {
                 setTypedValue('')

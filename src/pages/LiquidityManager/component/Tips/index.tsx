@@ -1,7 +1,6 @@
 import React from 'react'
 import { Tooltip } from 'antd'
 // import { TooltipProps } from 'antd/lib/tooltip'
-import { Info } from 'react-feather'
 import './index.scss'
 
 export default function Tips() {
@@ -51,8 +50,7 @@ export function StakingTips() {
   }
   return (
     <Tooltip placement="rightTop" overlayClassName="tips-liq" title={titleNode}>
-      <Info className="font-16 cursor-select tips-circle m-l-10 font-bold" size={18} />
-      {/* <i className="iconfont font-16 cursor-select tips-circle m-l-10 font-bold">&#xe620;</i> */}
+      <i className="iconfont font-24 hope-icon-common p-2 m-l-5 cursor-select">&#xe631;</i>
     </Tooltip>
   )
 }
