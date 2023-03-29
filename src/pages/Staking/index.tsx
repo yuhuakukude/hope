@@ -397,7 +397,7 @@ export default function Staking() {
           </div>
           <Row className="m-t-30" gutter={30}>
             <Col className="gutter-row" span={14}>
-              <div className="staking-tab">
+              <div className={['staking-tab', curType === 'unstake' ? 'isActive' : ''].join(' ')}>
                 <div className="head flex">
                   <div
                     onClick={() => {
@@ -509,8 +509,8 @@ export default function Staking() {
                     )}
 
                     {curType === 'unstake' && (
-                      <div className="flex m-t-15">
-                        <i className="text-primary iconfont m-r-5 font-14 m-t-5">&#xe62b;</i>
+                      <div className="flex m-t-15 ai-center">
+                        <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
                         <div>
                           <p className="text-white lh15">
                             The unstaking process takes 28 days, and you can withdraw the unstaked HOPE afterward.

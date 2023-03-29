@@ -42,12 +42,28 @@
     border-radius: 20px;
     background: #26262C;
     overflow: hidden;
+    &::after{
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 0;
+      height: 75px;
+      width: 50%;
+      border-top-left-radius: 20px;
+      border-top-right-radius: 20px;
+      background-color: #26262C;
+      transition: all ease 0.25s;
+    }
+    &.isActive::after{
+      left: calc(50% - 15px);
+    }
 
     .head {
       height: 75px;
       background: #18181D;
-
       .head-item {
+        position: relative;
+        z-index: 2;
         height: 100%;
         text-align: center;
         color: #A8A8AA;
@@ -62,7 +78,7 @@
         }
 
         &.active {
-          background: #26262C;
+          // background: #26262C;
           color: #fff;
         }
       }
