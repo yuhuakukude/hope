@@ -309,7 +309,7 @@ const ButtonErrorStyle = styled(Base)`
     opacity: 50%;
     cursor: auto;
     box-shadow: none;
-    color: ${({ theme }) => theme.text5};
+    color: #e2afb5;
     background-color: ${({ theme }) => theme.red2};
     border: 1px solid ${({ theme }) => theme.red2};
   }
