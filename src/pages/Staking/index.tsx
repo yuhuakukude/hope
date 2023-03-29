@@ -464,30 +464,36 @@ export default function Staking() {
                         Connect Wallet
                       </ButtonPrimary>
                     ) : curType === 'stake' ? (
-                      <ActionButton
-                        error={stakeInputError}
-                        pendingText={
-                          approvalState === ApprovalState.PENDING ? 'Approving HOPE' : 'Confirm in your wallet'
-                        }
-                        pending={(approvalState === ApprovalState.PENDING && curType === 'stake') || !!stakePendingText}
-                        disableAction={!inputAmount || !hopeBal}
-                        actionText={
-                          stakeInputError
-                            ? stakeInputError
-                            : !amount
-                            ? 'Enter Amount'
-                            : approvalState === ApprovalState.NOT_APPROVED
-                            ? 'Approve Hope'
-                            : 'Stake HOPE Get stHOPE'
-                        }
-                        onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : stakingCallback}
-                      />
+                      <div className="flex">
+                        {approvalState === ApprovalState.NOT_APPROVED && (
+                          <div className="m-r-15" style={{ whiteSpace: 'nowrap' }}>
+                            <ActionButton
+                              pendingText="Approving HOPE"
+                              actionText="Approve Hope"
+                              pending={!!stakePendingText}
+                              onAction={onApprove}
+                            />
+                          </div>
+                        )}
+                        <ActionButton
+                          error={stakeInputError}
+                          pendingText="Confirm in your wallet"
+                          pending={
+                            (approvalState === ApprovalState.PENDING && curType === 'stake') || !!stakePendingText
+                          }
+                          disableAction={!inputAmount || !hopeBal}
+                          actionText={
+                            stakeInputError ? stakeInputError : inputAmount ? 'Stake HOPE Get stHOPE' : 'Enter Amount'
+                          }
+                          onAction={stakingCallback}
+                        />
+                      </div>
                     ) : (
                       <ActionButton
                         error={unstakeInputError}
                         pendingText={'Confirm in your wallet'}
                         pending={!!stakePendingText && actionType === ACTION.UNSTAKING}
-                        disableAction={!inputAmount || !stakedVal}
+                        disableAction={!inputAmount || !stakedVal || approvalState === ApprovalState.NOT_APPROVED}
                         actionText={
                           unstakeInputError ? unstakeInputError : !inputAmount ? 'Enter amount' : 'Commit to unstake'
                         }

@@ -50,6 +50,7 @@ export default function AddAmount() {
 
   // token api
   const [approvalState, approveCallback] = useApproveCallback(inputAmount, permit2Address)
+
   const [curToken, setCurToken] = useState<Token | undefined>(ltToken)
 
   // modal and loading
@@ -93,9 +94,9 @@ export default function AddAmount() {
     } else if (!inputAmount) {
       return `Enter LT Amount`
     } else {
-      return approvalState === ApprovalState.NOT_APPROVED ? 'Approve LT' : 'Add'
+      return 'Add'
     }
-  }, [isMaxDisabled, inputAmount, approvalState])
+  }, [isMaxDisabled, inputAmount])
 
   const confirmationContent = useCallback(() => {
     return (
@@ -122,10 +123,12 @@ export default function AddAmount() {
     setAmount('')
   }, [])
 
+  const [approvePendingText, setApprovePendingText] = useState('')
   const onTxError = useCallback(error => {
     setShowConfirm(true)
     setTxHash('')
     setPendingText(``)
+    setApprovePendingText('')
     setAttemptingTxn(false)
     setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
@@ -134,11 +137,11 @@ export default function AddAmount() {
     setIsToGaugeFlag(false)
     setCurToken(undefined)
     onTxStart()
-    setPendingText(`Approve LT`)
+    setApprovePendingText(`Approving LT`)
     approveCallback()
       .then((response: TransactionResponse | undefined) => {
         setShowConfirm(true)
-        setPendingText(``)
+        setApprovePendingText(``)
         setAttemptingTxn(false)
         response?.hash && setTxHash(response?.hash)
       })
@@ -252,6 +255,17 @@ export default function AddAmount() {
           </p>
         </div>
         <div className="m-t-50">
+          {approvalState === ApprovalState.NOT_APPROVED && (
+            <>
+              <ActionButton
+                pending={!!approvePendingText}
+                pendingText={approvePendingText}
+                actionText="Approve LT"
+                onAction={onApprove}
+              />
+              <div className="m-t-20"></div>
+            </>
+          )}
           <ActionButton
             error={isMaxDisabled ? 'Insufficient LT balance' : undefined}
             pending={
@@ -262,9 +276,15 @@ export default function AddAmount() {
                 ? 'Pending'
                 : 'Confirm in your wallet'
             }
-            disableAction={isMaxDisabled || !inputAmount || !ltBalance || approvalState === ApprovalState.UNKNOWN}
+            disableAction={
+              isMaxDisabled ||
+              !inputAmount ||
+              !ltBalance ||
+              approvalState === ApprovalState.UNKNOWN ||
+              approvalState === ApprovalState.NOT_APPROVED
+            }
             actionText={actionText}
-            onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : lockerCallback}
+            onAction={lockerCallback}
           />
         </div>
       </div>
