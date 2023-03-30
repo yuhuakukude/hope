@@ -180,7 +180,7 @@ export default function DaoLocker() {
     } else {
       return 'Lock'
     }
-  }, [isMaxDisabled, inputAmount, lockerDate, approvalState, lockerRes])
+  }, [isMaxDisabled, inputAmount, lockerDate, lockerRes])
 
   const confirmationContent = useCallback(() => {
     return (
