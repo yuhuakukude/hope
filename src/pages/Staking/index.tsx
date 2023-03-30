@@ -561,16 +561,16 @@ export default function Staking() {
                       <span className="text-white text-medium">{format.rate(relWeight)}</span>
                     </div>
                     <div className="flex jc-between m-b-20 font-nor">
-                      <span className="text-normal">My Current Boost</span>
+                      <span className="text-normal">My Current Cycle</span>
                       <span className="text-white text-medium">{currentBoots ? currentBoots.toFixed(2) : '--'}x</span>
                     </div>
                     <div className="flex jc-between m-b-20 font-nor">
                       <span className="text-normal">
-                        My Next Boost
+                        My Next Cycle
                         <Tooltip
                           className="m-l-5"
                           overlayClassName="tips-question"
-                          title="When the number of a user's veLT changes, the values of the Current Boost and Next Boost may become inconsistent. To ensure that the Next Boost takes effect, the user needs to actively update the value."
+                          title="When the number of a user's veLT changes, the values of the Current Cycle and Next Cycle may become inconsistent. To ensure that the Next Cycle takes effect, the user needs to actively update the value."
                         >
                           <i className="iconfont font-16 cursor-select tips-circle">&#xe620;</i>
                         </Tooltip>
@@ -597,7 +597,7 @@ export default function Staking() {
                     {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
                       <div className="flex ai-center">
                         <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
-                        <p className="text-normal lh15">Claim your rewards to apply your next boost</p>
+                        <p className="text-normal lh15">Claim your rewards to apply your next cycle</p>
                       </div>
                     )}
                   </div>
