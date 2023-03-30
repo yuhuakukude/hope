@@ -162,18 +162,19 @@ export default function Staking() {
     setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
+  const [approvePendingText, setApprovePendingText] = useState('')
   const onApprove = useCallback(() => {
     setActionType(ACTION.STAKE)
     setCurToken(undefined)
     onTxStart()
-    setStakePendingText(`Approve ${hopeToken.symbol}`)
+    setApprovePendingText(`Approving ${hopeToken.symbol}`)
     approveCallback()
       .then((response: TransactionResponse | undefined) => {
-        setStakePendingText('')
+        setApprovePendingText('')
         onTxSubmitted(response?.hash)
       })
       .catch(error => {
-        setStakePendingText('')
+        setApprovePendingText('')
         onTxError(error)
       })
   }, [approveCallback, hopeToken, onTxError, onTxStart, onTxSubmitted])
@@ -197,13 +198,12 @@ export default function Staking() {
     }
 
     const { domain, types, values } = getPermitData(permit, getPermit2Address(chainId), chainId)
-    setStakePendingText(`Approve HOPE`)
-
+    // setStakePendingText(`Approve HOPE`)
+    setStakePendingText(`Stake ${inputAmount.toFixed(2)} HOPE`)
     library
       .getSigner(account)
       ._signTypedData(domain, types, values)
       .then(signature => {
-        setStakePendingText(`Stake ${inputAmount.toFixed(2)} HOPE`)
         toStaked(inputAmount, nonce, deadline, signature)
           .then(hash => {
             setAmount('')
@@ -468,9 +468,9 @@ export default function Staking() {
                         {(approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING) && (
                           <div className="m-r-15" style={{ whiteSpace: 'nowrap', minWidth: '40%' }}>
                             <ActionButton
-                              pendingText="Approving HOPE"
-                              actionText="Approve HOPE"
-                              pending={approvalState === ApprovalState.PENDING || !!stakePendingText}
+                              pendingText={approvePendingText}
+                              actionText={`Approve ${hopeToken.symbol}`}
+                              pending={!!approvePendingText || approvalState === ApprovalState.PENDING}
                               onAction={onApprove}
                             />
                           </div>
@@ -478,8 +478,14 @@ export default function Staking() {
                         <ActionButton
                           error={stakeInputError}
                           pendingText="Confirm in your wallet"
-                          pending={approvalState !== ApprovalState.PENDING || !!stakePendingText}
-                          disableAction={approvalState === ApprovalState.NOT_APPROVED || !inputAmount || !hopeBal}
+                          pending={!!stakePendingText && actionType === ACTION.STAKE}
+                          disableAction={
+                            !!approvePendingText ||
+                            approvalState === ApprovalState.NOT_APPROVED ||
+                            approvalState === ApprovalState.PENDING ||
+                            !inputAmount ||
+                            !hopeBal
+                          }
                           actionText={
                             stakeInputError ? stakeInputError : inputAmount ? 'Stake HOPE Get stHOPE' : 'Enter Amount'
                           }
@@ -564,7 +570,7 @@ export default function Staking() {
                         <Tooltip
                           className="m-l-5"
                           overlayClassName="tips-question"
-                          title="When the number of a user's veLT changes, the values of the Current Boost and Future Boost may become inconsistent. To ensure that the Future Boost takes effect, the user needs to actively update the value."
+                          title="When the number of a user's veLT changes, the values of the Current Boost and Next Boost may become inconsistent. To ensure that the Next Boost takes effect, the user needs to actively update the value."
                         >
                           <i className="iconfont font-16 cursor-select tips-circle">&#xe620;</i>
                         </Tooltip>
