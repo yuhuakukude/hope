@@ -194,9 +194,7 @@ export default function SettingsTab() {
                 deadline={ttl}
                 setDeadline={setTtl}
               />
-              <Text fontWeight={600} fontSize={14}>
-                Interface Settings
-              </Text>
+              <Text fontSize={14}>Interface Settings</Text>
               <RowBetween>
                 <RowFixed>
                   <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>

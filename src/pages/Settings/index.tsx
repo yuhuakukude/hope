@@ -168,9 +168,7 @@ export default function SettingPage() {
             deadline={ttl}
             setDeadline={setTtl}
           />
-          <TYPE.main fontWeight={600} fontSize={14}>
-            Interface Settings
-          </TYPE.main>
+          <TYPE.main fontSize={14}>Interface Settings</TYPE.main>
           <AutoColumn gap="sm">
             <RowBetween>
               <RowFixed>

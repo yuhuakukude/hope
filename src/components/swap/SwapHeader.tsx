@@ -29,7 +29,7 @@ export default function SwapHeader() {
   return (
     <StyledSwapHeader>
       <RowBetween>
-        <TYPE.white fontSize={20} fontWeight={500}>
+        <TYPE.white fontSize={18} fontWeight={500} fontFamily={'Arboria-Medium'}>
           Swap
         </TYPE.white>
         <StyledInternalLink to={'/swap/settings'} style={{ textDecoration: 'none' }}>

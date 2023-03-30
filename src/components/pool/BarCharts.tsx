@@ -60,7 +60,6 @@ export default function BarCharts({
           `
         }
       },
-      dataZoom: [{ type: 'inside' }],
       xAxis: {
         type: 'category',
         data: xData,
