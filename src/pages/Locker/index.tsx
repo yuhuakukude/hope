@@ -206,10 +206,12 @@ export default function DaoLocker() {
     hash && setTxHash(hash)
   }, [])
 
+  const [approvePendingText, setApprovePendingText] = useState('')
   const onTxError = useCallback(error => {
     setShowConfirm(true)
     setTxHash('')
     setPendingText(``)
+    setApprovePendingText('')
     setAttemptingTxn(false)
     setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
@@ -218,7 +220,7 @@ export default function DaoLocker() {
     setActionType(ACTION.LOCKER)
     setCurToken(undefined)
     onTxStart()
-    setPendingText(`Approve LT`)
+    setApprovePendingText(`Approving LT`)
     approveCallback()
       .then((response: TransactionResponse | undefined) => {
         onTxSubmitted(response?.hash)
@@ -483,26 +485,40 @@ export default function DaoLocker() {
                           Connect Wallet
                         </ButtonPrimary>
                       ) : (
-                        <ActionButton
-                          error={isMaxDisabled ? 'Insufficient LT balance' : undefined}
-                          pending={approvalState === ApprovalState.PENDING || !!pendingText || isLockerPending}
-                          pendingText={
-                            isLockerPending || approvalState === ApprovalState.PENDING
-                              ? 'Pending'
-                              : 'Confirm in your wallet'
-                          }
-                          disableAction={
-                            isMaxDisabled ||
-                            !inputAmount ||
-                            !lockerDate ||
-                            !ltBalance ||
-                            lockerRes?.end !== '--' ||
-                            !!lockerRes?.amount ||
-                            approvalState === ApprovalState.UNKNOWN
-                          }
-                          actionText={actionText}
-                          onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : lockerCallback}
-                        />
+                        <>
+                          {approvalState === ApprovalState.NOT_APPROVED && (
+                            <>
+                              <ActionButton
+                                pending={!!approvePendingText}
+                                pendingText={approvePendingText}
+                                actionText="Approve LT"
+                                onAction={onApprove}
+                              />
+                              <div className="m-b-20"></div>
+                            </>
+                          )}
+
+                          <ActionButton
+                            error={isMaxDisabled ? 'Insufficient LT balance' : undefined}
+                            pending={approvalState === ApprovalState.PENDING || !!pendingText || isLockerPending}
+                            pendingText={
+                              isLockerPending || approvalState === ApprovalState.PENDING
+                                ? 'Pending'
+                                : 'Confirm in your wallet'
+                            }
+                            disableAction={
+                              isMaxDisabled ||
+                              !inputAmount ||
+                              !lockerDate ||
+                              !ltBalance ||
+                              lockerRes?.end !== '--' ||
+                              !!lockerRes?.amount ||
+                              approvalState === ApprovalState.UNKNOWN
+                            }
+                            actionText={actionText}
+                            onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : lockerCallback}
+                          />
+                        </>
                       )}
                     </div>
                   </div>
