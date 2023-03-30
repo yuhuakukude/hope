@@ -8,7 +8,7 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { CurrencyAmount, Token } from '@uniswap/sdk'
 import { useTokenBalances } from 'state/wallet/hooks'
-import { getUSDCToken, getUSDTToken, getHOPEToken, getDAIToken } from 'utils/addressHelpers'
+import { getUSDCToken, getUSDTToken, getHOPEToken, getDAIToken, getEthToken } from 'utils/addressHelpers'
 
 import './index.scss'
 import { message } from 'antd'
@@ -16,6 +16,7 @@ import { useSingleCallResult } from 'state/multicall/hooks'
 import Modal from 'components/antd/Modal'
 import CurrencyLogo from 'components/CurrencyLogo'
 import { useWalletModalToggle } from 'state/application/hooks'
+import Tips from 'components/Tips'
 
 const formatBalance = function(val?: string, decimals?: number) {
   if (!val || !decimals) {
@@ -77,16 +78,20 @@ function useAvailableBalance(account?: string) {
 export default function Faucet() {
   const [dataSource, setDataSource] = useState<Token[]>([])
   const { account, chainId } = useActiveWeb3React()
-  const USDCToken = useMemo(() => getUSDCToken(chainId), [chainId])
-  const USDTToken = useMemo(() => getUSDTToken(chainId), [chainId])
-  const HOPEToken = useMemo(() => getHOPEToken(chainId), [chainId])
-  const DAIToken = useMemo(() => getDAIToken(chainId), [chainId])
+
   useEffect(() => {
     if (!chainId) {
       return
     }
-    setDataSource([USDCToken, USDTToken, HOPEToken, DAIToken])
-  }, [chainId, USDCToken, USDTToken, HOPEToken, DAIToken])
+
+    setDataSource([
+      getUSDCToken(chainId),
+      getUSDTToken(chainId),
+      getHOPEToken(chainId),
+      getDAIToken(chainId),
+      getEthToken(chainId)
+    ])
+  }, [chainId])
 
   const requestToken = useFaucet()
 
@@ -140,6 +145,7 @@ export default function Faucet() {
                   toggleWalletModal()
                   return
                 }
+                console.log(record)
                 setToken(record)
               }}
             >
@@ -154,7 +160,9 @@ export default function Faucet() {
   return (
     <div className="faucet-wrap">
       <Modal visible={!!token} getContainer={false} onCancel={handleClose}>
-        <div className="faucet-title">Faucet {token?.symbol}</div>
+        <div className="faucet-title">
+          Faucet {token?.symbol} {token?.symbol === 'WETH' && <Tips title="For test use only" />}
+        </div>
         <div className="faucet-desc">
           <div>Amount</div>
           <div>
