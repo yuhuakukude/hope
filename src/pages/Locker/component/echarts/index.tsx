@@ -108,6 +108,7 @@ export default function LockerEcharts() {
               },
               axisLabel: {
                 color: '#FFFFFF',
+                fontFamily: 'Arboria-Book',
                 margin: 10,
                 fontSize: 12,
                 formatter: (value: any) => {
@@ -134,6 +135,7 @@ export default function LockerEcharts() {
               },
               axisLabel: {
                 color: '#FFFFFF',
+                fontFamily: 'Arboria-Book',
                 fontSize: 12,
                 formatter: (value: any) => {
                   return format.numFormat(Number(value), 2)

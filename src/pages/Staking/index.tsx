@@ -395,7 +395,7 @@ export default function Staking() {
               </Col>
             </Row>
           </div>
-          <Row className="m-t-30" gutter={30}>
+          <Row className="m-t-30  font-nor" gutter={30}>
             <Col className="gutter-row" span={14}>
               <div className={['staking-tab', curType === 'unstake' ? 'isActive' : ''].join(' ')}>
                 <div className="head flex">
@@ -421,7 +421,7 @@ export default function Staking() {
                 <div className="tab-con p-30">
                   <div className="flex jc-between">
                     <span className="text-normal">{curType === 'stake' ? 'Stake' : 'Unstake (It takes 28 days)'}</span>
-                    <div className="text-normal">
+                    <div className="text-normal font-nor">
                       Available:{' '}
                       {curType === 'stake'
                         ? `${hopeBal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'} HOPE`
@@ -452,7 +452,7 @@ export default function Staking() {
                       </div>
                     </div>
                   </div>
-                  <div className="flex jc-between m-t-20">
+                  <div className="flex jc-between m-t-30">
                     <span className="text-white">Receive </span>
                     <span className="text-white">
                       {amount || '--'} {curType !== 'stake' ? 'HOPE' : 'stHOPE'}
@@ -509,8 +509,8 @@ export default function Staking() {
                     )}
 
                     {curType === 'unstake' && (
-                      <div className="flex m-t-15 ai-center">
-                        <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
+                      <div className="flex m-t-20">
+                        <i className="text-primary iconfont m-t-5 m-r-5 font-14">&#xe62b;</i>
                         <div>
                           <p className="text-white lh15">
                             The unstaking process takes 28 days, and you can withdraw the unstaked HOPE afterward.

@@ -140,7 +140,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
     <AutoColumn gap="30px">
       <AutoColumn gap="lg">
         <RowFixed>
-          <TYPE.black fontWeight={400} fontSize={14} color={theme.text2}>
+          <TYPE.black fontSize={14} color={theme.text2}>
             Slippage tolerance
           </TYPE.black>
           <Tooltip
@@ -219,7 +219,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
 
       <AutoColumn gap="lg">
         <RowFixed>
-          <TYPE.black fontSize={14} fontWeight={400} color={theme.text2}>
+          <TYPE.black fontSize={14} color={theme.text2}>
             Transaction deadline
           </TYPE.black>
           <Tooltip
@@ -242,7 +242,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
               onChange={e => parseCustomDeadline(e.target.value)}
             />
           </OptionCustom>
-          <TYPE.white fontWeight={700} style={{ paddingLeft: '8px' }} fontSize={14}>
+          <TYPE.white style={{ paddingLeft: '8px', fontFamily: 'Arboria-Medium' }} fontSize={14}>
             minutes
           </TYPE.white>
         </RowFixed>
