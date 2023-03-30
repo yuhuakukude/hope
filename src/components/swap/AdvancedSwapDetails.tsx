@@ -66,6 +66,42 @@ function TradeSummary({
           <AutoColumn gap={'4px'}>
             <RowFixed>
               <TYPE.black fontWeight={400} color={theme.text2}>
+                Expected Output
+              </TYPE.black>
+              <Tooltip
+                className="m-l-5"
+                overlayClassName="tips-question"
+                title="The amount you expect to receive at the current market price. You may receive less or more if the market price changes while your transaction is pending."
+              >
+                <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+              </Tooltip>
+            </RowFixed>
+          </AutoColumn>
+          <RowFixed>
+            <TYPE.black fontWeight={700} color={theme.text1}>
+              {`${trade.outputAmount?.toSignificant(6)} ${trade.executionPrice?.quoteCurrency?.symbol}`}
+            </TYPE.black>
+          </RowFixed>
+        </RowBetween>
+        <RowBetween>
+          <RowFixed>
+            <TYPE.black fontWeight={400} color={theme.text2}>
+              Price Impact
+            </TYPE.black>
+            <Tooltip
+              className="m-l-5"
+              overlayClassName="tips-question"
+              title="The difference between the market price and estimated price due to trade size."
+            >
+              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
+            </Tooltip>
+          </RowFixed>
+          <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
+        </RowBetween>
+        <RowBetween>
+          <AutoColumn gap={'4px'}>
+            <RowFixed>
+              <TYPE.black fontWeight={400} color={theme.text2}>
                 {'Minimum received'} (slippage{' '}
                 {new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000)).toFixed(2)}%)
               </TYPE.black>
@@ -87,21 +123,6 @@ function TradeSummary({
                   '-'}
             </TYPE.black>
           </RowFixed>
-        </RowBetween>
-        <RowBetween>
-          <RowFixed>
-            <TYPE.black fontWeight={400} color={theme.text2}>
-              Price Impact
-            </TYPE.black>
-            <Tooltip
-              className="m-l-5"
-              overlayClassName="tips-question"
-              title="The difference between the market price and estimated price due to trade size."
-            >
-              <i className="iconfont font-14 cursor-select tips-circle">&#xe620;</i>
-            </Tooltip>
-          </RowFixed>
-          <FormattedPriceImpact priceImpact={priceImpactWithoutFee} />
         </RowBetween>
 
         {/*<RowBetween>*/}

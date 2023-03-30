@@ -125,7 +125,7 @@ const positionTitles = [
   { value: 'Boost' },
   { value: 'APR', weight: 1.5 },
   { value: 'Claimable Rewards' },
-  { value: 'Actions', weight: 0.5, alignCenter: true }
+  { value: 'Actions', weight: 0.6, alignCenter: true }
 ]
 export default function Pools() {
   const theme = useTheme()
