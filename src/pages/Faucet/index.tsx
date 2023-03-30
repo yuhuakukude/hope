@@ -8,7 +8,7 @@ import { TransactionResponse } from '@ethersproject/providers'
 import { useTransactionAdder } from 'state/transactions/hooks'
 import { CurrencyAmount, Token } from '@uniswap/sdk'
 import { useTokenBalances } from 'state/wallet/hooks'
-import { getUSDCToken, getUSDTToken, getHOPEToken, getDAIToken, getEthToken } from 'utils/addressHelpers'
+import { getUSDCToken, getUSDTToken, getHOPEToken, getDAIToken, getWETHToken } from 'utils/addressHelpers'
 
 import './index.scss'
 import { message } from 'antd'
@@ -89,7 +89,7 @@ export default function Faucet() {
       getUSDTToken(chainId),
       getHOPEToken(chainId),
       getDAIToken(chainId),
-      getEthToken(chainId)
+      getWETHToken(chainId)
     ])
   }, [chainId])
 
