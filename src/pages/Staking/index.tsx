@@ -198,7 +198,7 @@ export default function Staking() {
     }
 
     const { domain, types, values } = getPermitData(permit, getPermit2Address(chainId), chainId)
-    setStakePendingText(`Approve HOPE`)
+    // setStakePendingText(`Approve HOPE`)
 
     library
       .getSigner(account)
@@ -479,10 +479,11 @@ export default function Staking() {
                         <ActionButton
                           error={stakeInputError}
                           pendingText="Confirm in your wallet"
-                          pending={approvalState === ApprovalState.PENDING || !!stakePendingText}
+                          pending={!!stakePendingText && actionType === ACTION.STAKE}
                           disableAction={
                             !!approvePendingText ||
                             approvalState === ApprovalState.NOT_APPROVED ||
+                            approvalState === ApprovalState.PENDING ||
                             !inputAmount ||
                             !hopeBal
                           }
