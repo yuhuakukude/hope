@@ -124,7 +124,7 @@ export default function Staking() {
 
   const stakeInputError = useMemo(() => {
     if (hopeBal && inputAmount && hopeBal?.lessThan(inputAmount)) {
-      return 'Insufficient Hope'
+      return 'Insufficient HOPE'
     }
     return undefined
   }, [hopeBal, inputAmount])
@@ -469,7 +469,7 @@ export default function Staking() {
                           <div className="m-r-15" style={{ whiteSpace: 'nowrap' }}>
                             <ActionButton
                               pendingText="Approving HOPE"
-                              actionText="Approve Hope"
+                              actionText="Approve HOPE"
                               pending={!!stakePendingText}
                               onAction={onApprove}
                             />
