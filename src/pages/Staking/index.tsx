@@ -465,12 +465,12 @@ export default function Staking() {
                       </ButtonPrimary>
                     ) : curType === 'stake' ? (
                       <div className="flex">
-                        {approvalState === ApprovalState.NOT_APPROVED && (
-                          <div className="m-r-15" style={{ whiteSpace: 'nowrap', minWidth: '35%' }}>
+                        {(approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING) && (
+                          <div className="m-r-15" style={{ whiteSpace: 'nowrap', minWidth: '40%' }}>
                             <ActionButton
                               pendingText="Approving HOPE"
                               actionText="Approve HOPE"
-                              pending={!!stakePendingText}
+                              pending={approvalState === ApprovalState.PENDING || !!stakePendingText}
                               onAction={onApprove}
                             />
                           </div>
@@ -478,10 +478,8 @@ export default function Staking() {
                         <ActionButton
                           error={stakeInputError}
                           pendingText="Confirm in your wallet"
-                          pending={
-                            (approvalState === ApprovalState.PENDING && curType === 'stake') || !!stakePendingText
-                          }
-                          disableAction={!inputAmount || !hopeBal}
+                          pending={approvalState === ApprovalState.PENDING || !!stakePendingText}
+                          disableAction={approvalState === ApprovalState.NOT_APPROVED || !inputAmount || !hopeBal}
                           actionText={
                             stakeInputError ? stakeInputError : inputAmount ? 'Stake HOPE Get stHOPE' : 'Enter Amount'
                           }
