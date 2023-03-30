@@ -23,14 +23,14 @@ export function PoolPriceBar({
     <AutoColumn gap="md">
       <RowBetween justify="center">
         <TYPE.main fontWeight={500} pt={1}>
-          {currencies[Field.CURRENCY_A]?.symbol}/{currencies[Field.CURRENCY_B]?.symbol}
+          {'Rates'}
         </TYPE.main>
         <TYPE.white>{`1 ${currencies[Field.CURRENCY_A]?.symbol} ≈ ${price?.toSignificant(6, { groupSeparator: ',' }) ??
           '-'} ${currencies[Field.CURRENCY_B]?.symbol}`}</TYPE.white>
       </RowBetween>
       <RowBetween justify="center">
         <TYPE.main fontWeight={500} pt={1}>
-          {currencies[Field.CURRENCY_B]?.symbol}/{currencies[Field.CURRENCY_A]?.symbol}
+          {}
         </TYPE.main>
         <TYPE.white>{`1 ${currencies[Field.CURRENCY_B]?.symbol} ≈ ${price
           ?.invert()

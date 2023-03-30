@@ -776,9 +776,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
               {pair && (
                 <AutoColumn gap={'10px'} style={{ marginTop: '-15px' }}>
                   <RowBetween>
-                    <TYPE.main>
-                      {currencyB?.symbol}/{currencyA?.symbol}
-                    </TYPE.main>
+                    <TYPE.main>Rates</TYPE.main>
                     <div>
                       1 {currencyA?.symbol} ≈{' '}
                       {tokenA ? pair.priceOf(tokenA).toSignificant(6, { groupSeparator: ',' }) : '-'}{' '}
@@ -786,9 +784,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                     </div>
                   </RowBetween>
                   <RowBetween>
-                    <TYPE.main>
-                      {currencyA?.symbol}/{currencyB?.symbol}
-                    </TYPE.main>
+                    <TYPE.main></TYPE.main>
                     <div>
                       1 {currencyB?.symbol} ≈{' '}
                       {tokenB ? pair.priceOf(tokenB).toSignificant(6, { groupSeparator: ',' }) : '-'}{' '}

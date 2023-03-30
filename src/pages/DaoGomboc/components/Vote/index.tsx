@@ -379,10 +379,10 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
       <div className="gom-vote-box font-nor">
         <h3 className="font-bolder text-white font-20">Vote for A Gauge</h3>
         <p className="m-t-20 text-white lh15">
-          - Each vote directs future liquidity mining emissions starting from the next period on Thursday at 0:00 UTC.
+          - Your vote will affect the LT rewards distribution for the next voting cycle.
         </p>
         <p className="m-t-10 text-white lh15">
-          - Your voting power is fixed once your cast your vote. You can resubmit your vote later with more veLT to
+          - Your voting power is fixed once you cast your vote. You can resubmit your vote later with more veLT to
           increase your voting power.
         </p>
         <p className="m-t-10 text-white lh15">
@@ -452,7 +452,7 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
             <span className="text-normal">Vote weight:</span>
             {account && (
               <p>
-                unallocated votes : {isNoVelt ? '0.00' : `${viewSubAmount}%`}
+                Unallocated Votes : {isNoVelt ? '0.00' : `${viewSubAmount}%`}
                 <span onClick={toMax} className="text-primary m-l-5 cursor-select">
                   Max
                 </span>
