@@ -86,13 +86,15 @@ export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
     HOPE[ChainId.MAINNET]
   ],
   [ChainId.SEPOLIA]: [
-    ...WETH_ONLY[ChainId.SEPOLIA],
-    USDC[ChainId.SEPOLIA],
-    USDT[ChainId.SEPOLIA],
-    HOPE[ChainId.SEPOLIA]
+    // ...WETH_ONLY[ChainId.SEPOLIA],
+    // USDC[ChainId.SEPOLIA],
+    // USDT[ChainId.SEPOLIA],
+    // HOPE[ChainId.SEPOLIA]
   ],
   [ChainId.GOERLI]: [...WETH_ONLY[ChainId.GOERLI], USDC[ChainId.GOERLI], USDT[ChainId.GOERLI], HOPE[ChainId.GOERLI]],
-  [ChainId.HOPE]: [...WETH_ONLY[ChainId.HOPE], USDC[ChainId.HOPE], USDT[ChainId.HOPE], HOPE[ChainId.HOPE]]
+  [ChainId.HOPE]: [
+    // ...WETH_ONLY[ChainId.HOPE], USDC[ChainId.HOPE], USDT[ChainId.HOPE], HOPE[ChainId.HOPE]
+  ]
 }
 
 export const ADDITIONAL_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {

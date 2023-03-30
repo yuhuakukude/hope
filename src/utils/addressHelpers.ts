@@ -66,7 +66,7 @@ export const getDAIToken = (chainId?: ChainId): Token => {
   return getToken(DAI, chainId)
 }
 
-export const getWETHToken = (chainId?: ChainId) : Token => {
+export const getWETHToken = (chainId?: ChainId): Token => {
   return WETH_ONLY[getDefaultChinId(chainId) as ChainId][0]
 }
 
