@@ -421,7 +421,10 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
             {/*  ))}*/}
             <CurrencyInputPanel
               label={' '}
-              isError={!isValid && !!parsedAmounts[Field.CURRENCY_A]}
+              isError={
+                error === 'Insufficient ' + currencies[Field.CURRENCY_A]?.symbol + ' balance' &&
+                !!parsedAmounts[Field.CURRENCY_A]
+              }
               value={formattedAmounts[Field.CURRENCY_A]}
               onUserInput={onFieldAInput}
               onMax={() => {
@@ -439,7 +442,10 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
             </ColumnCenter>
             <CurrencyInputPanel
               label={' '}
-              isError={!isValid && !!parsedAmounts[Field.CURRENCY_B]}
+              isError={
+                error === 'Insufficient ' + currencies[Field.CURRENCY_B]?.symbol + ' balance' &&
+                !!parsedAmounts[Field.CURRENCY_B]
+              }
               value={formattedAmounts[Field.CURRENCY_B]}
               onUserInput={onFieldBInput}
               onCurrencySelect={handleCurrencyBSelect}
