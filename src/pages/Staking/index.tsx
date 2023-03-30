@@ -162,18 +162,19 @@ export default function Staking() {
     setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
 
+  const [approvePendingText, setApprovePendingText] = useState('')
   const onApprove = useCallback(() => {
     setActionType(ACTION.STAKE)
     setCurToken(undefined)
     onTxStart()
-    setStakePendingText(`Approve ${hopeToken.symbol}`)
+    setApprovePendingText(`Approving ${hopeToken.symbol}`)
     approveCallback()
       .then((response: TransactionResponse | undefined) => {
-        setStakePendingText('')
+        setApprovePendingText('')
         onTxSubmitted(response?.hash)
       })
       .catch(error => {
-        setStakePendingText('')
+        setApprovePendingText('')
         onTxError(error)
       })
   }, [approveCallback, hopeToken, onTxError, onTxStart, onTxSubmitted])
@@ -468,9 +469,9 @@ export default function Staking() {
                         {(approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING) && (
                           <div className="m-r-15" style={{ whiteSpace: 'nowrap', minWidth: '40%' }}>
                             <ActionButton
-                              pendingText="Approving HOPE"
-                              actionText="Approve HOPE"
-                              pending={approvalState === ApprovalState.PENDING || !!stakePendingText}
+                              pendingText={approvePendingText}
+                              actionText={`Approve ${hopeToken.symbol}`}
+                              pending={!!approvePendingText}
                               onAction={onApprove}
                             />
                           </div>
@@ -478,8 +479,13 @@ export default function Staking() {
                         <ActionButton
                           error={stakeInputError}
                           pendingText="Confirm in your wallet"
-                          pending={approvalState !== ApprovalState.PENDING || !!stakePendingText}
-                          disableAction={approvalState === ApprovalState.NOT_APPROVED || !inputAmount || !hopeBal}
+                          pending={approvalState === ApprovalState.PENDING || !!stakePendingText}
+                          disableAction={
+                            !!approvePendingText ||
+                            approvalState === ApprovalState.NOT_APPROVED ||
+                            !inputAmount ||
+                            !hopeBal
+                          }
                           actionText={
                             stakeInputError ? stakeInputError : inputAmount ? 'Stake HOPE Get stHOPE' : 'Enter Amount'
                           }
