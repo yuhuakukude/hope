@@ -466,7 +466,7 @@ export default function Staking() {
                     ) : curType === 'stake' ? (
                       <div className="flex">
                         {approvalState === ApprovalState.NOT_APPROVED && (
-                          <div className="m-r-15" style={{ whiteSpace: 'nowrap' }}>
+                          <div className="m-r-15" style={{ whiteSpace: 'nowrap', minWidth: '35%' }}>
                             <ActionButton
                               pendingText="Approving HOPE"
                               actionText="Approve HOPE"

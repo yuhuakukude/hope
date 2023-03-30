@@ -178,7 +178,7 @@ export default function DaoLocker() {
     } else if (!inputAmount || !lockerDate) {
       return `Enter Amount & Date`
     } else {
-      return approvalState === ApprovalState.NOT_APPROVED ? 'Approve LT' : 'Lock'
+      return 'Lock'
     }
   }, [isMaxDisabled, inputAmount, lockerDate, approvalState, lockerRes])
 
@@ -513,10 +513,11 @@ export default function DaoLocker() {
                               !ltBalance ||
                               lockerRes?.end !== '--' ||
                               !!lockerRes?.amount ||
-                              approvalState === ApprovalState.UNKNOWN
+                              approvalState === ApprovalState.UNKNOWN ||
+                              approvalState === ApprovalState.NOT_APPROVED
                             }
                             actionText={actionText}
-                            onAction={approvalState === ApprovalState.NOT_APPROVED ? onApprove : lockerCallback}
+                            onAction={lockerCallback}
                           />
                         </>
                       )}
