@@ -160,9 +160,11 @@ export default function Faucet() {
   return (
     <div className="faucet-wrap">
       <Modal visible={!!token} getContainer={false} onCancel={handleClose}>
-        <div className="faucet-title">Faucet {token?.symbol}</div>
+        <div className="faucet-title">
+          Faucet {token?.symbol} {token?.symbol === 'WETH' && <Tips title="For test use only" />}
+        </div>
         <div className="faucet-desc">
-          <div>Amount {token?.symbol === 'WETH' && <Tips title="For test use only" />}</div>
+          <div>Amount</div>
           <div>
             <CurrencyLogo size={'16px'} currency={token} />
             <span className="faucet-balance">
