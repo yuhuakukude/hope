@@ -199,12 +199,11 @@ export default function Staking() {
 
     const { domain, types, values } = getPermitData(permit, getPermit2Address(chainId), chainId)
     // setStakePendingText(`Approve HOPE`)
-
+    setStakePendingText(`Stake ${inputAmount.toFixed(2)} HOPE`)
     library
       .getSigner(account)
       ._signTypedData(domain, types, values)
       .then(signature => {
-        setStakePendingText(`Stake ${inputAmount.toFixed(2)} HOPE`)
         toStaked(inputAmount, nonce, deadline, signature)
           .then(hash => {
             setAmount('')
