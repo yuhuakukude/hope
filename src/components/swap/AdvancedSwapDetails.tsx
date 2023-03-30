@@ -142,6 +142,9 @@ export function AdvancedSwapDetails({ trade, feeRate, error }: AdvancedSwapDetai
           <TradeSummary feeRate={feeRate} trade={trade} allowedSlippage={allowedSlippage} />
           <>
             <AutoColumn style={{ marginTop: 22 }}>
+              <TYPE.black fontWeight={400} color={'#A8A8AA'} marginBottom={20}>
+                Router
+              </TYPE.black>
               <SwapRoute trade={trade} />
             </AutoColumn>
           </>

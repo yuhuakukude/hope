@@ -7,7 +7,7 @@ import { useTotalSupply } from '../../data/TotalSupply'
 
 import { useActiveWeb3React } from '../../hooks'
 import { useTokenBalance } from '../../state/wallet/hooks'
-import { ExternalLink, TYPE } from '../../theme'
+import { TYPE } from '../../theme'
 import { unwrappedToken } from '../../utils/wrappedCurrency'
 
 import { useColor } from '../../hooks/useColor'
@@ -16,7 +16,6 @@ import Card, { LightCard } from '../Card'
 import { AutoColumn } from '../Column'
 import DoubleCurrencyLogo from '../DoubleLogo'
 import { RowBetween, RowFixed, AutoRow } from '../Row'
-import { getEtherscanLink } from '../../utils'
 import { usePair } from '../../data/Reserves'
 import CurrencyLogo from '../CurrencyLogo'
 import TitleTips, { TitleTipsProps } from '../../pages/Portfolio/component/SelectTips'
@@ -188,7 +187,7 @@ export default function FullPositionCard({
   RewardsApr,
   maxBoost
 }: FullCardProps) {
-  const { account, chainId } = useActiveWeb3React()
+  const { account } = useActiveWeb3React()
   const history = useHistory()
   const currency0 = unwrappedToken(pairInfo.tokens[0])
   const currency1 = unwrappedToken(pairInfo.tokens[1])
@@ -275,19 +274,13 @@ export default function FullPositionCard({
           <AutoColumn gap={'12px'}>
             <AutoRow>
               <DoubleCurrencyLogo margin currency0={currency0} currency1={currency1} size={24} />
-              <TYPE.link
-                as={ExternalLink}
-                href={getEtherscanLink(chainId ?? 1, pairInfo.liquidityToken.address, 'address')}
-                ml={10}
-                fontWeight={500}
-                fontSize={20}
-              >
+              <TYPE.white>
                 {currency0 && currency1 ? (
                   <TYPE.white>{`${currency0.symbol} / ${currency1.symbol}`}</TYPE.white>
                 ) : (
                   '-/-'
                 )}
-              </TYPE.link>
+              </TYPE.white>
             </AutoRow>
             <AutoRow>
               <TYPE.main>Fee Rate: {feeRate ? `${feeRate * 100}%` : '--'}</TYPE.main>

@@ -1,15 +1,13 @@
 import React from 'react'
 import styled from 'styled-components'
-import { useActiveWeb3React } from '../../hooks'
 import { unwrappedToken } from '../../utils/wrappedCurrency'
 import { usePair } from '../../data/Reserves'
 import { CurrencyAmount, Token } from '@uniswap/sdk'
 import { useColor } from '../../hooks/useColor'
 import { AutoRow, RowFixed } from '../Row'
 import DoubleCurrencyLogo from '../DoubleLogo'
-import { ExternalLink, TYPE } from '../../theme'
+import { TYPE } from '../../theme'
 import { LightCard } from '../Card'
-import { getEtherscanLink } from '../../utils'
 import { ArrowUpRight } from 'react-feather'
 import { useHistory } from 'react-router-dom'
 import { BasePair } from '../../graph/fetch'
@@ -49,7 +47,6 @@ interface PoolCardProps {
 }
 
 export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardProps) {
-  const { chainId } = useActiveWeb3React()
   const history = useHistory()
 
   const currency0 = unwrappedToken(pairInfo.tokens[0])
@@ -64,15 +61,9 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
       <AutoRow>
         <ContentRow weight={1.5}>
           <DoubleCurrencyLogo margin currency0={currency0} currency1={currency1} size={24} />
-          <TYPE.link
-            as={ExternalLink}
-            href={getEtherscanLink(chainId ?? 1, pairInfo.liquidityToken.address, 'address')}
-            ml={10}
-            fontWeight={500}
-            fontSize={20}
-          >
+          <TYPE.white ml={10}>
             {currency0 && currency1 ? <TYPE.white>{`${currency0.symbol} / ${currency1.symbol}`}</TYPE.white> : '-/-'}
-          </TYPE.link>
+          </TYPE.white>
           {pairData.feeRate && <SmallCard ml={10}>{pairData?.feeRate * 100} %</SmallCard>}
         </ContentRow>
         <ContentRow>
