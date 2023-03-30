@@ -478,7 +478,7 @@ export default function Staking() {
                         <ActionButton
                           error={stakeInputError}
                           pendingText="Confirm in your wallet"
-                          pending={approvalState === ApprovalState.PENDING || !!stakePendingText}
+                          pending={approvalState !== ApprovalState.PENDING || !!stakePendingText}
                           disableAction={approvalState === ApprovalState.NOT_APPROVED || !inputAmount || !hopeBal}
                           actionText={
                             stakeInputError ? stakeInputError : inputAmount ? 'Stake HOPE Get stHOPE' : 'Enter Amount'
