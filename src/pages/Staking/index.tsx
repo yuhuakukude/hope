@@ -471,7 +471,7 @@ export default function Staking() {
                             <ActionButton
                               pendingText={approvePendingText}
                               actionText={`Approve ${hopeToken.symbol}`}
-                              pending={!!approvePendingText}
+                              pending={!!approvePendingText || approvalState === ApprovalState.PENDING}
                               onAction={onApprove}
                             />
                           </div>
