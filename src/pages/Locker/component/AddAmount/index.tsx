@@ -255,10 +255,10 @@ export default function AddAmount() {
           </p>
         </div>
         <div className="m-t-50">
-          {approvalState === ApprovalState.NOT_APPROVED && (
+          {(approvalState === ApprovalState.NOT_APPROVED || approvalState === ApprovalState.PENDING) && (
             <>
               <ActionButton
-                pending={!!approvePendingText}
+                pending={approvalState === ApprovalState.PENDING || !!approvePendingText}
                 pendingText={approvePendingText}
                 actionText="Approve LT"
                 onAction={onApprove}
@@ -268,20 +268,15 @@ export default function AddAmount() {
           )}
           <ActionButton
             error={isMaxDisabled ? 'Insufficient LT balance' : undefined}
-            pending={
-              approvalState === ApprovalState.PENDING || !!pendingText || isLocerkAmountPending || isLocerkTimePending
-            }
-            pendingText={
-              isLocerkAmountPending || isLocerkTimePending || approvalState === ApprovalState.PENDING
-                ? 'Pending'
-                : 'Confirm in your wallet'
-            }
+            pending={!!pendingText || isLocerkAmountPending || isLocerkTimePending}
+            pendingText={isLocerkAmountPending || isLocerkTimePending ? 'Pending' : 'Confirm in your wallet'}
             disableAction={
               isMaxDisabled ||
               !inputAmount ||
               !ltBalance ||
               approvalState === ApprovalState.UNKNOWN ||
-              approvalState === ApprovalState.NOT_APPROVED
+              approvalState === ApprovalState.NOT_APPROVED ||
+              approvalState === ApprovalState.PENDING
             }
             actionText={actionText}
             onAction={lockerCallback}

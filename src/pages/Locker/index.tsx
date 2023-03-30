@@ -180,7 +180,7 @@ export default function DaoLocker() {
     } else {
       return 'Lock'
     }
-  }, [isMaxDisabled, inputAmount, lockerDate, approvalState, lockerRes])
+  }, [isMaxDisabled, inputAmount, lockerDate, lockerRes])
 
   const confirmationContent = useCallback(() => {
     return (
@@ -199,14 +199,15 @@ export default function DaoLocker() {
     setAttemptingTxn(true)
   }, [])
 
+  const [approvePendingText, setApprovePendingText] = useState('')
   const onTxSubmitted = useCallback((hash: string | undefined) => {
     setShowConfirm(true)
     setPendingText(``)
     setAttemptingTxn(false)
+    setApprovePendingText('')
     hash && setTxHash(hash)
   }, [])
 
-  const [approvePendingText, setApprovePendingText] = useState('')
   const onTxError = useCallback(error => {
     setShowConfirm(true)
     setTxHash('')
@@ -486,10 +487,11 @@ export default function DaoLocker() {
                         </ButtonPrimary>
                       ) : (
                         <>
-                          {approvalState === ApprovalState.NOT_APPROVED && (
+                          {(approvalState === ApprovalState.NOT_APPROVED ||
+                            approvalState === ApprovalState.PENDING) && (
                             <>
                               <ActionButton
-                                pending={!!approvePendingText}
+                                pending={approvalState === ApprovalState.PENDING || !!approvePendingText}
                                 pendingText={approvePendingText}
                                 actionText="Approve LT"
                                 onAction={onApprove}
@@ -500,12 +502,8 @@ export default function DaoLocker() {
 
                           <ActionButton
                             error={isMaxDisabled ? 'Insufficient LT balance' : undefined}
-                            pending={approvalState === ApprovalState.PENDING || !!pendingText || isLockerPending}
-                            pendingText={
-                              isLockerPending || approvalState === ApprovalState.PENDING
-                                ? 'Pending'
-                                : 'Confirm in your wallet'
-                            }
+                            pending={!!pendingText || isLockerPending}
+                            pendingText={isLockerPending ? 'Pending' : 'Confirm in your wallet'}
                             disableAction={
                               isMaxDisabled ||
                               !inputAmount ||
@@ -514,7 +512,8 @@ export default function DaoLocker() {
                               lockerRes?.end !== '--' ||
                               !!lockerRes?.amount ||
                               approvalState === ApprovalState.UNKNOWN ||
-                              approvalState === ApprovalState.NOT_APPROVED
+                              approvalState === ApprovalState.NOT_APPROVED ||
+                              approvalState === ApprovalState.PENDING
                             }
                             actionText={actionText}
                             onAction={lockerCallback}
