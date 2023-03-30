@@ -459,6 +459,7 @@ export default function Swap({ history }: RouteComponentProps) {
           <AutoColumn gap={'sm'}>
             <CurrencyInputPanel
               showCommonBases
+              isError={swapInputError === `Insufficient ${currencies[Field.INPUT]?.symbol} balance`}
               label={independentField === Field.OUTPUT && !showWrap && trade ? 'Sell (estimated)' : 'Sell'}
               value={formattedAmounts[Field.INPUT]}
               showMaxButton={!atMaxAmountInput}

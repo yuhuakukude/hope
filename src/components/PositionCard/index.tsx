@@ -344,7 +344,7 @@ export default function FullPositionCard({
           </AutoColumn>
         </ContentRow>
 
-        <ContentRow weight={0.5}>
+        <ContentRow weight={0.6} style={{ minWidth: '86px', justifyContent: 'center' }}>
           <TitleTips options={actions} label={'More'} />
         </ContentRow>
       </AutoRow>
