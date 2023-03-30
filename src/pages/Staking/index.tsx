@@ -497,7 +497,7 @@ export default function Staking() {
                         error={unstakeInputError}
                         pendingText={'Confirm in your wallet'}
                         pending={!!stakePendingText && actionType === ACTION.UNSTAKING}
-                        disableAction={!inputAmount || !stakedVal || approvalState === ApprovalState.NOT_APPROVED}
+                        disableAction={!inputAmount || !stakedVal}
                         actionText={
                           unstakeInputError ? unstakeInputError : !inputAmount ? 'Enter amount' : 'Commit to unstake'
                         }
