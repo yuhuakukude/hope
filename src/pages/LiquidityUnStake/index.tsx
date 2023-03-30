@@ -167,7 +167,7 @@ export default function LiquidityUnStake({
               customBalanceText={'Available to deposit: '}
               id="stake-liquidity-token"
             />
-            <RowBetween>
+            <RowBetween style={{ gap: '20px' }}>
               <PercentButton
                 onClick={() =>
                   stakedAmount &&

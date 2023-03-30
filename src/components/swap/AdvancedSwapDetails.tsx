@@ -66,7 +66,7 @@ function TradeSummary({
           <AutoColumn gap={'4px'}>
             <RowFixed>
               <TYPE.black fontWeight={400} color={theme.text2}>
-                {'Minimum received'} (slippage
+                {'Minimum received'} (slippage{' '}
                 {new Percent(JSBI.BigInt(allowedSlippage), JSBI.BigInt(10000)).toFixed(2)}%)
               </TYPE.black>
               <Tooltip

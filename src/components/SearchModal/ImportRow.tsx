@@ -4,14 +4,14 @@ import { AutoRow, RowFixed } from 'components/Row'
 import { AutoColumn } from 'components/Column'
 import CurrencyLogo from 'components/CurrencyLogo'
 import { TYPE } from 'theme'
-import ListLogo from 'components/ListLogo'
+// import ListLogo from 'components/ListLogo'
 import { useActiveWeb3React } from 'hooks'
 import { useCombinedInactiveList } from 'state/lists/hooks'
 import useTheme from 'hooks/useTheme'
 import { ButtonPrimary } from 'components/Button'
 import styled from 'styled-components'
 import { useIsUserAddedToken, useIsTokenActive } from 'hooks/Tokens'
-import { CheckCircle } from 'react-feather'
+// import { CheckCircle } from 'react-feather'
 
 const TokenSection = styled.div<{ dim?: boolean }>`
   padding: 4px 20px;
@@ -24,12 +24,12 @@ const TokenSection = styled.div<{ dim?: boolean }>`
   opacity: ${({ dim }) => (dim ? '0.4' : '1')};
 `
 
-const CheckIcon = styled(CheckCircle)`
-  height: 16px;
-  width: 16px;
-  margin-right: 6px;
-  stroke: ${({ theme }) => theme.green1};
-`
+// const CheckIcon = styled(CheckCircle)`
+//   height: 16px;
+//   width: 16px;
+//   margin-right: 6px;
+//   stroke: ${({ theme }) => theme.green1};
+// `
 
 const NameOverflow = styled.div`
   white-space: nowrap;
@@ -80,7 +80,7 @@ export default function ImportRow({
             <TYPE.small mr="4px" color={theme.text3}>
               via {list.name}
             </TYPE.small>
-            <ListLogo logoURI={list.logoURI} size="12px" />
+            {/* <ListLogo logoURI={list.logoURI} size="12px" /> */}
           </RowFixed>
         )}
       </AutoColumn>
@@ -99,8 +99,8 @@ export default function ImportRow({
         </ButtonPrimary>
       ) : (
         <RowFixed style={{ minWidth: 'fit-content' }}>
-          <CheckIcon />
-          <TYPE.main color={theme.green1}>Active</TYPE.main>
+          {/* <CheckIcon />
+          <TYPE.main color={theme.green1}>Active</TYPE.main> */}
         </RowFixed>
       )}
     </TokenSection>

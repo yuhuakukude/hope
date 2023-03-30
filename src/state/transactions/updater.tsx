@@ -45,44 +45,64 @@ export default function Updater(): null {
     Object.keys(transactions)
       .filter(hash => shouldCheck(lastBlockNumber, transactions[hash]))
       .forEach(hash => {
-        library
-          .getTransactionReceipt(hash)
-          .then(receipt => {
-            if (receipt) {
-              dispatch(
-                finalizeTransaction({
-                  chainId,
-                  hash,
-                  receipt: {
-                    blockHash: receipt.blockHash,
-                    blockNumber: receipt.blockNumber,
-                    contractAddress: receipt.contractAddress,
-                    from: receipt.from,
-                    status: receipt.status,
-                    to: receipt.to,
-                    transactionHash: receipt.transactionHash,
-                    transactionIndex: receipt.transactionIndex
-                  }
-                })
-              )
-
-              addPopup(
-                {
-                  txn: {
+        const minutesPending = (new Date().getTime() - transactions[hash].addedTime) / 1000 / 60
+        if (minutesPending > 3) {
+          dispatch(
+            finalizeTransaction({
+              chainId,
+              hash,
+              receipt: {
+                blockHash: '',
+                blockNumber: 0,
+                contractAddress: '',
+                from: '',
+                status: 0,
+                to: '',
+                transactionHash: '',
+                transactionIndex: 0
+              }
+            })
+          )
+        } else {
+          library
+            .getTransactionReceipt(hash)
+            .then(receipt => {
+              if (receipt) {
+                dispatch(
+                  finalizeTransaction({
+                    chainId,
                     hash,
-                    success: receipt.status === 1,
-                    summary: transactions[hash]?.summary
-                  }
-                },
-                hash
-              )
-            } else {
-              dispatch(checkedTransaction({ chainId, hash, blockNumber: lastBlockNumber }))
-            }
-          })
-          .catch(error => {
-            console.error(`failed to check transaction hash: ${hash}`, error)
-          })
+                    receipt: {
+                      blockHash: receipt.blockHash,
+                      blockNumber: receipt.blockNumber,
+                      contractAddress: receipt.contractAddress,
+                      from: receipt.from,
+                      status: receipt.status,
+                      to: receipt.to,
+                      transactionHash: receipt.transactionHash,
+                      transactionIndex: receipt.transactionIndex
+                    }
+                  })
+                )
+
+                addPopup(
+                  {
+                    txn: {
+                      hash,
+                      success: receipt.status === 1,
+                      summary: transactions[hash]?.summary
+                    }
+                  },
+                  hash
+                )
+              } else {
+                dispatch(checkedTransaction({ chainId, hash, blockNumber: lastBlockNumber }))
+              }
+            })
+            .catch(error => {
+              console.error(`failed to check transaction hash: ${hash}`, error)
+            })
+        }
       })
   }, [chainId, library, transactions, lastBlockNumber, dispatch, addPopup])
 

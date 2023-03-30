@@ -465,7 +465,7 @@ export default function LiquidityStake({
         />
       ) : (
         <ConfirmationModalContent
-          title={noLiquidity ? 'You are creating a pool' : 'You will receive'}
+          title={noLiquidity ? 'You Are Creating A Pool' : 'You Will Receive'}
           onDismiss={handleDismissConfirmation}
           topContent={modalHeader}
           bottomContent={modalBottom}

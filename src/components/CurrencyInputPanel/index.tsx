@@ -14,9 +14,9 @@ import { ReactComponent as DropDown } from '../../assets/images/dropdown.svg'
 import { useActiveWeb3React } from '../../hooks'
 import useTheme from '../../hooks/useTheme'
 
-const InputRow = styled.div<{ selected: boolean; active: boolean }>`
+const InputRow = styled.div<{ selected: boolean; active: boolean; isError?: boolean }>`
   ${({ theme }) => theme.flexRowNoWrap}
-  border: 1px solid ${({ theme, active }) => (active ? theme.primary1 : theme.borderInput)};
+  border: 1px solid ${({ theme, active, isError }) => (isError ? 'red' : active ? theme.primary1 : theme.borderInput)};
   margin-top: 12px;
   border-radius: 10px;
   align-items: center;
@@ -123,6 +123,7 @@ interface CurrencyInputPanelProps {
   customBalanceText?: string
   otherBalance?: CurrencyAmount
   hideCurrency?: boolean
+  isError?: boolean
 }
 
 export default function CurrencyInputPanel({
@@ -142,7 +143,8 @@ export default function CurrencyInputPanel({
   showCommonBases,
   customBalanceText,
   otherBalance,
-  hideCurrency = false
+  hideCurrency = false,
+  isError = false
 }: CurrencyInputPanelProps) {
   const [modalOpen, setModalOpen] = useState(false)
   const { account } = useActiveWeb3React()
@@ -185,6 +187,7 @@ export default function CurrencyInputPanel({
         )}
         <InputRow
           active={focus}
+          isError={isError}
           style={hideInput ? { padding: '0', borderRadius: '8px' } : {}}
           selected={disableCurrencySelect}
         >

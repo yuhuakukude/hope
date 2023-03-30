@@ -56,7 +56,9 @@ const WarningWrapper = styled(AutoRow)`
   border-radius: 8px;
   background-color: rgba(255, 222, 41, 0.2);
   padding: 9px;
-  justify-content: center;
+  justify-content: flex-start;
+  margin-bottom: 10px;
+}
 `
 
 const ErrorWrapper = styled(AutoRow)`

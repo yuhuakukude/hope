@@ -13,17 +13,17 @@ export const ClickableText = styled(Text)`
   color: ${({ theme }) => theme.primary1};
 `
 export const MaxButton = styled.button<{ width: string }>`
-  padding: 0.5rem 1rem;
+  flex: 1;
+  height: 40px;
   background-color: ${({ theme }) => theme.bg1};
   border: 1px solid ${({ theme }) => theme.bg3};
-  border-radius: 0.5rem;
+  border-radius: 10px;
   font-size: 1rem;
   ${({ theme }) => theme.mediaWidth.upToSmall`
     padding: 0.25rem 0.5rem;
   `};
   font-weight: 500;
   cursor: pointer;
-  margin: 0.25rem;
   overflow: hidden;
   color: ${({ theme }) => theme.text1};
   :hover {
