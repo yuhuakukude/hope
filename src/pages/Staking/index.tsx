@@ -570,7 +570,7 @@ export default function Staking() {
                         <Tooltip
                           className="m-l-5"
                           overlayClassName="tips-question"
-                          title="When the number of a user's veLT changes, the values of the Current Boost and Future Boost may become inconsistent. To ensure that the Future Boost takes effect, the user needs to actively update the value."
+                          title="When the number of a user's veLT changes, the values of the Current Boost and Next Boost may become inconsistent. To ensure that the Next Boost takes effect, the user needs to actively update the value."
                         >
                           <i className="iconfont font-16 cursor-select tips-circle">&#xe620;</i>
                         </Tooltip>

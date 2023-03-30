@@ -91,10 +91,10 @@ export function CurrencySearch({
     }
   }, [isAddressSearch])
 
-  const showETH: boolean = useMemo(() => {
-    const s = debouncedQuery.toLowerCase().trim()
-    return s === '' || s === 'e' || s === 'et' || s === 'h' || s === 'th' || s === 'eth'
-  }, [debouncedQuery])
+  // const showETH: boolean = useMemo(() => {
+  //   const s = debouncedQuery.toLowerCase().trim()
+  //   return s === '' || s === 'e' || s === 'et' || s === 'h' || s === 'th' || s === 'eth'
+  // }, [debouncedQuery])
 
   const tokenComparator = useTokenComparator(invertSearchOrder)
 
@@ -192,7 +192,8 @@ export function CurrencySearch({
             {({ height }) => (
               <CurrencyList
                 height={height}
-                showETH={showETH}
+                // showETH={showETH} eth disable reset
+                showETH={false}
                 currencies={
                   filteredInactiveTokens ? filteredSortedTokens.concat(filteredInactiveTokens) : filteredSortedTokens
                 }

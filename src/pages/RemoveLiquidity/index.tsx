@@ -25,7 +25,8 @@ import useIsArgentWallet from '../../hooks/useIsArgentWallet'
 import useTransactionDeadline from '../../hooks/useTransactionDeadline'
 
 import { useTransactionAdder } from '../../state/transactions/hooks'
-import { StyledInternalLink, TYPE } from '../../theme'
+// import { StyledInternalLink, TYPE } from '../../theme'
+import { TYPE } from '../../theme'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '../../utils'
 import { currencyId } from '../../utils/currencyId'
 import useDebouncedChangeHandler from '../../utils/useDebouncedChangeHandler'
@@ -513,7 +514,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
     [onUserInput]
   )
 
-  const oneCurrencyIsETH = currencyA === ETHER || currencyB === ETHER
+  // const oneCurrencyIsETH = currencyA === ETHER || currencyB === ETHER  eth disable reset
   const oneCurrencyIsWETH = Boolean(
     chainId &&
       ((currencyA && currencyEquals(WETH[chainId], currencyA)) ||
@@ -721,7 +722,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                   </RowBetween>
                 )}
               </div>
-              {chainId && (oneCurrencyIsWETH || oneCurrencyIsETH) ? (
+              {/* {chainId && (oneCurrencyIsWETH || oneCurrencyIsETH) ? (
                 <RowBetween style={{ justifyContent: 'flex-end' }}>
                   {oneCurrencyIsETH ? (
                     <StyledInternalLink
@@ -741,7 +742,8 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                     </StyledInternalLink>
                   ) : null}
                 </RowBetween>
-              ) : null}
+              ) : null} */}
+              {/* eth disable reset */}
               {!showDetailed && (
                 <>
                   <AutoColumn gap="10px">
@@ -774,9 +776,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
               {pair && (
                 <AutoColumn gap={'10px'} style={{ marginTop: '-15px' }}>
                   <RowBetween>
-                    <TYPE.main>
-                      {currencyB?.symbol}/{currencyA?.symbol}
-                    </TYPE.main>
+                    <TYPE.main>Rates</TYPE.main>
                     <div>
                       1 {currencyA?.symbol} ≈{' '}
                       {tokenA ? pair.priceOf(tokenA).toSignificant(6, { groupSeparator: ',' }) : '-'}{' '}
@@ -784,9 +784,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                     </div>
                   </RowBetween>
                   <RowBetween>
-                    <TYPE.main>
-                      {currencyA?.symbol}/{currencyB?.symbol}
-                    </TYPE.main>
+                    <TYPE.main></TYPE.main>
                     <div>
                       1 {currencyB?.symbol} ≈{' '}
                       {tokenB ? pair.priceOf(tokenB).toSignificant(6, { groupSeparator: ',' }) : '-'}{' '}

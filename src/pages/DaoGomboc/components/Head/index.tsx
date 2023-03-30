@@ -18,9 +18,12 @@ const Head = () => {
       <div className="flex">
         <div className="flex-1 m-r-30">
           <h2 className="text-white font-bolder font-28">How to maximize my LT rewards?</h2>
-          <p className="text-white lh18 m-t-15 font-nor">
-            Hope protocol’s liquidity incentives are directed to pools selected by veLT voters. Stake in these pools to
-            earn incentives. Enjoy 2.5x extra on pools when you boost your veLT.
+          <p className="text-white lh15 m-t-15 font-nor">
+            The distribution of LT rewards within the HOPE ecosystem is governed by Gauge Weights, which are determined
+            by veLT voting.
+          </p>
+          <p className="text-white lh15 m-t-5 font-nor">
+            You can also get a 2.5x farming rewards booster when you lock your LT for veLT.
           </p>
           <Button
             type="link"

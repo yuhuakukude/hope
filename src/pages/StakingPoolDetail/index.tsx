@@ -475,7 +475,7 @@ export default function StakingPoolDetail({
                     <TYPE.white>{currentBoots ? `${currentBoots.toFixed(2)}x` : '--'}</TYPE.white>
                   </RowBetween>
                   <RowBetween>
-                    <TYPE.main>My Future Boost</TYPE.main>
+                    <TYPE.main>My Next Boost</TYPE.main>
                     <TYPE.white>{futureBoots ? `${futureBoots.toFixed(2)}x` : '--'}</TYPE.white>
                   </RowBetween>
                   <RowBetween>
@@ -534,7 +534,7 @@ export default function StakingPoolDetail({
               <i style={{ color: '#FBDD55', fontSize: 16, fontWeight: 700 }} className="iconfont">
                 &#xe614;
               </i>
-              <TYPE.main ml={10}>You can apply future boost by claiming LT</TYPE.main>
+              <TYPE.main ml={10}>You can apply next boost by claiming LT</TYPE.main>
             </AutoRow>
           )}
         </LightCard>
