@@ -65,7 +65,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
     currencyB,
     chainId
   ])
-  const routerAddress = useMemo(() => getRouterAddress(chainId),[chainId])
+  const routerAddress = useMemo(() => getRouterAddress(chainId), [chainId])
   const history = useHistory()
   const theme = useContext(ThemeContext)
 
@@ -596,7 +596,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
               </TYPE.white>
             </AutoColumn>
           ) : (
-            <AutoColumn gap="md" style={{ marginTop: 20, padding: 20 }}>
+            <AutoColumn gap="30px" style={{ marginTop: 20, padding: 20 }}>
               <AutoColumn gap="20px">
                 {pair ? (
                   <>
@@ -625,7 +625,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
                 {!showDetailed && (
                   <>
                     <Slider size={20} value={innerLiquidityPercentage} onChange={setInnerLiquidityPercentage} />
-                    <RowBetween>
+                    <RowBetween style={{ gap: '20px' }}>
                       <MaxButton onClick={() => onUserInput(Field.LIQUIDITY_PERCENT, '25')} width="20%">
                         25%
                       </MaxButton>
@@ -745,29 +745,34 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
               {!showDetailed && (
                 <>
                   <AutoColumn gap="10px">
+                    <TYPE.main fontWeight={500}>You Will Receive</TYPE.main>
                     <RowBetween>
                       <RowFixed>
-                        <CurrencyLogo currency={currencyA} style={{ marginRight: '12px' }} />
-                        <Text fontWeight={500} id="remove-liquidity-tokena-symbol">
+                        <CurrencyLogo size={'20px'} currency={currencyA} style={{ marginRight: '12px' }} />
+                        <Text id="remove-liquidity-tokena-symbol" fontFamily={'Arboria-Medium;'}>
                           {currencyA?.symbol}
                         </Text>
                       </RowFixed>
-                      <Text fontWeight={500}>{format.separate(formattedAmounts[Field.CURRENCY_A], 6) || '-'}</Text>
+                      <Text fontFamily={'Arboria-Medium;'}>
+                        {format.separate(formattedAmounts[Field.CURRENCY_A], 6) || '-'}
+                      </Text>
                     </RowBetween>
                     <RowBetween>
                       <RowFixed>
-                        <CurrencyLogo currency={currencyB} style={{ marginRight: '12px' }} />
-                        <Text fontWeight={500} id="remove-liquidity-tokenb-symbol">
+                        <CurrencyLogo size={'20px'} currency={currencyB} style={{ marginRight: '12px' }} />
+                        <Text id="remove-liquidity-tokenb-symbol" fontFamily={'Arboria-Medium;'}>
                           {currencyB?.symbol}
                         </Text>
                       </RowFixed>
-                      <Text fontWeight={500}>{format.separate(formattedAmounts[Field.CURRENCY_B], 6) || '-'}</Text>
+                      <Text fontFamily={'Arboria-Medium;'}>
+                        {format.separate(formattedAmounts[Field.CURRENCY_B], 6) || '-'}
+                      </Text>
                     </RowBetween>
                   </AutoColumn>
                 </>
               )}
               {pair && (
-                <AutoColumn gap={'10px'}>
+                <AutoColumn gap={'10px'} style={{ marginTop: '-15px' }}>
                   <RowBetween>
                     <TYPE.main>
                       {currencyB?.symbol}/{currencyA?.symbol}

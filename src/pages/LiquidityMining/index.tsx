@@ -337,6 +337,7 @@ export default function LiquidityMining({
                 value={typedValue}
                 onUserInput={onUserInput}
                 onMax={handleMax}
+                isError={error === 'Insufficient Liquidity'}
                 showMaxButton={!atMaxAmount}
                 currency={staking ? pool?.lpToken : pool?.stakingToken}
                 pair={dummyPair}

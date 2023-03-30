@@ -364,7 +364,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
         />
       ) : (
         <ConfirmationModalContent
-          title={noLiquidity ? 'You are creating a pool' : 'You will receive'}
+          title={noLiquidity ? 'You Are Creating A Pool' : 'You Will Receive'}
           onDismiss={handleDismissConfirmation}
           topContent={modalHeader}
           bottomContent={modalBottom}
@@ -421,6 +421,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
             {/*  ))}*/}
             <CurrencyInputPanel
               label={' '}
+              isError={!isValid && !!parsedAmounts[Field.CURRENCY_A]}
               value={formattedAmounts[Field.CURRENCY_A]}
               onUserInput={onFieldAInput}
               onMax={() => {
@@ -438,6 +439,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
             </ColumnCenter>
             <CurrencyInputPanel
               label={' '}
+              isError={!isValid && !!parsedAmounts[Field.CURRENCY_B]}
               value={formattedAmounts[Field.CURRENCY_B]}
               onUserInput={onFieldBInput}
               onCurrencySelect={handleCurrencyBSelect}
