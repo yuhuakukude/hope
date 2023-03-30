@@ -117,6 +117,13 @@ export const TIMELOCK_ADDRESS: { [chainId in ChainId]: string } = {
   [ChainId.HOPE]: '0x1a9C8182C09F50C8318d769245beA52c32BE35BC'
 }
 
+export const ETH_ADDRESS: { [chainId in ChainId]: string } = {
+  [ChainId.MAINNET]: '0xb0Ac866E8951bC07efBF738580F7f17900cebE15',
+  [ChainId.GOERLI]: '0xb0Ac866E8951bC07efBF738580F7f17900cebE15',
+  [ChainId.SEPOLIA]: '0xb0Ac866E8951bC07efBF738580F7f17900cebE15',
+  [ChainId.HOPE]: '0xb0Ac866E8951bC07efBF738580F7f17900cebE15'
+}
+
 // hope about token
 export const USDC: { [chainId in ChainId]: Token } = {
   [ChainId.MAINNET]: new Token(ChainId.MAINNET, USDC_TOKEN_ADDRESS[ChainId.MAINNET], 18, 'USDC', 'USD//C'),
@@ -165,4 +172,10 @@ export const DAI: { [chainId in ChainId]: Token } = {
   [ChainId.HOPE]: new Token(ChainId.HOPE, DAI_TOKEN_ADDRESS[ChainId.HOPE], 18, 'DAI', 'Dai Stablecoin')
 }
 
+export const ETH : { [chainId in ChainId]: Token } = {
+  [ChainId.MAINNET]: new Token(ChainId.MAINNET, ETH_ADDRESS[ChainId.MAINNET], 18, 'ETH', 'Dai Stablecoin'),
+  [ChainId.SEPOLIA]: new Token(ChainId.SEPOLIA, ETH_ADDRESS[ChainId.SEPOLIA], 18, 'ETH', 'Dai Stablecoin'),
+  [ChainId.GOERLI]: new Token(ChainId.GOERLI, ETH_ADDRESS[ChainId.GOERLI], 18, 'ETH', 'Dai Stablecoin'),
+  [ChainId.HOPE]: new Token(ChainId.HOPE, ETH_ADDRESS[ChainId.HOPE], 18, 'ETH', 'Dai Stablecoin')
+}
 
