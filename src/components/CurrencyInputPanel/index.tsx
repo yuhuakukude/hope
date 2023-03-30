@@ -17,7 +17,7 @@ import useTheme from '../../hooks/useTheme'
 const InputRow = styled.div<{ selected: boolean; active: boolean }>`
   ${({ theme }) => theme.flexRowNoWrap}
   border: 1px solid ${({ theme, active }) => (active ? theme.primary1 : theme.borderInput)};
-  margin-top: 10px;
+  margin-top: 12px;
   border-radius: 10px;
   align-items: center;
   padding: ${({ selected }) => (selected ? '0.75rem 0.5rem 0.75rem 1rem' : '0.75rem 0.75rem 0.75rem 1rem')};
@@ -92,10 +92,10 @@ const StyledTokenName = styled.span<{ active?: boolean }>`
 `
 
 const StyledBalanceMax = styled.button`
-  font-size: 0.16px;
+  font-size: 14px;
   background-color: transparent;
   border: 1px solid transparent;
-  font-weight: 500;
+  font-family: Arboria-Book;
   cursor: pointer;
   margin-left: 0.5rem;
   color: ${({ theme }) => theme.primary1};
@@ -161,16 +161,15 @@ export default function CurrencyInputPanel({
         {!hideInput && (
           <LabelRow>
             <RowBetween>
-              <TYPE.body color={theme.text2} fontWeight={500} fontSize={14}>
+              <TYPE.body color={theme.text2} fontSize={14} style={{ fontFamily: 'Arboria-Book' }}>
                 {label}
               </TYPE.body>
               {account && (
                 <TYPE.body
                   onClick={onMax}
                   color={theme.text2}
-                  fontWeight={500}
                   fontSize={14}
-                  style={{ display: 'inline', cursor: 'pointer' }}
+                  style={{ display: 'inline', cursor: 'pointer', fontFamily: 'Arboria-Book' }}
                 >
                   {!hideBalance && !!currency && selectedCurrencyBalance
                     ? (customBalanceText ?? 'Available: ') +

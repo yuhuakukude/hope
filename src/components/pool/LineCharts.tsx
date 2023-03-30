@@ -57,7 +57,6 @@ export default function LineCharts({
           `
         }
       },
-      dataZoom: [{ type: 'inside' }],
       xAxis: {
         type: 'category',
         boundaryGap: false,
