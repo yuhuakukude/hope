@@ -601,7 +601,7 @@ export default function Staking() {
                           account && currentBoots && futureBoots && currentBoots.toFixed(2) !== futureBoots.toFixed(2)
                             ? '24px'
                             : 0,
-                        transition: 'height 1s',
+                        transition: 'height 0.3s',
                         overflow: 'hidden'
                       }}
                     >
