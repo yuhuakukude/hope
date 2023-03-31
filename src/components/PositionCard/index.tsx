@@ -312,11 +312,11 @@ export default function FullPositionCard({
         <ContentRow>
           <AutoColumn gap={'10px'}>
             <AutoRow>
-              <TYPE.main>Current Cycle:&nbsp;</TYPE.main>
+              <TYPE.main>Current Boots:&nbsp;</TYPE.main>
               <TYPE.white>{currentBoots ? `${currentBoots.toFixed(2)}x` : '--'}</TYPE.white>
             </AutoRow>
             <AutoRow>
-              <TYPE.main>Next Cycle:&nbsp;&nbsp;</TYPE.main>
+              <TYPE.main>Next Boots:&nbsp;&nbsp;</TYPE.main>
               <TYPE.white>{futureBoots ? `${futureBoots.toFixed(2)}x` : '--'}</TYPE.white>
             </AutoRow>
           </AutoColumn>
