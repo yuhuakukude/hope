@@ -243,7 +243,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       title: (
         <>
           Boost{' '}
-          <Tips title="When the number of a user's veLT changes, the values of the Current Cycle and Next Cycle may become inconsistent. To ensure that the Next Cycle takes effect, the user needs to actively update the value."></Tips>
+          <Tips title="When the number of a user's veLT changes, the values of the Current Boost and Next Boost may become inconsistent. To ensure that the Next Boost takes effect, the user needs to actively update the value."></Tips>
         </>
       ),
       dataIndex: 'currentBoost',
@@ -253,8 +253,8 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
         return (
           <Item
             type={2}
-            title={<>Current Cycle: {record.currentBoost || '--'}</>}
-            desc={<>Next Cycle: {record.futureBoost || '--'}</>}
+            title={<>Current Boost: {record.currentBoost || '--'}</>}
+            desc={<>Next Boost: {record.futureBoost || '--'}</>}
           />
         )
       }
