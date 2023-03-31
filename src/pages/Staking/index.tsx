@@ -597,11 +597,12 @@ export default function Staking() {
                     <div
                       className="flex ai-center"
                       style={{
-                        opacity:
+                        height:
                           account && currentBoots && futureBoots && currentBoots.toFixed(2) !== futureBoots.toFixed(2)
-                            ? 1
+                            ? '24px'
                             : 0,
-                        transition: 'opacity 0.5s'
+                        transition: 'height 1s',
+                        overflow: 'hidden'
                       }}
                     >
                       <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
