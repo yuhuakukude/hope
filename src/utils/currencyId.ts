@@ -7,7 +7,8 @@ export function currencyId(currency: Currency): string {
 }
 
 export function tokenId(weth: Token, token: Token): string {
-  if (weth.address === token.address) return 'ETH'
+  // if (weth.address === token.address) return 'ETH' eth disable reset
+  if (weth.address === token.address) return token.address
   if (token instanceof Token) return token.address
   throw new Error('invalid currency')
 }
