@@ -6,6 +6,10 @@ export const rate = (value: string | number | undefined, decimal?: number, isNul
   if (value || value === 0) {
     const val = Number(value) * 100
     const de = decimal || 2
+    const baseNum = 1 / Math.pow(10, de || 0)
+    if (Number(val) > 0 && Number(val) < baseNum) {
+      return `< ${baseNum.toFixed(de)}%`
+    }
     return `${val
       .toFixed(de)
       .toString()
