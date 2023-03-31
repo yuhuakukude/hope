@@ -594,12 +594,16 @@ export default function Staking() {
                         )}
                       </div>
                     </div>
-                    {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
-                      <div className="flex ai-center">
-                        <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
-                        <p className="text-normal lh15">Claim your rewards to apply your next cycle</p>
-                      </div>
-                    )}
+                    <div
+                      className="flex ai-center"
+                      style={{
+                        opacity: account && claRewards && Number(claRewards.toFixed(2)) > 0 ? 1 : 0,
+                        transition: 'opacity 1s'
+                      }}
+                    >
+                      <i className="text-primary iconfont m-r-5 font-14">&#xe62b;</i>
+                      <p className="text-normal lh15">Claim your rewards to apply your next cycle</p>
+                    </div>
                   </div>
                   <div className="card-bot p-30">
                     <div className="flex jc-between m-b-20">
