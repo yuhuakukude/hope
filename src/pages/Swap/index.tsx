@@ -1,5 +1,5 @@
 import { CurrencyAmount, JSBI, Token, Trade, WETH } from '@uniswap/sdk'
-import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useMemo, useState } from 'react'
 import { ArrowDownCircle } from 'react-feather'
 import ReactGA from 'react-ga'
 import { Text } from 'rebass'
@@ -216,19 +216,10 @@ export default function Swap({ history }: RouteComponentProps) {
 
   // check whether the user has approved the router on the input token
   const [approval, approveCallback, approveToken] = useApproveCallbackFromTrade(trade, allowedSlippage)
-
   // check if user has gone through approval process, used to show two step buttons, reset on token change
-  const [approvalSubmitted, setApprovalSubmitted] = useState<boolean>(false)
 
   const [pending, setPending] = useState<boolean>(false)
   const [showAddToken, setShowAddToken] = useState<boolean>(false)
-
-  // mark when a user has submitted an approval, reset onTokenSelection for input field
-  useEffect(() => {
-    if (approval === ApprovalState.PENDING) {
-      setApprovalSubmitted(true)
-    }
-  }, [approval, approvalSubmitted])
 
   const maxAmountInput: CurrencyAmount | undefined = maxAmountSpend(currencyBalances[Field.INPUT])
   const atMaxAmountInput = Boolean(maxAmountInput && parsedAmounts[Field.INPUT]?.equalTo(maxAmountInput))
@@ -400,7 +391,6 @@ export default function Swap({ history }: RouteComponentProps) {
 
   const handleInputSelect = useCallback(
     inputCurrency => {
-      setApprovalSubmitted(false) // reset 2 step UI for approvals
       onCurrencySelection(Field.INPUT, inputCurrency)
     },
     [onCurrencySelection]
@@ -492,7 +482,6 @@ export default function Swap({ history }: RouteComponentProps) {
                   <i
                     className="iconfont hope-icon-common font-28"
                     onClick={() => {
-                      setApprovalSubmitted(false) // reset 2 step UI for approvals
                       onSwitchTokens()
                     }}
                   >
@@ -636,7 +625,7 @@ export default function Swap({ history }: RouteComponentProps) {
               <RowBetween>
                 <ButtonConfirmed
                   onClick={handleApprove}
-                  disabled={approval !== ApprovalState.NOT_APPROVED || approvalSubmitted}
+                  disabled={approval !== ApprovalState.NOT_APPROVED}
                   altDisabledStyle={!!pendingMessage || approval === ApprovalState.PENDING} // show solid button while waiting
                   confirmed={!!pendingMessage || approval === ApprovalState.APPROVED}
                 >
@@ -644,7 +633,7 @@ export default function Swap({ history }: RouteComponentProps) {
                     <AutoRow gap="6px" justify="center">
                       Approving <Loader stroke="white" />
                     </AutoRow>
-                  ) : approvalSubmitted && approval === ApprovalState.APPROVED ? (
+                  ) : approval === ApprovalState.APPROVED ? (
                     'Approved'
                   ) : (
                     <AutoRow gap={'4px'} justify={'center'}>
