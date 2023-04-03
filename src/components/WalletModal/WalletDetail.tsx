@@ -20,7 +20,8 @@ import Copy from '../AccountDetails/Copy'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { setInjectedConnected } from 'utils/isInjectedConnectedPrev'
 import { Tooltip } from 'antd'
-import { getHOPEToken, getLTToken } from 'utils/addressHelpers'
+import { getHOPEToken, getLTToken, getHopeTokenAddress } from 'utils/addressHelpers'
+import { useHistory } from 'react-router-dom'
 
 export const DivideLine = styled.div`
   border: 0.5px solid ${({ theme }) => theme.bg3};
@@ -74,6 +75,7 @@ export default function WalletDetail({
   showTransaction: boolean
   setShowTransaction: (showTransaction: boolean) => void
 }) {
+  const history = useHistory()
   const { account, chainId, deactivate } = useActiveWeb3React()
   const hopeToken = useMemo(() => getHOPEToken(chainId), [chainId])
   const ltToken = useMemo(() => getLTToken(chainId), [chainId])
@@ -83,6 +85,10 @@ export default function WalletDetail({
   const hopeBalance = useTokenBalance(account ?? undefined, hopeToken)
   const stHopeBalance = useStHopeBalance()
   const ltBalance = useTokenBalance(account ?? undefined, ltToken)
+
+  const hopeAddresses = useMemo(() => {
+    return getHopeTokenAddress(chainId) ?? undefined
+  }, [chainId])
 
   const fakeIcon = <img src={Avatar} style={{ width: '24px', height: '24px' }} alt="" />
   return (
@@ -145,7 +151,15 @@ export default function WalletDetail({
       )}
       <ThemeText style={{ color: theme.text2, marginTop: '16px' }}>ETH Balance</ThemeText>
       <div style={{ padding: '40px 30px', width: '100%' }}>
-        <ButtonPrimary disabled>Buy HOPE</ButtonPrimary>
+        <ButtonPrimary
+          disabled={!hopeAddresses}
+          onClick={() => {
+            history.push(`/swap/exchange/${hopeAddresses}`)
+            toggleWalletModal()
+          }}
+        >
+          Buy HOPE
+        </ButtonPrimary>
       </div>
       <DivideLine />
       <GapColumn gap={'30px'} style={{ width: '100%', padding: '30px' }}>
