@@ -605,36 +605,18 @@ export default function Swap({ history }: RouteComponentProps) {
           ) : null}
 
           <BottomGrouping>
-            {swapIsUnsupported ? (
-              <ButtonPrimary disabled={true}>
-                <TYPE.main mb="4px">Unsupported Asset</TYPE.main>
-              </ButtonPrimary>
-            ) : !account ? (
-              <ButtonPrimary onClick={toggleWalletModal}>Connect Wallet</ButtonPrimary>
-            ) : showWrap ? (
-              <ButtonPrimary disabled={Boolean(wrapInputError)} onClick={onWrap}>
-                {wrapInputError ??
-                  (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
-              </ButtonPrimary>
-            ) : noRoute && userHasSpecifiedInputOutput ? (
-              <GreyCard style={{ textAlign: 'center' }}>
-                <TYPE.main mb="4px">Insufficient liquidity for this trade.</TYPE.main>
-                {singleHopOnly && <TYPE.main mb="4px">Try enabling multi-hop trades.</TYPE.main>}
-              </GreyCard>
-            ) : showApproveFlow ? (
-              <RowBetween>
+            {showApproveFlow && (
+              <RowBetween mb="20px">
                 <ButtonConfirmed
                   onClick={handleApprove}
                   disabled={approval !== ApprovalState.NOT_APPROVED}
                   altDisabledStyle={!!pendingMessage || approval === ApprovalState.PENDING} // show solid button while waiting
-                  confirmed={!!pendingMessage || approval === ApprovalState.APPROVED}
+                  confirmed={!!pendingMessage}
                 >
                   {pendingMessage || approval === ApprovalState.PENDING ? (
                     <AutoRow gap="6px" justify="center">
                       Approving <Loader stroke="white" />
                     </AutoRow>
-                  ) : approval === ApprovalState.APPROVED ? (
-                    'Approved'
                   ) : (
                     <AutoRow gap={'4px'} justify={'center'}>
                       {'Approve ' + currencies[Field.INPUT]?.symbol}
@@ -670,9 +652,26 @@ export default function Swap({ history }: RouteComponentProps) {
                 {/*  </Text>*/}
                 {/*</ButtonError>*/}
               </RowBetween>
+            )}
+            {swapIsUnsupported ? (
+              <ButtonPrimary disabled={true}>
+                <TYPE.main mb="4px">Unsupported Asset</TYPE.main>
+              </ButtonPrimary>
+            ) : !account ? (
+              <ButtonPrimary onClick={toggleWalletModal}>Connect Wallet</ButtonPrimary>
+            ) : showWrap ? (
+              <ButtonPrimary disabled={Boolean(wrapInputError)} onClick={onWrap}>
+                {wrapInputError ??
+                  (wrapType === WrapType.WRAP ? 'Wrap' : wrapType === WrapType.UNWRAP ? 'Unwrap' : null)}
+              </ButtonPrimary>
+            ) : noRoute && userHasSpecifiedInputOutput ? (
+              <GreyCard style={{ textAlign: 'center' }}>
+                <TYPE.main mb="4px">Insufficient liquidity for this trade.</TYPE.main>
+                {singleHopOnly && <TYPE.main mb="4px">Try enabling multi-hop trades.</TYPE.main>}
+              </GreyCard>
             ) : (
               <>
-                {pendingMessage ? (
+                {pendingMessage && approval !== ApprovalState.PENDING && approval !== ApprovalState.NOT_APPROVED ? (
                   <ButtonConfirmed
                     altDisabledStyle={!!pendingMessage} // show solid button while waiting
                     confirmed={!!pendingMessage}
@@ -700,7 +699,9 @@ export default function Swap({ history }: RouteComponentProps) {
                       }
                     }}
                     id="swap-button"
-                    disabled={!isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!swapCallbackError}
+                    disabled={
+                      !isValid || (priceImpactSeverity > 3 && !isExpertMode) || !!swapCallbackError || showApproveFlow
+                    }
                   >
                     <Text fontSize={16} fontWeight={500}>
                       {!userHasSpecifiedInputOutput && swapInputError ? swapInputError : `Swap`}
