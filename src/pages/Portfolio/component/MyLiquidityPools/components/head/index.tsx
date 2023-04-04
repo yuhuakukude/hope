@@ -34,9 +34,11 @@ export default function Head({
       <div className="pools-head-top">
         Total Claimable Mining Rewards
         <Tips title="Total Claimable Farming Rewards: Showing claimable liquidity farming rewards from liquidity pools and LP token staking. Other rewards, such as the $LT rewards obtained by holding $stHOPE in a liquidity pool (yes, you still earn $LT when you deposit it into a liquidity pool but did not stake the LP token) are not displayed here and would need to be claimed separately. "></Tips>
-        <Button disabled={false} className="pools-head-top-button" type="ghost" onClick={claimAll}>
-          Claim All
-        </Button>
+        {totalVal.greaterThan('0') && (
+          <Button className="pools-head-top-button" type="ghost" onClick={claimAll}>
+            Claim All
+          </Button>
+        )}
       </div>
       <div className="pools-head-bottom flex ai-center">
         <span className="pools-head-bottom-value text-medium">
