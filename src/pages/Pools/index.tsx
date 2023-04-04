@@ -114,6 +114,7 @@ const TableTitle = styled(TYPE.main)<{ isSort?: boolean; onClick?: () => void }>
 `
 const SortWrapper = styled(AutoColumn)`
   margin-left: 10px;
+  margin-top: -5px;
 `
 
 const poolTitles = [
@@ -165,10 +166,17 @@ export default function Pools() {
           return flag
         })
       }
+      if (sort !== 'none' && sort.includes('Volume')) {
+        return pairInfosList.sort((next, current) => {
+          const flag = sort.includes('ascend')
+            ? Number(next.dayVolume) - Number(current.dayVolume)
+            : Number(current.dayVolume) - Number(next.dayVolume)
+          return flag
+        })
+      }
     }
     return pairInfosList
   }, [pairInfosList, sort])
-  console.log(pairInfos)
 
   const ltAddress = useMemo(() => [getLTTokenAddress(chainId)], [chainId])
   const { result: priceResult } = useTokenPriceObject(ltAddress)
@@ -304,7 +312,7 @@ export default function Pools() {
           <AutoColumn>
             <RowFixed gap={'md'}>
               <AutoRow gap={'12px'}>
-                <TYPE.main>My Farms {sort}</TYPE.main>
+                <TYPE.main>My Farms</TYPE.main>
                 <Switch
                   checked={liquiditySearchType === Field.USER_STAKING}
                   className="pool-switch"
@@ -350,7 +358,8 @@ export default function Pools() {
                         fontSize: '12px',
                         height: '8px',
                         lineHeight: '8px',
-                        color: sort === `${isSort}-ascend` ? '#E4C989' : '#A8A8AA'
+                        color: sort === `${isSort}-ascend` ? '#E4C989' : '#A8A8AA',
+                        transition: 'all 0.3s'
                       }}
                     />
                     <Icon
@@ -359,7 +368,8 @@ export default function Pools() {
                         fontSize: '12px',
                         height: '8px',
                         lineHeight: '8px',
-                        color: sort === `${isSort}-descend` ? '#E4C989' : '#A8A8AA'
+                        color: sort === `${isSort}-descend` ? '#E4C989' : '#A8A8AA',
+                        transition: 'all 0.3s'
                       }}
                     />
                   </SortWrapper>
