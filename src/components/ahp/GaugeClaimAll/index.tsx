@@ -42,7 +42,7 @@ function GaugeClaimAll({ onSubmit, onDismiss, total, list, ltPrice }: GaugeClaim
             <CloseIcon onClick={onDismiss} />
           </div>
         </div>
-        <div className="claim-con p-30">
+        <div className="claim-con p-20">
           <div>
             {
               <div className="radio-item">

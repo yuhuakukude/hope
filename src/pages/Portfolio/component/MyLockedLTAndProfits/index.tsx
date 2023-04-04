@@ -234,25 +234,45 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                   </div>
                 </div>
                 <div className="my-locked-lt-col">
-                  <div className="my-locked-lt-title">Current Voting Power</div>
+                  <div className="my-locked-lt-title flex ai-center jc-between">
+                    <span>Current Voting Power</span>
+                    <NavLink to={'/dao/locker'}>
+                      <Button className="my-locked-lt-button" type="ghost">
+                        Increase voting power
+                      </Button>
+                    </NavLink>
+                  </div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">
                       ≈ {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
                     </span>
                     <span className="my-locked-lt-value2">{unUseRateVal || '0.00'}% of Total</span>
                   </div>
-                  <NavLink to={'/dao/locker'}>
-                    <Button className="my-locked-lt-button" type="ghost">
-                      Increase voting power
-                    </Button>
-                  </NavLink>
                 </div>
               </div>
               <div className="my-locked-lt-row2">
                 <div className="my-locked-lt-col">
-                  <div className="my-locked-lt-title">
-                    Claimable Revenue Shares{' '}
-                    <Tips title="25% of the platform's revenue will be distributed proportionally among all veLT holders."></Tips>
+                  <div style={{ height: '20px' }} className="my-locked-lt-title flex ai-center jc-between">
+                    <div>
+                      Claimable Revenue Shares{' '}
+                      <Tips title="25% of the platform's revenue will be distributed proportionally among all veLT holders."></Tips>
+                    </div>
+                    <div>
+                      {claimableFees && Number(claimableFees.toFixed(2)) > 0 && (
+                        <Button
+                          onClick={() => {
+                            withdrawFn('others')
+                          }}
+                          className={[
+                            'my-locked-lt-button',
+                            !(claimableFees && Number(claimableFees.toFixed(2)) > 0) ? 'disabled' : ''
+                          ].join(' ')}
+                          type="ghost"
+                        >
+                          Claim All
+                        </Button>
+                      )}
+                    </div>
                   </div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">
@@ -262,44 +282,32 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                       ≈ ${toUsdPrice(claimableFees?.toFixed(2), stHopePrice) || '--'}
                     </span>
                   </div>
-                  {claimableFees && Number(claimableFees.toFixed(2)) > 0 && (
-                    <Button
-                      onClick={() => {
-                        withdrawFn('others')
-                      }}
-                      className={[
-                        'my-locked-lt-button',
-                        !(claimableFees && Number(claimableFees.toFixed(2)) > 0) ? 'disabled' : ''
-                      ].join(' ')}
-                      type="ghost"
-                    >
-                      Claim All
-                    </Button>
-                  )}
                 </div>
                 <div className="my-locked-lt-col">
-                  <div className="my-locked-lt-title">
-                    Claiming Voting Rewards{' '}
-                    <Tips title="An additional 25% of the platform's revenue will be distributed proportionally among all Gauge voters."></Tips>
+                  <div style={{ height: '20px' }} className="my-locked-lt-title flex ai-center jc-between">
+                    <div>
+                      Claiming Voting Rewards{' '}
+                      <Tips title="An additional 25% of the platform's revenue will be distributed proportionally among all Gauge voters."></Tips>
+                    </div>
+                    {claimableFees && Number(votingFee.stHope) > 0 && (
+                      <Button
+                        onClick={() => {
+                          withdrawFn('all')
+                        }}
+                        className={[
+                          'my-locked-lt-button',
+                          !(claimableFees && Number(votingFee.stHope) > 0) ? 'disabled' : ''
+                        ].join(' ')}
+                        type="ghost"
+                      >
+                        Claim All
+                      </Button>
+                    )}
                   </div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">≈ {votingFee.stHope} stHOPE</span>
                     <span className="my-locked-lt-value2">≈ ${votingFee.toUsd}</span>
                   </div>
-                  {claimableFees && Number(votingFee.stHope) > 0 && (
-                    <Button
-                      onClick={() => {
-                        withdrawFn('all')
-                      }}
-                      className={[
-                        'my-locked-lt-button',
-                        !(claimableFees && Number(votingFee.stHope) > 0) ? 'disabled' : ''
-                      ].join(' ')}
-                      type="ghost"
-                    >
-                      Claim All
-                    </Button>
-                  )}
                 </div>
               </div>
             </div>
