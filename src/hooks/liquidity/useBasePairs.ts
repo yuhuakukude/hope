@@ -23,6 +23,7 @@ export default function useBasePairs(
   const { chainId } = useActiveWeb3React()
   const [result, setResult] = useState<BasePair[]>([])
   const [timeInfo, setTimeInfo] = useState<TimeInfoObject | undefined>(undefined)
+  console.log(timeInfo)
 
   const [total, setTotal] = useState(0)
   const [loading, setLoading] = useState<boolean>(false)

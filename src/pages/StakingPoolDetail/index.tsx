@@ -597,14 +597,14 @@ export default function StakingPoolDetail({
                   <Row>
                     {pool && (
                       <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
-                        1.00 {token0Symbol} = {amountFormat(pool?.token1Price, 2)} {token1Symbol}
+                        1.00 {token0Symbol} ≈ {amountFormat(pool?.token1Price, 2)} {token1Symbol}
                       </TYPE.body>
                     )}
                   </Row>
                   <Row margin={'25px 0 0 0'}>
                     {pool && (
                       <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
-                        1.00 {token1Symbol} = {amountFormat(pool?.token0Price, 2)} {token0Symbol}
+                        1.00 {token1Symbol} ≈ {amountFormat(pool?.token0Price, 2)} {token0Symbol}
                       </TYPE.body>
                     )}
                   </Row>

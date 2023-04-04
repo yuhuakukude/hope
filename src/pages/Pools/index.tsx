@@ -26,6 +26,7 @@ import { DOCS_URL } from 'constants/config'
 import { useLiquiditySearchType } from '../../state/liquidity/hooks'
 import { Field } from '../../state/liquidity/actions'
 import { getLTTokenAddress } from 'utils/addressHelpers'
+import { Icon } from 'antd'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
@@ -102,16 +103,23 @@ const TableTitleWrapper = styled(AutoColumn)`
   background-color: ${({ theme }) => theme.bg1};
 `
 
-const TableTitle = styled(TYPE.main)`
+const TableTitle = styled(TYPE.main)<{ isSort?: boolean; onClick?: () => void }>`
   flex: 1;
   font-size: 14px;
+  display: flex;
+  align-items: center;
   font-family: Arboria-Medium;
+  cursor: ${({ isSort }) => (isSort ? 'pointer' : 'text')};
+  user-select: ${({ isSort }) => (isSort ? 'none' : '')};
+`
+const SortWrapper = styled(AutoColumn)`
+  margin-left: 10px;
 `
 
 const poolTitles = [
   { value: 'Pools', weight: 1.5 },
-  { value: 'TVL' },
-  { value: 'Volume (24h)' },
+  { value: 'TVL', isSort: 'TVL' },
+  { value: 'Volume (24h)', isSort: 'Volume' },
   { value: 'Fees APR' },
   { value: 'Farming APR', weight: 1.5 },
   { value: 'Daily Farming Rewards' },
@@ -134,17 +142,33 @@ export default function Pools() {
   const inputRef = useRef<HTMLInputElement>()
   const [searchValue, setSearchValue] = useState('')
   const [currentPage, setCurrentPage] = useState<number>(1)
+  const [sort, setSort] = useState<string>('none')
   const [pageSize, setPageSize] = useState<number>(10)
   const toggleWalletModal = useWalletModalToggle()
   const history = useHistory()
   const [reload, setReload] = useState(0)
-  const { pairInfos, total, loading, isError } = usePairsInfo(
+  const { pairInfos: pairInfosList, total, loading, isError } = usePairsInfo(
     pageSize,
     currentPage,
     liquiditySearchType,
     searchValue,
     reload
   )
+
+  const pairInfos = useMemo(() => {
+    if (pairInfosList.length > 0) {
+      if (sort !== 'none' && sort.includes('TVL')) {
+        return pairInfosList.sort((next, current) => {
+          const flag = sort.includes('ascend')
+            ? Number(next.tvl?.toFixed(2)) - Number(current.tvl?.toFixed(2))
+            : Number(current.tvl?.toFixed(2)) - Number(next.tvl?.toFixed(2))
+          return flag
+        })
+      }
+    }
+    return pairInfosList
+  }, [pairInfosList, sort])
+  console.log(pairInfos)
 
   const ltAddress = useMemo(() => [getLTTokenAddress(chainId)], [chainId])
   const { result: priceResult } = useTokenPriceObject(ltAddress)
@@ -228,6 +252,20 @@ export default function Pools() {
     )
   }
 
+  const toSortFn = (sortCol: string) => {
+    if (sort.includes(sortCol)) {
+      if (sort === 'none') {
+        setSort(`${sortCol}-ascend`)
+      } else if (sort.includes('ascend')) {
+        setSort(`${sortCol}-descend`)
+      } else {
+        setSort('none')
+      }
+    } else {
+      setSort(`${sortCol}-ascend`)
+    }
+  }
+
   return (
     <PageWrapper>
       <RowBetween>
@@ -241,7 +279,6 @@ export default function Pools() {
           New Position
         </ButtonPrimary>
       </RowBetween>
-      　
       <AutoRow mt={30}>
         <RowBetween>
           <TabWrapper left={liquiditySearchType === Field.ALL ? 0 : 50}>
@@ -267,7 +304,7 @@ export default function Pools() {
           <AutoColumn>
             <RowFixed gap={'md'}>
               <AutoRow gap={'12px'}>
-                <TYPE.main>My Farms</TYPE.main>
+                <TYPE.main>My Farms {sort}</TYPE.main>
                 <Switch
                   checked={liquiditySearchType === Field.USER_STAKING}
                   className="pool-switch"
@@ -302,9 +339,31 @@ export default function Pools() {
       {liquiditySearchType === Field.ALL && (
         <TableWrapper>
           <TableTitleWrapper>
-            {poolTitles.map(({ value, weight }, index) => (
-              <TableTitle key={index} flex={weight ?? 1}>
+            {poolTitles.map(({ value, weight, isSort }, index) => (
+              <TableTitle key={index} flex={weight ?? 1} isSort={!!isSort} onClick={() => toSortFn(isSort ?? '')}>
                 {value}
+                {!!isSort && (
+                  <SortWrapper>
+                    <Icon
+                      type="caret-up"
+                      style={{
+                        fontSize: '12px',
+                        height: '8px',
+                        lineHeight: '8px',
+                        color: sort === `${isSort}-ascend` ? '#E4C989' : '#A8A8AA'
+                      }}
+                    />
+                    <Icon
+                      type="caret-down"
+                      style={{
+                        fontSize: '12px',
+                        height: '8px',
+                        lineHeight: '8px',
+                        color: sort === `${isSort}-descend` ? '#E4C989' : '#A8A8AA'
+                      }}
+                    />
+                  </SortWrapper>
+                )}
               </TableTitle>
             ))}
           </TableTitleWrapper>

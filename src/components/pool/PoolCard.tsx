@@ -47,6 +47,7 @@ interface PoolCardProps {
 }
 
 export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardProps) {
+  console.log(pairData)
   const history = useHistory()
 
   const currency0 = unwrappedToken(pairInfo.tokens[0])
