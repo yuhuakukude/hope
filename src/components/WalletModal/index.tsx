@@ -297,6 +297,7 @@ export default function WalletModal() {
 
   function getModalContent() {
     if (error) {
+      const params = SUPPORTED_NETWORKS[NETWORK_CHAIN_ID as ChainId]
       return (
         <div className="wallet-modal-wrap">
           <UpperSection>
@@ -316,15 +317,10 @@ export default function WalletModal() {
                 <TYPE.body mt={'8px'}>Error connecting</TYPE.body>
                 {error instanceof UnsupportedChainIdError ? (
                   <>
-                    <TYPE.main textAlign={'center'}>Please switch to Ethereum Mainnet</TYPE.main>
+                    <TYPE.main textAlign={'center'}>Please switch to {params?.chainName} </TYPE.main>
                     <ButtonPrimary
                       mt={'34px'}
                       onClick={() => {
-                        const id = Object.values(ChainId).find(val => val === NETWORK_CHAIN_ID)
-                        if (!id) {
-                          return
-                        }
-                        const params = SUPPORTED_NETWORKS[id as ChainId]
                         return params?.nativeCurrency.symbol === 'ETH'
                           ? window.ethereum?.request?.({
                               method: 'wallet_switchEthereumChain',

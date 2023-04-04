@@ -39,7 +39,7 @@ const GaugeClaim = ({ onSubmit, onDismiss, tableItem = {} as ITableItem }: Gauge
             <CloseIcon onClick={onDismiss} />
           </div>
         </div>
-        <div className="claim-con p-30">
+        <div className="claim-con p-20">
           {tableItem?.usdOfTotalReward && (
             <div className="flex jc-between">
               <span className="text-white">Total Claimable Rewards</span>

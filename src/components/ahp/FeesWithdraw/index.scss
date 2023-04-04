@@ -1,11 +1,21 @@
 .fee-with-box {
-  .radio-item {
+  .head{
+    text-align: left !important;
+    padding-left: 20px;
+    border: none !important;
+  }
+  .feew-item {
     background: #3D3E46;
     border-radius: 10px;
-    padding: 20px;
-    .radio-box-con {
-      margin-top: 20px;
-      padding-top: 20px;
+    overflow: hidden;
+    .feew-head {
+      padding: 16px;
+      border-bottom:1px solid #494949;
+    }
+    .feew-con {
+      padding: 16px;
+    }
+    .feew-con {
       &.hide{
         display: none;
       }
