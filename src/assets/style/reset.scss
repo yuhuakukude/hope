@@ -556,6 +556,27 @@
     border-left-width: 0px;
     bottom: -1;
   }
+  &.ant-tooltip-placement-bottom {
+    .ant-tooltip-arrow::before {
+      border-bottom-width: 0px;
+      border-right-width: 0px;
+    }
+  }
+  &.ant-tooltip-placement-top {
+    .ant-tooltip-arrow::before {
+      border-top-width: 0px;
+      border-left-width: 0px;
+    }
+  }
+  &.tips-tran {
+    .ant-tooltip-arrow {
+      margin-left: 23px;
+    }
+    .ant-tooltip-inner {
+      font-size: 12px;
+      line-height: 18px;
+    }
+  }
 }
 
 #buy-hope-nav-link {
