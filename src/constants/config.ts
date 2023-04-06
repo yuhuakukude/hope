@@ -1,11 +1,14 @@
 export const DOCS_URL: { [name: string]: string } = {
-  BoostingLTRewards: 'https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/reward-goemboec/boosting-usdlt-rewards',
-  GombocWeights: 'https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/reward-goemboec/goemboec-weights',
-  LightToken: 'https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/light-token-usdlt',
-  HopeToken: 'https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/tokens/usdhope-token',
+  BoostingLTRewards: 'https://docs.hope.money/reward-gauges/velt-and-checkpoint-mechanism#checkpoint',
+  GombocWeights: 'https://docs.hope.money/lt-light-token/boosting-usdlt-rewards',
+  LightToken: 'https://docs.hope.money/lt-light-token/locking-lt-velt',
+  LightToken2:'https://docs.hope.money/lt-light-token/earning-gov-fees',
+  HopeToken: 'https://docs.hope.money/protocols/hopeswap#liquidity-provider',
+  HopeToken2: 'https://docs.hope.money/hope-token/stake-and-earn-with-hope',
   WelcomeToHope: 'https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/',
-  ReservePools:
-    'https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/usdhope-reserve-pools-hrp/understanding-usdhope-reserve-pools'
+  ReservePools: 'https://docs.hope.money/reward-gauges/claiming-rewards',
+  LiquidityProvider:'https://docs.hope.money/protocols/hopeswap#liquidity-provider',
+  HopeSwap: 'https://docs.hope.money/protocols/hopeswap'
 }
 
 export const CONTRACT_ERROR_CODE: { [name: string]: string } = {
