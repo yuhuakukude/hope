@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useMemo } from 'react'
 import styled from 'styled-components'
 import { CheckCircle, Triangle } from 'react-feather'
 import { useActiveWeb3React } from '../../hooks'
@@ -9,6 +9,7 @@ import { RowFixed } from '../Row'
 import Loader from '../Loader'
 import { TYPE } from '../../theme'
 import { formatDate } from '../../utils/format'
+import { Tooltip } from 'antd'
 
 const TransactionWrapper = styled.div``
 
@@ -48,6 +49,17 @@ export default function Transaction({ hash }: { hash: string }) {
   const pending = !tx?.receipt
   const success = !pending && tx && (tx.receipt?.status === 1 || typeof tx.receipt?.status === 'undefined')
 
+  const isOverTranTip = useMemo(() => {
+    let res = false
+    if (tx && tx.addedTime) {
+      const time = (new Date().getTime() - tx.addedTime) / 1000 / 60
+      if (time > 2) {
+        res = true
+      }
+    }
+    return res
+  }, [tx])
+
   if (!chainId) return null
 
   return (
@@ -59,7 +71,20 @@ export default function Transaction({ hash }: { hash: string }) {
         <RowFixed>
           <TransactionStatusText>{summary ?? hash}</TransactionStatusText>
         </RowFixed>
-        <IconWrapper pending={pending} success={success}>
+        <IconWrapper className="flex ai-center" pending={pending} success={success}>
+          {pending && isOverTranTip && (
+            <Tooltip
+              overlayClassName="tips-wallet tips-tran"
+              title="Due to the long waiting time, the transaction may fail. You can check if it fails on Etherscan. If so, you can click 'Clear All' and resubmit the transaction."
+            >
+              <i
+                className="iconfont hope-icon-common text-primary"
+                style={{ fontSize: '15px', margin: '0 21px 0 0', padding: '5px', color: '#E4C989' }}
+              >
+                &#xe62b;
+              </i>
+            </Tooltip>
+          )}
           {pending ? <Loader /> : success ? <CheckCircle size="16" /> : <Triangle size="16" />}
         </IconWrapper>
       </TransactionState>

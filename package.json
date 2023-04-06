@@ -126,7 +126,8 @@
     ]
   },
   "license": "GPL-3.0-or-later",
-  "proxy": "https://dapp-dev1.hivefin.net/",
+  "proxy": "https://hope-dapp-dev1.hivefin.net/",
+
   "dependencies": {
     "@ethersproject/address": "5.5.0",
     "@types/ms.macro": "^2.0.0",

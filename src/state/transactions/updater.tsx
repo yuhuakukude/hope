@@ -45,8 +45,8 @@ export default function Updater(): null {
     Object.keys(transactions)
       .filter(hash => shouldCheck(lastBlockNumber, transactions[hash]))
       .forEach(hash => {
-        const minutesPending = (new Date().getTime() - transactions[hash].addedTime) / 1000 / 60
-        if (minutesPending > 3) {
+        const minutesPending = (new Date().getTime() - transactions[hash]?.addedTime) / 1000 / 60
+        if (minutesPending > 5) {
           dispatch(
             finalizeTransaction({
               chainId,
