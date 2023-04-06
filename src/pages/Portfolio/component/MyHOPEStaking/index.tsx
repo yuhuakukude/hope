@@ -210,7 +210,7 @@ export default function MyHOPEStaking() {
                 Staking HOPE
               </ButtonPrimary>
               <a
-                href={DOCS_URL['HopeToken']}
+                href={DOCS_URL['HopeToken2']}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-center m-t-20 font-nor text-normal flex ai-center jc-center"
