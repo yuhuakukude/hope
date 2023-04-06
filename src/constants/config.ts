@@ -5,7 +5,7 @@ export const DOCS_URL: { [name: string]: string } = {
   LightToken2:'https://docs.hope.money/lt-light-token/earning-gov-fees',
   HopeToken: 'https://docs.hope.money/protocols/hopeswap#liquidity-provider',
   HopeToken2: 'https://docs.hope.money/hope-token/stake-and-earn-with-hope',
-  WelcomeToHope: 'https://docs.hope.money/hope-1/lRGc3srjpd2008mDaMdR/',
+  WelcomeToHope: 'https://docs.hope.money/protocols/hopeswap#liquidity-provider',
   ReservePools: 'https://docs.hope.money/reward-gauges/claiming-rewards',
   LiquidityProvider:'https://docs.hope.money/protocols/hopeswap#liquidity-provider',
   HopeSwap: 'https://docs.hope.money/protocols/hopeswap'
