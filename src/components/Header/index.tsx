@@ -106,7 +106,6 @@ const AccountElement = styled.div<{ active: boolean }>`
 `
 
 const activeClassName = 'ACTIVE'
-
 export interface HeaderEvent {
   id: string
   title: string
@@ -128,6 +127,16 @@ const StyledNavLink = styled(NavLink).attrs({
   font-weight: 500;
   padding-bottom: 1rem;
 
+  @keyframes showTab {
+    from {
+      transform: scale(0);
+    }
+
+    to {
+      transform: scale(1);
+    }
+  }
+
   &.${activeClassName} {
     font-weight: 600;
     color: ${({ theme }) => theme.text1};
@@ -141,6 +150,7 @@ const StyledNavLink = styled(NavLink).attrs({
     margin-left: -12px;
     width: 24px;
     height: 3px;
+    animation: showTab 0.25s ease-in forwards;
     background-color: ${({ theme }) => theme.primary1};
   }
 
