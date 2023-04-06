@@ -449,7 +449,7 @@ export default function StakingPoolDetail({
                 The Pool has not yet been added to the liquidity mining list, you can start the add process via the
                 governance specification.
               </TYPE.white>
-              <ButtonPrimary className="text-medium" mt={50}>
+              <ButtonPrimary disabled className="text-medium" mt={50}>
                 Create Proposal
               </ButtonPrimary>
               <AutoRow
