@@ -17,7 +17,7 @@ const Head = () => {
     <div className="gom-head-box">
       <div className="flex">
         <div className="flex-1 m-r-30">
-          <h2 className="text-white font-bolder font-28">imize my LT rewards?</h2>
+          <h2 className="text-white font-bolder font-28">How to maximize my LT rewards?</h2>
           <p className="text-white lh15 m-t-15 font-nor">
             The distribution of LT rewards within the HOPE ecosystem is governed by Gauge Weights, which are determined
             by veLT voting.
