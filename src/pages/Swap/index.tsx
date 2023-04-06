@@ -277,6 +277,7 @@ export default function Swap({ history }: RouteComponentProps) {
     if (!swapCallback) {
       return
     }
+    setShowAddToken(true)
     setPending(false)
     setSwapState({
       pendingMessage: `Swap ${trade?.inputAmount.toSignificant()} ${
@@ -291,8 +292,6 @@ export default function Swap({ history }: RouteComponentProps) {
     })
     swapCallback()
       .then(hash => {
-        setShowAddToken(true)
-        onUserInput(Field.INPUT, '')
         setPending(true)
         setSwapState({
           pendingMessage: undefined,
@@ -342,7 +341,6 @@ export default function Swap({ history }: RouteComponentProps) {
     trade,
     tradeToConfirm,
     showConfirm,
-    onUserInput,
     recipient,
     recipientAddress,
     account,
@@ -372,10 +370,10 @@ export default function Swap({ history }: RouteComponentProps) {
       errorCode: undefined
     })
     // if there was a tx hash, we want to clear the input
-    // if (txHash) {
-    //   onUserInput(Field.INPUT, '')
-    // }
-  }, [attemptingTxn, swapErrorMessage, tradeToConfirm, txHash, pendingMessage])
+    if (txHash) {
+      onUserInput(Field.INPUT, '')
+    }
+  }, [pendingMessage, tradeToConfirm, attemptingTxn, swapErrorMessage, txHash, onUserInput])
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({

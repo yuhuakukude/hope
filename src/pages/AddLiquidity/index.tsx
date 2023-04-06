@@ -32,7 +32,7 @@ import { CustomLightSpinner, TYPE } from '../../theme'
 import { calculateGasMargin, calculateSlippageAmount, getRouterContract } from '../../utils'
 import { maxAmountSpend } from '../../utils/maxAmountSpend'
 import { wrappedCurrency } from '../../utils/wrappedCurrency'
-import { Dots, Wrapper } from '../Pools/styleds'
+import { Wrapper } from '../Pools/styleds'
 import { ConfirmAddModalBottom } from './ConfirmAddModalBottom'
 import { currencyId } from '../../utils/currencyId'
 import { PoolPriceBar } from './PoolPriceBar'
@@ -42,6 +42,7 @@ import spinner from '../../assets/svg/spinner.svg'
 import { useHistory } from 'react-router-dom'
 import { formatMessage } from '../../utils/format'
 import { getRouterAddress } from 'utils/addressHelpers'
+import Loader from '../../components/Loader'
 
 const PageWrapper = styled(GapColumn)`
   width: 100%;
@@ -91,6 +92,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
   const [showConfirm, setShowConfirm] = useState<boolean>(false)
   const [attemptingTxn, setAttemptingTxn] = useState<boolean>(false) // clicked confirm
   const [pendingText, setPendingText] = useState('')
+  const [isApproveTx, setIsApproveTx] = useState(false)
   const [errorStatus, setErrorStatus] = useState<{ code: number; message: string } | undefined>()
 
   // txn values
@@ -154,6 +156,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
 
   const approveCallback = useCallback(
     (symbol: string, approve: () => Promise<TransactionResponse | undefined>) => {
+      setIsApproveTx(true)
       onTxStart(`Approve ${symbol}`)
       approve()
         .then((response: TransactionResponse | undefined) => {
@@ -170,6 +173,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
 
   const addCallback = useCallback(() => {
     if (!chainId || !library || !account) return
+    setIsApproveTx(false)
     const router = getRouterContract(chainId, library, account)
 
     const { [Field.CURRENCY_A]: parsedAmountA, [Field.CURRENCY_B]: parsedAmountB } = parsedAmounts
@@ -386,7 +390,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
             hash={txHash}
             content={confirmationContent}
             pendingText={pendingText}
-            currencyToAdd={pair?.liquidityToken}
+            currencyToAdd={isApproveTx ? undefined : pair?.liquidityToken}
           />
           <AutoColumn gap="20px">
             {/*{noLiquidity ||*/}
@@ -504,7 +508,9 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
                           width={approvalB !== ApprovalState.APPROVED ? '48%' : '100%'}
                         >
                           {approvalA === ApprovalState.PENDING ? (
-                            <Dots>Approving {currencies[Field.CURRENCY_A]?.symbol}</Dots>
+                            <AutoRow gap="6px" justify="center">
+                              Approving <Loader stroke="white" />
+                            </AutoRow>
                           ) : (
                             'Approve ' + currencies[Field.CURRENCY_A]?.symbol
                           )}
@@ -517,7 +523,9 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
                           width={approvalA !== ApprovalState.APPROVED ? '48%' : '100%'}
                         >
                           {approvalB === ApprovalState.PENDING ? (
-                            <Dots>Approving {currencies[Field.CURRENCY_B]?.symbol}</Dots>
+                            <AutoRow gap="6px" justify="center">
+                              Approving <Loader stroke="white" />
+                            </AutoRow>
                           ) : (
                             'Approve ' + currencies[Field.CURRENCY_B]?.symbol
                           )}
@@ -525,7 +533,7 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
                       )}
                     </RowBetween>
                   )}
-                {pendingText ? (
+                {pendingText && !isApproveTx ? (
                   <ButtonConfirmed
                     altDisabledStyle={!!pendingText} // show solid button while waiting
                     confirmed={!!pendingText}

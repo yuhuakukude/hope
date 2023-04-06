@@ -38,7 +38,6 @@ const StyledNavLink = styled(NavLink).attrs({
     border-radius: 12px;
     font-weight: 500;
     color: ${({ theme }) => theme.text1};
-    transition: all ease 0.25s;
   }
 
   :hover,
