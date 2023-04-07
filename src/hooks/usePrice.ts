@@ -20,18 +20,18 @@ const usePrice = () => {
         const query = `{  
           token(id: "${add}") {    
             symbol   
-            derivedETH  
+            derivedHOPE  
           }  
           bundle(id: 1) {    
-            ethPrice  
+            hopePrice  
           }
         }`
 
         const res = await postQuery(SUBGRAPH, query)
         if (res && res.data) {
           const item = res.data
-          const de = item.token?.derivedETH || 0
-          const bu = item.bundle?.ethPrice || 0
+          const de = item.token?.derivedHOPE || 0
+          const bu = item.bundle?.hopePrice || 0
           const pr = new Decimal(de).mul(new Decimal(bu)).toNumber()
           const num = pr.toFixed(18)
           if (num && Number(num) > 0) {

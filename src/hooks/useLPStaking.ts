@@ -80,7 +80,7 @@ export function useLPStakingPairsInfos(sort: 'asc' | 'desc') {
     ;(async () => {
       setLoading(true)
       try {
-        let list = await fetchPairsList(chainId ?? 1, account ?? '', sort, 'trackedReserveETH')
+        let list = await fetchPairsList(chainId ?? 1, account ?? '', sort, 'trackedReserveHOPE')
         const addressList = list.map((e: GraphPairInfo) => e.address)
         const res = await AprApi.getHopeAllFeeApr(addressList.join(','))
         list = list.map((e: GraphPairInfo) => ({ ...e, ...res.result[e.address] }))

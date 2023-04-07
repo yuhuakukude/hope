@@ -119,11 +119,11 @@ export async function fetchTokensPrice(addresses: string[]): Promise<any> {
       tokens: addresses.map(address => address.toLowerCase())
     })
     const tokens = response.data.tokens
-    const ethPrice = response.data.bundles[0].ethPrice
+    const hopePrice = response.data.bundles[0].hopePrice
     return tokens.map((item: any) => {
       return {
         address: item.id,
-        price: (item.derivedETH * ethPrice).toFixed(16)
+        price: (item.derivedHOPE * hopePrice).toFixed(16)
       }
     })
   } catch (error) {
