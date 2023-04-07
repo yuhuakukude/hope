@@ -139,7 +139,7 @@ export default function SideBar() {
         </TabBox>
       </Column>
       <Column style={{ width: '100%' }}>
-        <AutoColumn gap="10px" style={{ marginLeft: 'auto', marginRight: 'auto' }}>
+        <AutoColumn gap="10px" style={{ marginLeft: 'auto', marginRight: 'auto' }} className="a-link-box">
           <a href="https://twitter.com/hope_ecosystem" target="_blank" rel="noopener noreferrer" className="a-link">
             <Twitter className="icon-link"></Twitter>
           </a>

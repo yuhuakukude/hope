@@ -5,6 +5,28 @@
   transform-origin: left center;
 }
 
+#side-bar{
+  .a-link-box{
+    display: flex !important;
+    justify-content: space-between;
+    gap: 5px;
+    .a-link, .icon-link{
+      width: 12px;
+      height: 12px;
+      transition: all 0.5s;
+    }
+  }
+  &:hover{
+    .a-link-box{
+      display: grid !important;
+      .a-link, .icon-link{
+        width: 30px;
+        height: 30px;
+      }
+    }
+  }
+}
+
 .sidebar-logo {
   white-space: nowrap;
   padding: 35px;

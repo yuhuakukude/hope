@@ -45,7 +45,12 @@ export function useStaking() {
     unstakingVal: unstakingVal?.result ? CurrencyAmount.ether(unstakingVal?.result?.[0]) : undefined,
     claRewards: claRewards?.result ? CurrencyAmount.ether(claRewards?.result?.[0]) : undefined,
     mintedVal: mintedVal?.result ? CurrencyAmount.ether(mintedVal?.result?.[0]) : undefined,
-    gomRelativeWeigh: gomRelativeWeigh?.result ? CurrencyAmount.ether(gomRelativeWeigh?.result?.[0]) : undefined
+    gomRelativeWeigh: gomRelativeWeigh?.result ? CurrencyAmount.ether(gomRelativeWeigh?.result?.[0]) : undefined,
+    lpTotalSupplyLoading: lpTotalSupply.loading,
+    gomRelativeWeighLoading: gomRelativeWeigh.loading,
+    claRewardsLoading: claRewards.loading,
+    unstakedValLoading: unstakedVal.loading,
+    unstakingValLoading: unstakingVal.loading
   }
 }
 

@@ -204,14 +204,22 @@ export function usePairStakeInfo(stakingAddress?: string) {
     timestamp?.toString()
   ])?.result?.[0].toString()
 
-  const veltBalance = useSingleCallResult(
+  const veltBalanceRes = useSingleCallResult(
     veltContract,
     'balanceOfAtTime',
     account ? [account, timestamp?.toString()] : [undefined]
-  )?.result?.[0].toString()
-  const veltTotal = useSingleCallResult(veltContract, 'totalSupplyAtTime', [
-    timestamp?.toString()
-  ])?.result?.[0].toString()
+  )
+
+  const veltBalance = useMemo(() => {
+    return veltBalanceRes?.result?.[0].toString()
+  }, [veltBalanceRes])
+
+  const veltTotalRes = useSingleCallResult(veltContract, 'totalSupplyAtTime', [timestamp?.toString()])
+
+  const veltTotal = useMemo(() => {
+    return veltTotalRes?.result?.[0].toString()
+  }, [veltTotalRes])
+
   const claimAbleRewards = useSingleCallResult(stakingContract, 'claimableTokens', [account ?? undefined])?.result
 
   const isSHAddr = useMemo(() => {
@@ -229,11 +237,18 @@ export function usePairStakeInfo(stakingAddress?: string) {
     isSHAddr ? [undefined] : [account ?? undefined, getLTTokenAddress(chainId)]
   ).result
 
-  const balance = useSingleCallResult(stakingContract, 'lpBalanceOf', [account ?? undefined])?.result?.[0].toString()
-  const workingBalance = useSingleCallResult(stakingContract, 'workingBalances', [
-    account ?? undefined
-  ])?.result?.[0].toString()
-  const totalSupply = useSingleCallResult(stakingContract, 'lpTotalSupply')?.result?.[0].toString()
+  const balanceRes = useSingleCallResult(stakingContract, 'lpBalanceOf', [account ?? undefined])
+  const workingBalanceRes = useSingleCallResult(stakingContract, 'workingBalances', [account ?? undefined])
+  const balance = useMemo(() => {
+    return balanceRes?.result?.[0].toString()
+  }, [balanceRes])
+  const workingBalance = useMemo(() => {
+    return workingBalanceRes?.result?.[0].toString()
+  }, [workingBalanceRes])
+  const totalSupplyRes = useSingleCallResult(stakingContract, 'lpTotalSupply')
+  const totalSupply = useMemo(() => {
+    return totalSupplyRes?.result?.[0].toString()
+  }, [totalSupplyRes])
 
   let lim =
     veltTotal && balance ? JSBI.divide(JSBI.multiply(JSBI.BigInt(balance), JSBI.BigInt(4)), JSBI.BigInt(10)) : undefined
@@ -270,6 +285,8 @@ export function usePairStakeInfo(stakingAddress?: string) {
   return {
     currentBoots,
     futureBoots,
+    currentBootsLoading: workingBalanceRes.loading || balanceRes.loading,
+    futureBootsLoading: veltTotalRes.loading || balanceRes.loading || totalSupplyRes.loading || veltBalanceRes.loading,
     relativeWeight: relativeWeight
       ? CurrencyAmount.ether(JSBI.multiply(JSBI.BigInt(relativeWeight), JSBI.BigInt(100)))
       : undefined,
