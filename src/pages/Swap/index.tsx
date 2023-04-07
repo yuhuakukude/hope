@@ -15,7 +15,7 @@ import { AutoRow, RowBetween } from '../../components/Row'
 import AdvancedSwapDetailsDropdown from '../../components/swap/AdvancedSwapDetailsDropdown'
 import BetterTradeLink, { DefaultVersionLink } from '../../components/swap/BetterTradeLink'
 import confirmPriceImpactWithoutFee from '../../components/swap/confirmPriceImpactWithoutFee'
-import { ArrowWrapper, BottomGrouping, Dots, SwapCallbackError, Wrapper } from '../../components/swap/styleds'
+import { ArrowWrapper, BottomGrouping, Dots, Wrapper } from '../../components/swap/styleds'
 import TokenWarningModal from '../../components/TokenWarningModal'
 import SwapHeader from '../../components/swap/SwapHeader'
 
@@ -370,10 +370,10 @@ export default function Swap({ history }: RouteComponentProps) {
       errorCode: undefined
     })
     // if there was a tx hash, we want to clear the input
-    if (txHash) {
+    if (txHash && showAddToken) {
       onUserInput(Field.INPUT, '')
     }
-  }, [pendingMessage, tradeToConfirm, attemptingTxn, swapErrorMessage, txHash, onUserInput])
+  }, [pendingMessage, tradeToConfirm, attemptingTxn, swapErrorMessage, txHash, onUserInput, showAddToken])
 
   const handleAcceptChanges = useCallback(() => {
     setSwapState({
@@ -707,7 +707,7 @@ export default function Swap({ history }: RouteComponentProps) {
                 )}
               </>
             )}
-            {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null}
+            {/* {isExpertMode && swapErrorMessage ? <SwapCallbackError error={swapErrorMessage} /> : null} */}
             {betterTradeLinkV2 && !swapIsUnsupported && toggledVersion === Version.v1 ? (
               <BetterTradeLink version={betterTradeLinkV2} />
             ) : toggledVersion !== DEFAULT_VERSION && defaultTrade ? (

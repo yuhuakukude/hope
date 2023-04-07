@@ -60,7 +60,7 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
     <StyledPositionCard border={border} bgColor={backgroundColor}>
       <AutoRow>
         <ContentRow weight={1.5}>
-          <DoubleCurrencyLogo margin currency0={currency0} currency1={currency1} size={24} />
+          <DoubleCurrencyLogo currency0={currency0} currency1={currency1} size={24} />
           <TYPE.white ml={10}>
             {currency0 && currency1 ? <TYPE.white>{`${currency0.symbol} / ${currency1.symbol}`}</TYPE.white> : '-/-'}
           </TYPE.white>
