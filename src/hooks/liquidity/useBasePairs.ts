@@ -4,6 +4,7 @@ import { useActiveWeb3React } from '../index'
 import AprApi from '../../api/apr.api'
 import { fetchPairsTimeInfo } from '../../state/stake/hooks'
 import { Field } from '../../state/liquidity/actions'
+import { getStakingHopeGaugeAddress, getHopeTokenAddress } from 'utils/addressHelpers'
 
 export interface TimeInfoObject {
   [key: string]: {
@@ -123,13 +124,23 @@ export function useTokenPriceObject(addresses: string[]) {
       setLoading(true)
       if (addresses.length === 0) return
       try {
+        // TODO fix no stHope，repease
+        const stHopeAddress = getStakingHopeGaugeAddress();
+        const hopeAddress = getHopeTokenAddress();
+        const hasHope = addresses.some(s => s.toLowerCase() === hopeAddress.toLowerCase())
+        const hasStHope = addresses.some(s => s.toLowerCase() === stHopeAddress.toLowerCase())
+        if (hasStHope && !hasHope) {
+          addresses.push(hopeAddress)
+        }
         const tokensPrice: TokenPrice[] = await fetchTokensPrice(addresses)
-        setResult(
-          tokensPrice.reduce((acc, item) => {
-            acc[item.address] = item.price
-            return acc
-          }, {} as any)
-        )
+        const tokenMap = tokensPrice.reduce((acc, item) => {
+          acc[item.address] = item.price
+          return acc
+        }, {} as any)
+        if (hasStHope) {
+          tokenMap[stHopeAddress.toLowerCase()] = tokenMap[hopeAddress.toLowerCase()]
+        }
+        setResult(tokenMap)
         setLoading(false)
       } catch (error) {
         setResult(undefined)
