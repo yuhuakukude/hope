@@ -638,7 +638,14 @@ const VotedList = ({
         currencyToAdd={curToken}
       />
       <div className="my-list-box">
-        <Table rowKey={'id'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
+        <Table
+          rowKey={'id'}
+          pagination={false}
+          className="hp-table"
+          columns={columns}
+          dataSource={tableData}
+          locale={{ emptyText: 'You have no Votes' }}
+        />
         {pageTotal > 0 && (
           <Row justify="flex-end" marginTop={12}>
             <Pagination

@@ -1,6 +1,6 @@
 import React, { useMemo } from 'react'
 import styled from 'styled-components'
-import { CheckCircle, Triangle } from 'react-feather'
+import { CheckCircle, XCircle } from 'react-feather'
 import { useActiveWeb3React } from '../../hooks'
 import { getEtherscanLink } from '../../utils'
 import { ExternalLink } from '../../theme'
@@ -85,7 +85,7 @@ export default function Transaction({ hash }: { hash: string }) {
               </i>
             </Tooltip>
           )}
-          {pending ? <Loader /> : success ? <CheckCircle size="16" /> : <Triangle size="16" />}
+          {pending ? <Loader /> : success ? <CheckCircle size="16" /> : <XCircle size="16" />}
         </IconWrapper>
       </TransactionState>
     </TransactionWrapper>

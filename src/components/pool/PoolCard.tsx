@@ -58,7 +58,11 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
 
   return (
     <StyledPositionCard border={border} bgColor={backgroundColor}>
-      <AutoRow>
+      <AutoRow
+        onClick={() => {
+          history.push(`/swap/liquidity/pool-detail/${pairInfo.liquidityToken.address}`)
+        }}
+      >
         <ContentRow weight={1.5}>
           <DoubleCurrencyLogo currency0={currency0} currency1={currency1} size={24} />
           <TYPE.white ml={10}>
@@ -86,14 +90,7 @@ export default function PoolCard({ pairData, pairInfo, border, tvl }: PoolCardPr
           <TYPE.white>{pairData?.ltAmountPerDay ? `${amountFormat(pairData?.ltAmountPerDay, 2)} LT` : ''}</TYPE.white>
         </ContentRow>
         <ContentRow weight={0.1}>
-          <i
-            className="iconfont font-16 hope-icon-common p-3 m-l-5 cursor-select"
-            onClick={() => {
-              history.push(`/swap/liquidity/pool-detail/${pairInfo.liquidityToken.address}`)
-            }}
-          >
-            &#xe62a;
-          </i>
+          <i className="iconfont font-16 hope-icon-common p-3 m-l-5 cursor-select">&#xe62a;</i>
         </ContentRow>
       </AutoRow>
     </StyledPositionCard>
