@@ -1,10 +1,10 @@
 import { ChainId, Token } from '@uniswap/sdk'
 
 export const ROUTER_ADDRESS: { [chainId in ChainId]: string } = {
-  [ChainId.MAINNET]: '0xc58842eF6C95c0f857230252c3393b90DE607444',
-  [ChainId.SEPOLIA]: '0xc58842eF6C95c0f857230252c3393b90DE607444',
+  [ChainId.MAINNET]: '0xdCfF2ddFcFee1145b8A75c31D2170B029fAF749C',
+  [ChainId.SEPOLIA]: '0xdCfF2ddFcFee1145b8A75c31D2170B029fAF749C',
   [ChainId.GOERLI]: '0x3E719F9743B246C0caa053eBeE60f2C4169D8259',
-  [ChainId.HOPE]: '0xc58842eF6C95c0f857230252c3393b90DE607444'
+  [ChainId.HOPE]: '0xdCfF2ddFcFee1145b8A75c31D2170B029fAF749C'
 }
 
 // staking buyhope dao about address
