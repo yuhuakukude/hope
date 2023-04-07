@@ -27,8 +27,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const [tableData, setTableData] = useState<any>([])
   const [baseTableData, setBaseTableData] = useState<any>([])
   const [curType, setCurType] = useState('all')
-  const stakingAddress = useMemo(() => 
-    `${getStakingHopeGaugeAddress(chainId)}`.toLocaleLowerCase(), [chainId])
+  const stakingAddress = useMemo(() => `${getStakingHopeGaugeAddress(chainId)}`.toLocaleLowerCase(), [chainId])
   const argList = useMemo(() => {
     let res: any = []
     const arr: any = []
@@ -214,7 +213,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       key: 'gauge'
     }
   ]
-
+  const [loading, setLoading] = useState(true)
   const init = useCallback(async () => {
     try {
       const res = await GaugeApi.getGaugeAllPools()
@@ -230,6 +229,8 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
       }
     } catch (error) {
       console.log(error)
+    } finally {
+      setLoading(false)
     }
   }, [])
 
@@ -329,7 +330,14 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
         </div>
         <div className="m-t-30">
           {curType === 'all' && (
-            <Table rowKey={'gauge'} pagination={false} className="hp-table" columns={columns} dataSource={tableData} />
+            <Table
+              rowKey={'gauge'}
+              pagination={false}
+              className="hp-table"
+              columns={columns}
+              dataSource={tableData}
+              loading={loading}
+            />
           )}
           {curType === 'my' && <VotedList isShowAll={false} />}
         </div>
