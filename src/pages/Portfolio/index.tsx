@@ -76,7 +76,7 @@ export default function Portfolio() {
       const query = `{
         tokens(where: {symbol_in: ["stHOPE", "LT", "HOPE"]}){
           symbol
-          derivedETH
+          derivedHOPE
         }
       }`
       const res = await postQuery(SUBGRAPH, query)
@@ -84,8 +84,8 @@ export default function Portfolio() {
         const list = res.data.tokens
         const price: any = {}
         list.forEach((e: any) => {
-          if (e.symbol && e.derivedETH) {
-            price[e.symbol] = e.derivedETH
+          if (e.symbol && e.derivedHOPE) {
+            price[e.symbol] = e.derivedHOPE
           }
         })
         if (price['stHOPE'] && price['LT'] && price['HOPE']) {
