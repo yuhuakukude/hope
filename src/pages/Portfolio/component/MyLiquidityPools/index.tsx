@@ -211,7 +211,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
                 <div className="flex ai-center">
                   <SymbolLogo size={'16px'} symbol={`${record.composition.split('/')[0]}`} />
                   <div className="m-l-8">
-                    {toFixed(record.token0Balance, 8)}
+                    {toFixed(record.token0Balance, 4)}
                     &nbsp; {record.composition.split('/')[0]}
                   </div>
                 </div>
@@ -222,7 +222,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
                 <div className="flex ai-center">
                   <SymbolLogo size={'16px'} symbol={`${record.composition.split('/')[1]}`} />
                   <div className="m-l-8">
-                    {toFixed(record.token1Balance, 8)}
+                    {toFixed(record.token1Balance, 4)}
                     &nbsp;{record.composition.split('/')[1]}
                   </div>
                 </div>
@@ -237,7 +237,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       dataIndex: 'lpBalance',
       key: 'lpBalance',
       render: (text: string, record: ILiquidityPools) => {
-        return <Item title={toFixed(record.lpBalance, 8)} desc={`${format.rate(record.stakedProportion)}  Staked`} />
+        return <Item title={toFixed(record.lpBalance, 4)} desc={`${format.rate(record.stakedProportion)}  Staked`} />
       }
     },
     {
@@ -292,8 +292,8 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
             <Item
               title={
                 conRewData[record.gauge] && conRewData[record.gauge].conTotalReward
-                  ? `${conRewData[record.gauge].conTotalReward.toFixed(2, { groupSeparator: ',' })} LT`
-                  : '0.00 LT'
+                  ? `${conRewData[record.gauge].conTotalReward.toFixed(4, { groupSeparator: ',' })} LT`
+                  : '0.0000 LT'
               }
               desc={
                 conRewData[record.gauge] && ltPrice
@@ -306,7 +306,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
             />
           )
         }
-        return <Item title={'0.00 LT'} desc={'≈ $ 0.00'} />
+        return <Item title={'0.0000 LT'} desc={'≈ $ 0.00'} />
       }
     },
     {
