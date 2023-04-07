@@ -8,6 +8,7 @@ import { useTokenBalance, useStHopeBalance } from '../../state/wallet/hooks'
 import StakingApi from '../../api/staking.api'
 import { Row, Col } from 'antd'
 import HopeCard from '../../components/ahp/card'
+import Skeleton from '../../components/Skeleton'
 import {
   useStaking,
   useToStaked,
@@ -75,7 +76,7 @@ export default function Staking() {
     return [getStakingHopeGaugeAddress(chainId) ?? '', getHopeTokenAddress(chainId) ?? '']
   }, [chainId])
 
-  const { result: priceResult } = useTokenPriceObject(addresses)
+  const { result: priceResult, loading: priceLoading } = useTokenPriceObject(addresses)
 
   const hopePrice = useMemo(() => {
     let pr = '0'
@@ -109,10 +110,23 @@ export default function Staking() {
   const hopeBal = useTokenBalance(account ?? undefined, hopeToken)
   const stHopeBalance = useStHopeBalance()
   const [apyVal, setApyVal] = useState('0')
+  const [apyLoading, setApyLoading] = useState(false)
   const [amount, setAmount] = useState('')
 
   const inputAmount = tryParseAmount(amount, hopeToken) as TokenAmount | undefined
-  const { stakedVal, lpTotalSupply, unstakedVal, claRewards, unstakingVal, gomRelativeWeigh } = useStaking()
+  const {
+    stakedVal,
+    lpTotalSupply,
+    unstakedVal,
+    claRewards,
+    unstakingVal,
+    gomRelativeWeigh,
+    lpTotalSupplyLoading,
+    gomRelativeWeighLoading,
+    claRewardsLoading,
+    unstakedValLoading,
+    unstakingValLoading
+  } = useStaking()
   const { toStaked } = useToStaked()
   const { toUnStaked } = useToUnStaked()
   const { toWithdraw } = useToWithdraw()
@@ -121,7 +135,7 @@ export default function Staking() {
   const stakingAddr = useMemo(() => {
     return `${getStakingHopeGaugeAddress(chainId)}`.toLocaleLowerCase()
   }, [chainId])
-  const { currentBoots, futureBoots } = usePairStakeInfo(stakingAddr)
+  const { currentBoots, futureBoots, currentBootsLoading, futureBootsLoading } = usePairStakeInfo(stakingAddr)
 
   const stakeInputError = useMemo(() => {
     if (hopeBal && inputAmount && hopeBal?.lessThan(inputAmount)) {
@@ -283,12 +297,15 @@ export default function Staking() {
 
   async function initApy() {
     try {
+      setApyLoading(true)
       const res = await StakingApi.getApy()
       if (res && res.result) {
         setApyVal(res.result)
       }
+      setApyLoading(false)
     } catch (error) {
       console.log(error)
+      setApyLoading(false)
     }
   }
 
@@ -388,13 +405,17 @@ export default function Staking() {
                           <i className="iconfont font-16 cursor-select tips-circle">&#xe620;</i>
                         </Tooltip>
                       </div>
-                      <h3 className="text-success font-28 font-bold m-t-10">{format.rate(apyVal)}</h3>
+                      <Skeleton loading={apyLoading} width={80} height={28} mt={10}>
+                        <h3 className="text-success font-28 font-bold m-t-10">{format.rate(apyVal)}</h3>
+                      </Skeleton>
                     </div>
                     <div className="m-l-30">
                       <div className="text-white font-nor flex ai-center">Total Staked</div>
-                      <h3 className="text-white font-28 font-bold m-t-10">
-                        {lpTotalSupply?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
-                      </h3>
+                      <Skeleton loading={lpTotalSupplyLoading} width={150} height={28} mt={10}>
+                        <h3 className="text-white font-28 font-bold m-t-10">
+                          {lpTotalSupply?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+                        </h3>
+                      </Skeleton>
                     </div>
                   </div>
                 </div>
@@ -427,15 +448,20 @@ export default function Staking() {
                 <div className="tab-con p-30">
                   <div className="flex jc-between">
                     <span className="text-normal">{curType === 'stake' ? 'Stake' : 'Unstake (It takes 28 days)'}</span>
-                    <div className="text-normal font-nor">
-                      Available:{' '}
-                      {curType === 'stake'
-                        ? `${hopeBal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'} HOPE`
-                        : `${stakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'} stHOPE`}
-                      <span onClick={() => toMax()} className="input-max cursor-select">
-                        Max
-                      </span>
-                    </div>
+                    <Skeleton
+                      loading={curType === 'stake' ? hopeBal === undefined : stakedVal === undefined}
+                      width={100}
+                    >
+                      <div className="text-normal font-nor">
+                        Available:{' '}
+                        {curType === 'stake'
+                          ? `${hopeBal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'} HOPE`
+                          : `${stakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'} stHOPE`}
+                        <span onClick={() => toMax()} className="input-max cursor-select">
+                          Max
+                        </span>
+                      </div>
+                    </Skeleton>
                   </div>
                   <div className="hp-amount-box">
                     <NumericalInput
@@ -564,11 +590,15 @@ export default function Staking() {
                     </div>
                     <div className="flex jc-between m-b-20 font-nor">
                       <span className="text-normal">Gauge relative weight</span>
-                      <span className="text-white text-medium">{format.rate(relWeight)}</span>
+                      <Skeleton loading={gomRelativeWeighLoading} width={50}>
+                        <span className="text-white text-medium">{format.rate(relWeight)}</span>
+                      </Skeleton>
                     </div>
                     <div className="flex jc-between m-b-20 font-nor">
                       <span className="text-normal">My Current Boost</span>
-                      <span className="text-white text-medium">{currentBoots ? currentBoots.toFixed(2) : '--'}x</span>
+                      <Skeleton loading={currentBootsLoading} width={50}>
+                        <span className="text-white text-medium">{currentBoots ? currentBoots.toFixed(2) : '--'}x</span>
+                      </Skeleton>
                     </div>
                     <div className="flex jc-between m-b-20 font-nor">
                       <span className="text-normal">
@@ -581,24 +611,28 @@ export default function Staking() {
                           <i className="iconfont font-16 cursor-select tips-circle">&#xe620;</i>
                         </Tooltip>
                       </span>
-                      <span className="text-white text-medium">{futureBoots ? futureBoots.toFixed(2) : '--'}x</span>
+                      <Skeleton loading={futureBootsLoading} width={50}>
+                        <span className="text-white text-medium">{futureBoots ? futureBoots.toFixed(2) : '--'}x</span>
+                      </Skeleton>
                     </div>
                     <div className="flex jc-between ai-center m-b-20 font-nor" style={{ height: '23px' }}>
                       <span className="text-normal">Claimable Rewards</span>
-                      <div className="flex ai-center">
-                        <span className="text-white text-medium">
-                          {claRewards?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
-                        </span>
-                        {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
-                          <ButtonOutlined
-                            disabled={isMintTranPending}
-                            className="staking-outline m-l-10"
-                            onClick={claimCallback}
-                          >
-                            Claim
-                          </ButtonOutlined>
-                        )}
-                      </div>
+                      <Skeleton loading={claRewardsLoading} width={50}>
+                        <div className="flex ai-center">
+                          <span className="text-white text-medium">
+                            {claRewards?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+                          </span>
+                          {account && claRewards && Number(claRewards.toFixed(2)) > 0 && (
+                            <ButtonOutlined
+                              disabled={isMintTranPending}
+                              className="staking-outline m-l-10"
+                              onClick={claimCallback}
+                            >
+                              Claim
+                            </ButtonOutlined>
+                          )}
+                        </div>
+                      </Skeleton>
                     </div>
                     <div
                       className="flex ai-center"
@@ -621,28 +655,34 @@ export default function Staking() {
                         <div className="hope-icon"></div>
                         <div className="currency font-nor text-medium m-l-12">HOPE</div>
                       </div>
-                      <span className="text-normal text-medium">
-                        ≈ ${toUsdPrice(hopeBal?.toFixed(2), hopePrice) || '--'}
-                      </span>
+                      <Skeleton loading={hopeBal === undefined || priceLoading} width={80}>
+                        <span className="text-normal text-medium">
+                          ≈ ${toUsdPrice(hopeBal?.toFixed(2), hopePrice) || '--'}
+                        </span>
+                      </Skeleton>
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-white">Available</span>
-                      <span className="text-white text-medium">
-                        {hopeBal?.toFixed(2, { groupSeparator: ',' } ?? '-') || '--'}
-                      </span>
+                      <Skeleton loading={hopeBal === undefined} width={50}>
+                        <span className="text-white text-medium">
+                          {hopeBal?.toFixed(2, { groupSeparator: ',' } ?? '-') || '--'}
+                        </span>
+                      </Skeleton>
                     </div>
                     <div className="flex jc-between">
                       <span className="text-white">Withdrawable</span>
-                      <div className="flex ai-center">
-                        <span className="text-white text-medium">
-                          {unstakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
-                        </span>
-                        {account && unstakedVal && Number(unstakedVal.toFixed(2)) > 0 && (
-                          <ButtonOutlined className="staking-outline m-l-10" onClick={toWithdrawCallback}>
-                            Withdaw
-                          </ButtonOutlined>
-                        )}
-                      </div>
+                      <Skeleton loading={unstakedValLoading} width={50}>
+                        <div className="flex ai-center">
+                          <span className="text-white text-medium">
+                            {unstakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+                          </span>
+                          {account && unstakedVal && Number(unstakedVal.toFixed(2)) > 0 && (
+                            <ButtonOutlined className="staking-outline m-l-10" onClick={toWithdrawCallback}>
+                              Withdaw
+                            </ButtonOutlined>
+                          )}
+                        </div>
+                      </Skeleton>
                     </div>
                     <div className="card-line m-y-30"></div>
                     <div className="flex jc-between m-b-20">
@@ -650,21 +690,27 @@ export default function Staking() {
                         <div className="hope-icon"></div>
                         <div className="currency font-nor text-medium m-l-12">stHOPE</div>
                       </div>
-                      <span className="text-normal text-medium">
-                        ≈ ${toUsdPrice(stHopeBalance?.toFixed(2), stHopePrice) || '--'}
-                      </span>
+                      <Skeleton loading={stakedVal === undefined || priceLoading} width={80}>
+                        <span className="text-normal text-medium">
+                          ≈ ${toUsdPrice(stHopeBalance?.toFixed(2), stHopePrice) || '--'}
+                        </span>
+                      </Skeleton>
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-white">Available</span>
-                      <span className="text-white text-medium">
-                        {stakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
-                      </span>
+                      <Skeleton loading={stakedVal === undefined} width={50}>
+                        <span className="text-white text-medium">
+                          {stakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+                        </span>
+                      </Skeleton>
                     </div>
                     <div className="flex jc-between">
                       <span className="text-white">Unstaking</span>
-                      <span className="text-white text-medium">
-                        {unstakingVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
-                      </span>
+                      <Skeleton loading={unstakingValLoading} width={50}>
+                        <span className="text-white text-medium">
+                          {unstakingVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
+                        </span>
+                      </Skeleton>
                     </div>
                   </div>
                 </HopeCard>
