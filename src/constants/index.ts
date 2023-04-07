@@ -78,23 +78,21 @@ export const WETH_ONLY: ChainTokenList = {
 
 // used to construct intermediary pairs for trading
 export const BASES_TO_CHECK_TRADES_AGAINST: ChainTokenList = {
-  ...WETH_ONLY,
+  // ...WETH_ONLY,
   [ChainId.MAINNET]: [
-    ...WETH_ONLY[ChainId.MAINNET],
-    USDC[ChainId.MAINNET],
+    // ...WETH_ONLY[ChainId.MAINNET],
+    // USDC[ChainId.MAINNET],
     USDT[ChainId.MAINNET],
     HOPE[ChainId.MAINNET]
   ],
   [ChainId.SEPOLIA]: [
     // ...WETH_ONLY[ChainId.SEPOLIA],
     // USDC[ChainId.SEPOLIA],
-    // USDT[ChainId.SEPOLIA],
-    // HOPE[ChainId.SEPOLIA]
+    USDT[ChainId.SEPOLIA],
+    HOPE[ChainId.SEPOLIA]
   ],
-  [ChainId.GOERLI]: [...WETH_ONLY[ChainId.GOERLI], USDC[ChainId.GOERLI], USDT[ChainId.GOERLI], HOPE[ChainId.GOERLI]],
-  [ChainId.HOPE]: [
-    // ...WETH_ONLY[ChainId.HOPE], USDC[ChainId.HOPE], USDT[ChainId.HOPE], HOPE[ChainId.HOPE]
-  ]
+  [ChainId.GOERLI]: [USDT[ChainId.GOERLI], HOPE[ChainId.GOERLI]],
+  [ChainId.HOPE]: [USDT[ChainId.HOPE], HOPE[ChainId.HOPE]]
 }
 
 export const ADDITIONAL_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: Token[] } } = {
