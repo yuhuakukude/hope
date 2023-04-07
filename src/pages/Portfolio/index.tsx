@@ -88,8 +88,8 @@ export default function Portfolio() {
             price[e.symbol] = e.derivedHOPE
           }
         })
-        if (price['stHOPE'] && price['LT'] && price['HOPE']) {
-          const stToHopeVal = new Decimal(price['stHOPE'])
+        if (price['LT'] && price['HOPE']) {
+          const stToHopeVal = new Decimal(price['stHOPE'] || price['HOPE'])
             .div(new Decimal(price['HOPE']))
             .toNumber()
             .toFixed(18)

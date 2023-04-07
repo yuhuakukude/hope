@@ -137,7 +137,7 @@ export function useTokenPriceObject(addresses: string[]) {
           acc[item.address] = item.price
           return acc
         }, {} as any)
-        if (hasStHope) {
+        if (hasStHope && tokensPrice.some(s => s.address.toLowerCase() !== stHopeAddress.toLowerCase())) {
           tokenMap[stHopeAddress.toLowerCase()] = tokenMap[hopeAddress.toLowerCase()]
         }
         setResult(tokenMap)
