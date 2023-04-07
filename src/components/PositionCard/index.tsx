@@ -273,8 +273,8 @@ export default function FullPositionCard({
         <ContentRow>
           <AutoColumn gap={'12px'}>
             <AutoRow>
-              <DoubleCurrencyLogo margin currency0={currency0} currency1={currency1} size={24} />
-              <TYPE.white>
+              <DoubleCurrencyLogo currency0={currency0} currency1={currency1} size={24} />
+              <TYPE.white style={{ marginLeft: '8px' }}>
                 {currency0 && currency1 ? (
                   <TYPE.white>{`${currency0.symbol} / ${currency1.symbol}`}</TYPE.white>
                 ) : (
@@ -289,13 +289,17 @@ export default function FullPositionCard({
         </ContentRow>
         <ContentRow>
           <AutoColumn gap={'12px'}>
-            <DataRow gap={'8px'}>
-              <CurrencyLogo size={'16px'} currency={currency0} />
-              <TYPE.white>{`${token0Amount ? token0Amount?.toFixed(4, { groupSeparator: ',' }) : '--'}`}</TYPE.white>
+            <DataRow>
+              <CurrencyLogo style={{ margin: '0px 8px' }} size={'16px'} currency={currency0} />
+              <TYPE.white style={{ margin: '0px 8px 0px 0' }}>{`${
+                token0Amount ? token0Amount?.toFixed(4, { groupSeparator: ',' }) : '--'
+              }`}</TYPE.white>
             </DataRow>
-            <DataRow gap={'8px'}>
-              <CurrencyLogo size={'16px'} currency={currency1} />
-              <TYPE.white>{`${token1Amount ? token1Amount?.toFixed(4, { groupSeparator: ',' }) : '--'}`}</TYPE.white>
+            <DataRow>
+              <CurrencyLogo style={{ margin: '0px 8px' }} size={'16px'} currency={currency1} />
+              <TYPE.white style={{ margin: '0px 8px 0px 0' }}>{`${
+                token1Amount ? token1Amount?.toFixed(4, { groupSeparator: ',' }) : '--'
+              }`}</TYPE.white>
             </DataRow>
           </AutoColumn>
         </ContentRow>
