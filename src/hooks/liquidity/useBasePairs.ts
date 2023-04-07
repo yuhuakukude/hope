@@ -97,7 +97,24 @@ export function useTokenPrice(addresses: string[]) {
       setLoading(true)
       if (addresses.length === 0) return
       try {
-        const tokensPrice = await fetchTokensPrice(addresses)
+         // TODO fix no stHope，repease
+         const stHopeAddress = getStakingHopeGaugeAddress();
+         const hopeAddress = getHopeTokenAddress();
+         const hasHope = addresses.some(s => s.toLowerCase() === hopeAddress.toLowerCase())
+         const hasStHope = addresses.some(s => s.toLowerCase() === stHopeAddress.toLowerCase())
+         if (hasStHope && !hasHope) {
+           addresses.push(hopeAddress)
+         }
+        const tokensPrice: TokenPrice[] = await fetchTokensPrice(addresses)
+        if (hasStHope && tokensPrice.some((s => s.address.toLowerCase() !== stHopeAddress.toLowerCase()))) {
+          const hopePrice = tokensPrice.find(f => f.address.toLowerCase() === hopeAddress.toLowerCase())
+          if (hopePrice) {
+            tokensPrice.push({
+              address: stHopeAddress.toLowerCase(),
+              price: hopePrice?.price
+            })
+          }
+        }
         setResult(tokensPrice)
         setLoading(false)
       } catch (error) {

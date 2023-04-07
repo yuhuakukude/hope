@@ -54,7 +54,9 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
     account ?? undefined,
     getLTTokenAddress(chainId)
   ])
-  const ltRewardsAmount = ltRewards?.result?.[0] ? new TokenAmount(getLTToken(chainId), ltRewards?.result?.[0]) : undefined
+  const ltRewardsAmount = ltRewards?.result?.[0]
+    ? new TokenAmount(getLTToken(chainId), ltRewards?.result?.[0])
+    : undefined
   const totalRewards = ltRewardsAmount && earnedAmount ? earnedAmount.add(ltRewardsAmount) : undefined
   const contract = claimType === Reward.LT ? ltMinterContract : stakingContract
   const method = claimType === Reward.LT ? 'mint' : 'claimRewards'
@@ -74,7 +76,7 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
     rewardArgs
   )
 
-  const ltAddress = useMemo(() => [getLTTokenAddress(chainId)], [chainId])
+  const ltAddress = useMemo(() => [getLTTokenAddress(chainId).toLowerCase()], [chainId])
   const { result: priceResult } = useTokenPriceObject(ltAddress)
 
   const onTxStart = useCallback(() => {
