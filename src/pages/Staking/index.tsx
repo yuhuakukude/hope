@@ -44,6 +44,7 @@ import {
   getSTHOPEToken
 } from 'utils/addressHelpers'
 import { useEstimate } from '../../hooks/ahp'
+import { DOCS_URL } from '../../constants/config'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1340px;
@@ -377,7 +378,12 @@ export default function Staking() {
                     <h3 className="text-white font-28 font-bolder">Stake HOPE</h3>
                     <p className="text-white font-nor m-t-10">
                       Get staking rewards, and use stHOPE across the ecosystem.
-                      <a href="/" className="text-primary m-l-15 learn-more">
+                      <a
+                        href={DOCS_URL['HopeToken2']}
+                        className="text-primary m-l-15 learn-more"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      >
                         Learn more
                         <i className="iconfont m-l-5 font-14 m-t-2">&#xe619;</i>
                       </a>

@@ -81,11 +81,11 @@ export function QUERY_TOKENS_PRICE() {
   return `query tokens($tokens: [Bytes]!){
     tokens(where: {id_in: $tokens}){
       id
-      derivedETH
+      derivedHOPE
     }
     bundles(where: {id: 1}){
       id
-      ethPrice
+      hopePrice
     }
   }`
 }

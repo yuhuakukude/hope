@@ -419,7 +419,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
                 Add Liquidity
               </ButtonPrimary>
               <a
-                href={DOCS_URL['ReservePools']}
+                href={DOCS_URL['LiquidityProvider']}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-center m-t-20 font-nor text-normal flex ai-center jc-center"

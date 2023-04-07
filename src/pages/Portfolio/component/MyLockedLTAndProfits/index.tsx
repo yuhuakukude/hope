@@ -326,7 +326,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                 Get veLT
               </ButtonPrimary>
               <a
-                href={DOCS_URL['LightToken']}
+                href={DOCS_URL['LightToken2']}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="text-center m-t-20 font-nor text-normal flex ai-center jc-center"

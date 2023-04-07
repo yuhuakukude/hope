@@ -34,6 +34,7 @@ import { tokenId, tokenSymbol } from '../../utils/currencyId'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
 import Loader from '../../components/Loader'
 import { getLTToken } from 'utils/addressHelpers'
+import { DOCS_URL } from '../../constants/config'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -448,10 +449,16 @@ export default function StakingPoolDetail({
                 The Pool has not yet been added to the liquidity mining list, you can start the add process via the
                 governance specification.
               </TYPE.white>
-              <ButtonPrimary className="text-medium" mt={50}>
+              <ButtonPrimary style={{ cursor: 'no-drop' }} disabled className="text-medium" mt={50}>
                 Create Proposal
               </ButtonPrimary>
-              <AutoRow mt={30} justify={'center'}>
+              <AutoRow
+                mt={30}
+                justify={'center'}
+                onClick={() => {
+                  window.open(DOCS_URL['HopeSwap'])!.opener = null
+                }}
+              >
                 <TYPE.main>Learn more about Liquidity Mining</TYPE.main>
                 <ArrowRight style={{ marginLeft: 20 }} size={12} color={'#A8A8AA'} />
               </AutoRow>
