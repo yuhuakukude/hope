@@ -164,7 +164,7 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
           <TYPE.mediumHeader>Rewards Claim</TYPE.mediumHeader>
           <CloseIcon onClick={onDismiss} />
         </RowBetween>
-        <Radio.Group onChange={e => setClaimType(e.target.value)} defaultValue={Reward.LT}>
+        <Radio.Group value={claimType} onChange={e => setClaimType(e.target.value)} defaultValue={Reward.LT}>
           <AutoColumn style={{ padding: '0 20px 20px  20px' }} gap={'20px'}>
             <AutoColumn gap={'lg'}>
               <RowBetween>
@@ -176,7 +176,14 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
                   <TYPE.white alignSelf={'end'}>LT</TYPE.white>
                 </RowFixed>
               </RowBetween>
-              <GreyCard padding={'0'} borderRadius={'10px'}>
+              <GreyCard
+                className={claimType === Reward.LT ? 'border-primary' : ''}
+                onClick={() => {
+                  setClaimType(Reward.LT)
+                }}
+                padding={'0'}
+                borderRadius={'10px'}
+              >
                 <AutoRow padding={'16px'} height={48} style={{ borderBottom: '1px solid #494949' }}>
                   <Radio value={Reward.LT} />
                   <TYPE.main ml={'8px'}>Mining Rewards</TYPE.main>
@@ -197,7 +204,14 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
                 </RowBetween>
               </GreyCard>
               {rewards.length > 0 && (
-                <GreyCard padding={'0'} borderRadius={'10px'}>
+                <GreyCard
+                  className={claimType === Reward.ALL ? 'border-primary' : ''}
+                  onClick={() => {
+                    setClaimType(Reward.ALL)
+                  }}
+                  padding={'0'}
+                  borderRadius={'10px'}
+                >
                   <AutoRow padding={'16px'} height={48} style={{ borderBottom: '1px solid #494949' }}>
                     <Radio value={Reward.ALL} />
                     <TYPE.main ml={'8px'}>Other Rewards</TYPE.main>
