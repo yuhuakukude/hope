@@ -11,6 +11,7 @@ import { Text } from 'rebass'
 import { NavLink, useLocation } from 'react-router-dom'
 import { PrimaryText } from '../Text'
 import { DOC_API } from '../../constants'
+import { DOCS_URL } from 'constants/config'
 
 import './index.scss'
 
@@ -158,8 +159,16 @@ export default function SideBar() {
         </AutoColumn>
 
         <AutoColumn gap={'18px'} style={{ marginTop: '30px' }}>
-          <MenuText>About</MenuText>
-          <MenuText>Docs</MenuText>
+          <MenuText>
+            <a href={`https://hope.money/`} target="_blank" rel="noopener noreferrer">
+              About
+            </a>
+          </MenuText>
+          <MenuText>
+            <a href={DOCS_URL['Main']} target="_blank" rel="noopener noreferrer">
+              Docs
+            </a>
+          </MenuText>
           <MenuText>
             <a href={`${DOC_API}/bug-bounty.html`} target="_blank" rel="noopener noreferrer">
               Bug bounty
