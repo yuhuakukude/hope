@@ -50,7 +50,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
     }
   }
   const addWeekFn = () => {
-    if (weekNumber < maxWeek) {
+    if (weekNumber < maxWeek && maxWeek >= 2) {
       setWeekNumber(Number(weekNumber) + 1)
     }
   }
@@ -184,11 +184,15 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
                 autoComplete="off"
                 defaultValue={2}
                 value={weekNumber}
+                disabled={maxWeek < 2}
                 onChange={changeWeek}
                 onKeyDown={isCorrect}
                 formatter={inpFormatter}
               />
-              <i className={['iconfont', 'add', weekNumber >= maxWeek && 'disabled'].join(' ')} onClick={addWeekFn}>
+              <i
+                className={['iconfont', 'add', weekNumber >= maxWeek || (maxWeek < 2 && 'disabled')].join(' ')}
+                onClick={addWeekFn}
+              >
                 &#xe623;
               </i>
             </div>
