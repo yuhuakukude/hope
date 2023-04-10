@@ -12,9 +12,10 @@
     width: 30px;
     overflow: hidden;
     margin: 0 auto;
-    // transition: all 1s;
+    transition: all 0.5s;
     flex-wrap: wrap;
     transform-origin: center;
+    will-change: auto;
 
     .a-link,
     .icon-link {
@@ -28,6 +29,7 @@
       width: 180px;
       display: flex !important;
       gap: 5px;
+      transition: none;
       animation: linkHover 0.5s linear;
       transform-origin: left center;
     }
