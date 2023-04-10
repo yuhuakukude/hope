@@ -224,7 +224,8 @@ export function usePairTxs(pairAddress: string, type?: string) {
         console.error('useOverviewData', error)
       }
     })()
-  }, [pairAddress, type, defaultObj])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pairAddress, type])
 
   return {
     loading: loading,
