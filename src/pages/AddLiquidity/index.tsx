@@ -329,9 +329,9 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
     (currencyA: Currency) => {
       const newCurrencyIdA = currencyId(currencyA)
       if (newCurrencyIdA === currencyIdB) {
-        history.push(`/swap/liquidity/manager/deposit/${currencyIdB}/${currencyIdA}`)
+        history.replace(`/swap/liquidity/manager/deposit/${currencyIdB}/${currencyIdA}`)
       } else {
-        history.push(`/swap/liquidity/manager/deposit/${newCurrencyIdA}/${currencyIdB}`)
+        history.replace(`/swap/liquidity/manager/deposit/${newCurrencyIdA}/${currencyIdB}`)
       }
     },
     [currencyIdB, history, currencyIdA]
@@ -341,12 +341,12 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
       const newCurrencyIdB = currencyId(currencyB)
       if (currencyIdA === newCurrencyIdB) {
         if (currencyIdB) {
-          history.push(`/swap/liquidity/manager/deposit/${currencyIdB}/${newCurrencyIdB}`)
+          history.replace(`/swap/liquidity/manager/deposit/${currencyIdB}/${newCurrencyIdB}`)
         } else {
-          history.push(`/swap/liquidity/manager/deposit/${newCurrencyIdB}`)
+          history.replace(`/swap/liquidity/manager/deposit/${newCurrencyIdB}`)
         }
       } else {
-        history.push(`/swap/liquidity/manager/deposit/${currencyIdA ? currencyIdA : 'ETH'}/${newCurrencyIdB}`)
+        history.replace(`/swap/liquidity/manager/deposit/${currencyIdA ? currencyIdA : 'ETH'}/${newCurrencyIdB}`)
       }
     },
     [currencyIdA, history, currencyIdB]
