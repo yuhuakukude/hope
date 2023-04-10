@@ -191,7 +191,7 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
                 <RowBetween padding={'16px'} height={48}>
                   <RowFixed>
                     <CurrencyLogo size={'16px'} currency={getLTToken(chainId)} />
-                    <TYPE.white ml={'8px'}>{earnedAmount?.toFixed(2, { groupSeparator: ',' }) ?? '--'}LT</TYPE.white>
+                    <TYPE.white ml={'8px'}>{earnedAmount?.toFixed(2, { groupSeparator: ',' }) ?? '--'} LT</TYPE.white>
                   </RowFixed>
                   <TYPE.white>
                     {priceResult
@@ -232,7 +232,11 @@ export default function ClaimRewardModal({ isOpen, onDismiss, stakingAddress }: 
                 </GreyCard>
               )}
             </AutoColumn>
-            <ButtonError height={56} disabled={!earnedAmount || !claimType} onClick={onClaimCallback}>
+            <ButtonError
+              height={56}
+              disabled={(Number(earnedAmount?.toExact().toString()) <= 0 && claimType === Reward.LT) || !claimType}
+              onClick={onClaimCallback}
+            >
               {'Claim'}
             </ButtonError>
           </AutoColumn>
