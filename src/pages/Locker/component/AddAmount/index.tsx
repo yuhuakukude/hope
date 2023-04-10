@@ -246,12 +246,14 @@ export default function AddAmount() {
           </div>
           <p className="m-t-30 font-nor flex jc-between">
             <span className="text-normal">Your starting voting power will be:</span>
-            <span className="text-medium">
-              {afterVeLtAmount
-                ? afterVeLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
-                : veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}{' '}
-              veLT
-            </span>
+            <Skeleton loading={lockerResLoading || isLocerkAmountPending || isLocerkTimePending} width={126}>
+              <span className="text-medium">
+                {afterVeLtAmount
+                  ? afterVeLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
+                  : veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '--'}{' '}
+                veLT
+              </span>
+            </Skeleton>
           </p>
         </div>
         <div className="m-t-50">

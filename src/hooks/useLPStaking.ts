@@ -224,7 +224,7 @@ export function usePairTxs(pairAddress: string, type?: string) {
         console.error('useOverviewData', error)
       }
     })()
-  }, [pairAddress, type])
+  }, [pairAddress, type, defaultObj])
 
   return {
     loading: loading,

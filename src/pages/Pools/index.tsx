@@ -1,8 +1,9 @@
 import React, { RefObject, useMemo, useRef, useState } from 'react'
 import styled from 'styled-components'
+import Card, { LightCard } from '../../components/Card'
 import { AutoColumn, ColumnCenter } from '../../components/Column'
 import Row, { AutoRow, RowBetween, RowFixed } from '../../components/Row'
-import { CustomLightSpinner, ExternalLink, TYPE } from '../../theme'
+import { ExternalLink, TYPE } from '../../theme'
 import { ButtonGray, ButtonOutlined, ButtonPrimary } from '../../components/Button'
 import usePairsInfo from '../../hooks/usePairInfo'
 import PoolCard from '../../components/pool/PoolCard'
@@ -14,10 +15,8 @@ import { CardSection } from '../../components/earn/styled'
 import empty1 from '../../assets/images/empty.png'
 import empty2 from '../../assets/images/empty2.png'
 import farmsEmpty from '../../assets/images/farms-empty.png'
-import Card from '../../components/Card'
 import { useWalletModalToggle } from '../../state/application/hooks'
 import { useActiveWeb3React } from '../../hooks'
-import Circle from '../../assets/images/blue-loader.svg'
 import { Switch } from 'antd'
 import NoData from '../../assets/images/no_data.png'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
@@ -27,6 +26,7 @@ import { useLiquiditySearchType } from '../../state/liquidity/hooks'
 import { Field } from '../../state/liquidity/actions'
 import { getLTTokenAddress } from 'utils/addressHelpers'
 import { Icon } from 'antd'
+import Skeleton from '../../components/Skeleton'
 
 const PageWrapper = styled(AutoColumn)`
   padding: 0 30px;
@@ -117,6 +117,24 @@ const SortWrapper = styled(AutoColumn)`
   margin-top: -5px;
 `
 
+const StyledPositionCard = styled(LightCard)`
+  background-color: transparent;
+  border-radius: 0;
+  border: none;
+  position: relative;
+  overflow: hidden;
+  &:hover {
+    background-color: #1b1b1f;
+  }
+  &:not(:last-child) {
+    border-bottom: 1px solid ${({ theme }) => theme.bg3};
+  }
+`
+
+const ContentRow = styled(RowFixed)<{ weight?: number }>`
+  flex: ${({ weight }) => (weight ? weight : 1)};
+`
+
 const poolTitles = [
   { value: 'Pools', weight: 1.5 },
   { value: 'TVL', isSort: 'TVL' },
@@ -189,6 +207,36 @@ export default function Pools() {
   const onPagesChange = (page: any, pageSize: any) => {
     setCurrentPage(Number(page))
     setPageSize(Number(pageSize))
+  }
+  function LoadingView() {
+    const typeFlag = liquiditySearchType === Field.ALL
+    return (
+      <StyledPositionCard>
+        <AutoRow>
+          <ContentRow weight={typeFlag ? 1.5 : 1}>
+            <Skeleton loading={loading} width={150}></Skeleton>
+          </ContentRow>
+          <ContentRow>
+            <Skeleton loading={loading} width={120}></Skeleton>
+          </ContentRow>
+          <ContentRow>
+            <Skeleton loading={loading} width={120}></Skeleton>
+          </ContentRow>
+          <ContentRow>
+            <Skeleton loading={loading} width={120}></Skeleton>
+          </ContentRow>
+          <ContentRow gap={'10px'} weight={1.5}>
+            <Skeleton loading={loading} width={120}></Skeleton>
+          </ContentRow>
+          <ContentRow>
+            <Skeleton loading={loading} width={120}></Skeleton>
+          </ContentRow>
+          <ContentRow weight={typeFlag ? 0.1 : 0.6}>
+            <Skeleton loading={loading} width={50} marginAuto={true}></Skeleton>
+          </ContentRow>
+        </AutoRow>
+      </StyledPositionCard>
+    )
   }
 
   function ConnectView() {
@@ -383,20 +431,22 @@ export default function Pools() {
         <TableWrapper>
           <TableTitleWrapper>
             {positionTitles.map(({ value, weight, alignCenter }, index) => (
-              <TableTitle key={index} flex={weight ?? 1}>
-                <p style={{ textAlign: alignCenter ? 'center' : 'left' }}>{value}</p>
+              <TableTitle
+                key={index}
+                flex={weight ?? 1}
+                style={{ justifyContent: alignCenter ? 'center' : 'flex-start' }}
+              >
+                {value}
               </TableTitle>
             ))}
           </TableTitleWrapper>
         </TableWrapper>
       )}
       {loading ? (
-        <ColumnCenter
-          style={{ height: '100%', width: '100%', alignItems: 'center', justifyContent: 'center', marginTop: 50 }}
-        >
-          <CustomLightSpinner src={Circle} alt="loader" size={'30px'} />
-          <TYPE.main mt={20}>Loading</TYPE.main>
-        </ColumnCenter>
+        <>
+          <LoadingView></LoadingView>
+          <LoadingView></LoadingView>
+        </>
       ) : liquiditySearchType === Field.ALL ? (
         <>
           {pairInfos.length > 0 ? (
