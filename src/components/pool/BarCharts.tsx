@@ -11,7 +11,8 @@ export default function BarCharts({
   bottom,
   right,
   height,
-  is24Hour
+  is24Hour,
+  loading
 }: {
   xData: any
   yData: any
@@ -22,6 +23,7 @@ export default function BarCharts({
   height?: number
   total?: string
   is24Hour?: boolean
+  loading?: boolean
 }) {
   const chartRef: any = useRef()
   const handleResizeChart = (myChart: any) => {
@@ -110,7 +112,7 @@ export default function BarCharts({
       ]
     }
     myChart.setOption(option)
-    if (xData && yData) {
+    if (xData && yData && !loading) {
       myChart.hideLoading()
     }
     window.addEventListener('resize', () => handleResizeChart(myChart))

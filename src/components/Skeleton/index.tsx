@@ -34,7 +34,7 @@ const SkeletonBox = styled.span<{
   radius?: string
 }>`
   display: block;
-  width: ${({ width }) => (width ? `${width}px` : '')};
+  width: ${({ width }) => (width ? `${width}px` : '100%')};
   height: ${({ height }) => (height ? `${height}px` : '16px')};
   margin-top: ${({ mt }) => (mt ? `${mt}px` : '0')};
   margin-left: ${({ ml }) => (ml ? `${ml}px` : '0')};
