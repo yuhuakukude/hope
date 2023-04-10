@@ -94,7 +94,7 @@ export const CONTRACT_ERROR_CODE: { [name: string]: string } = {
   GP002: 'Initiation forbidden',
   GP003: 'Negative after decreasing',
   GP004: 'Reward Threshold exceeded',
-  GP005: 'Repeated',
+  GP005: 'Repeated setting',
   GP006: 'Must currentDistributor or owner',
   GP007: 'CurrentDistributor the zero address',
   GP008: 'Distributor the zero address',
