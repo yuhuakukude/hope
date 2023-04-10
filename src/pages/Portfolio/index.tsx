@@ -17,7 +17,6 @@ import { useStHopeBalance } from '../../state/wallet/hooks'
 import { SUBGRAPH } from '../../constants'
 import { postQuery } from '../../utils/graph'
 import { useStaking } from 'hooks/ahp/useStaking'
-import Skeleton from 'components/Skeleton'
 
 const PageWrapper = styled(AutoColumn)`
   max-width: 1340px;
@@ -129,19 +128,11 @@ export default function Portfolio() {
           <PortfolioConnect />
         ) : (
           <>
-            <Skeleton loading={!allData} height={312} ml={30} mr={30} radius="20px">
-              <InvestmentAllocation data={allData} />
-            </Skeleton>
+            <InvestmentAllocation data={allData} />
             <MyHOPEStaking />
             {/* <MyDepositedLiquidity /> */}
-            <Skeleton loading={!allData} height={267} mt={30} ml={30} mr={30} radius="20px">
-              <MyLiquidityPools getLpData={setLpTotal} />
-            </Skeleton>
-            {stHopeBalance && (
-              <Skeleton loading={!allData} height={267} mt={30} ml={30} mr={30} radius="20px">
-                <MyLockedLTAndProfits getAllVoting={getAllVoting} />
-              </Skeleton>
-            )}
+            <MyLiquidityPools getLpData={setLpTotal} />
+            {stHopeBalance && <MyLockedLTAndProfits getAllVoting={getAllVoting} />}
           </>
         )}
       </div>
