@@ -8,7 +8,8 @@ export const DOCS_URL: { [name: string]: string } = {
   WelcomeToHope: 'https://docs.hope.money/protocols/hopeswap#liquidity-provider',
   ReservePools: 'https://docs.hope.money/reward-gauges/claiming-rewards',
   LiquidityProvider: 'https://docs.hope.money/protocols/hopeswap#liquidity-provider',
-  HopeSwap: 'https://docs.hope.money/protocols/hopeswap'
+  HopeSwap: 'https://docs.hope.money/protocols/hopeswap',
+  Main: 'https://docs.hope.money'
 }
 
 export const CONTRACT_ERROR_CODE: { [name: string]: string } = {
