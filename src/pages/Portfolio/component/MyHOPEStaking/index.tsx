@@ -17,7 +17,6 @@ import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
 import './index.scss'
 import { DOCS_URL } from 'constants/config'
 import { getHopeTokenAddress, getLTTokenAddress, getStakingHopeGaugeAddress } from 'utils/addressHelpers'
-import Skeleton from 'components/Skeleton'
 
 interface IStaking {
   stHOPE: string
@@ -193,7 +192,7 @@ export default function MyHOPEStaking() {
   ]
 
   return (
-    <Skeleton loading={!priceResult} height={260} ml={30} mr={30} radius="20px">
+    <>
       <HopeStakingClaim item={item} clearItem={clearItem} />
       <Card title="My Single-Sided Staking">
         {data.stHOPE !== '--' ? (
@@ -223,6 +222,6 @@ export default function MyHOPEStaking() {
           </div>
         )}
       </Card>
-    </Skeleton>
+    </>
   )
 }
