@@ -22,6 +22,7 @@ interface Props {
   mr?: number
   mb?: number
   radius?: string
+  marginAuto?: boolean
 }
 
 const SkeletonBox = styled.span<{
@@ -32,13 +33,14 @@ const SkeletonBox = styled.span<{
   mr?: number
   mb?: number
   radius?: string
+  marginAuto?: boolean
 }>`
   display: block;
-  width: ${({ width }) => (width ? `${width}px` : '')};
+  width: ${({ width }) => (width ? `${width}px` : '100%')};
   height: ${({ height }) => (height ? `${height}px` : '16px')};
   margin-top: ${({ mt }) => (mt ? `${mt}px` : '0')};
-  margin-left: ${({ ml }) => (ml ? `${ml}px` : '0')};
-  margin-right: ${({ mr }) => (mr ? `${mr}px` : '0')};
+  margin-left: ${({ ml, marginAuto }) => (marginAuto ? 'auto' : ml ? `${ml}px` : '0')};
+  margin-right: ${({ mr, marginAuto }) => (marginAuto ? 'auto' : mr ? `${mr}px` : '0')};
   margin-bottom: ${({ mb }) => (mb ? `${mb}px` : '0')};
   background: -webkit-gradient(
     linear,
@@ -64,9 +66,18 @@ const SkeletonBox = styled.span<{
 `
 
 // eslint-disable-next-line react/prop-types
-export default function Skeleton({ loading, children, width, height, mt, ml, mr, mb, radius }: Props) {
+export default function Skeleton({ loading, children, width, height, mt, ml, mr, mb, radius, marginAuto }: Props) {
   return loading ? (
-    <SkeletonBox width={width} height={height} mt={mt} ml={ml} mr={mr} mb={mb} radius={radius}></SkeletonBox>
+    <SkeletonBox
+      width={width}
+      height={height}
+      mt={mt}
+      ml={ml}
+      mr={mr}
+      mb={mb}
+      radius={radius}
+      marginAuto={marginAuto}
+    ></SkeletonBox>
   ) : (
     <>{children}</>
   )

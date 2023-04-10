@@ -32,9 +32,9 @@ import { usePairStakeInfo } from '../../hooks/usePairInfo'
 import { JSBI, WETH } from '@uniswap/sdk'
 import { tokenId, tokenSymbol } from '../../utils/currencyId'
 import { useTokenPriceObject } from '../../hooks/liquidity/useBasePairs'
-import Loader from '../../components/Loader'
 import { getLTToken } from 'utils/addressHelpers'
 import { DOCS_URL } from '../../constants/config'
+import Skeleton from '../../components/Skeleton'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -193,7 +193,7 @@ export default function StakingPoolDetail({
   const [showClaimModal, setShowClaimModal] = useState(false)
   const [showTx, setShowTx] = useState<boolean>(false)
   const [transactionType, setTransactionType] = useState('All')
-  const txs = usePairTxs(address, transactionType)
+  const { result: txsResult, loading: txsLoading } = usePairTxs(address, transactionType)
   //const stakedAmount = useTokenBalance(account ?? undefined, pool?.stakingToken)
 
   const { token0Deposited, token1Deposited, balance } = usePosition(pool?.pair)
@@ -206,8 +206,8 @@ export default function StakingPoolDetail({
   const [timeIndex, setTimeIndex] = useState('24H')
   const [xData, setXData] = useState<string[]>()
   const [yData, setYData] = useState<string[]>()
-  const { result: dayChartResult } = useLineDaysChartsData(address ?? '')
-  const { result: hourChartResult } = useLine24HourChartsData(address ?? '')
+  const { result: dayChartResult, loading: dayChartLoading } = useLineDaysChartsData(address ?? '')
+  const { result: hourChartResult, loading: hourChartLoading } = useLine24HourChartsData(address ?? '')
 
   const token0PriceUSD =
     priceResult && pool?.tokens[0].address ? Number(priceResult[pool.tokens[0].address.toLowerCase()]) : undefined
@@ -335,94 +335,125 @@ export default function StakingPoolDetail({
           <AutoColumn gap={'8px'}>
             <AutoRowBetween>
               <AutoRow gap={'10px'}>
-                <DoubleCurrencyLogo over size={24} currency0={pool?.pair.token0} currency1={pool?.pair.token1} />
-                <TYPE.white fontWeight={700} fontSize={18}>{`${token0Symbol || '-'}/${token1Symbol ||
-                  '-'} Pool Token`}</TYPE.white>
+                <Skeleton loading={loading} width={38} height={24}>
+                  <DoubleCurrencyLogo over size={24} currency0={pool?.pair.token0} currency1={pool?.pair.token1} />
+                </Skeleton>
+                <Skeleton loading={loading} width={200} height={18}>
+                  <TYPE.white fontWeight={700} fontSize={18}>{`${token0Symbol || '-'}/${token1Symbol ||
+                    '-'} Pool Token`}</TYPE.white>
+                </Skeleton>
               </AutoRow>
-              <TYPE.white fontSize={18} fontWeight={700}>
-                {userTotalBalance ? userTotalBalance?.toFixed(4, { groupSeparator: ',' }) : '0.00'}
-              </TYPE.white>
+              <Skeleton loading={loading} width={150} height={18}>
+                <TYPE.white fontSize={18} fontWeight={700}>
+                  {userTotalBalance ? userTotalBalance?.toFixed(4, { groupSeparator: ',' }) : '0.00'}
+                </TYPE.white>
+              </Skeleton>
             </AutoRowBetween>
-            <TYPE.main textAlign={'right'}>
-              {userToken0 && userToken1 && token0PriceUSD && token1PriceUSD && pool?.tokens[0]
-                ? `≈$${amountFormat(
-                    Number(userToken0.toExact().toString()) * token0PriceUSD +
-                      Number(userToken1.toExact().toString()) * token1PriceUSD,
-                    2
-                  )}`
-                : '≈$0.00'}
-            </TYPE.main>
+
+            <AutoRow justify={'flex-end'}>
+              <Skeleton loading={loading} width={90} height={14}>
+                <TYPE.main>
+                  {userToken0 && userToken1 && token0PriceUSD && token1PriceUSD && pool?.tokens[0]
+                    ? `≈$${amountFormat(
+                        Number(userToken0.toExact().toString()) * token0PriceUSD +
+                          Number(userToken1.toExact().toString()) * token1PriceUSD,
+                        2
+                      )}`
+                    : '≈$0.00'}
+                </TYPE.main>
+              </Skeleton>
+            </AutoRow>
           </AutoColumn>
           <AutoColumn gap={'20px'}>
             <RowBetween>
               <AutoRow gap={'10px'} style={{ width: '50%' }}>
-                <CurrencyLogo size={'20px'} currency={pool?.pair.token0} />
-                <TYPE.white>
-                  {userToken0 ? userToken0.toFixed(4, { groupSeparator: ',' } ?? '0.00') : ''} {token0Symbol ?? ''}
-                </TYPE.white>
+                <Skeleton loading={loading} width={20} height={20} radius={'50%'}>
+                  <CurrencyLogo size={'20px'} currency={pool?.pair.token0} />
+                </Skeleton>
+                <Skeleton loading={loading} width={100} height={14}>
+                  <TYPE.white>
+                    {userToken0 ? userToken0.toFixed(4, { groupSeparator: ',' } ?? '0.00') : ''} {token0Symbol ?? ''}
+                  </TYPE.white>
+                </Skeleton>
               </AutoRow>
-              <TYPE.main>
-                {userToken0 && token0PriceUSD
-                  ? `≈$${amountFormat(Number(userToken0.toExact().toString()) * token0PriceUSD, 2)}`
-                  : '≈$0.00'}
-              </TYPE.main>
+              <Skeleton loading={loading} width={90} height={14}>
+                <TYPE.main>
+                  {userToken0 && token0PriceUSD
+                    ? `≈$${amountFormat(Number(userToken0.toExact().toString()) * token0PriceUSD, 2)}`
+                    : '≈$0.00'}
+                </TYPE.main>
+              </Skeleton>
             </RowBetween>
             <RowBetween>
               <AutoRow gap={'10px'} style={{ width: '50%' }}>
-                <CurrencyLogo size={'20px'} currency={pool?.pair.token1} />
-                <TYPE.white>
-                  {userToken1 ? userToken1.toFixed(4, { groupSeparator: ',' } ?? '0.00') : ''} {token1Symbol ?? ''}
-                </TYPE.white>
+                <Skeleton loading={loading} width={20} height={20} radius={'50%'}>
+                  <CurrencyLogo size={'20px'} currency={pool?.pair.token1} />
+                </Skeleton>
+                <Skeleton loading={loading} width={100} height={14}>
+                  <TYPE.white>
+                    {userToken1 ? userToken1.toFixed(4, { groupSeparator: ',' } ?? '0.00') : ''} {token1Symbol ?? ''}
+                  </TYPE.white>
+                </Skeleton>
               </AutoRow>
-              <TYPE.main>
-                {userToken1 && token1PriceUSD
-                  ? `≈$${amountFormat(Number(userToken1.toExact().toString()) * token1PriceUSD, 2)}`
-                  : '≈$0.00'}
-              </TYPE.main>
+              <Skeleton loading={loading} width={90} height={14}>
+                <TYPE.main>
+                  {userToken1 && token1PriceUSD
+                    ? `≈$${amountFormat(Number(userToken1.toExact().toString()) * token1PriceUSD, 2)}`
+                    : '≈$0.00'}
+                </TYPE.main>
+              </Skeleton>
             </RowBetween>
           </AutoColumn>
           <AutoColumn gap={'20px'}>
             <RowBetween>
               <TYPE.main>Unstaked Position</TYPE.main>
-              <TYPE.white>{balance?.toFixed(4, { groupSeparator: ',' } ?? '0.0000') ?? '0.0000'}</TYPE.white>
+              <Skeleton loading={loading} width={150}>
+                <TYPE.white>{balance?.toFixed(4, { groupSeparator: ',' } ?? '0.0000') ?? '0.0000'}</TYPE.white>
+              </Skeleton>
             </RowBetween>
             <RowBetween>
               <TYPE.main>Staked Position</TYPE.main>
-              <TYPE.white>{stakedAmount?.toFixed(4, { groupSeparator: ',' } ?? '0.0000') ?? '0.0000'}</TYPE.white>
+              <Skeleton loading={loading} width={150}>
+                <TYPE.white>{stakedAmount?.toFixed(4, { groupSeparator: ',' } ?? '0.0000') ?? '0.0000'}</TYPE.white>
+              </Skeleton>
             </RowBetween>
             <AutoRowBetween gap={'30px'}>
-              <ButtonPrimary
-                className="text-medium"
-                onClick={() =>
-                  pool?.tokens[0] &&
-                  pool?.tokens[1] &&
-                  history.push(
-                    `/swap/liquidity/manager/deposit/${tokenId(chainWETH, pool?.tokens[0])}/${tokenId(
-                      chainWETH,
-                      pool?.tokens[1]
-                    )}`
-                  )
-                }
-                height={42}
-              >
-                Deposit
-              </ButtonPrimary>
-              <ButtonOutlined
-                primary
-                onClick={() =>
-                  pool?.tokens[0] &&
-                  pool?.tokens[1] &&
-                  history.push(
-                    `/swap/liquidity/manager/withdraw/${tokenId(chainWETH, pool.tokens[0])}/${tokenId(
-                      chainWETH,
-                      pool.tokens[1]
-                    )}`
-                  )
-                }
-                height={42}
-              >
-                Withdraw
-              </ButtonOutlined>
+              <Skeleton loading={loading} height={42} radius={'10px'}>
+                <ButtonPrimary
+                  className="text-medium"
+                  onClick={() =>
+                    pool?.tokens[0] &&
+                    pool?.tokens[1] &&
+                    history.push(
+                      `/swap/liquidity/manager/deposit/${tokenId(chainWETH, pool?.tokens[0])}/${tokenId(
+                        chainWETH,
+                        pool?.tokens[1]
+                      )}`
+                    )
+                  }
+                  height={42}
+                >
+                  Deposit
+                </ButtonPrimary>
+              </Skeleton>
+              <Skeleton loading={loading} height={42} radius={'10px'}>
+                <ButtonOutlined
+                  primary
+                  onClick={() =>
+                    pool?.tokens[0] &&
+                    pool?.tokens[1] &&
+                    history.push(
+                      `/swap/liquidity/manager/withdraw/${tokenId(chainWETH, pool.tokens[0])}/${tokenId(
+                        chainWETH,
+                        pool.tokens[1]
+                      )}`
+                    )
+                  }
+                  height={42}
+                >
+                  Withdraw
+                </ButtonOutlined>
+              </Skeleton>
             </AutoRowBetween>
           </AutoColumn>
         </AutoColumn>
@@ -439,11 +470,7 @@ export default function StakingPoolDetail({
               Liquidity Gauge
             </TYPE.white>
           </CardHeader>
-          {loading && !pool?.stakingRewardAddress ? (
-            <div className="flex jc-center m-t-50">
-              <Loader size={'20px'} style={{ margin: 'auto' }} />
-            </div>
-          ) : !pool?.stakingRewardAddress ? (
+          {!pool?.stakingRewardAddress && !loading ? (
             <AutoColumn style={{ justifyContent: 'center', padding: '93px 30px' }}>
               <TYPE.white lineHeight={'20px'} textAlign={'center'}>
                 The Pool has not yet been added to the liquidity mining list, you can start the add process via the
@@ -469,55 +496,69 @@ export default function StakingPoolDetail({
                 <AutoColumn gap={'20px'}>
                   <RowBetween>
                     <TYPE.main>Gauge Relative Weight</TYPE.main>
-                    <TYPE.white>{relativeWeight ? `${relativeWeight.toFixed(2)}%` : ''}</TYPE.white>
+                    <Skeleton loading={loading} width={150}>
+                      <TYPE.white>{relativeWeight ? `${relativeWeight.toFixed(2)}%` : ''}</TYPE.white>
+                    </Skeleton>
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Mining Position</TYPE.main>
-                    <TYPE.white>
-                      {stakedAmount ? stakedAmount.toFixed(4, { groupSeparator: ',' } ?? '0.00') : '--'}
-                    </TYPE.white>
+                    <Skeleton loading={loading} width={150}>
+                      <TYPE.white>
+                        {stakedAmount ? stakedAmount.toFixed(4, { groupSeparator: ',' } ?? '0.00') : '--'}
+                      </TYPE.white>
+                    </Skeleton>
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Current Boost</TYPE.main>
-                    <TYPE.white>{currentBoots ? `${currentBoots.toFixed(2)}x` : '--'}</TYPE.white>
+                    <Skeleton loading={loading} width={150}>
+                      <TYPE.white>{currentBoots ? `${currentBoots.toFixed(2)}x` : '--'}</TYPE.white>
+                    </Skeleton>
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Next Boost</TYPE.main>
-                    <TYPE.white>{futureBoots ? `${futureBoots.toFixed(2)}x` : '--'}</TYPE.white>
+                    <Skeleton loading={loading} width={150}>
+                      <TYPE.white>{futureBoots ? `${futureBoots.toFixed(2)}x` : '--'}</TYPE.white>
+                    </Skeleton>
                   </RowBetween>
                   <RowBetween>
                     <TYPE.main>My Claimable Rewards</TYPE.main>
-                    <RowFixed>
-                      <TYPE.white>
-                        {claimAbleRewards ? claimAbleRewards?.toFixed(4, { groupSeparator: ',' } ?? '0.00') : '--'}
-                      </TYPE.white>
-                      {claimAbleRewards && claimAbleRewards.greaterThan(JSBI.BigInt('0')) && (
-                        <TYPE.link style={{ cursor: 'pointer' }} ml={'10px'} onClick={() => setShowClaimModal(true)}>
-                          claim
-                        </TYPE.link>
-                      )}
-                    </RowFixed>
+                    <Skeleton loading={loading} width={150}>
+                      <RowFixed>
+                        <TYPE.white>
+                          {claimAbleRewards ? claimAbleRewards?.toFixed(4, { groupSeparator: ',' } ?? '0.00') : '--'}
+                        </TYPE.white>
+                        {claimAbleRewards && claimAbleRewards.greaterThan(JSBI.BigInt('0')) && (
+                          <TYPE.link style={{ cursor: 'pointer' }} ml={'10px'} onClick={() => setShowClaimModal(true)}>
+                            claim
+                          </TYPE.link>
+                        )}
+                      </RowFixed>
+                    </Skeleton>
                   </RowBetween>
                 </AutoColumn>
                 {account ? (
                   <>
                     <AutoRowBetween gap={'30px'}>
-                      <ButtonPrimary
-                        className="text-medium"
-                        onClick={() => history.push(`/swap/liquidity/mining/${pool?.stakingRewardAddress}`)}
-                        height={42}
-                      >
-                        Stake
-                      </ButtonPrimary>
-                      <ButtonOutlined
-                        primary
-                        onClick={() =>
-                          history.push(`/swap/liquidity/mining/${pool?.stakingRewardAddress}?type=unstake`)
-                        }
-                        height={42}
-                      >
-                        Unstake
-                      </ButtonOutlined>
+                      <Skeleton loading={loading} height={42} radius={'10px'}>
+                        <ButtonPrimary
+                          className="text-medium"
+                          onClick={() => history.push(`/swap/liquidity/mining/${pool?.stakingRewardAddress}`)}
+                          height={42}
+                        >
+                          Stake
+                        </ButtonPrimary>
+                      </Skeleton>
+                      <Skeleton loading={loading} height={42} radius={'10px'}>
+                        <ButtonOutlined
+                          primary
+                          onClick={() =>
+                            history.push(`/swap/liquidity/mining/${pool?.stakingRewardAddress}?type=unstake`)
+                          }
+                          height={42}
+                        >
+                          Unstake
+                        </ButtonOutlined>
+                      </Skeleton>
                     </AutoRowBetween>
                   </>
                 ) : (
@@ -584,36 +625,54 @@ export default function StakingPoolDetail({
                 ></PieCharts>
                 <div className="m-l-30">
                   <Row>
-                    <Circular></Circular>
-                    <CurrencyLogo currency={pool?.tokens[0]} />
-                    <TYPE.body marginLeft={9}>
-                      {format.amountFormat(pool?.token0Value, 2)} {token0Symbol}
-                      {token0Percent ? ` (${Number(token0Percent).toFixed(2)}%)` : '--'}
-                    </TYPE.body>
+                    {/* <Skeleton loading={loading} width={200}></Skeleton> */}
+                    <Skeleton loading={loading} width={7} height={7} radius={'50%'} mr={8}>
+                      <Circular></Circular>
+                    </Skeleton>
+                    <Skeleton loading={loading} width={24} height={24}>
+                      <CurrencyLogo currency={pool?.tokens[0]} />
+                    </Skeleton>
+                    <Skeleton loading={loading} width={200} height={18} ml={9}>
+                      <TYPE.body marginLeft={9}>
+                        {format.amountFormat(pool?.token0Value, 2)} {token0Symbol}{' '}
+                        {token0Percent ? ` (${Number(token0Percent).toFixed(2)}%)` : '--'}
+                      </TYPE.body>
+                    </Skeleton>
                   </Row>
                   <Row margin={'16px 0 0 0'}>
-                    <Circular color={'#8FFBAE'}></Circular>
-                    <CurrencyLogo currency={pool?.tokens[1]} />
-                    <TYPE.body marginLeft={9}>
-                      {format.amountFormat(pool?.token1Value, 2)} {token1Symbol}
-                      {token1Percent ? ` (${Number(token1Percent).toFixed(2)}%)` : '--'}
-                    </TYPE.body>
+                    <Skeleton loading={loading} width={7} height={7} radius={'50%'} mr={8}>
+                      <Circular color={'#8FFBAE'}></Circular>
+                    </Skeleton>
+                    <Skeleton loading={loading} width={24} height={24}>
+                      <CurrencyLogo currency={pool?.tokens[1]} />
+                    </Skeleton>
+                    <Skeleton loading={loading} width={200} height={18} ml={9}>
+                      <TYPE.body marginLeft={9}>
+                        {format.amountFormat(pool?.token1Value, 2)} {token1Symbol}{' '}
+                        {token1Percent ? ` (${Number(token1Percent).toFixed(2)}%)` : '--'}
+                      </TYPE.body>
+                    </Skeleton>
                   </Row>
                 </div>
                 <div>
                   <Row>
-                    {pool && (
-                      <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
-                        1.00 {token0Symbol} ≈ {amountFormat(pool?.token1Price, 2)} {token1Symbol}
-                      </TYPE.body>
-                    )}
+                    <Skeleton loading={loading} width={200} ml={12}>
+                      {pool && (
+                        <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
+                          1.00 {token0Symbol} ≈ {amountFormat(pool?.token1Price, 2)} {token1Symbol}
+                        </TYPE.body>
+                      )}
+                    </Skeleton>
                   </Row>
+
                   <Row margin={'25px 0 0 0'}>
-                    {pool && (
-                      <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
-                        1.00 {token1Symbol} ≈ {amountFormat(pool?.token0Price, 2)} {token0Symbol}
-                      </TYPE.body>
-                    )}
+                    <Skeleton loading={loading} width={200} ml={12}>
+                      {pool && (
+                        <TYPE.body marginLeft={12} fontSize={14} color={'#A8A8AA'}>
+                          1.00 {token1Symbol} ≈ {amountFormat(pool?.token0Price, 2)} {token0Symbol}
+                        </TYPE.body>
+                      )}
+                    </Skeleton>
                   </Row>
                 </div>
               </Row>
@@ -625,32 +684,41 @@ export default function StakingPoolDetail({
             >
               <div className="flex-1">
                 <p className="text-medium font-nor text-normal">TVL</p>
-                <p className="font-30 text-medium m-t-16">
-                  {pool ? `$${format.numFormat(format.amountFormat(Number(pool.tvl), 2), 2, true)}` : `--`}
-                </p>
+                <Skeleton loading={loading} width={230} height={20} mt={16}>
+                  <p className="font-30 text-medium m-t-16">
+                    {pool ? `$${format.numFormat(format.amountFormat(Number(pool.tvl), 2), 2, true)}` : `--`}
+                  </p>
+                </Skeleton>
+
                 <p className="flex jc-between ai-center font-nor m-t-22">
                   <span className="text-normal">Volume(24H)</span>
-                  <span>
-                    {pairMore
-                      ? `$${format.numFormat(format.amountFormat(pairMore.oneDayVolumeUSD, 2), 2, true)}`
-                      : `$0.00`}
-                  </span>
+                  <Skeleton loading={loading} width={130} height={18}>
+                    <span>
+                      {pairMore
+                        ? `$${format.numFormat(format.amountFormat(pairMore.oneDayVolumeUSD, 2), 2, true)}`
+                        : `$0.00`}
+                    </span>
+                  </Skeleton>
                 </p>
                 <p className="flex jc-between ai-center font-nor m-t-16">
                   <span className="text-normal">Fees(24H)</span>
-                  <span>
-                    {pairMore && pool?.feeRate
-                      ? `$${format.amountFormat(pairMore.oneDayVolumeUSD * pool.feeRate, 2)}`
-                      : `$0.00`}
-                  </span>
+                  <Skeleton loading={loading} width={130} height={18}>
+                    <span>
+                      {pairMore && pool?.feeRate
+                        ? `$${format.amountFormat(pairMore.oneDayVolumeUSD * pool.feeRate, 2)}`
+                        : `$0.00`}
+                    </span>
+                  </Skeleton>
                 </p>
                 <p className="flex jc-between ai-center font-nor m-t-16">
                   <span className="text-normal">Fees(7d)</span>
-                  <span>
-                    {pairMore && pairMore.oneWeekVolume && pool?.feeRate
-                      ? `$${format.amountFormat(pairMore.oneWeekVolume * pool.feeRate, 2)}`
-                      : `$0.00`}
-                  </span>
+                  <Skeleton loading={loading} width={130} height={18}>
+                    <span>
+                      {pairMore && pairMore.oneWeekVolume && pool?.feeRate
+                        ? `$${format.amountFormat(pairMore.oneWeekVolume * pool.feeRate, 2)}`
+                        : `$0.00`}
+                    </span>
+                  </Skeleton>
                 </p>
               </div>
               <div
@@ -663,20 +731,29 @@ export default function StakingPoolDetail({
               ></div>
               <div className="flex-1">
                 <p className="text-medium font-nor text-normal">APR</p>
-                <TYPE.green fontSize={30} marginTop={16} fontFamily={'Arboria-Medium'}>
-                  {numeral(aprInfo.baseApr * 100, 2)}%
-                </TYPE.green>
+                <Skeleton loading={loading} width={230} height={20} mt={16}>
+                  <TYPE.green fontSize={30} marginTop={16} fontFamily={'Arboria-Medium'}>
+                    {numeral(aprInfo.baseApr * 100, 2)}%
+                  </TYPE.green>
+                </Skeleton>
+
                 <p className="flex jc-between ai-center font-nor m-t-22">
                   <span className="text-normal">Fees APR:</span>
-                  <span>{numeral(aprInfo.feeApr * 100, 2)}%</span>
+                  <Skeleton loading={loading} width={130} height={18}>
+                    <span>{numeral(aprInfo.feeApr * 100, 2)}%</span>
+                  </Skeleton>
                 </p>
                 <p className="flex jc-between ai-center font-nor m-t-16">
                   <span className="text-normal">Rewards APR</span>
-                  <span>{aprInfo.ltApr ? `${numeral(aprInfo.ltApr * 100, 2)}%` : `--`}</span>
+                  <Skeleton loading={loading} width={130} height={18}>
+                    <span>{aprInfo.ltApr ? `${numeral(aprInfo.ltApr * 100, 2)}%` : `--`}</span>
+                  </Skeleton>
                 </p>
                 <p className="flex jc-between ai-center font-nor m-t-16">
                   <span className="text-normal">Daily Reward</span>
-                  <span>{dayRewards ? dayRewards?.toFixed(2, { groupSeparator: ',' }) : `0.00`} LT</span>
+                  <Skeleton loading={loading} width={130} height={18}>
+                    <span>{dayRewards ? dayRewards?.toFixed(2, { groupSeparator: ',' }) : `0.00`} LT</span>
+                  </Skeleton>
                 </p>
               </div>
             </div>
@@ -713,6 +790,7 @@ export default function StakingPoolDetail({
                   yData={yData}
                   height={330}
                   left={10}
+                  loading={timeIndex === '24H' ? hourChartLoading : dayChartLoading}
                   is24Hour={timeIndex === '24H'}
                 ></LineCharts>
               ) : (
@@ -722,6 +800,7 @@ export default function StakingPoolDetail({
                   bottom={10}
                   left={10}
                   height={330}
+                  loading={timeIndex === '24H' ? hourChartLoading : dayChartLoading}
                   is24Hour={timeIndex === '24H'}
                 ></BarCharts>
               )}
@@ -793,39 +872,51 @@ export default function StakingPoolDetail({
 
                 <LightCard padding={'0 10px 10px'} borderRadius={'20px'}>
                   <TxItemWrapper>
-                    {txs.result.map(tx => {
+                    {txsResult.map(tx => {
                       return (
                         <AutoRow key={tx.transaction.id} style={{ borderBottom: '1px solid #3D3E46' }}>
                           <TxItem>
-                            <TYPE.link
-                              as={ExternalLink}
-                              href={getEtherscanLink(chainId ?? 1, tx.transaction.id, 'transaction')}
-                            >
-                              {tx.title}
-                            </TYPE.link>
+                            <Skeleton loading={txsLoading} width={120}>
+                              <TYPE.link
+                                as={ExternalLink}
+                                href={getEtherscanLink(chainId ?? 1, tx.transaction.id, 'transaction')}
+                              >
+                                {tx.title}
+                              </TYPE.link>
+                            </Skeleton>
                           </TxItem>
                           <TxItem>
-                            <TYPE.subHeader>{`≈$${amountFormat(tx.amountUSD, 2)}`}</TYPE.subHeader>
+                            <Skeleton loading={txsLoading} width={120}>
+                              <TYPE.subHeader>{`≈$${amountFormat(tx.amountUSD, 2)}`}</TYPE.subHeader>
+                            </Skeleton>
                           </TxItem>
                           <TxItem>
-                            <TYPE.subHeader>{`${format.amountFormat(tx.amount0, 2)} ${
-                              tx.pair.token0.symbol
-                            }`}</TYPE.subHeader>
-                          </TxItem>
-                          <TxItem>
-                            <TYPE.subHeader>{`${format.amountFormat(tx.amount1, 2)} ${
-                              tx.pair.token1.symbol
-                            }`}</TYPE.subHeader>
-                          </TxItem>
-                          <TxItem>
-                            <ExternalLink href={`${getEtherscanLink(chainId || 1, tx.sender, 'address')}`}>
-                              <TYPE.subHeader style={{ color: '#fff' }}>{`${
-                                tx.sender ? shortenAddress(tx.sender) : ''
+                            <Skeleton loading={txsLoading} width={120}>
+                              <TYPE.subHeader>{`${format.amountFormat(tx.amount0, 2)} ${
+                                tx.pair.token0.symbol
                               }`}</TYPE.subHeader>
-                            </ExternalLink>
+                            </Skeleton>
                           </TxItem>
                           <TxItem>
-                            <TYPE.subHeader>{`${formatUTCDate(tx.transaction.timestamp)}`}</TYPE.subHeader>
+                            <Skeleton loading={txsLoading} width={120}>
+                              <TYPE.subHeader>{`${format.amountFormat(tx.amount1, 2)} ${
+                                tx.pair.token1.symbol
+                              }`}</TYPE.subHeader>
+                            </Skeleton>
+                          </TxItem>
+                          <TxItem>
+                            <Skeleton loading={txsLoading} width={120}>
+                              <ExternalLink href={`${getEtherscanLink(chainId || 1, tx.sender, 'address')}`}>
+                                <TYPE.subHeader style={{ color: '#fff' }}>{`${
+                                  tx.sender ? shortenAddress(tx.sender) : ''
+                                }`}</TYPE.subHeader>
+                              </ExternalLink>
+                            </Skeleton>
+                          </TxItem>
+                          <TxItem>
+                            <Skeleton loading={txsLoading} width={120}>
+                              <TYPE.subHeader>{`${formatUTCDate(tx.transaction.timestamp)}`}</TYPE.subHeader>
+                            </Skeleton>
                           </TxItem>
                         </AutoRow>
                       )
@@ -849,65 +940,99 @@ export default function StakingPoolDetail({
                 <LightCard>
                   <AutoRow align={'flex-start'}>
                     <TableTitle>
-                      <ExternalLink href={`${getEtherscanLink(chainId || 1, address, 'address')}`}>
-                        <span style={{ color: '#fff' }}>{shortenAddress(address)}</span>
-                      </ExternalLink>
+                      <Skeleton loading={loading} width={120}>
+                        <ExternalLink href={`${getEtherscanLink(chainId || 1, address, 'address')}`}>
+                          <span style={{ color: '#fff' }}>{shortenAddress(address)}</span>
+                        </ExternalLink>
+                      </Skeleton>
                     </TableTitle>
-                    <TableTitle>{formatUTCDate(pool?.createAt)}</TableTitle>
-                    <TableTitle flex={0.8}>{pool?.feeRate ? `${pool.feeRate * 100}%` : '--'}</TableTitle>
+                    <TableTitle>
+                      <Skeleton loading={loading} width={120}>
+                        {formatUTCDate(pool?.createAt)}
+                      </Skeleton>
+                    </TableTitle>
+                    <TableTitle flex={0.8}>
+                      <Skeleton loading={loading} width={70}>
+                        {pool?.feeRate ? `${pool.feeRate * 100}%` : '--'}
+                      </Skeleton>
+                    </TableTitle>
                     <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
                       <TableTitle>
-                        {pairMore
-                          ? `≈ $${format.numFormat(format.amountFormat(pairMore.totalVolume, 2), 2, true)}`
-                          : '--'}
+                        <Skeleton loading={loading} width={120}>
+                          {pairMore
+                            ? `≈ $${format.numFormat(format.amountFormat(pairMore.totalVolume, 2), 2, true)}`
+                            : '--'}
+                        </Skeleton>
                       </TableTitle>
                       <AutoRow gap={'5px'}>
-                        <CurrencyLogo currency={pool?.tokens[0]} />
-                        <TYPE.main>
-                          {pool?.volume0Amount
-                            ? `${pool.volume0Amount.toFixed(2, { groupSeparator: ',' })} ${token0Symbol}`
-                            : '--'}
-                        </TYPE.main>
+                        <Skeleton loading={loading} width={24} height={24}>
+                          <CurrencyLogo currency={pool?.tokens[0]} />
+                        </Skeleton>
+                        <Skeleton loading={loading} width={120}>
+                          <TYPE.main>
+                            {pool?.volume0Amount
+                              ? `${pool.volume0Amount.toFixed(2, { groupSeparator: ',' })} ${token0Symbol}`
+                              : '--'}
+                          </TYPE.main>
+                        </Skeleton>
                       </AutoRow>
                       <AutoRow gap={'5px'}>
-                        <CurrencyLogo currency={pool?.tokens[1]} />
-                        <TYPE.main>
-                          {pool?.volume1Amount
-                            ? `${pool.volume1Amount.toFixed(2, { groupSeparator: ',' })} ${token1Symbol}`
-                            : '--'}
-                        </TYPE.main>
+                        <Skeleton loading={loading} width={24} height={24}>
+                          <CurrencyLogo currency={pool?.tokens[1]} />
+                        </Skeleton>
+                        <Skeleton loading={loading} width={120}>
+                          <TYPE.main>
+                            {pool?.volume1Amount
+                              ? `${pool.volume1Amount.toFixed(2, { groupSeparator: ',' })} ${token1Symbol}`
+                              : '--'}
+                          </TYPE.main>
+                        </Skeleton>
                       </AutoRow>
                     </AutoColumn>
                     <AutoColumn gap={'lg'} style={{ flex: 1.5 }}>
                       <TableTitle>
-                        {pairMore && pool?.feeRate
-                          ? `≈ $${format.amountFormat(pairMore.totalVolume * pool.feeRate, 2)}`
-                          : '--'}
+                        <Skeleton loading={loading} width={120}>
+                          {pairMore && pool?.feeRate
+                            ? `≈ $${format.amountFormat(pairMore.totalVolume * pool.feeRate, 2)}`
+                            : '--'}
+                        </Skeleton>
                       </TableTitle>
                       <AutoRow gap={'5px'}>
-                        <CurrencyLogo currency={pool?.tokens[0]} />
-                        <TYPE.main>
-                          {pool?.volume0Amount && pool?.feeRate
-                            ? `${format.amountFormat(
-                                Number(pool?.volume0Amount.toFixed(2)) * pool.feeRate,
-                                2
-                              )} ${token0Symbol}`
-                            : '--'}
-                        </TYPE.main>
+                        <Skeleton loading={loading} width={24} height={24}>
+                          <CurrencyLogo currency={pool?.tokens[0]} />
+                        </Skeleton>
+                        <Skeleton loading={loading} width={120}>
+                          <TYPE.main>
+                            {pool?.volume0Amount && pool?.feeRate
+                              ? `${format.amountFormat(
+                                  Number(pool?.volume0Amount.toFixed(2)) * pool.feeRate,
+                                  2
+                                )} ${token0Symbol}`
+                              : '--'}
+                          </TYPE.main>
+                        </Skeleton>
                       </AutoRow>
                       <AutoRow gap={'5px'}>
-                        <CurrencyLogo currency={pool?.tokens[1]} />
-                        <TYPE.main>
-                          {pool?.volume1Amount && pool?.feeRate
-                            ? `${format.amountFormat(
-                                Number(pool?.volume1Amount.toFixed(2)) * pool.feeRate,
-                                2
-                              )} ${token1Symbol}`
-                            : '--'}
-                        </TYPE.main>
+                        <Skeleton loading={loading} width={24} height={24}>
+                          <CurrencyLogo currency={pool?.tokens[1]} />
+                        </Skeleton>
+                        <Skeleton loading={loading} width={120}>
+                          <TYPE.main>
+                            {pool?.volume1Amount && pool?.feeRate
+                              ? `${format.amountFormat(
+                                  Number(pool?.volume1Amount.toFixed(2)) * pool.feeRate,
+                                  2
+                                )} ${token1Symbol}`
+                              : '--'}
+                          </TYPE.main>
+                        </Skeleton>
                       </AutoRow>
                     </AutoColumn>
-                    <TableTitle>{pool ? pool.txCount : '--'}</TableTitle>
+                    <TableTitle>
+                      <Skeleton loading={loading} width={120}>
+                        {pool ? pool.txCount : '--'}
+                      </Skeleton>
+                    </TableTitle>
                   </AutoRow>
                 </LightCard>
               </>
