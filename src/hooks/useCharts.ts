@@ -46,6 +46,7 @@ const dealListZeroData = (list: any) => {
 
 export function useLineDaysChartsData(address: string) {
   const [result, setResult] = useState<any[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
   useEffect(() => {
     ;(async () => {
       try {
@@ -57,19 +58,23 @@ export function useLineDaysChartsData(address: string) {
         } else {
           setResult([])
         }
+        setLoading(false)
       } catch (error) {
         setResult([])
+        setLoading(false)
       }
     })()
   }, [address])
 
   return {
-    result
+    result,
+    loading
   }
 }
 
 export function useLine24HourChartsData(address: string) {
   const [result, setResult] = useState<any[]>([])
+  const [loading, setLoading] = useState<boolean>(true)
   useEffect(() => {
     ;(async () => {
       try {
@@ -81,14 +86,17 @@ export function useLine24HourChartsData(address: string) {
         } else {
           setResult([])
         }
+        setLoading(false)
       } catch (error) {
         setResult([])
+        setLoading(false)
       }
     })()
   }, [address])
 
   return {
-    result
+    result,
+    loading
   }
 }
 
