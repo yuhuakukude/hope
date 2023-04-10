@@ -50,7 +50,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
     }
   }
   const addWeekFn = () => {
-    if (weekNumber < maxWeek) {
+    if (weekNumber < maxWeek && maxWeek >= 2) {
       setWeekNumber(Number(weekNumber) + 1)
     }
   }
@@ -139,7 +139,11 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
       .then(hash => {
         setAttemptingTxn(false)
         setTxHash(hash)
-        setWeekNumber(2)
+        if (maxWeek - weekNumber >= 2) {
+          setWeekNumber(2)
+        } else {
+          setWeekNumber(0)
+        }
         setPendingText(``)
       })
       .catch((err: any) => {
@@ -148,7 +152,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
         setPendingText(``)
         setErrorStatus({ code: err?.code, message: formatMessage(err) ?? err.message })
       })
-  }, [account, argTime, chainId, toAddTimeLocker])
+  }, [account, argTime, chainId, toAddTimeLocker, maxWeek, weekNumber])
 
   return (
     <div>
@@ -180,11 +184,15 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
                 autoComplete="off"
                 defaultValue={2}
                 value={weekNumber}
+                disabled={maxWeek < 2}
                 onChange={changeWeek}
                 onKeyDown={isCorrect}
                 formatter={inpFormatter}
               />
-              <i className={['iconfont', 'add', weekNumber >= maxWeek && 'disabled'].join(' ')} onClick={addWeekFn}>
+              <i
+                className={['iconfont', 'add', weekNumber >= maxWeek || (maxWeek < 2 && 'disabled')].join(' ')}
+                onClick={addWeekFn}
+              >
                 &#xe623;
               </i>
             </div>
@@ -207,7 +215,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
             </p>
             <p className="font-nor flex jc-between ai-center m-t-16">
               <span className="text-normal">Your voting power after the lock will be:</span>
-              <Skeleton loading={lockerResLoading} width={160}>
+              <Skeleton loading={lockerResLoading || isLocerkAmountPending || isLocerkTimePending} width={126}>
                 <span className="text-medium">
                   {afterVeLtAmount
                     ? afterVeLtAmount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
