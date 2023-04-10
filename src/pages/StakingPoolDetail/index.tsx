@@ -193,7 +193,8 @@ export default function StakingPoolDetail({
   const [showClaimModal, setShowClaimModal] = useState(false)
   const [showTx, setShowTx] = useState<boolean>(false)
   const [transactionType, setTransactionType] = useState('All')
-  const txs = usePairTxs(address, transactionType)
+  const { result: txsResult, loading: txsLoading } = usePairTxs(address, transactionType)
+  console.log(txsLoading)
   //const stakedAmount = useTokenBalance(account ?? undefined, pool?.stakingToken)
 
   const { token0Deposited, token1Deposited, balance } = usePosition(pool?.pair)
@@ -872,39 +873,51 @@ export default function StakingPoolDetail({
 
                 <LightCard padding={'0 10px 10px'} borderRadius={'20px'}>
                   <TxItemWrapper>
-                    {txs.result.map(tx => {
+                    {txsResult.map(tx => {
                       return (
                         <AutoRow key={tx.transaction.id} style={{ borderBottom: '1px solid #3D3E46' }}>
                           <TxItem>
-                            <TYPE.link
-                              as={ExternalLink}
-                              href={getEtherscanLink(chainId ?? 1, tx.transaction.id, 'transaction')}
-                            >
-                              {tx.title}
-                            </TYPE.link>
+                            <Skeleton loading={loading} width={120}>
+                              <TYPE.link
+                                as={ExternalLink}
+                                href={getEtherscanLink(chainId ?? 1, tx.transaction.id, 'transaction')}
+                              >
+                                {tx.title}
+                              </TYPE.link>
+                            </Skeleton>
                           </TxItem>
                           <TxItem>
-                            <TYPE.subHeader>{`≈$${amountFormat(tx.amountUSD, 2)}`}</TYPE.subHeader>
+                            <Skeleton loading={loading} width={120}>
+                              <TYPE.subHeader>{`≈$${amountFormat(tx.amountUSD, 2)}`}</TYPE.subHeader>
+                            </Skeleton>
                           </TxItem>
                           <TxItem>
-                            <TYPE.subHeader>{`${format.amountFormat(tx.amount0, 2)} ${
-                              tx.pair.token0.symbol
-                            }`}</TYPE.subHeader>
-                          </TxItem>
-                          <TxItem>
-                            <TYPE.subHeader>{`${format.amountFormat(tx.amount1, 2)} ${
-                              tx.pair.token1.symbol
-                            }`}</TYPE.subHeader>
-                          </TxItem>
-                          <TxItem>
-                            <ExternalLink href={`${getEtherscanLink(chainId || 1, tx.sender, 'address')}`}>
-                              <TYPE.subHeader style={{ color: '#fff' }}>{`${
-                                tx.sender ? shortenAddress(tx.sender) : ''
+                            <Skeleton loading={loading} width={120}>
+                              <TYPE.subHeader>{`${format.amountFormat(tx.amount0, 2)} ${
+                                tx.pair.token0.symbol
                               }`}</TYPE.subHeader>
-                            </ExternalLink>
+                            </Skeleton>
                           </TxItem>
                           <TxItem>
-                            <TYPE.subHeader>{`${formatUTCDate(tx.transaction.timestamp)}`}</TYPE.subHeader>
+                            <Skeleton loading={loading} width={120}>
+                              <TYPE.subHeader>{`${format.amountFormat(tx.amount1, 2)} ${
+                                tx.pair.token1.symbol
+                              }`}</TYPE.subHeader>
+                            </Skeleton>
+                          </TxItem>
+                          <TxItem>
+                            <Skeleton loading={loading} width={120}>
+                              <ExternalLink href={`${getEtherscanLink(chainId || 1, tx.sender, 'address')}`}>
+                                <TYPE.subHeader style={{ color: '#fff' }}>{`${
+                                  tx.sender ? shortenAddress(tx.sender) : ''
+                                }`}</TYPE.subHeader>
+                              </ExternalLink>
+                            </Skeleton>
+                          </TxItem>
+                          <TxItem>
+                            <Skeleton loading={loading} width={120}>
+                              <TYPE.subHeader>{`${formatUTCDate(tx.transaction.timestamp)}`}</TYPE.subHeader>
+                            </Skeleton>
                           </TxItem>
                         </AutoRow>
                       )
@@ -953,7 +966,7 @@ export default function StakingPoolDetail({
                         </Skeleton>
                       </TableTitle>
                       <AutoRow gap={'5px'}>
-                        <Skeleton loading={loading} width={24} height={24} radius={'50%'}>
+                        <Skeleton loading={loading} width={24} height={24}>
                           <CurrencyLogo currency={pool?.tokens[0]} />
                         </Skeleton>
                         <Skeleton loading={loading} width={120}>
@@ -965,7 +978,7 @@ export default function StakingPoolDetail({
                         </Skeleton>
                       </AutoRow>
                       <AutoRow gap={'5px'}>
-                        <Skeleton loading={loading} width={24} height={24} radius={'50%'}>
+                        <Skeleton loading={loading} width={24} height={24}>
                           <CurrencyLogo currency={pool?.tokens[1]} />
                         </Skeleton>
                         <Skeleton loading={loading} width={120}>
@@ -986,7 +999,7 @@ export default function StakingPoolDetail({
                         </Skeleton>
                       </TableTitle>
                       <AutoRow gap={'5px'}>
-                        <Skeleton loading={loading} width={24} height={24} radius={'50%'}>
+                        <Skeleton loading={loading} width={24} height={24}>
                           <CurrencyLogo currency={pool?.tokens[0]} />
                         </Skeleton>
                         <Skeleton loading={loading} width={120}>
@@ -1001,7 +1014,7 @@ export default function StakingPoolDetail({
                         </Skeleton>
                       </AutoRow>
                       <AutoRow gap={'5px'}>
-                        <Skeleton loading={loading} width={24} height={24} radius={'50%'}>
+                        <Skeleton loading={loading} width={24} height={24}>
                           <CurrencyLogo currency={pool?.tokens[1]} />
                         </Skeleton>
                         <Skeleton loading={loading} width={120}>
