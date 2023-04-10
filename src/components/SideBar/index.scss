@@ -12,7 +12,7 @@
     width: 30px;
     overflow: hidden;
     margin: 0 auto;
-    transition: all 0.25s;
+    transition: all 0.15s;
     flex-wrap: wrap;
     transform-origin: center;
     will-change: auto;
@@ -30,20 +30,20 @@
       display: flex !important;
       gap: 5px;
       transition: none;
-      animation: linkHover 0.5s linear;
-      transform-origin: left center;
+      animation: linkHover 0.3s linear;
+      transform-origin: center;
     }
   }
 
   @keyframes linkHover {
-    from {
-      transform: scale(0);
-      opacity: 0;
+    0% {
+      transform: scale(0.25);
     }
-
-    to {
+    50% {
+      transform: scale(0.5);
+    }
+    100% {
       transform: scale(1);
-      opacity: 1;
     }
   }
 }
