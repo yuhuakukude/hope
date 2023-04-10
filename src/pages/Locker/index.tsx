@@ -150,11 +150,11 @@ export default function DaoLocker() {
     const maxEndTime = moment(
       moment()
         .utc()
-        .add(4 * 365, 'days')
+        .add(208, 'week')
     )
     const lastEndTime = format.formatDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')
     const todayDiffEnd = moment(maxEndTime).diff(moment(lastEndTime), 'days')
-    return Math.floor(todayDiffEnd / 7)
+    return todayDiffEnd > 0 ? Math.floor(todayDiffEnd / 7) : 0
   }, [lockerRes])
 
   const isMaxDisabled = useMemo(() => {
