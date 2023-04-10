@@ -5,25 +5,43 @@
   transform-origin: left center;
 }
 
-#side-bar{
-  .a-link-box{
+#side-bar {
+  .a-link-box {
     display: flex !important;
     justify-content: space-between;
     width: 30px;
     overflow: hidden;
     margin: 0 auto;
-    transition: all 0.5s;
+    // transition: all 1s;
     flex-wrap: wrap;
-    .a-link, .icon-link{
+    transform-origin: center;
+
+    .a-link,
+    .icon-link {
       width: 30px;
       height: 30px;
     }
   }
-  &:hover{
-    .a-link-box{
+
+  &:hover {
+    .a-link-box {
       width: 180px;
       display: flex !important;
       gap: 5px;
+      animation: linkHover 0.5s linear;
+      transform-origin: left center;
+    }
+  }
+
+  @keyframes linkHover {
+    from {
+      transform: scale(0);
+      opacity: 0;
+    }
+
+    to {
+      transform: scale(1);
+      opacity: 1;
     }
   }
 }
