@@ -449,7 +449,9 @@ export default function Staking() {
                   <div className="flex jc-between">
                     <span className="text-normal">{curType === 'stake' ? 'Stake' : 'Unstake (It takes 28 days)'}</span>
                     <Skeleton
-                      loading={curType === 'stake' ? hopeBal === undefined : stakedVal === undefined}
+                      loading={
+                        curType === 'stake' ? hopeBal === undefined && !!account : stakedVal === undefined && !!account
+                      }
                       width={100}
                     >
                       <div className="text-normal font-nor">
@@ -655,7 +657,7 @@ export default function Staking() {
                         <div className="hope-icon"></div>
                         <div className="currency font-nor text-medium m-l-12">HOPE</div>
                       </div>
-                      <Skeleton loading={hopeBal === undefined || priceLoading} width={80}>
+                      <Skeleton loading={(hopeBal === undefined || priceLoading) && !!account} width={80}>
                         <span className="text-normal text-medium">
                           ≈ ${toUsdPrice(hopeBal?.toFixed(2), hopePrice) || '--'}
                         </span>
@@ -663,7 +665,7 @@ export default function Staking() {
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-white">Available</span>
-                      <Skeleton loading={hopeBal === undefined} width={50}>
+                      <Skeleton loading={hopeBal === undefined && !!account} width={50}>
                         <span className="text-white text-medium">
                           {hopeBal?.toFixed(2, { groupSeparator: ',' } ?? '-') || '--'}
                         </span>
@@ -690,7 +692,7 @@ export default function Staking() {
                         <div className="hope-icon"></div>
                         <div className="currency font-nor text-medium m-l-12">stHOPE</div>
                       </div>
-                      <Skeleton loading={stakedVal === undefined || priceLoading} width={80}>
+                      <Skeleton loading={(stakedVal === undefined || priceLoading) && !!account} width={80}>
                         <span className="text-normal text-medium">
                           ≈ ${toUsdPrice(stHopeBalance?.toFixed(2), stHopePrice) || '--'}
                         </span>
@@ -698,7 +700,7 @@ export default function Staking() {
                     </div>
                     <div className="flex jc-between m-b-20">
                       <span className="text-white">Available</span>
-                      <Skeleton loading={stakedVal === undefined} width={50}>
+                      <Skeleton loading={stakedVal === undefined && !!account} width={50}>
                         <span className="text-white text-medium">
                           {stakedVal?.toFixed(2, { groupSeparator: ',' }).toString() || '--'}
                         </span>
