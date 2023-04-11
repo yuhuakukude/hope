@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback } from 'react'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
 import { useLocker, useToLocker, conFnNameEnum } from '../../../../hooks/ahp/useLocker'
 import { InputNumber } from 'antd'
 import ActionButton from '../../../../components/Button/ActionButton'
@@ -17,7 +17,7 @@ import { useActionPending } from '../../../../state/transactions/hooks'
 import { getLTToken, getVELTToken } from 'utils/addressHelpers'
 
 export default function AddTime({ maxWeek }: { maxWeek: number }) {
-  const [weekNumber, setWeekNumber] = useState(maxWeek < 2 ? 0 : 2)
+  const [weekNumber, setWeekNumber] = useState(maxWeek < 1 ? 0 : 1)
   const { account, chainId } = useActiveWeb3React()
   const ltToken = useMemo(() => getLTToken(chainId), [chainId])
   const veltToken = useMemo(() => getVELTToken(chainId), [chainId])
@@ -45,20 +45,20 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
   const { toAddTimeLocker, getVeLtAmount } = useToLocker()
 
   const subWeekFn = () => {
-    if (weekNumber > 2) {
+    if (weekNumber > 1) {
       setWeekNumber(Number(weekNumber) - 1)
     }
   }
   const addWeekFn = () => {
-    if (weekNumber < maxWeek && maxWeek >= 2) {
+    if (weekNumber < maxWeek && maxWeek >= 1) {
       setWeekNumber(Number(weekNumber) + 1)
     }
   }
 
   const changeWeek = (val: any) => {
-    val = Number(val) || 2
-    if (val < 2) {
-      setWeekNumber(2)
+    val = Number(val) || 1
+    if (val < 1) {
+      setWeekNumber(1)
     } else if (val > maxWeek) {
       setWeekNumber(maxWeek)
     } else {
@@ -139,11 +139,6 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
       .then(hash => {
         setAttemptingTxn(false)
         setTxHash(hash)
-        if (maxWeek - weekNumber >= 2) {
-          setWeekNumber(2)
-        } else {
-          setWeekNumber(0)
-        }
         setPendingText(``)
       })
       .catch((err: any) => {
@@ -152,7 +147,13 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
         setPendingText(``)
         setErrorStatus({ code: err?.code, message: formatMessage(err) ?? err.message })
       })
-  }, [account, argTime, chainId, toAddTimeLocker, maxWeek, weekNumber])
+  }, [account, argTime, chainId, toAddTimeLocker])
+
+  useEffect(() => {
+    if (!isLocerkTimePending) {
+      setWeekNumber(maxWeek < 1 ? 0 : 1)
+    }
+  }, [isLocerkTimePending, maxWeek])
 
   return (
     <div>
@@ -170,19 +171,19 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
         <div className="time-box m-t-30">
           <p className="font-nor text-normal text-center">
             <Skeleton loading={lockerResLoading} width={265}>
-              The max. duration you can add is {maxWeek >= 2 ? maxWeek : 0} weeks
+              The max. duration you can add is {maxWeek} weeks
             </Skeleton>
           </p>
 
           <div className="week-box flex ai-center jc-center m-t-26">
             <span className="font-nor text-medium">Add</span>
             <div className="week-input-box m-x-20">
-              <i className={['iconfont', 'sub', weekNumber <= 2 && 'disabled'].join(' ')} onClick={subWeekFn}>
+              <i className={['iconfont', 'sub', weekNumber <= 1 && 'disabled'].join(' ')} onClick={subWeekFn}>
                 &#xe622;
               </i>
               <InputNumber
                 autoComplete="off"
-                defaultValue={2}
+                defaultValue={1}
                 value={weekNumber}
                 disabled={maxWeek < 2}
                 onChange={changeWeek}
@@ -190,7 +191,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
                 formatter={inpFormatter}
               />
               <i
-                className={['iconfont', 'add', (weekNumber >= maxWeek || maxWeek < 2) && 'disabled'].join(' ')}
+                className={['iconfont', 'add', (weekNumber >= maxWeek || maxWeek < 1) && 'disabled'].join(' ')}
                 onClick={addWeekFn}
               >
                 &#xe623;
@@ -230,7 +231,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
           <ActionButton
             pending={!!pendingText || isLocerkTimePending || isLocerkAmountPending}
             pendingText={isLocerkTimePending || isLocerkAmountPending ? 'Pending' : 'Confirm in your wallet'}
-            disableAction={!weekNumber || weekNumber < 2 || maxWeek < 2 || !ltBalance}
+            disableAction={!weekNumber || weekNumber < 1 || maxWeek < 1 || !ltBalance}
             actionText="Increase"
             onAction={lockerCallback}
           />
