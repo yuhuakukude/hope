@@ -187,30 +187,30 @@ export interface Overview {
 }
 
 export function usePairTxs(pairAddress: string, type?: string) {
-  // const defaultObj = {
-  //   title: '',
-  //   transaction: { id: '', timestamp: '' },
-  //   pair: {
-  //     token0: {
-  //       id: '',
-  //       symbol: ''
-  //     },
-  //     token1: {
-  //       id: '',
-  //       symbol: ''
-  //     }
-  //   },
-  //   sender: '',
-  //   amount0: 0,
-  //   amount1: 0,
-  //   amountUSD: 0
-  // }
   const [result, setResult] = useState<TxResponse[]>([])
   const [loading, setLoading] = useState<boolean>(false)
   // const [total, setTotal] = useState<number>(0)
 
   useEffect(() => {
     ;(async () => {
+      // const defaultObj = {
+      //   title: '',
+      //   transaction: { id: '', timestamp: '' },
+      //   pair: {
+      //     token0: {
+      //       id: '',
+      //       symbol: ''
+      //     },
+      //     token1: {
+      //       id: '',
+      //       symbol: ''
+      //     }
+      //   },
+      //   sender: '',
+      //   amount0: 0,
+      //   amount1: 0,
+      //   amountUSD: 0
+      // }
       // setResult([defaultObj, defaultObj])
       setLoading(true)
       try {

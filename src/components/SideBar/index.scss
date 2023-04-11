@@ -23,15 +23,23 @@
       height: 30px;
     }
   }
+  .text-link-box{
+    margin-top: 30px;
+  }
 
   &:hover {
-    .a-link-box {
+    .a-link-box, .text-link-box{
       width: 180px;
       display: flex !important;
       gap: 5px;
       transition: none;
       animation: linkHover 0.3s linear;
       transform-origin: center;
+    }
+    .text-link-box{
+      justify-content: space-between;
+      padding: 0 10px;
+      margin: 20px auto;
     }
   }
 

@@ -190,7 +190,7 @@ export default function AddTime({ maxWeek }: { maxWeek: number }) {
                 formatter={inpFormatter}
               />
               <i
-                className={['iconfont', 'add', weekNumber >= maxWeek || (maxWeek < 2 && 'disabled')].join(' ')}
+                className={['iconfont', 'add', (weekNumber >= maxWeek || maxWeek < 2) && 'disabled'].join(' ')}
                 onClick={addWeekFn}
               >
                 &#xe623;
