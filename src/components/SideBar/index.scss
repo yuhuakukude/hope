@@ -12,46 +12,119 @@
     width: 30px;
     overflow: hidden;
     margin: 0 auto;
-    transition: all 0.15s;
+    transition: all 0.5s;
     flex-wrap: wrap;
     transform-origin: center;
     will-change: auto;
-
+    height: 190px;
+    position: relative;
     .a-link,
     .icon-link {
       width: 30px;
       height: 30px;
     }
+    .icon-item {
+      position: absolute;
+      transition: all 0.5s;
+    }
+    .icon-item-1 {
+      bottom: 160px;
+    }
+    .icon-item-2 {
+      bottom: 120px;
+    }
+    .icon-item-3 {
+      bottom: 80px;
+    }
+    .icon-item-4 {
+      bottom: 40px;
+    }
+    .icon-item-5 {
+      bottom: 0;
+    }
   }
   .text-link-box{
     margin-top: 30px;
   }
-
   &:hover {
-    .a-link-box, .text-link-box{
+    .a-link-box {
       width: 180px;
-      display: flex !important;
-      gap: 5px;
-      transition: none;
-      animation: linkHover 0.3s linear;
-      transform-origin: center;
+      transition: all 0.5s;
+      .icon-item {
+        transform-origin: center;
+        bottom: 0;
+      }
+      .icon-item-1 {
+        animation: linkHoverItem1 0.5s linear;
+        left: 5px;
+      }
+      .icon-item-2 {
+        animation: linkHoverItem2 0.5s linear;
+        left: 40px;
+      }
+      .icon-item-3 {
+        animation: linkHoverItem3 0.5s linear;
+        left: 75px;
+      }
+      .icon-item-4 {
+        animation: linkHoverItem4 0.5s linear;
+        left: 110px;
+      }
+      .icon-item-5 {
+        animation: linkHoverItem5 0.5s linear;
+        left: 145px;
+      }
     }
     .text-link-box{
       justify-content: space-between;
       padding: 0 10px;
-      margin: 20px auto;
+      margin: 30px auto 0;
     }
   }
 
-  @keyframes linkHover {
+  @keyframes linkHoverItem1 {
     0% {
-      transform: scale(0.25);
-    }
-    50% {
-      transform: scale(0.5);
+      bottom: 160px;
     }
     100% {
-      transform: scale(1);
+      bottom: 0;
+      left: 5px;
+    }
+  }
+  @keyframes linkHoverItem2 {
+    0% {
+      bottom: 120px;
+    }
+    100% {
+      bottom: 0;
+      left: 40px;
+    }
+  }
+  @keyframes linkHoverItem3 {
+    0% {
+      bottom: 80px;
+    }
+    100% {
+      bottom: 0;
+      left: 75px;
+    }
+  }
+  @keyframes linkHoverItem4 {
+    0% {
+      bottom: 40px;
+    }
+    100% {
+      bottom: 0;
+      left: 110px;
+    }
+  }
+  @keyframes linkHoverItem5 {
+    0% {
+      bottom: 0px;
+    }
+    100% {
+      bottom: 0;
+      left: 145px;
     }
   }
 }
