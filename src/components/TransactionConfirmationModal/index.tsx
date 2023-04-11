@@ -114,7 +114,7 @@ function TransactionSubmittedContent({
             >
               {!success ? (
                 <RowFixed color={theme.primary1}>
-                  Add {currencyToAdd.symbol} to Metamask <StyledLogo src={MetaMaskLogo} />
+                  Add {currencyToAdd.symbol} to MetaMask <StyledLogo src={MetaMaskLogo} />
                 </RowFixed>
               ) : (
                 <RowFixed color={theme.primary1}>
