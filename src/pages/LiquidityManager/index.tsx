@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react'
+import React, { useEffect } from 'react'
 import AddLiquidity from '../AddLiquidity'
 import { RouteComponentProps, useHistory } from 'react-router-dom'
 import AppBody from '../AppBody'
@@ -15,9 +15,6 @@ import { useDispatch } from 'react-redux'
 import { AppDispatch } from '../../state'
 // import { Tooltip } from 'antd'
 // import { Info } from 'react-feather'
-
-import { WETH_ONLY } from '../../constants'
-import { useActiveWeb3React } from '../../hooks'
 
 const PageWrapper = styled(GapColumn)`
   width: 100%;
@@ -75,11 +72,6 @@ export default function LiquidityManager({
   const dispatch = useDispatch<AppDispatch>()
   const isRemove = history.location.pathname.includes('/withdraw')
 
-  const { chainId } = useActiveWeb3React()
-  const WETHADDR = useMemo(() => {
-    return WETH_ONLY[chainId ?? 1] ? WETH_ONLY[chainId ?? 1][0]['address'] : 'ETH'
-  }, [chainId])
-
   useEffect(() => {
     dispatch(mintTypeInput({ field: mintField.CURRENCY_A, typedValue: '', noLiquidity: false }))
     dispatch(mintTypeInput({ field: mintField.CURRENCY_B, typedValue: '', noLiquidity: false }))
@@ -134,8 +126,7 @@ export default function LiquidityManager({
               history.replace(
                 `/swap/liquidity/manager/deposit/${
                   !currencyIdA && !currencyIdB
-                    ? // ? 'ETH' eth disable reset
-                      `${WETHADDR}`
+                    ? 'ETH'
                     : currencyIdA && currencyIdB
                     ? currencyIdA + '/' + currencyIdB
                     : currencyIdA
@@ -153,8 +144,7 @@ export default function LiquidityManager({
               history.replace(
                 `/swap/liquidity/manager/withdraw/${
                   !currencyIdA && !currencyIdB
-                    ? // ? 'ETH' eth disable reset
-                      `${WETHADDR}`
+                    ? 'ETH'
                     : currencyIdA && currencyIdB
                     ? currencyIdA + '/' + currencyIdB
                     : currencyIdA
