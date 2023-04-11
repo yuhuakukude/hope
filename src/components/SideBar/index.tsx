@@ -158,19 +158,19 @@ export default function SideBar() {
           <Email className="icon-link disabled"></Email>
         </AutoColumn>
 
-        <AutoColumn gap={'18px'} style={{ marginTop: '30px' }}>
+        <AutoColumn gap={'18px'} className="text-link-box">
           <MenuText>
-            <a href={`https://hope.money/`} target="_blank" rel="noopener noreferrer">
+            <a href={`https://hope.money/`} target="_blank" rel="noopener noreferrer" className="text-link">
               About
             </a>
           </MenuText>
           <MenuText>
-            <a href={DOCS_URL['Main']} target="_blank" rel="noopener noreferrer">
+            <a href={DOCS_URL['Main']} target="_blank" rel="noopener noreferrer" className="text-link">
               Docs
             </a>
           </MenuText>
           <MenuText>
-            <a href={`${DOC_API}/bug-bounty.html`} target="_blank" rel="noopener noreferrer">
+            <a href={`${DOC_API}/bug-bounty.html`} target="_blank" rel="noopener noreferrer" className="text-link">
               Bug bounty
             </a>
           </MenuText>
