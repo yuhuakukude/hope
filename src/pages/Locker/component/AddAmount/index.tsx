@@ -245,7 +245,7 @@ export default function AddAmount() {
             </div>
           </div>
           <p className="m-t-30 font-nor flex jc-between">
-            <span className="text-normal">Your starting voting power will be:</span>
+            <span className="text-normal">Your voting power after the lock will be:</span>
             <Skeleton loading={lockerResLoading || isLocerkAmountPending || isLocerkTimePending} width={126}>
               <span className="text-medium">
                 {afterVeLtAmount
