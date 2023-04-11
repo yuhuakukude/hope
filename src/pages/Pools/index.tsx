@@ -215,6 +215,7 @@ export default function Pools() {
         <AutoRow>
           <ContentRow weight={typeFlag ? 1.5 : 1}>
             <Skeleton loading={loading} width={150} height={typeFlag ? 25 : 40}></Skeleton>
+            <Skeleton loading={loading} width={150} height={typeFlag ? 25 : 40}></Skeleton>
           </ContentRow>
           <ContentRow>
             <Skeleton loading={loading} width={120} height={typeFlag ? 25 : 40}></Skeleton>
