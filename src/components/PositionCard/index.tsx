@@ -48,6 +48,13 @@ const StyledPositionCard = styled(LightCard)<{ bgColor: any }>`
   }
 `
 
+const SmallCard = styled(TYPE.white)`
+  background-color: ${({ theme }) => theme.bg3};
+  border-radius: 6px;
+  font-size: 12px;
+  padding: 4px;
+`
+
 const ContentRow = styled(RowFixed)<{ weight?: number }>`
   flex: ${({ weight }) => (weight ? weight : 1)};
 `
@@ -283,7 +290,8 @@ export default function FullPositionCard({
               </TYPE.white>
             </AutoRow>
             <AutoRow>
-              <TYPE.main>Fee Rate: {feeRate ? `${feeRate * 100}%` : '--'}</TYPE.main>
+              <TYPE.main>Fee Rate: </TYPE.main>
+              {feeRate ? <SmallCard ml={10}>{`${feeRate * 100}%`}</SmallCard> : '--'}
             </AutoRow>
           </AutoColumn>
         </ContentRow>
