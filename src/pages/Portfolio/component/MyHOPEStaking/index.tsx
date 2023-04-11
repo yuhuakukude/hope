@@ -65,7 +65,7 @@ export default function MyHOPEStaking() {
       getHopeTokenAddress(chainId) ?? ''
     ]
   }, [chainId])
-  const { result: priceResult } = useTokenPriceObject(addresses)
+  const { result: priceResult, loading } = useTokenPriceObject(addresses)
   const hopePrice = useMemo(() => {
     let pr = '0'
     if (getHopeTokenAddress(chainId) && priceResult) {
@@ -101,7 +101,6 @@ export default function MyHOPEStaking() {
   const history = useHistory()
 
   const clearItem = useCallback(() => setItem(false), [])
-  const loading = !priceResult
   const columns: ColumnProps<IStaking>[] = [
     {
       title: 'Assets',
