@@ -132,9 +132,6 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
       )
     }
   }, [votingFee.stHope, claimableFees, getAllVoting, lockerRes])
-  const getAllData = (allList: any) => {
-    setAllData(allList)
-  }
 
   const feeClaimCallback = useCallback(
     async (amount: string) => {
@@ -311,7 +308,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                 </div>
               </div>
             </div>
-            <VotedList isShowAll={true} getAllData={getAllData} getVotingRewards={getVotingRewards}></VotedList>
+            <VotedList isShowAll={true} getAllData={setAllData} getVotingRewards={getVotingRewards}></VotedList>
           </>
         ) : (
           <div className="flex jc-center">

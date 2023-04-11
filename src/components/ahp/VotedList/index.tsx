@@ -625,6 +625,7 @@ const VotedList = ({
     setPageSize(Number(pageSize))
     setPageSearch(page, pageSize)
   }
+  const [locale] = useState({ emptyText: 'You have no Votes' })
 
   return (
     <>
@@ -644,7 +645,7 @@ const VotedList = ({
           className="hp-table"
           columns={columns}
           dataSource={tableData}
-          locale={{ emptyText: 'You have no Votes' }}
+          locale={locale}
         />
         {pageTotal > 0 && (
           <Row justify="flex-end" marginTop={12}>
