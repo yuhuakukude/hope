@@ -141,21 +141,36 @@ export default function SideBar() {
       </Column>
       <Column style={{ width: '100%' }}>
         <AutoColumn gap="10px" style={{ marginLeft: 'auto', marginRight: 'auto' }} className="a-link-box">
-          <a href="https://twitter.com/hope_ecosystem" target="_blank" rel="noopener noreferrer" className="a-link">
+          <a
+            href="https://twitter.com/hope_ecosystem"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="a-link icon-item icon-item-1"
+          >
             <Twitter className="icon-link"></Twitter>
           </a>
 
-          <a href="https://hope-ecosystem.medium.com/" target="_blank" rel="noopener noreferrer" className="a-link">
+          <a
+            href="https://hope-ecosystem.medium.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="a-link icon-item icon-item-2"
+          >
             <Medium className="icon-link"></Medium>
           </a>
 
-          <Telegram className="icon-link disabled"></Telegram>
+          <Telegram className="icon-link disabled icon-item icon-item-3"></Telegram>
 
-          <a href="https://discord.gg/hope-ecosystem" target="_blank" rel="noopener noreferrer" className="a-link">
+          <a
+            href="https://discord.gg/hope-ecosystem"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="a-link icon-item icon-item-4"
+          >
             <Discord className="icon-link"></Discord>
           </a>
 
-          <Email className="icon-link disabled"></Email>
+          <Email className="icon-link disabled icon-item icon-item-5"></Email>
         </AutoColumn>
 
         <AutoColumn gap={'18px'} className="text-link-box">
