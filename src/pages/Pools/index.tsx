@@ -214,25 +214,25 @@ export default function Pools() {
       <StyledPositionCard>
         <AutoRow>
           <ContentRow weight={typeFlag ? 1.5 : 1}>
-            <Skeleton loading={loading} width={150}></Skeleton>
+            <Skeleton loading={loading} width={150} height={typeFlag ? 25 : 40}></Skeleton>
           </ContentRow>
           <ContentRow>
-            <Skeleton loading={loading} width={120}></Skeleton>
+            <Skeleton loading={loading} width={120} height={typeFlag ? 25 : 40}></Skeleton>
           </ContentRow>
           <ContentRow>
-            <Skeleton loading={loading} width={120}></Skeleton>
+            <Skeleton loading={loading} width={120} height={typeFlag ? 25 : 40}></Skeleton>
           </ContentRow>
           <ContentRow>
-            <Skeleton loading={loading} width={120}></Skeleton>
+            <Skeleton loading={loading} width={120} height={typeFlag ? 25 : 40}></Skeleton>
           </ContentRow>
           <ContentRow gap={'10px'} weight={1.5}>
-            <Skeleton loading={loading} width={120}></Skeleton>
+            <Skeleton loading={loading} width={120} height={typeFlag ? 25 : 40}></Skeleton>
           </ContentRow>
           <ContentRow>
-            <Skeleton loading={loading} width={120}></Skeleton>
+            <Skeleton loading={loading} width={120} height={typeFlag ? 25 : 40}></Skeleton>
           </ContentRow>
           <ContentRow weight={typeFlag ? 0.1 : 0.6}>
-            <Skeleton loading={loading} width={50} marginAuto={true}></Skeleton>
+            <Skeleton loading={loading} width={50} height={typeFlag ? 25 : 40} marginAuto={true}></Skeleton>
           </ContentRow>
         </AutoRow>
       </StyledPositionCard>
