@@ -388,7 +388,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
                   toSearch()
                 }}
               >
-                Search {`${loading}`}
+                Search
               </ButtonPrimary>
             </div>
           ) : (
