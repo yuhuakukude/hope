@@ -27,6 +27,7 @@ export default function DaoGauge() {
   const voteRef = useRef<any>()
   const { account, chainId } = useActiveWeb3React()
   const [votiingData, setVotiingData] = useState({})
+  const [votiingLoading, setVotiingLoading] = useState<boolean>(false)
   const [gaugeList, setGaugeList] = useState([])
   const { lockerRes } = useLocker()
   const isShowTip = useMemo(() => {
@@ -49,12 +50,15 @@ export default function DaoGauge() {
   }, [veltBalance])
   async function initVotiingData() {
     try {
+      setVotiingLoading(true)
       const res = await GaugeApi.getGaugeVotiing()
       if (res && res.result) {
         setVotiingData(res.result)
       }
+      setVotiingLoading(false)
     } catch (error) {
       console.log(error)
+      setVotiingLoading(false)
     }
   }
 
@@ -104,6 +108,7 @@ export default function DaoGauge() {
                 ref={voteRef}
                 updateTable={updateTable}
                 isNoVelt={isNoVelt}
+                loading={votiingLoading}
                 votiingData={votiingData}
                 gaugeList={gaugeList}
               />
