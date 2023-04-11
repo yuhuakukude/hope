@@ -13,6 +13,8 @@ import { useTokenPrice } from '../../../../hooks/liquidity/useBasePairs'
 import { toUsdPrice } from 'hooks/ahp/usePortfolio'
 import { DOCS_URL } from 'constants/config'
 import { getHopeTokenAddress } from 'utils/addressHelpers'
+import Skeleton from 'components/Skeleton'
+import { PortfolioData } from 'pages/Portfolio'
 // import Button from 'components/antd/Button'
 
 type EChartsOption = echarts.ComposeOption<TitleComponentOption | PieSeriesOption>
@@ -24,7 +26,7 @@ type IOptionItem = {
   tips: JSX.Element | string
 }
 
-export default function InvestmentAllocation({ data }: { data: any }) {
+export default function InvestmentAllocation({ data, loading }: { data?: PortfolioData; loading: boolean }) {
   const { chainId } = useActiveWeb3React()
   const addresses = useMemo(() => [getHopeTokenAddress(chainId)], [chainId])
   const { result: priceResult } = useTokenPrice(addresses)
@@ -39,27 +41,27 @@ export default function InvestmentAllocation({ data }: { data: any }) {
     const listData = [
       {
         name: 'HOPE Staking',
-        value: data.staking,
-        formatValue: format.amountFormat(data.staking, 2),
+        value: data?.staking,
+        formatValue: format.amountFormat(data?.staking, 2),
         tips:
           'The total value of tokens currently held in the HOPE Staking contract, including the transferable, unstaking, redeemable, and claimable reward portions of the address'
       },
       {
         name: 'Liquidity Pools',
-        value: data.lp,
-        formatValue: format.amountFormat(data.lp, 2),
+        value: data?.lp,
+        formatValue: format.amountFormat(data?.lp, 2),
         tips: 'Total value of assets redeemable from liquidity pools'
       },
       {
         name: 'Yield Farming',
-        value: data.yieldFarming,
-        formatValue: format.amountFormat(data.yieldFarming, 2),
+        value: data?.yieldFarming,
+        formatValue: format.amountFormat(data?.yieldFarming, 2),
         tips: 'Total value of LP Tokens staked and pending rewards'
       },
       {
         name: 'Locked LT & Profits',
-        value: data.profits,
-        formatValue: format.amountFormat(data.profits, 2),
+        value: data?.profits,
+        formatValue: format.amountFormat(data?.profits, 2),
         tips: (
           <>
             <div>
@@ -174,13 +176,20 @@ export default function InvestmentAllocation({ data }: { data: any }) {
               />
             </div>
             <div className="investment-allocation-total2">
-              <span className="text-medium">{format.amountFormat(data.totalHope, 2)} HOPE</span>
+              <span className="text-medium investment-allocation-total4">
+                <Skeleton loading={loading} width={150} height={30}>
+                  {format.amountFormat(data?.totalHope, 2)} HOPE
+                </Skeleton>
+              </span>
+
               <span className="investment-allocation-total3">
-                {' '}
-                ≈ $
-                {priceResult && priceResult[0] && priceResult[0].price
-                  ? toUsdPrice(data.totalHope, priceResult[0].price)
-                  : '0.00'}
+                <Skeleton loading={loading} width={46} height={14} ml={12}>
+                  {' '}
+                  ≈ $
+                  {priceResult && priceResult[0] && priceResult[0].price
+                    ? toUsdPrice(data?.totalHope, priceResult[0].price)
+                    : '0.00'}
+                </Skeleton>
               </span>
             </div>
           </div>
@@ -196,12 +205,18 @@ export default function InvestmentAllocation({ data }: { data: any }) {
                       <Tips title={item.tips} />
                     </span>
                   </div>
-                  <div className="investment-allocation-box-amount text-medium">≈ {item.formatValue} HOPE</div>
+                  <div className="investment-allocation-box-amount text-medium">
+                    <Skeleton loading={loading} width={94} height={16}>
+                      ≈ {item.formatValue} HOPE
+                    </Skeleton>
+                  </div>
                   <div className="investment-allocation-box-amount2">
-                    ≈ $
-                    {priceResult && priceResult[0] && priceResult[0].price
-                      ? toUsdPrice(item.value, priceResult[0].price)
-                      : '0.00'}
+                    <Skeleton loading={loading} width={46} height={14}>
+                      ≈ $
+                      {priceResult && priceResult[0] && priceResult[0].price
+                        ? toUsdPrice(item.value, priceResult[0].price)
+                        : '0.00'}
+                    </Skeleton>
                   </div>
                 </div>
               )

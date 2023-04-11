@@ -23,6 +23,14 @@ const PageWrapper = styled(AutoColumn)`
   width: 100%;
 `
 
+export type PortfolioData = {
+  staking: number
+  profits: string
+  lp: string
+  yieldFarming: string
+  totalHope: string
+}
+
 export default function Portfolio() {
   const { account } = useActiveWeb3React()
   const stHopeBalance = useStHopeBalance()
@@ -41,7 +49,7 @@ export default function Portfolio() {
       .toFixed(3)
   }
 
-  const allData = useMemo(() => {
+  const allData: PortfolioData | undefined = useMemo(() => {
     if (!account) {
       return
     }
@@ -70,6 +78,7 @@ export default function Portfolio() {
     }
   }, [stHopeBalance, stToHope, ltToHope, lockerLt, stHopeProfits, lpData, claRewards, account])
 
+  const [loading, setLoading] = useState(true)
   const getTokenPrice = useCallback(async () => {
     try {
       const query = `{
@@ -102,6 +111,8 @@ export default function Portfolio() {
       }
     } catch (error) {
       console.log(error)
+    } finally {
+      setLoading(false)
     }
   }, [])
 
@@ -128,7 +139,7 @@ export default function Portfolio() {
           <PortfolioConnect />
         ) : (
           <>
-            <InvestmentAllocation data={allData} />
+            <InvestmentAllocation data={allData} loading={loading} />
             <MyHOPEStaking />
             {/* <MyDepositedLiquidity /> */}
             <MyLiquidityPools getLpData={setLpTotal} />
