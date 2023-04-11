@@ -17,6 +17,8 @@ import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
 import './index.scss'
 import { DOCS_URL } from 'constants/config'
 import { getHopeTokenAddress, getLTTokenAddress, getStakingHopeGaugeAddress } from 'utils/addressHelpers'
+import { ColumnProps } from 'antd/lib/table'
+import { Skeleton2 } from 'components/Skeleton'
 
 interface IStaking {
   stHOPE: string
@@ -99,8 +101,8 @@ export default function MyHOPEStaking() {
   const history = useHistory()
 
   const clearItem = useCallback(() => setItem(false), [])
-
-  const columns: any = [
+  const loading = !priceResult
+  const columns: ColumnProps<IStaking>[] = [
     {
       title: 'Assets',
       dataIndex: 'Protocol',
@@ -112,7 +114,7 @@ export default function MyHOPEStaking() {
       dataIndex: 'boost',
       key: 'boost',
       render: (text: string) => {
-        return `${text}x`
+        return <Skeleton2 loading={loading}>`${text}x`</Skeleton2>
       }
     },
     {
@@ -120,7 +122,7 @@ export default function MyHOPEStaking() {
       dataIndex: 'stHOPE',
       key: 'stHOPE',
       render: (text: string, record: IStaking) => {
-        return <Item title={record.stHOPE} desc={record.usdOfStHOPE} />
+        return <Item title={record.stHOPE} desc={record.usdOfStHOPE} loading={loading} />
       }
     },
     {
@@ -128,7 +130,7 @@ export default function MyHOPEStaking() {
       dataIndex: 'unstaking',
       key: 'unstaking',
       render: (text: string, record: IStaking) => {
-        return <Item title={record.unstaking} desc={record.usdOfUnstaking} />
+        return <Item title={record.unstaking} desc={record.usdOfUnstaking} loading={loading} />
       }
     },
     {
@@ -136,7 +138,7 @@ export default function MyHOPEStaking() {
       dataIndex: 'unstaked',
       key: 'unstaked',
       render: (text: string, record: IStaking) => {
-        return <Item title={record.unstaked} desc={record.usdOfUnstaked} />
+        return <Item title={record.unstaked} desc={record.usdOfUnstaked} loading={loading} />
       }
     },
     {
@@ -144,7 +146,7 @@ export default function MyHOPEStaking() {
       dataIndex: 'claRewards',
       key: 'claRewards',
       render: (text: string, record: IStaking) => {
-        return <Item title={record.claRewards} desc={record.usdOfClaRewards} />
+        return <Item title={record.claRewards} desc={record.usdOfClaRewards} loading={loading} />
       }
     },
     {
@@ -195,7 +197,7 @@ export default function MyHOPEStaking() {
     <>
       <HopeStakingClaim item={item} clearItem={clearItem} />
       <Card title="My Single-Sided Staking">
-        {data.stHOPE !== '--' ? (
+        {data.stHOPE !== '--' || loading ? (
           <Table className="my-hope-staking-wrap" columns={columns} dataSource={[data]} pagination={false}></Table>
         ) : (
           <div className="flex jc-center">
