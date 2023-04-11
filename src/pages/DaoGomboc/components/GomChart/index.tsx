@@ -153,7 +153,7 @@ const GomChart = ({ votiingData }: GomChartProps) => {
     <div className="gom-chart-box">
       <h3 className="font-bolder text-white font-20">Gauge Weights</h3>
       <p className="m-t-20 text-white lh15 font-nor">
-        The distribution of $LT rewards between pools and protocols is governed by Gauge Weights, which will be updated
+        The distribution of LT rewards between pools and protocols is governed by Gauge Weights, which will be updated
         every voting cycle (currently set to one week).
       </p>
       <p className="m-t-20 text-white lh15 font-nor">

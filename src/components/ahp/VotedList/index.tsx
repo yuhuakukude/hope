@@ -25,6 +25,7 @@ import { Decimal } from 'decimal.js'
 import format, { formatMessage } from '../../../utils/format'
 import { useHistory } from 'react-router-dom'
 import { SymbolLogo } from 'components/CurrencyLogo'
+import Skeleton from '../../../components/Skeleton'
 import { getStakingHopeGaugeAddress, getSTHOPEToken, getVELTToken } from 'utils/addressHelpers'
 
 const VotedList = ({
@@ -40,6 +41,11 @@ const VotedList = ({
   const gomFeeDisContract = useGomFeeDisContract()
   const { account, chainId } = useActiveWeb3React()
   const [tableData, setTableData] = useState<any>([])
+  const [tableLoadingData] = useState<any>([
+    { id: '1', name: '1', allocated: '', voting: '', rewards: '', actions: '' },
+    { id: '2', name: '2', allocated: '', voting: '', rewards: '', actions: '' }
+  ])
+  const [tableDataLoading, setTableDataLoading] = useState<boolean>(false)
   const [allTableData, setAllTableData] = useState<any>([])
   const [curTableItem, setCurTableItem] = useState<any>({})
   const [curItemData, setCurItemData] = useState<any>({})
@@ -569,6 +575,98 @@ const VotedList = ({
     }
   ]
 
+  const loadingColumns: any = [
+    {
+      title: 'Gauges',
+      dataIndex: 'id',
+      render: () => {
+        return <Skeleton loading={tableDataLoading} width={80}></Skeleton>
+      },
+      key: 'id'
+    },
+    {
+      title: 'Composition',
+      dataIndex: 'name',
+      key: 'name',
+      render: () => {
+        return (
+          <div className="flex">
+            <Skeleton loading={tableDataLoading} width={16} height={16}></Skeleton>
+            <Skeleton loading={tableDataLoading} width={50} ml={6}></Skeleton>
+          </div>
+        )
+      }
+    },
+    {
+      title: 'Votes Allocation',
+      dataIndex: 'allocated',
+      key: 'allocated',
+      render: () => {
+        return (
+          <div>
+            <Skeleton loading={tableDataLoading} width={80}></Skeleton>
+            <Skeleton loading={tableDataLoading} width={80} mt={10}></Skeleton>
+          </div>
+        )
+      }
+    },
+    {
+      title: (
+        <>
+          veLT Balance{' '}
+          {isShowAll && allArg && allArg.add && allArg.add.length > 0 && (
+            <span
+              className="title-button"
+              onClick={() => {
+                toVoteAllCallback()
+              }}
+            >
+              Refresh All
+            </span>
+          )}
+        </>
+      ),
+      width: 235,
+      dataIndex: 'voting',
+      key: 'voting',
+      render: () => {
+        return (
+          <div>
+            <Skeleton loading={tableDataLoading} width={80}></Skeleton>
+            <Skeleton loading={tableDataLoading} width={80} mt={10}></Skeleton>
+          </div>
+        )
+      }
+    },
+    {
+      title: 'Voting Rewards',
+      dataIndex: 'rewards',
+      key: 'rewards',
+      render: () => {
+        return (
+          <div>
+            <Skeleton loading={tableDataLoading} width={80}></Skeleton>
+            <Skeleton loading={tableDataLoading} width={80} mt={10}></Skeleton>
+          </div>
+        )
+      }
+    },
+    {
+      title: 'Actions',
+      dataIndex: 'actions',
+      key: 'actions',
+      align: 'center',
+      width: 160,
+      render: () => {
+        return (
+          <div className="flex jc-center">
+            <Skeleton loading={tableDataLoading} width={85} height={30}></Skeleton>
+          </div>
+        )
+      }
+    }
+  ]
+
   const init = useCallback(async () => {
     const par = account ? `${account}`.toLocaleLowerCase() : ''
     const query = `{
@@ -594,6 +692,7 @@ const VotedList = ({
       }
     }`
     try {
+      setTableDataLoading(true)
       const response = await postQuery(SUBGRAPH, query)
       if (response && response.data && response.data.user && response.data.user.voteGauges) {
         const listData = response.data.user.voteGauges
@@ -603,8 +702,10 @@ const VotedList = ({
       } else {
         setTableData([])
       }
+      setTableDataLoading(false)
     } catch (error) {
       console.log(error)
+      setTableDataLoading(false)
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account])
@@ -639,14 +740,25 @@ const VotedList = ({
         currencyToAdd={curToken}
       />
       <div className="my-list-box">
-        <Table
-          rowKey={'id'}
-          pagination={false}
-          className="hp-table"
-          columns={columns}
-          dataSource={tableData}
-          locale={locale}
-        />
+        {tableDataLoading ? (
+          <Table
+            rowKey={'name'}
+            pagination={false}
+            className="hp-table"
+            columns={loadingColumns}
+            dataSource={tableLoadingData}
+          />
+        ) : (
+          <Table
+            rowKey={'id'}
+            pagination={false}
+            className="hp-table"
+            columns={columns}
+            dataSource={tableData}
+            locale={{ emptyText: 'You have no Votes' }}
+          />
+        )}
+
         {pageTotal > 0 && (
           <Row justify="flex-end" marginTop={12}>
             <Pagination

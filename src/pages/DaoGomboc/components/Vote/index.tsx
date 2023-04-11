@@ -22,6 +22,7 @@ import TransactionConfirmationModal, {
 import { useActionPending } from '../../../../state/transactions/hooks'
 import { Decimal } from 'decimal.js'
 import { formatMessage } from '../../../../utils/format'
+import Skeleton from '../../../../components/Skeleton'
 
 import moment from 'moment'
 import format from 'utils/format'
@@ -33,10 +34,11 @@ interface VoteProps {
   votiingData: any
   gaugeList: any
   isNoVelt: boolean
+  loading?: boolean
   updateTable: () => void
 }
 
-const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref: any) => {
+const VoteF = ({ votiingData, gaugeList, isNoVelt, loading, updateTable }: VoteProps, ref: any) => {
   const { account, chainId } = useActiveWeb3React()
   const toggleWalletModal = useWalletModalToggle()
   const gomConContract = useGomConContract()
@@ -403,25 +405,33 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
           <div className="flex-1">
             <p className="text-center text-gray">Day</p>
             <div className="flex jc-center m-t-8">
-              <div className="end-item">{cd.current > 0 && endTimeData.d ? endTimeData.d : '00'}</div>
+              <Skeleton loading={loading || false} width={86} height={56} radius={'10px'}>
+                <div className="end-item">{cd.current > 0 && endTimeData.d ? endTimeData.d : '00'}</div>
+              </Skeleton>
             </div>
           </div>
           <div className="flex-1">
             <p className="text-center text-gray">Hour</p>
             <div className="flex jc-center m-t-8">
-              <div className="end-item">{cd.current > 0 && endTimeData.h ? endTimeData.h : '00'}</div>
+              <Skeleton loading={loading || false} width={86} height={56} radius={'10px'}>
+                <div className="end-item">{cd.current > 0 && endTimeData.h ? endTimeData.h : '00'}</div>
+              </Skeleton>
             </div>
           </div>
           <div className="flex-1">
             <p className="text-center text-gray">Min</p>
             <div className="flex jc-center m-t-8">
-              <div className="end-item">{cd.current > 0 && endTimeData.m ? endTimeData.m : '00'}</div>
+              <Skeleton loading={loading || false} width={86} height={56} radius={'10px'}>
+                <div className="end-item">{cd.current > 0 && endTimeData.m ? endTimeData.m : '00'}</div>
+              </Skeleton>
             </div>
           </div>
           <div className="flex-1">
             <p className="text-center text-gray">Sec</p>
             <div className="flex jc-center m-t-8">
-              <div className="end-item">{cd.current > 0 && endTimeData.s ? endTimeData.s : '00'}</div>
+              <Skeleton loading={loading || false} width={86} height={56} radius={'10px'}>
+                <div className="end-item">{cd.current > 0 && endTimeData.s ? endTimeData.s : '00'}</div>
+              </Skeleton>
             </div>
           </div>
         </div>
@@ -451,12 +461,14 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
           <div className="flex jc-between m-t-30 m-b-10">
             <span className="text-normal">Vote weight:</span>
             {account && (
-              <p>
-                Unallocated Votes : {isNoVelt ? '0.00' : `${viewSubAmount}%`}
-                <span onClick={toMax} className="text-primary m-l-5 cursor-select">
-                  Max
-                </span>
-              </p>
+              <Skeleton loading={curPower.loading || loading || false} width={200}>
+                <p>
+                  Unallocated Votes : {isNoVelt ? '0.00' : `${viewSubAmount}%`}
+                  <span onClick={toMax} className="text-primary m-l-5 cursor-select">
+                    Max
+                  </span>
+                </p>
+              </Skeleton>
             )}
           </div>
           <div className="hp-amount-box vote-input-con">

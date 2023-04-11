@@ -6,7 +6,7 @@ import { ReactComponent as Twitter } from 'assets/svg/sidebar-twitter.svg'
 import { ReactComponent as Medium } from 'assets/svg/sidebar-medium.svg'
 import { ReactComponent as Telegram } from 'assets/svg/sidebar-telegram.svg'
 import { ReactComponent as Discord } from 'assets/svg/sidebar-discord.svg'
-import { ReactComponent as Email } from 'assets/svg/sidebar-email.svg'
+// import { ReactComponent as Email } from 'assets/svg/sidebar-email.svg'
 import { Text } from 'rebass'
 import { NavLink, useLocation } from 'react-router-dom'
 import { PrimaryText } from '../Text'
@@ -159,8 +159,14 @@ export default function SideBar() {
             <Medium className="icon-link"></Medium>
           </a>
 
-          <Telegram className="icon-link disabled icon-item icon-item-3"></Telegram>
-
+          <a
+            href="https://t.me/+9-N6Fa5D98JlYTk1"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="a-link icon-item icon-item-3"
+          >
+            <Telegram className="icon-link"></Telegram>
+          </a>
           <a
             href="https://discord.gg/hope-ecosystem"
             target="_blank"
@@ -170,7 +176,7 @@ export default function SideBar() {
             <Discord className="icon-link"></Discord>
           </a>
 
-          <Email className="icon-link disabled icon-item icon-item-5"></Email>
+          {/* <Email className="icon-link disabled icon-item icon-item-5"></Email> */}
         </AutoColumn>
 
         <AutoColumn gap={'18px'} className="text-link-box">
