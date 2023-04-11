@@ -142,7 +142,9 @@ const VotedList = ({
   const allocatedData = useSingleContractMultipleData(gomConContract, 'voteUserSlopes', argList)
   const pointData = useSingleContractMultipleData(gomConContract, 'voteVeLtPointHistory', epoArgList)
   const rewardsData = useSingleContractMultipleData(gomFeeDisContract, 'claimableTokens', claArgList)
-  const rewardsView = useMemo(() => {
+  const [rewardsView, setRrewardsView] = useState({})
+
+  useEffect(() => {
     const res: any = {}
     if (tableData.length > 0 && rewardsData.length > 0 && tableData.length === rewardsData.length) {
       rewardsData.forEach((e: any, index) => {
@@ -201,7 +203,7 @@ const VotedList = ({
       }
     })
     setAllData && setAllData(arr)
-    return res
+    setRrewardsView(res)
   }, [rewardsData, tableData, priceResult, chainId, setVotingFee, setAllData])
 
   const allocatedView = useMemo(() => {
