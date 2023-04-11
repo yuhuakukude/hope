@@ -461,12 +461,14 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, loading, updateTable }: VoteP
           <div className="flex jc-between m-t-30 m-b-10">
             <span className="text-normal">Vote weight:</span>
             {account && (
-              <p>
-                Unallocated Votes : {isNoVelt ? '0.00' : `${viewSubAmount}%`}
-                <span onClick={toMax} className="text-primary m-l-5 cursor-select">
-                  Max
-                </span>
-              </p>
+              <Skeleton loading={curPower.loading || loading || false} width={200}>
+                <p>
+                  Unallocated Votes : {isNoVelt ? '0.00' : `${viewSubAmount}%`}
+                  <span onClick={toMax} className="text-primary m-l-5 cursor-select">
+                    Max
+                  </span>
+                </p>
+              </Skeleton>
             )}
           </div>
           <div className="hp-amount-box vote-input-con">
