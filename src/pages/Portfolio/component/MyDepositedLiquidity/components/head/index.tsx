@@ -4,6 +4,7 @@ import React from 'react'
 import format from 'utils/format'
 import { TokenAmount } from '@uniswap/sdk'
 import './index.scss'
+import { Skeleton2 } from 'components/Skeleton'
 
 export interface IHeadItem {
   ltOfReward: string | number
@@ -16,12 +17,14 @@ export interface IHeadItem {
 export default function Head({
   totalVal,
   claimAll,
-  ltPrice
+  ltPrice,
+  loading
 }: {
   data: any[]
   claimAll: () => void
   ltPrice: any
   totalVal: TokenAmount
+  loading: boolean
 }) {
   return (
     <div className="pools-head-wrap">
@@ -36,13 +39,15 @@ export default function Head({
       </div>
       <div className="pools-head-bottom flex ai-center">
         <span className="pools-head-bottom-value text-medium">
-          {totalVal?.toFixed(2, { groupSeparator: ',' } ?? '0.00')} LT
+          <Skeleton2 loading={loading}>{totalVal?.toFixed(2, { groupSeparator: ',' } ?? '0.00')} LT</Skeleton2>
         </span>
         <span className="pools-head-bottom-value2">
-          ≈ $
-          {totalVal && ltPrice
-            ? format.amountFormat(Number(totalVal?.toExact().toString()) * Number(ltPrice), 2)
-            : '0.00'}
+          <Skeleton2 loading={loading}>
+            ≈ $
+            {totalVal && ltPrice
+              ? format.amountFormat(Number(totalVal?.toExact().toString()) * Number(ltPrice), 2)
+              : '0.00'}
+          </Skeleton2>
         </span>
       </div>
     </div>

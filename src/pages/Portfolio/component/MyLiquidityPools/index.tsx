@@ -35,6 +35,7 @@ import { getLTToken, getLTTokenAddress } from 'utils/addressHelpers'
 import { useBlockNumber } from 'state/application/hooks'
 import { ColumnProps } from 'antd/lib/table'
 import { Skeleton2 } from 'components/Skeleton'
+import { mockDataSource } from './mock'
 
 function toFixed(val: string | number, length = 2) {
   return format.amountFormat(val, length)
@@ -407,8 +408,8 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       <Card title="My Deposited Liquidity">
         {allTableData.length > 0 || loading ? (
           <>
-            <Head totalVal={totalVal} ltPrice={ltPrice} data={headData} claimAll={claimAll}></Head>
-            <Table columns={columns} dataSource={dataSource} loading={loading}></Table>
+            <Head loading={loading} totalVal={totalVal} ltPrice={ltPrice} data={headData} claimAll={claimAll}></Head>
+            <Table columns={columns} dataSource={loading ? mockDataSource : dataSource}></Table>
             {pageTotal > 0 && (
               <Row justify="flex-end" marginTop={12}>
                 <Pagination

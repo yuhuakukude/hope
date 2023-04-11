@@ -21,10 +21,11 @@ import { ButtonPrimary } from '../../../../components/Button'
 import { useTokenPriceObject } from '../../../../hooks/liquidity/useBasePairs'
 import { DOCS_URL } from 'constants/config'
 import { getStakingHopeGaugeAddress, getSTHOPEToken, getVELTToken } from 'utils/addressHelpers'
+import { Skeleton2 } from 'components/Skeleton'
 
 export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (stHope: string, lt: string) => void }) {
   const { account, chainId } = useActiveWeb3React()
-  const { lockerRes, veltTotalAmount } = useLocker()
+  const { lockerRes, veltTotalAmount, lockerResLoading } = useLocker()
   const { claimableFees } = usePortfolio()
   const veltBalance = useTokenBalance(account ?? undefined, getVELTToken(chainId))
   const [curWithType, setCurWithType] = useState<string>('all')
@@ -42,8 +43,8 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
   const { toGomFeeManyClaim } = useGomFeeManyClaim()
 
   const [unUseRateVal, setUnUseRateVal] = useState<string>('')
-  const [votingFee, setVotingFee] = useState<any>({ stHope: '0.00', toUsd: '0.00' })
-  const [allData, setAllData] = useState([])
+  const [votingFee, setVotingFee] = useState({ stHope: '0.00', toUsd: '0.00' })
+  const [allData, setAllData] = useState<any[]>([])
   const addresses = useMemo(() => [getStakingHopeGaugeAddress(chainId) ?? ''], [chainId])
   const { result: priceResult } = useTokenPriceObject(addresses)
   const stHopePrice = useMemo(() => {
@@ -116,10 +117,6 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
     setAttemptingTxn(false)
     setErrorStatus({ code: error?.code, message: formatMessage(error) ?? error.message })
   }, [])
-
-  const getVotingRewards = (stHope: string, toUsd: string) => {
-    setVotingFee({ stHope, toUsd })
-  }
 
   useEffect(() => {
     if (claimableFees) {
@@ -215,7 +212,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
         currencyToAdd={curToken}
       />
       <Card title="My Locked LT & DAO Rewards">
-        {lockerRes?.amount ? (
+        {lockerRes?.amount || lockerResLoading ? (
           <>
             <div className="my-locked-lt-content">
               <div className="my-locked-lt-row">
@@ -223,10 +220,14 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                   <div className="my-locked-lt-title">Total LT Locked</div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">
-                      ≈ {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}
+                      <Skeleton2 loading={lockerResLoading}>
+                        ≈ {lockerRes?.amount ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00') : '0.00'}
+                      </Skeleton2>
                     </span>
                     <span className="my-locked-lt-value2">
-                      Locked Until: {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
+                      <Skeleton2 loading={lockerResLoading}>
+                        Locked Until: {format.formatUTCDate(Number(`${lockerRes?.end}`), 'YYYY-MM-DD')}
+                      </Skeleton2>
                     </span>
                   </div>
                 </div>
@@ -241,9 +242,13 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                   </div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">
-                      ≈ {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
+                      <Skeleton2 loading={lockerResLoading}>
+                        ≈ {veltBalance?.toFixed(2, { groupSeparator: ',' } ?? '0.00', 0) || '0.00'} veLT
+                      </Skeleton2>
                     </span>
-                    <span className="my-locked-lt-value2">{unUseRateVal || '0.00'}% of Total</span>
+                    <span className="my-locked-lt-value2">
+                      <Skeleton2 loading={lockerResLoading}>{unUseRateVal || '0.00'}% of Total</Skeleton2>
+                    </span>
                   </div>
                 </div>
               </div>
@@ -273,10 +278,14 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                   </div>
                   <div className="my-locked-lt-desc">
                     <span className="my-locked-lt-value text-medium">
-                      ≈ {claimableFees?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} stHOPE
+                      <Skeleton2 loading={lockerResLoading}>
+                        ≈ {claimableFees?.toFixed(2, { groupSeparator: ',' } ?? '0.00') || '0.00'} stHOPE
+                      </Skeleton2>
                     </span>
                     <span className="my-locked-lt-value2">
-                      ≈ ${toUsdPrice(claimableFees?.toFixed(2), stHopePrice) || '--'}
+                      <Skeleton2 loading={lockerResLoading}>
+                        ≈ ${toUsdPrice(claimableFees?.toFixed(2), stHopePrice) || '--'}
+                      </Skeleton2>
                     </span>
                   </div>
                 </div>
@@ -302,13 +311,17 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                     )}
                   </div>
                   <div className="my-locked-lt-desc">
-                    <span className="my-locked-lt-value text-medium">≈ {votingFee.stHope} stHOPE</span>
-                    <span className="my-locked-lt-value2">≈ ${votingFee.toUsd}</span>
+                    <span className="my-locked-lt-value text-medium">
+                      <Skeleton2 loading={lockerResLoading}>≈ {votingFee.stHope} stHOPE</Skeleton2>
+                    </span>
+                    <span className="my-locked-lt-value2">
+                      <Skeleton2 loading={lockerResLoading}>≈ ${votingFee.toUsd}</Skeleton2>
+                    </span>
                   </div>
                 </div>
               </div>
             </div>
-            <VotedList isShowAll={true} getAllData={setAllData} getVotingRewards={getVotingRewards}></VotedList>
+            <VotedList isShowAll={true} setAllData={setAllData} setVotingFee={setVotingFee}></VotedList>
           </>
         ) : (
           <div className="flex jc-center">

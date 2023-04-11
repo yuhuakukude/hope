@@ -93,8 +93,8 @@ const SkeletonBox2 = styled.span<{
   background?: string
 }>`
   display: inline-block;
-  width: ${({ width }) => (width ? `${width}px` : '100%')};
-  height: ${({ height }) => (height ? `${height}px` : '16px')};
+  width: ${({ width }) => (width ? `${width}px` : 'initial')};
+  height: ${({ height }) => (height ? `${height}px` : 'initial')};
   margin-top: ${({ mt }) => (mt ? `${mt}px` : '0')};
   margin-left: ${({ ml, marginAuto }) => (marginAuto ? 'auto' : ml ? `${ml}px` : '0')};
   margin-right: ${({ mr, marginAuto }) => (marginAuto ? 'auto' : mr ? `${mr}px` : '0')};
@@ -158,7 +158,7 @@ export function Skeleton2({ loading, children, width, height, mt, ml, mr, mb, ra
       radius={radius}
       marginAuto={marginAuto}
     >
-      <div style={{ opacity: loading ? 0 : 1 }}>{children}</div>
+      <span style={{ opacity: loading ? 0 : 1 }}>{children}</span>
     </SkeletonBox2>
   )
 }
