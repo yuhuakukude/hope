@@ -22,6 +22,7 @@ import TransactionConfirmationModal, {
 import { useActionPending } from '../../../../state/transactions/hooks'
 import { Decimal } from 'decimal.js'
 import { formatMessage } from '../../../../utils/format'
+import Skeleton from '../../../../components/Skeleton'
 
 import moment from 'moment'
 import format from 'utils/format'
@@ -403,6 +404,7 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, updateTable }: VoteProps, ref
           <div className="flex-1">
             <p className="text-center text-gray">Day</p>
             <div className="flex jc-center m-t-8">
+              <Skeleton loading={false} width={86} height={56} radius={'10px'}></Skeleton>
               <div className="end-item">{cd.current > 0 && endTimeData.d ? endTimeData.d : '00'}</div>
             </div>
           </div>
