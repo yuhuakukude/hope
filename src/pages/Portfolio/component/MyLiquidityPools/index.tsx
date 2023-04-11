@@ -33,6 +33,8 @@ import ClaimRewardModal from 'components/earn/ClaimRewardModal'
 import { getLTToken, getLTTokenAddress } from 'utils/addressHelpers'
 
 import { useBlockNumber } from 'state/application/hooks'
+import { ColumnProps } from 'antd/lib/table'
+import { Skeleton2 } from 'components/Skeleton'
 
 function toFixed(val: string | number, length = 2) {
   return format.amountFormat(val, length)
@@ -46,7 +48,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
   const [currentPage, setCurrentPage] = useState<number>(1)
   const [pageSize, setPageSize] = useState<number>(10)
   const [pageTotal, setPageTotal] = useState<number>(0)
-  const [allTableData, setAllTableData] = useState<any>([])
+  const [allTableData, setAllTableData] = useState<ILiquidityPools[]>([])
   // const [headData, setHeadData] = useState<IHeadItem[]>([])
   const [showClaimModal, setShowClaimModal] = useState(false)
   const [stakingAddress, setStakingAddress] = useState('')
@@ -56,34 +58,38 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
   const ltPrice = useMemo(() => {
     return priceResult ? Number(priceResult[ltAddress[0].toLowerCase()]) : undefined
   }, [priceResult, ltAddress])
-
+  const [loading, setLoading] = useState(true)
   useEffect(() => {
     if (!account) {
       return
     }
-    PortfolioApi.getLiquidityPools(account).then(data => {
-      if (data.success && data.result) {
-        setAllTableData(data.result)
-        setPageTotal(data.result.length || 0)
-        setDataSource(data.result.slice(0, pageSize))
-        let lpTotal = 0
-        let yfTotal = 0
-        if (data.result && data.result.length > 0) {
-          data.result.forEach(e => {
-            if (e.hopeOfStakableLpBalance) {
-              lpTotal = new Decimal(lpTotal).add(new Decimal(Number(e.hopeOfStakableLpBalance))).toNumber()
-            }
-            if (e.hopeOfStakedLpBalance && e.hopeOfTotalReward) {
-              yfTotal = new Decimal(yfTotal)
-                .add(new Decimal(Number(e.hopeOfStakedLpBalance)))
-                .add(new Decimal(Number(e.hopeOfTotalReward)))
-                .toNumber()
-            }
-          })
+    PortfolioApi.getLiquidityPools(account)
+      .then(data => {
+        if (data.success && data.result) {
+          setAllTableData(data.result)
+          setPageTotal(data.result.length || 0)
+          setDataSource(data.result.slice(0, pageSize))
+          let lpTotal = 0
+          let yfTotal = 0
+          if (data.result && data.result.length > 0) {
+            data.result.forEach(e => {
+              if (e.hopeOfStakableLpBalance) {
+                lpTotal = new Decimal(lpTotal).add(new Decimal(Number(e.hopeOfStakableLpBalance))).toNumber()
+              }
+              if (e.hopeOfStakedLpBalance && e.hopeOfTotalReward) {
+                yfTotal = new Decimal(yfTotal)
+                  .add(new Decimal(Number(e.hopeOfStakedLpBalance)))
+                  .add(new Decimal(Number(e.hopeOfTotalReward)))
+                  .toNumber()
+              }
+            })
+          }
+          getLpData && getLpData(lpTotal, yfTotal)
         }
-        getLpData && getLpData(lpTotal, yfTotal)
-      }
-    })
+      })
+      .finally(() => {
+        setLoading(false)
+      })
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [account, blockNumber])
 
@@ -176,7 +182,8 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
 
   const [item, setItem] = useState<ILiquidityPools | IHeadItem[] | null>(null)
   const history = useHistory()
-  const columns: any = [
+
+  const columns: ColumnProps<ILiquidityPools>[] = [
     {
       title: 'Pools',
       dataIndex: 'composition',
@@ -184,6 +191,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       render: (text: string, record: ILiquidityPools) => {
         return (
           <Item
+            loading={loading}
             title={
               <>
                 <span>
@@ -206,6 +214,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
         return (
           <Item
             type={2}
+            loading={loading}
             title={
               <>
                 <div className="flex ai-center">
@@ -237,7 +246,13 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       dataIndex: 'lpBalance',
       key: 'lpBalance',
       render: (text: string, record: ILiquidityPools) => {
-        return <Item title={toFixed(record.lpBalance, 4)} desc={`${format.rate(record.stakedProportion)}  Staked`} />
+        return (
+          <Item
+            loading={loading}
+            title={toFixed(record.lpBalance, 4)}
+            desc={`${format.rate(record.stakedProportion)}  Staked`}
+          />
+        )
       }
     },
     {
@@ -253,6 +268,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       render: (text: string, record: ILiquidityPools) => {
         return (
           <Item
+            loading={loading}
             type={2}
             title={<>Current Boost: {record.currentBoost || '--'}</>}
             desc={<>Next Boost: {record.futureBoost || '--'}</>}
@@ -268,16 +284,20 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       render: (text: string, record: ILiquidityPools) => {
         return (
           <AutoColumn gap={'10px'}>
-            <AutoRow>
-              <TYPE.main>Fees:&nbsp;</TYPE.main>
-              <TYPE.white>{format.rate(record.feesApr)}</TYPE.white>
-            </AutoRow>
-            <AutoRow>
-              <TYPE.main>Rewards:&nbsp;</TYPE.main>
-              <TYPE.white>{format.rate(record.ltApr)}</TYPE.white>
-              {record.maxLtApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
-              <TYPE.green>{format.rate(record.maxLtApr)}</TYPE.green>
-            </AutoRow>
+            <Skeleton2 loading={loading}>
+              <AutoRow>
+                <TYPE.main>Fees:&nbsp;</TYPE.main>
+                <TYPE.white>{format.rate(record.feesApr)}</TYPE.white>
+              </AutoRow>
+            </Skeleton2>
+            <Skeleton2 loading={loading}>
+              <AutoRow>
+                <TYPE.main>Rewards:&nbsp;</TYPE.main>
+                <TYPE.white>{format.rate(record.ltApr)}</TYPE.white>
+                {record.maxLtApr && <ArrowUpRight color={'#0ECB81'} size={14} style={{ margin: '0 4px' }} />}
+                <TYPE.green>{format.rate(record.maxLtApr)}</TYPE.green>
+              </AutoRow>
+            </Skeleton2>
           </AutoColumn>
         )
       }
@@ -290,6 +310,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
         if (record.gauge) {
           return (
             <Item
+              loading={loading}
               title={
                 conRewData[record.gauge] && conRewData[record.gauge].conTotalReward
                   ? `${conRewData[record.gauge].conTotalReward.toFixed(4, { groupSeparator: ',' })} LT`
@@ -306,7 +327,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
             />
           )
         }
-        return <Item title={'0.0000 LT'} desc={'≈ $ 0.00'} />
+        return <Item loading={loading} title={'0.0000 LT'} desc={'≈ $ 0.00'} />
       }
     },
     {
@@ -384,10 +405,10 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
         />
       )}
       <Card title="My Deposited Liquidity">
-        {allTableData.length > 0 ? (
+        {allTableData.length > 0 || loading ? (
           <>
             <Head totalVal={totalVal} ltPrice={ltPrice} data={headData} claimAll={claimAll}></Head>
-            <Table columns={columns} dataSource={dataSource}></Table>
+            <Table columns={columns} dataSource={dataSource} loading={loading}></Table>
             {pageTotal > 0 && (
               <Row justify="flex-end" marginTop={12}>
                 <Pagination

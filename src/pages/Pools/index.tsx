@@ -214,25 +214,89 @@ export default function Pools() {
       <StyledPositionCard>
         <AutoRow>
           <ContentRow weight={typeFlag ? 1.5 : 1}>
-            <Skeleton loading={loading} width={150} height={typeFlag ? 25 : 40}></Skeleton>
+            {typeFlag ? (
+              <>
+                <Skeleton bg2={true} loading={loading} width={25} height={25}></Skeleton>
+                <Skeleton bg2={true} loading={loading} width={25} height={25} ml={3}></Skeleton>
+                <Skeleton bg2={true} loading={loading} width={80} height={25} ml={3}></Skeleton>
+              </>
+            ) : (
+              <>
+                <div style={{ display: 'bloock' }}>
+                  <div className="flex">
+                    <Skeleton bg2={true} loading={loading} width={24} height={24}></Skeleton>
+                    <Skeleton bg2={true} loading={loading} width={24} height={24} ml={3}></Skeleton>
+                    <Skeleton bg2={true} loading={loading} width={50} height={24} ml={3}></Skeleton>
+                  </div>
+                  <Skeleton bg2={true} loading={loading} width={104} height={14} mt={5}></Skeleton>
+                </div>
+              </>
+            )}
           </ContentRow>
           <ContentRow>
-            <Skeleton loading={loading} width={120} height={typeFlag ? 25 : 40}></Skeleton>
+            {typeFlag ? (
+              <Skeleton bg2={true} loading={loading} width={120} height={25}></Skeleton>
+            ) : (
+              <div style={{ display: 'bloock' }}>
+                <div className="flex">
+                  <Skeleton bg2={true} loading={loading} width={16} height={16}></Skeleton>
+                  <Skeleton bg2={true} loading={loading} width={80} height={16} ml={3}></Skeleton>
+                </div>
+                <div className="flex m-t-5">
+                  <Skeleton bg2={true} loading={loading} width={16} height={16}></Skeleton>
+                  <Skeleton bg2={true} loading={loading} width={80} height={16} ml={3}></Skeleton>
+                </div>
+              </div>
+            )}
           </ContentRow>
           <ContentRow>
-            <Skeleton loading={loading} width={120} height={typeFlag ? 25 : 40}></Skeleton>
+            {typeFlag ? (
+              <Skeleton bg2={true} loading={loading} width={100} height={25}></Skeleton>
+            ) : (
+              <div style={{ display: 'bloock' }}>
+                <Skeleton bg2={true} loading={loading} width={100} height={16}></Skeleton>
+                <Skeleton bg2={true} loading={loading} width={100} height={16} mt={5}></Skeleton>
+              </div>
+            )}
           </ContentRow>
           <ContentRow>
-            <Skeleton loading={loading} width={120} height={typeFlag ? 25 : 40}></Skeleton>
+            {typeFlag ? (
+              <Skeleton bg2={true} loading={loading} width={100} height={25}></Skeleton>
+            ) : (
+              <div style={{ display: 'bloock' }}>
+                <Skeleton bg2={true} loading={loading} width={100} height={16}></Skeleton>
+                <Skeleton bg2={true} loading={loading} width={100} height={16} mt={5}></Skeleton>
+              </div>
+            )}
           </ContentRow>
           <ContentRow gap={'10px'} weight={1.5}>
-            <Skeleton loading={loading} width={120} height={typeFlag ? 25 : 40}></Skeleton>
+            {typeFlag ? (
+              <Skeleton bg2={true} loading={loading} width={100} height={25}></Skeleton>
+            ) : (
+              <div style={{ display: 'bloock' }}>
+                <Skeleton bg2={true} loading={loading} width={100} height={16}></Skeleton>
+                <Skeleton bg2={true} loading={loading} width={100} height={16} mt={5}></Skeleton>
+              </div>
+            )}
           </ContentRow>
           <ContentRow>
-            <Skeleton loading={loading} width={120} height={typeFlag ? 25 : 40}></Skeleton>
+            {typeFlag ? (
+              <Skeleton bg2={true} loading={loading} width={100} height={25}></Skeleton>
+            ) : (
+              <div style={{ display: 'bloock' }}>
+                <Skeleton bg2={true} loading={loading} width={100} height={16}></Skeleton>
+                <Skeleton bg2={true} loading={loading} width={100} height={16} mt={5}></Skeleton>
+              </div>
+            )}
           </ContentRow>
           <ContentRow weight={typeFlag ? 0.1 : 0.6}>
-            <Skeleton loading={loading} width={50} height={typeFlag ? 25 : 40} marginAuto={true}></Skeleton>
+            <Skeleton
+              bg2={true}
+              loading={loading}
+              width={typeFlag ? 50 : 80}
+              height={typeFlag ? 25 : 30}
+              marginAuto={true}
+            ></Skeleton>
           </ContentRow>
         </AutoRow>
       </StyledPositionCard>
