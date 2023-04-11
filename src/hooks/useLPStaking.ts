@@ -193,25 +193,6 @@ export function usePairTxs(pairAddress: string, type?: string) {
 
   useEffect(() => {
     ;(async () => {
-      // const defaultObj = {
-      //   title: '',
-      //   transaction: { id: '', timestamp: '' },
-      //   pair: {
-      //     token0: {
-      //       id: '',
-      //       symbol: ''
-      //     },
-      //     token1: {
-      //       id: '',
-      //       symbol: ''
-      //     }
-      //   },
-      //   sender: '',
-      //   amount0: 0,
-      //   amount1: 0,
-      //   amountUSD: 0
-      // }
-      // setResult([defaultObj, defaultObj])
       setLoading(true)
       try {
         const data = await fetchPairTxs(pairAddress, type)
@@ -224,7 +205,6 @@ export function usePairTxs(pairAddress: string, type?: string) {
         console.error('useOverviewData', error)
       }
     })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [pairAddress, type])
 
   return {

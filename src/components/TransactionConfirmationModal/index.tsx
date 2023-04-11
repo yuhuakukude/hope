@@ -7,7 +7,7 @@ import { Text } from 'rebass'
 import { CloseIcon } from '../../theme/components'
 import { RowBetween, RowFixed } from '../Row'
 import { CheckCircle } from 'react-feather'
-import { ButtonPrimary, ButtonLight } from '../Button'
+import { ButtonPrimary, ButtonOutlined } from '../Button'
 import { AutoColumn, ColumnCenter } from '../Column'
 import MetaMaskLogo from '../../assets/images/metamask.png'
 import { getEtherscanLink } from '../../utils'
@@ -104,24 +104,25 @@ function TransactionSubmittedContent({
             Transaction Submitted
           </Text>
           {currencyToAdd && library?.provider?.isMetaMask && (
-            <ButtonLight
+            <ButtonOutlined
+              primary
               mt={isToGauge ? '35px' : '80px'}
               height="56px"
               width="100%"
-              color="rgba(38, 38, 44, 1)"
+              color={theme.primary1}
               onClick={addToken}
             >
               {!success ? (
-                <RowFixed color="rgba(38, 38, 44, 1)">
+                <RowFixed color={theme.primary1}>
                   Add {currencyToAdd.symbol} to Metamask <StyledLogo src={MetaMaskLogo} />
                 </RowFixed>
               ) : (
-                <RowFixed color="rgba(38, 38, 44, 1)">
+                <RowFixed color={theme.primary1}>
                   Added {currencyToAdd.symbol}{' '}
                   <CheckCircle size={'16px'} stroke={theme.green1} style={{ marginLeft: '6px' }} />
                 </RowFixed>
               )}
-            </ButtonLight>
+            </ButtonOutlined>
           )}
           {chainId && hash && (
             <ExternalLink href={getEtherscanLink(chainId, hash, 'transaction')}>
