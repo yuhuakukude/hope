@@ -120,7 +120,7 @@ export default function MyDepositedLiquidity() {
           </ColumnCenter>
         ) : pairInfos.length > 0 ? (
           <>
-            <Head totalVal={totalVal} ltPrice={ltPrice} data={headData} claimAll={claimAll}></Head>
+            <Head loading={loading} totalVal={totalVal} ltPrice={ltPrice} data={headData} claimAll={claimAll}></Head>
             <TableWrapper>
               <TableTitleWrapper>
                 {positionTitles.map(({ value, weight, alignCenter }, index) => (

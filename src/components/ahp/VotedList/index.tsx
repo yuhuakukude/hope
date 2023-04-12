@@ -1,3 +1,4 @@
+// @ts-nocheck
 import React, { useState, useCallback, useEffect, useMemo } from 'react'
 import './index.scss'
 import Table from 'components/antd/Table'
@@ -27,21 +28,31 @@ import { useHistory } from 'react-router-dom'
 import { SymbolLogo } from 'components/CurrencyLogo'
 import Skeleton from '../../../components/Skeleton'
 import { getStakingHopeGaugeAddress, getSTHOPEToken, getVELTToken } from 'utils/addressHelpers'
+import { ColumnProps } from 'antd/lib/table'
+
+type ITableLoadingItem = {
+  id: string
+  name: string
+  allocated: string
+  voting: string
+  rewards: string
+  actions: string
+}
 
 const VotedList = ({
-  getVotingRewards,
-  getAllData,
+  setVotingFee,
+  setAllData,
   isShowAll
 }: {
-  getVotingRewards?: (stHope: string, toUsd: string) => void
-  getAllData?: (list: any) => void
+  setVotingFee?: (fee: { stHope: string; toUsd: string }) => void
+  setAllData?: (list: any[]) => void
   isShowAll: boolean
 }) => {
   const gomConContract = useGomConContract()
   const gomFeeDisContract = useGomFeeDisContract()
   const { account, chainId } = useActiveWeb3React()
   const [tableData, setTableData] = useState<any>([])
-  const [tableLoadingData] = useState<any>([
+  const [tableLoadingData] = useState<ITableLoadingItem[]>([
     { id: '1', name: '1', allocated: '', voting: '', rewards: '', actions: '' },
     { id: '2', name: '2', allocated: '', voting: '', rewards: '', actions: '' }
   ])
@@ -63,11 +74,7 @@ const VotedList = ({
   const veltBalance = useTokenBalance(account ?? undefined, veltToken)
 
   const isNoVelt = useMemo(() => {
-    let res = false
-    if (veltBalance && Number(veltBalance.toFixed(2)) <= 0) {
-      res = true
-    }
-    return res
+    return !!veltBalance && Number(veltBalance.toFixed(2)) <= 0
   }, [veltBalance])
 
   // modal and loading
@@ -135,7 +142,9 @@ const VotedList = ({
   const allocatedData = useSingleContractMultipleData(gomConContract, 'voteUserSlopes', argList)
   const pointData = useSingleContractMultipleData(gomConContract, 'voteVeLtPointHistory', epoArgList)
   const rewardsData = useSingleContractMultipleData(gomFeeDisContract, 'claimableTokens', claArgList)
-  const rewardsView = useMemo(() => {
+  const [rewardsView, setRrewardsView] = useState({})
+
+  useEffect(() => {
     const res: any = {}
     if (tableData.length > 0 && rewardsData.length > 0 && tableData.length === rewardsData.length) {
       rewardsData.forEach((e: any, index) => {
@@ -164,7 +173,7 @@ const VotedList = ({
       stHope = new Decimal(stHope).add(new Decimal(Number(item.value))).toNumber()
       toUsd = new Decimal(toUsd).add(new Decimal(Number(item.usdOfValue))).toNumber()
     })
-    getVotingRewards && getVotingRewards(format.amountFormat(stHope, 2), format.amountFormat(toUsd, 2))
+    setVotingFee && setVotingFee({ stHope: format.amountFormat(stHope, 2), toUsd: format.amountFormat(toUsd, 2) })
     const arr: any = []
     tableData.forEach((e: any) => {
       const addr = e.gauge.id
@@ -193,10 +202,9 @@ const VotedList = ({
         arr.push(item)
       }
     })
-    getAllData && getAllData(arr)
-    return res
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rewardsData, tableData, priceResult, chainId])
+    setAllData && setAllData(arr)
+    setRrewardsView(res)
+  }, [rewardsData, tableData, priceResult, chainId, setVotingFee, setAllData])
 
   const allocatedView = useMemo(() => {
     const res: any = {}
@@ -417,7 +425,7 @@ const VotedList = ({
     [errorStatus, curItemData, gomFeeClaimCallback]
   )
 
-  const columns: any = [
+  const columns: ColumnProps<unknown>[] = [
     {
       title: 'Gauges',
       dataIndex: 'id',
@@ -575,7 +583,7 @@ const VotedList = ({
     }
   ]
 
-  const loadingColumns: any = [
+  const loadingColumns: ColumnProps<ITableLoadingItem>[] = [
     {
       title: 'Gauges',
       dataIndex: 'id',
@@ -716,12 +724,12 @@ const VotedList = ({
     }
   }, [init, account])
 
-  const setPageSearch = (page: number, pagesize: number) => {
+  const setPageSearch = (page: number, pagesize: number = 10) => {
     const resList = allTableData?.slice((page - 1) * pagesize, Number(pagesize) + (page - 1) * pagesize)
     setTableData(resList)
   }
 
-  const onPagesChange = (page: any, pageSize: any) => {
+  const onPagesChange = (page: number, pageSize?: number) => {
     setCurrentPage(Number(page))
     setPageSize(Number(pageSize))
     setPageSearch(page, pageSize)
@@ -779,5 +787,6 @@ const VotedList = ({
     </>
   )
 }
+
 // const GomList = forwardRef(GomListF)
 export default VotedList

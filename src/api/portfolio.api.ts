@@ -80,36 +80,37 @@ export interface ILiquidityPools {
   pair: string
   composition: string
   feeRate: string
-  token0Balance: number
+  token0Balance: number|string
   token0Address: string
-  token1Balance: number
+  token1Balance: number|string
   token1Address: string
-  lpBalance: number
-  hopeOfLpBalance: number
-  stakedLpBalance: number
-  hopeOfStakedLpBalance: number
-  stakedProportion: number
-  currentBoost: number
-  futureBoost: number
-  feesApr: number
-  ltApr: number
-  maxLtApr: number
-  boost: number
-  maxBoost: number
+  lpBalance: number|string
+  stakableLpBalance: number|string
+  hopeOfLpBalance: number|string
+  stakedLpBalance: number|string
+  hopeOfStakedLpBalance: number|string
+  stakedProportion: number|string
+  currentBoost: number|string
+  futureBoost: number|string
+  feesApr: number|string
+  ltApr: number|string
+  maxLtApr: number|string
+  boost: number|string
+  maxBoost: number|string
   rewardSymbol: string
-  ltTotalReward: number
-  usdOfTotalReward: number
-  hopeOfTotalReward: number
-  ltOfReward: number
-  usdOfReward: number
-  usdOfExtReward: number
-  ltOfExtReward: number
-  hopeOfStakableLpBalance: number
+  ltTotalReward: number|string
+  usdOfTotalReward: number|string
+  hopeOfTotalReward: number|string
+  ltOfReward: number|string
+  usdOfReward: number|string
+  usdOfExtReward: number|string
+  ltOfExtReward: number|string
+  hopeOfStakableLpBalance: number|string
   extRewardList: {
     symbol: string
     tokenAddress: string
-    amount: number
-    usdOfToken: number
+    amount: number|string
+    usdOfToken: number|string
   }[]
 }
 
