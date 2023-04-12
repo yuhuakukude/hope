@@ -122,12 +122,15 @@ function Web3StatusInner() {
       <Web3StatusConnected id="web3-status-connected" onClick={toggleWalletModal} pending={hasPendingTransactions}>
         {hasPendingTransactions ? (
           <RowBetween>
-            <Text className="lh15">{pending?.length} Pending</Text> <Loader stroke="white" />
+            <Text className="lh15" style={{ fontFamily: 'Arboria-Medium' }}>
+              {pending?.length} Pending
+            </Text>{' '}
+            <Loader stroke="white" />
           </RowBetween>
         ) : (
           <>
             {hasSocks ? SOCK : null}
-            <Text>{ENSName || shortenAddress(account)}</Text>
+            <Text style={{ fontFamily: 'Arboria-Medium' }}>{ENSName || shortenAddress(account)}</Text>
           </>
         )}
       </Web3StatusConnected>
@@ -136,13 +139,15 @@ function Web3StatusInner() {
     return (
       <Web3StatusError onClick={toggleWalletModal}>
         <NetworkIcon />
-        <Text>{error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error'}</Text>
+        <Text style={{ fontFamily: 'Arboria-Medium' }}>
+          {error instanceof UnsupportedChainIdError ? 'Wrong Network' : 'Error'}
+        </Text>
       </Web3StatusError>
     )
   } else {
     return (
       <Web3StatusConnect id="connect-wallet" onClick={toggleWalletModal} faded={!account}>
-        <Text>{t('Connect to a wallet')}</Text>
+        <Text style={{ fontFamily: 'Arboria-Medium' }}>{t('Connect to a wallet')}</Text>
       </Web3StatusConnect>
     )
   }

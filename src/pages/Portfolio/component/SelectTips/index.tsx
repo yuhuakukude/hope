@@ -10,7 +10,15 @@ export interface TitleTipsProps {
   onClick: (data: TitleTipsProps) => void
 }
 
-export default function TitleTips({ options, label }: { options: TitleTipsProps[]; label?: string | HTMLElement }) {
+export default function TitleTips({
+  options,
+  label,
+  noBorder
+}: {
+  options: TitleTipsProps[]
+  label?: string | HTMLElement
+  noBorder?: boolean
+}) {
   const getTitle = useCallback(
     () => (
       <div className="select-tips-list">
@@ -46,7 +54,7 @@ export default function TitleTips({ options, label }: { options: TitleTipsProps[
         overlayClassName="select-tips-tool"
         onVisibleChange={onVisibleChange}
       >
-        <span className="select-tips-more">
+        <span className={['select-tips-more', noBorder ? 'no-border' : ''].join(' ')}>
           {label ? label : 'More'}
           <i className={`iconfont ${visible ? 'iconfont-visible' : ''}`}>&#xe60d;</i>
         </span>

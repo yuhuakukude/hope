@@ -459,7 +459,7 @@ const VoteF = ({ votiingData, gaugeList, isNoVelt, loading, updateTable }: VoteP
             })}
           </Select>
           <div className="flex jc-between m-t-30 m-b-10">
-            <span className="text-normal">Vote weight:</span>
+            <span className="text-normal">Vote Weight:</span>
             {account && (
               <Skeleton loading={curPower.loading || loading || false} width={200}>
                 <p>

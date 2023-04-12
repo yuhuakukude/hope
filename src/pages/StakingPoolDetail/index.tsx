@@ -356,7 +356,7 @@ export default function StakingPoolDetail({
         <AutoColumn gap={'30px'} style={{ padding: 30 }}>
           <AutoColumn gap={'8px'}>
             <AutoRowBetween>
-              <AutoRow gap={'10px'}>
+              <AutoRow gap={'10px'} flex={2}>
                 <Skeleton loading={loading} width={38} height={24}>
                   <DoubleCurrencyLogo over size={24} currency0={pool?.pair.token0} currency1={pool?.pair.token1} />
                 </Skeleton>
@@ -366,7 +366,7 @@ export default function StakingPoolDetail({
                 </Skeleton>
               </AutoRow>
               <Skeleton loading={loading} width={150} height={18}>
-                <TYPE.white fontSize={18} fontWeight={700}>
+                <TYPE.white fontSize={18} fontWeight={700} flex={1} textAlign={'right'}>
                   {userTotalBalance ? userTotalBalance?.toFixed(4, { groupSeparator: ',' }) : '0.00'}
                 </TYPE.white>
               </Skeleton>
@@ -881,7 +881,7 @@ export default function StakingPoolDetail({
                   <AutoRow>
                     <TableTitle>
                       <div className="p-l-30">
-                        <SelectTips options={TransactionType} label={transactionType} />
+                        <SelectTips options={TransactionType} label={transactionType} noBorder={true} />
                       </div>
                     </TableTitle>
                     <TableTitle>Total Value</TableTitle>

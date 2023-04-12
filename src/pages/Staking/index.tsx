@@ -591,7 +591,7 @@ export default function Staking() {
                       </div>
                     </div>
                     <div className="flex jc-between m-b-20 font-nor">
-                      <span className="text-normal">Gauge relative weight</span>
+                      <span className="text-normal">Gauge Relative Weight</span>
                       <Skeleton loading={gomRelativeWeighLoading} width={50}>
                         <span className="text-white text-medium">{format.rate(relWeight)}</span>
                       </Skeleton>
