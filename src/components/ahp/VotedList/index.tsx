@@ -26,18 +26,9 @@ import { Decimal } from 'decimal.js'
 import format, { formatMessage } from '../../../utils/format'
 import { useHistory } from 'react-router-dom'
 import { SymbolLogo } from 'components/CurrencyLogo'
-import Skeleton from '../../../components/Skeleton'
 import { getStakingHopeGaugeAddress, getSTHOPEToken, getVELTToken } from 'utils/addressHelpers'
 import { ColumnProps } from 'antd/lib/table'
-
-type ITableLoadingItem = {
-  id: string
-  name: string
-  allocated: string
-  voting: string
-  rewards: string
-  actions: string
-}
+import LoadingList from './LoadingList'
 
 const VotedList = ({
   setVotingFee,
@@ -52,10 +43,6 @@ const VotedList = ({
   const gomFeeDisContract = useGomFeeDisContract()
   const { account, chainId } = useActiveWeb3React()
   const [tableData, setTableData] = useState<any>([])
-  const [tableLoadingData] = useState<ITableLoadingItem[]>([
-    { id: '1', name: '1', allocated: '', voting: '', rewards: '', actions: '' },
-    { id: '2', name: '2', allocated: '', voting: '', rewards: '', actions: '' }
-  ])
   const [tableDataLoading, setTableDataLoading] = useState<boolean>(false)
   const [allTableData, setAllTableData] = useState<any>([])
   const [curTableItem, setCurTableItem] = useState<any>({})
@@ -583,98 +570,6 @@ const VotedList = ({
     }
   ]
 
-  const loadingColumns: ColumnProps<ITableLoadingItem>[] = [
-    {
-      title: 'Gauges',
-      dataIndex: 'id',
-      render: () => {
-        return <Skeleton loading={tableDataLoading} width={80}></Skeleton>
-      },
-      key: 'id'
-    },
-    {
-      title: 'Composition',
-      dataIndex: 'name',
-      key: 'name',
-      render: () => {
-        return (
-          <div className="flex">
-            <Skeleton loading={tableDataLoading} width={16} height={16}></Skeleton>
-            <Skeleton loading={tableDataLoading} width={50} ml={6}></Skeleton>
-          </div>
-        )
-      }
-    },
-    {
-      title: 'Votes Allocation',
-      dataIndex: 'allocated',
-      key: 'allocated',
-      render: () => {
-        return (
-          <div>
-            <Skeleton loading={tableDataLoading} width={80}></Skeleton>
-            <Skeleton loading={tableDataLoading} width={80} mt={10}></Skeleton>
-          </div>
-        )
-      }
-    },
-    {
-      title: (
-        <>
-          veLT Balance{' '}
-          {isShowAll && allArg && allArg.add && allArg.add.length > 0 && (
-            <span
-              className="title-button"
-              onClick={() => {
-                toVoteAllCallback()
-              }}
-            >
-              Refresh All
-            </span>
-          )}
-        </>
-      ),
-      width: 235,
-      dataIndex: 'voting',
-      key: 'voting',
-      render: () => {
-        return (
-          <div>
-            <Skeleton loading={tableDataLoading} width={80}></Skeleton>
-            <Skeleton loading={tableDataLoading} width={80} mt={10}></Skeleton>
-          </div>
-        )
-      }
-    },
-    {
-      title: 'Voting Rewards',
-      dataIndex: 'rewards',
-      key: 'rewards',
-      render: () => {
-        return (
-          <div>
-            <Skeleton loading={tableDataLoading} width={80}></Skeleton>
-            <Skeleton loading={tableDataLoading} width={80} mt={10}></Skeleton>
-          </div>
-        )
-      }
-    },
-    {
-      title: 'Actions',
-      dataIndex: 'actions',
-      key: 'actions',
-      align: 'center',
-      width: 160,
-      render: () => {
-        return (
-          <div className="flex jc-center">
-            <Skeleton loading={tableDataLoading} width={85} height={30}></Skeleton>
-          </div>
-        )
-      }
-    }
-  ]
-
   const init = useCallback(async () => {
     const par = account ? `${account}`.toLocaleLowerCase() : ''
     const query = `{
@@ -724,7 +619,7 @@ const VotedList = ({
     }
   }, [init, account])
 
-  const setPageSearch = (page: number, pagesize: number = 10) => {
+  const setPageSearch = (page: number, pagesize = 10) => {
     const resList = allTableData?.slice((page - 1) * pagesize, Number(pagesize) + (page - 1) * pagesize)
     setTableData(resList)
   }
@@ -748,13 +643,7 @@ const VotedList = ({
       />
       <div className="my-list-box">
         {tableDataLoading ? (
-          <Table
-            rowKey={'name'}
-            pagination={false}
-            className="hp-table"
-            columns={loadingColumns}
-            dataSource={tableLoadingData}
-          />
+          <LoadingList loading={tableDataLoading}></LoadingList>
         ) : (
           <Table
             rowKey={'id'}

@@ -259,7 +259,9 @@ export default function Header({ headers }: { headers?: HeaderEvent[] }) {
                     marginRight: '5px'
                   }}
                 />
-                <Text>{CHAIN_ID_NETWORK_ARGUMENT[chainId as FormaticSupportedChains] ?? 'ETH'}</Text>
+                <Text style={{ fontFamily: 'Arboria-Medium' }}>
+                  {CHAIN_ID_NETWORK_ARGUMENT[chainId as FormaticSupportedChains] ?? 'ETH'}
+                </Text>
               </div>
             )}
             <Web3Status />

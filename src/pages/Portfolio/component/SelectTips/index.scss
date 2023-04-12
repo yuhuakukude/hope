@@ -8,7 +8,9 @@
     border-radius: 8px;
     background-color: #33333C;
     border: 0.5px solid #5A5A5B;
-
+    &.no-border{
+      border: none;
+    }
     .iconfont {
       font-size: 9px;
       margin-left: 5px;

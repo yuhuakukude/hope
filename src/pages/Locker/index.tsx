@@ -344,7 +344,7 @@ export default function DaoLocker() {
                       </p>
                       <p className="flex jc-between ai-center font-nor m-t-16">
                         <span className="text-normal">My LT Locked</span>
-                        <p className="flex ai-center">
+                        <span className="flex ai-center">
                           <span className="text-medium">
                             {lockerRes?.amount
                               ? lockerRes?.amount.toFixed(2, { groupSeparator: ',' } ?? '0.00')
@@ -359,7 +359,7 @@ export default function DaoLocker() {
                               Withdraw
                             </span>
                           )}
-                        </p>
+                        </span>
                       </p>
                       {lockerRes?.end && lockerRes?.end !== '--' && (
                         <p className="flex jc-between ai-center font-nor m-t-16">
