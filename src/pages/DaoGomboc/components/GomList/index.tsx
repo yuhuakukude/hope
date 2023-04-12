@@ -8,7 +8,6 @@ import { ButtonPrimary } from '../../../../components/Button'
 import GaugeApi from '../../../../api/gauge.api'
 import { useActiveWeb3React } from '../../../../hooks'
 import { TokenAmount } from '@uniswap/sdk'
-import Skeleton from '../../../../components/Skeleton'
 
 import { useSingleContractMultipleData } from '../../../../state/multicall/hooks'
 import { useGomConContract } from '../../../../hooks/useContract'
@@ -16,6 +15,7 @@ import VotedList from '../../../../components/ahp/VotedList'
 
 import { SymbolLogo } from 'components/CurrencyLogo'
 import { getLTToken, getStakingHopeGaugeAddress, getSTHOPEToken } from 'utils/addressHelpers'
+import LoadingList from './LoadingList'
 
 interface ListProps {
   toSetSelGom: (gauge: string) => void
@@ -26,10 +26,6 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
   const { account, chainId } = useActiveWeb3React()
   const [searchValue, setSearchValue] = useState('')
   const [tableData, setTableData] = useState<any>([])
-  const [tableLoadingData] = useState<any>([
-    { name: '1', composition: '', weight: '', ltRewards: '', gauge: '' },
-    { name: '2', composition: '', weight: '', ltRewards: '', gauge: '' }
-  ])
   const [baseTableData, setBaseTableData] = useState<any>([])
   const [curType, setCurType] = useState('all')
   const stakingAddress = useMemo(() => `${getStakingHopeGaugeAddress(chainId)}`.toLocaleLowerCase(), [chainId])
@@ -219,68 +215,6 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
     }
   ]
   const [loading, setLoading] = useState(true)
-  const loadingColumns: any = [
-    {
-      title: 'Gauges',
-      dataIndex: 'name',
-      key: 'name',
-      render: () => {
-        return <Skeleton loading={loading} width={80}></Skeleton>
-      }
-    },
-    {
-      title: 'Composition',
-      dataIndex: 'composition',
-      key: 'composition',
-      render: () => {
-        return (
-          <div className="flex">
-            <Skeleton loading={loading} width={16} height={16}></Skeleton>
-            <Skeleton loading={loading} width={50} ml={6}></Skeleton>
-          </div>
-        )
-      }
-    },
-    {
-      title: 'Weight',
-      dataIndex: 'weight',
-      render: () => {
-        return (
-          <div>
-            <Skeleton loading={loading} width={80}></Skeleton>
-            <Skeleton loading={loading} width={80} mt={10}></Skeleton>
-          </div>
-        )
-      },
-      key: 'weight'
-    },
-    {
-      title: 'Rewards (Last Cycle)',
-      dataIndex: 'ltRewards',
-      render: () => {
-        return (
-          <div>
-            <Skeleton loading={loading} width={80}></Skeleton>
-            <Skeleton loading={loading} width={80} mt={10}></Skeleton>
-          </div>
-        )
-      },
-      key: 'ltRewards'
-    },
-    {
-      title: 'Vote',
-      align: 'center',
-      dataIndex: 'gauge',
-      render: () => {
-        return (
-          <div className="flex jc-center">
-            <Skeleton loading={loading} width={85} height={30}></Skeleton>
-          </div>
-        )
-      },
-      key: 'gauge'
-    }
-  ]
   const init = useCallback(async () => {
     try {
       const res = await GaugeApi.getGaugeAllPools()
@@ -399,13 +333,7 @@ const GomListF = ({ toSetSelGom }: ListProps, ref: any) => {
           {curType === 'all' && (
             <div>
               {loading ? (
-                <Table
-                  rowKey={'name'}
-                  pagination={false}
-                  className="hp-table"
-                  columns={loadingColumns}
-                  dataSource={tableLoadingData}
-                />
+                <LoadingList loading={loading}></LoadingList>
               ) : (
                 <Table
                   rowKey={'gauge'}
