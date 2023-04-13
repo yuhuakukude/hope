@@ -1,7 +1,7 @@
 import { useSingleCallResult } from '../../state/multicall/hooks'
-import { useGomConContract, useLTContract } from '../useContract'
+import { useLTContract } from '../useContract'
 import { useActiveWeb3React } from '../index'
-import { JSBI, TokenAmount, CurrencyAmount } from '@uniswap/sdk'
+import { JSBI, TokenAmount, CurrencyAmount, Percent } from '@uniswap/sdk'
 import moment from 'moment'
 import { tryParseAmount } from '../../state/swap/hooks'
 import { getLTToken, getVELTToken } from 'utils/addressHelpers'
@@ -10,17 +10,6 @@ export enum conFnNameEnum {
   CreateLock = 'createLock',
   IncreaseAmount = 'increaseAmount',
   IncreaseUnlockTime = 'increaseUnlockTime'
-}
-
-export function useLocker() {
-  const { account } = useActiveWeb3React()
-  const gomConContract = useGomConContract()
-  const votePowerAmount = useSingleCallResult(gomConContract, 'gaugeRelativeWeight', [account ?? undefined])
-
-  return {
-    votePowerAmount: votePowerAmount?.result ? Number(votePowerAmount?.result) : undefined,
-    votePowerAmountLoading: votePowerAmount.loading
-  }
 }
 
 export function useCalculator() {
@@ -84,10 +73,72 @@ export function useCalculator() {
     return minVelt
   }
 
+  const getBuMin = (
+    depositAmountArg: string,
+    totalAmountArg: string,
+    veLtAmountArg: string,
+    veLtTotalAmountArg: string
+  ) => {
+    if (!depositAmountArg || !totalAmountArg || !veLtAmountArg || !veLtTotalAmountArg || !chainId) {
+      return undefined
+    }
+    const depositAmount = JSBI.BigInt(tryParseAmount(depositAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
+    const totalAmount = JSBI.BigInt(tryParseAmount(totalAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
+    const veLtAmount = JSBI.BigInt(tryParseAmount(veLtAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
+    const veLtTotalAmount = JSBI.BigInt(
+      tryParseAmount(veLtTotalAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0'
+    )
+
+    let lim = JSBI.divide(JSBI.multiply(JSBI.BigInt(depositAmount), JSBI.BigInt(4)), JSBI.BigInt(10))
+    if (
+      lim &&
+      veLtTotalAmount &&
+      totalAmount &&
+      veLtAmount &&
+      JSBI.greaterThan(JSBI.BigInt(veLtTotalAmount), JSBI.BigInt(0))
+    ) {
+      lim = JSBI.add(
+        JSBI.divide(
+          JSBI.multiply(JSBI.multiply(JSBI.BigInt(totalAmount), JSBI.BigInt(veLtAmount)), JSBI.BigInt(6)),
+          JSBI.multiply(JSBI.BigInt(veLtTotalAmount), JSBI.BigInt(10))
+        ),
+        lim
+      )
+    }
+    const bu =
+      depositAmount && lim
+        ? JSBI.greaterThanOrEqual(JSBI.BigInt(depositAmount), lim)
+          ? lim
+          : JSBI.BigInt(depositAmount)
+        : undefined
+    return bu
+  }
+
+  const getBoost = (depositAmountArg: string, totalAmountArg: string, buMin: JSBI) => {
+    try {
+      if (!depositAmountArg || !totalAmountArg || !chainId || !JSBI.greaterThan(JSBI.BigInt(buMin), JSBI.BigInt(0))) {
+        return undefined
+      }
+      const depositAmount = JSBI.BigInt(tryParseAmount(depositAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
+      const totalAmount = JSBI.BigInt(tryParseAmount(totalAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
+
+      const dividend = JSBI.divide(buMin, JSBI.add(JSBI.BigInt(totalAmount), buMin))
+      const bu1 = JSBI.divide(JSBI.multiply(JSBI.BigInt(4), JSBI.BigInt(depositAmount)), JSBI.BigInt(10))
+      const bu2 = JSBI.add(JSBI.BigInt(totalAmount), bu1)
+      const divisor = JSBI.divide(bu1, bu2)
+      return new Percent(dividend, divisor).toFixed(2)
+    } catch (error) {
+      console.log(error)
+      return ''
+    }
+  }
+
   return {
     getVeLtAmount,
     getLtRewards,
     getMinVeltAmount,
+    getBuMin,
+    getBoost,
     rateLoading: rateResult.loading
   }
 }

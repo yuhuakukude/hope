@@ -39,7 +39,9 @@ export default function DaoGauge() {
   const [totalVeLTAmount, setTotalVeLTAmount] = useState('')
   const [weight, setWeight] = useState<CurrencyAmount>()
   const [minVelt, setMinVelt] = useState<TokenAmount>()
-  const { getVeLtAmount, getLtRewards, getMinVeltAmount, rateLoading } = useCalculator()
+  const [currentBoost, setCurrentBoost] = useState<any>()
+  const [maxBoost, setMaxBoost] = useState<any>()
+  const { getVeLtAmount, getLtRewards, getMinVeltAmount, getBuMin, getBoost, rateLoading } = useCalculator()
 
   // loading
   const [gaugeListLoading, setGaugeListLoading] = useState(false)
@@ -218,9 +220,15 @@ export default function DaoGauge() {
 
   function toCal() {
     const minVeltRes = getMinVeltAmount(depositAmount, totalPoolAmount, totalVeLTAmount)
-    if (minVeltRes) {
-      setMinVelt(minVeltRes)
-    }
+    const velt = curType === 'veLT' ? veLTInputAmount : veLtAmount?.toFixed(2)
+    const currentBu = getBuMin(depositAmount, totalPoolAmount, velt || '0', totalVeLTAmount)
+    const maxBu = getBuMin(depositAmount, totalPoolAmount, minVeltRes?.toFixed(2) || '0', totalVeLTAmount)
+
+    const cboost = getBoost(depositAmount, totalPoolAmount, currentBu || JSBI.BigInt(0))
+    const mboost = getBoost(depositAmount, totalPoolAmount, maxBu || JSBI.BigInt(0))
+    setMinVelt(minVeltRes)
+    setCurrentBoost(cboost)
+    setMaxBoost(mboost)
   }
 
   useEffect(() => {
@@ -390,7 +398,17 @@ export default function DaoGauge() {
                   />
                 </Skeleton>
 
-                <ButtonPrimary className="hp-button-primary m-t-20" onClick={toCal}>
+                <ButtonPrimary
+                  className="hp-button-primary m-t-20"
+                  onClick={toCal}
+                  disabled={
+                    !depositAmount ||
+                    !totalPoolAmount ||
+                    !totalVeLTAmount ||
+                    (curType === 'veLT' && !veLTInputAmount) ||
+                    (curType === 'LT' && !veLtAmount)
+                  }
+                >
                   Calculate
                 </ButtonPrimary>
               </div>
@@ -417,11 +435,13 @@ export default function DaoGauge() {
                   <div className="flex jc-between m-t-20">
                     <div>
                       <p className="font-normal">Current Boost</p>
-                      <p className="text-white font-28 m-t-15 font-bolder">1.00x</p>
+                      <p className="text-white font-28 m-t-15 font-bolder">
+                        {currentBoost ? `${currentBoost}x` : '--'}
+                      </p>
                     </div>
                     <div>
                       <p className="font-normal">Max boost passible</p>
-                      <p className="text-success font-28 m-t-15 font-bolder">1.00x</p>
+                      <p className="text-success font-28 m-t-15 font-bolder">{maxBoost ? `${maxBoost}x` : '--'}</p>
                     </div>
                   </div>
                   <div className="m-t-30">
