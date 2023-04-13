@@ -13,8 +13,8 @@ export default function Tips() {
           automatically earn fees proportional to your share of the pool, and can be withdrawn anytime.
         </p>
         <p className="font-white lh15 m-b-10 font-12">
-          By adding liquidity, you'll earn 0.3% of all trades on this pair proportional to your share of the pool. Fees
-          are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.
+          By adding liquidity, you'll earn 50% of all fees specified in the pool, proportional to your share of the
+          pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.
         </p>
         <h3 className="font-white font-bold m-b-10 font-14">About Deposit</h3>
         <p className="font-white lh15 font-12">

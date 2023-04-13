@@ -143,6 +143,7 @@ export default function SlippageTabs({ rawSlippage, setRawSlippage, deadline, se
           <TYPE.black fontSize={14} color={theme.text2}>
             Slippage Tolerance
           </TYPE.black>
+          
           <Tooltip
             className="m-l-5"
             overlayClassName="tips-question"
