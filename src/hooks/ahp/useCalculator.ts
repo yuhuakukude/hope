@@ -16,7 +16,6 @@ export function useCalculator() {
   const { chainId } = useActiveWeb3React()
   const ltTokenContract = useLTContract()
   const rateResult = useSingleCallResult(ltTokenContract, 'rate')
-
   const getVeLtAmount = (amount: string, endDate: any) => {
     if (!amount || !endDate || !chainId) {
       return undefined
@@ -121,11 +120,13 @@ export function useCalculator() {
       }
       const depositAmount = JSBI.BigInt(tryParseAmount(depositAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
       const totalAmount = JSBI.BigInt(tryParseAmount(totalAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
-
-      const dividend = JSBI.divide(buMin, JSBI.add(JSBI.BigInt(totalAmount), buMin))
+      const MIN_ETH: JSBI = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(18))
+      const MIN_ETH2: JSBI = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(20))
+      const dividend = JSBI.divide(JSBI.multiply(buMin, MIN_ETH), JSBI.add(JSBI.BigInt(totalAmount), buMin))
       const bu1 = JSBI.divide(JSBI.multiply(JSBI.BigInt(4), JSBI.BigInt(depositAmount)), JSBI.BigInt(10))
       const bu2 = JSBI.add(JSBI.BigInt(totalAmount), bu1)
-      const divisor = JSBI.divide(bu1, bu2)
+      const divisor = JSBI.divide(JSBI.multiply(bu1, MIN_ETH2), bu2)
+      console.log(Number(dividend), bu1.toString(), bu2.toString(), divisor.toString())
       return new Percent(dividend, divisor).toFixed(2)
     } catch (error) {
       console.log(error)
