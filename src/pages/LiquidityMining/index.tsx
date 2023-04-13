@@ -130,7 +130,6 @@ export default function LiquidityMining({
   const onTxSubmitted = useCallback((hash: string | undefined) => {
     setShowConfirm(true)
     setPendingText(``)
-    setTypedValue('')
     setAttemptingTxn(false)
     hash && setTxHash(hash)
   }, [])
@@ -229,6 +228,7 @@ export default function LiquidityMining({
         setPendingText(`Stake  ${parsedAmount.toFixed(4, { groupSeparator: ',' })} ${pool.lpToken.symbol}`)
         onStake(parsedAmount, nonce, deadline, signature)
           .then(hash => {
+            setTypedValue('')
             onTxSubmitted(hash)
           })
           .catch((error: any) => {
@@ -247,6 +247,7 @@ export default function LiquidityMining({
     onTxStart()
     onUnstake(parsedAmount)
       .then(hash => {
+        setTypedValue('')
         onTxSubmitted(hash)
       })
       .catch((error: any) => {
