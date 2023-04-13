@@ -1,13 +1,20 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react'
 import styled from 'styled-components'
+import moment from 'moment'
+import momentTz from 'moment-timezone'
 import { AutoColumn } from '../../components/Column'
 import Select from 'components/antd/Select'
 import GaugeApi from '../../api/gauge.api'
 import NumericalInput from '../../components/NumericalInput'
 import { ButtonPrimary } from 'components/Button'
-import { useGomConContract } from 'hooks/useContract'
+import { useGomConContract, useStakingContract, useLockerContract } from 'hooks/useContract'
+import format from '../../utils/format'
 import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp'
+import { useCalculator } from '../../hooks/ahp/useCalculator'
+import Skeleton from '../../components/Skeleton'
+import { useActiveWeb3React } from '../../hooks'
 import './index.scss'
+import { CurrencyAmount, JSBI, TokenAmount } from '@uniswap/sdk'
 
 const PageWrapper = styled(AutoColumn)`
   width: 100%;
@@ -17,50 +24,41 @@ const PageWrapper = styled(AutoColumn)`
 `
 
 export default function DaoGauge() {
+  const { account } = useActiveWeb3React()
   const gomContract = useGomConContract()
-  const timestamp = useCurrentBlockTimestamp()
+  const lockerContract = useLockerContract()
   const [curGomAddress, setCurGomAddress] = useState('')
+  const stakingContract = useStakingContract(curGomAddress)
+  const timestamp = useCurrentBlockTimestamp()
   const [gaugeList, setGaugeList] = useState([])
   const [depositAmount, setDepositAmount] = useState('')
   const [curType, setCurType] = useState('veLT')
   const [totalPoolAmount, setTotalPoolAmount] = useState('')
   const [veLTInputAmount, setVeLTInputAmount] = useState('')
+  const [ltInputAmount, setltInputAmount] = useState('')
   const [totalVeLTAmount, setTotalVeLTAmount] = useState('')
+  const [weight, setWeight] = useState<CurrencyAmount>()
+  const [minVelt, setMinVelt] = useState<TokenAmount>()
+  const { getVeLtAmount, getLtRewards, getMinVeltAmount, rateLoading } = useCalculator()
+
+  // loading
+  const [gaugeListLoading, setGaugeListLoading] = useState(false)
+  const [depositLoading, setDepositLoading] = useState(false)
+  const [totalLoading, setTotalLoading] = useState(false)
+  const [veltTotalLoading, setVeltTotalLoading] = useState(false)
+  const [weightLoading, setWeightLoading] = useState(false)
+
   // const [relAmount, setRelAmount] = useState('')
-  const [time, setTime] = useState('')
+  const [time, setTime] = useState('2')
   const timeList: any = [
-    {
-      label: '2 Weeks',
-      value: '2'
-    },
-    {
-      label: '4 Weeks',
-      value: '2'
-    },
-    {
-      label: '3 Months',
-      value: '2'
-    },
-    {
-      label: '6 Months',
-      value: '2'
-    },
-    {
-      label: '1 Year',
-      value: '2'
-    },
-    {
-      label: '2 Year',
-      value: '2'
-    },
-    {
-      label: '3 Year',
-      value: '2'
-    },
-    {
-      label: '4 Year',
-      value: '2'
-    }
+    { label: '2 Weeks', value: '2' },
+    { label: '4 Weeks', value: '4' },
+    { label: '3 Months', value: '13' },
+    { label: '6 Months', value: '26' },
+    { label: '1 Year', value: '52' },
+    { label: '2 Year', value: '104' },
+    { label: '3 Year', value: '156' },
+    { label: '4 Year', value: '208' }
   ]
   const { Option } = Select
   function changeTime(val: string) {
@@ -72,31 +70,139 @@ export default function DaoGauge() {
   function changeTotalPoolAmount(val: any) {
     setTotalPoolAmount(val)
   }
-  function changeVeLTInputAmount(val: any) {
-    setVeLTInputAmount(val)
-  }
   function changeTotalVeLTAmount(val: any) {
     setTotalVeLTAmount(val)
   }
-  async function initGaugeList() {
-    try {
-      const res = await GaugeApi.getGaugeList()
-      if (res && res.result && res.result.length > 0) {
-        setGaugeList(res.result)
+
+  const getUserDepositAmount = async () => {
+    if (stakingContract) {
+      try {
+        setDepositLoading(true)
+        const res = await stakingContract.lpBalanceOf(account ?? undefined)
+        if (res) {
+          setDepositAmount(
+            CurrencyAmount.ether(res)
+              .toFixed(2)
+              .replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
+          )
+        } else {
+          setDepositAmount('')
+        }
+        setDepositLoading(false)
+      } catch (error) {
+        console.log(error)
+        setDepositAmount('')
+        setDepositLoading(false)
       }
-    } catch (error) {
-      console.log(error)
     }
   }
+
+  const lockTimeArg = useMemo(() => {
+    const weekDate = moment().day() === 0 ? 7 : moment().day()
+    let week4
+    if (weekDate >= 4) {
+      week4 = moment()
+        .subtract(weekDate - 4, 'day')
+        .format('YYYY-MM-DD')
+    } else {
+      week4 = moment()
+        .subtract(7 - 4 + weekDate, 'day')
+        .format('YYYY-MM-DD')
+    }
+    return momentTz(moment(week4).add(Number(time), 'week'))
+      .tz('Africa/Bissau', true)
+      .unix()
+  }, [time])
+
+  const veLtAmount = useMemo(() => {
+    if (!lockTimeArg || !ltInputAmount) return undefined
+    return getVeLtAmount(ltInputAmount, format.formatDate(lockTimeArg))
+  }, [ltInputAmount, getVeLtAmount, lockTimeArg])
+
+  const ltRewards = useMemo(() => {
+    if (!weight) return undefined
+    return getLtRewards(weight)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [weight, getLtRewards])
+
+  async function initGaugeList() {
+    try {
+      setGaugeListLoading(true)
+      const res = await GaugeApi.getGaugeList()
+      if (res && res.result && res.result.length > 0) {
+        setGaugeList(
+          res.result.map((e: any) => {
+            return { label: e.name, value: e.gauge }
+          })
+        )
+      }
+      setGaugeListLoading(false)
+    } catch (error) {
+      console.log(error)
+      setGaugeListLoading(false)
+    }
+  }
+
+  async function getVeltTotal() {
+    if (lockerContract) {
+      try {
+        setVeltTotalLoading(true)
+        const res = await lockerContract.totalSupply()
+        if (res) {
+          setTotalVeLTAmount(
+            CurrencyAmount.ether(res)
+              .toFixed(2)
+              .replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
+          )
+        } else {
+          setTotalVeLTAmount('')
+        }
+        setVeltTotalLoading(false)
+      } catch (error) {
+        console.log(error)
+        setTotalVeLTAmount('')
+        setVeltTotalLoading(false)
+      }
+    }
+  }
+
   async function getRelAmount(val: any) {
     if (gomContract) {
       try {
+        setWeightLoading(true)
         const res = await gomContract.gaugeRelativeWeight(val, timestamp?.toString())
         if (res) {
-          console.log(res)
+          setWeight(CurrencyAmount.ether(JSBI.multiply(JSBI.BigInt(res), JSBI.BigInt(100))))
+        } else {
+          setWeight(undefined)
         }
+        setWeightLoading(false)
       } catch (error) {
         console.log(error)
+        setWeight(undefined)
+        setWeightLoading(false)
+      }
+    }
+  }
+  async function getPoolTotalAmount() {
+    if (stakingContract) {
+      try {
+        setTotalLoading(true)
+        const res = await stakingContract.lpTotalSupply()
+        if (res) {
+          setTotalPoolAmount(
+            CurrencyAmount.ether(res)
+              .toFixed(2)
+              .replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
+          )
+        } else {
+          setTotalPoolAmount('')
+        }
+        setTotalLoading(false)
+      } catch (error) {
+        console.log(error)
+        setTotalPoolAmount('')
+        setTotalLoading(false)
       }
     }
   }
@@ -104,31 +210,29 @@ export default function DaoGauge() {
     setCurGomAddress(val)
     getRelAmount(val)
   }
-  const selList = useMemo(() => {
-    if (gaugeList) {
-      const arr: any = []
-      gaugeList.forEach((e: any) => {
-        const item = {
-          label: e.name,
-          value: e.gauge
-        }
-        arr.push(item)
-      })
-      return arr
-    } else {
-      return []
-    }
-  }, [gaugeList])
   const init = useCallback(async () => {
     await initGaugeList()
+    await getVeltTotal()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
   function toCal() {
-    console.log('cal')
+    const minVeltRes = getMinVeltAmount(depositAmount, totalPoolAmount, totalVeLTAmount)
+    if (minVeltRes) {
+      setMinVelt(minVeltRes)
+    }
   }
 
   useEffect(() => {
     init()
   }, [init])
+
+  useEffect(() => {
+    if (curGomAddress) {
+      getPoolTotalAmount()
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [curGomAddress])
   return (
     <>
       <PageWrapper>
@@ -138,50 +242,63 @@ export default function DaoGauge() {
             <div className="cal-con flex">
               <div className="con-left p-30 flex-1">
                 <p className="text-normal">Select a Gauge </p>
-                <Select
-                  value={curGomAddress ? curGomAddress : undefined}
-                  placeholder="Select a Gauge"
-                  showSearch
-                  optionFilterProp="children"
-                  filterOption={(input, option) =>
-                    option.props.children
-                      ? `${option.props.children}`.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                      : true
-                  }
-                  onChange={(val: string) => {
-                    changeSel(val)
-                  }}
-                  className="hp-select m-t-10"
-                >
-                  {selList.map((data: any, index: number) => {
-                    return (
-                      <Option key={index} value={data.value}>
-                        {data.label}
-                      </Option>
-                    )
-                  })}
-                </Select>
+                <Skeleton loading={gaugeListLoading} height={56} mt={10}>
+                  <Select
+                    value={curGomAddress ? curGomAddress : undefined}
+                    placeholder="Select a Gauge"
+                    showSearch
+                    optionFilterProp="children"
+                    filterOption={(input, option) =>
+                      option.props.children
+                        ? `${option.props.children}`.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        : true
+                    }
+                    onChange={(val: string) => {
+                      changeSel(val)
+                    }}
+                    className="hp-select m-t-10"
+                  >
+                    {gaugeList.map((data: any, index: number) => {
+                      return (
+                        <Option key={index} value={data.value}>
+                          {data.label}
+                        </Option>
+                      )
+                    })}
+                  </Select>
+                </Skeleton>
+
                 <div className="flex jc-between m-t-20">
                   <span className="text-normal">My Deposit Amount </span>
-                  <span className="text-primary">Use exsisting deposit</span>
+                  {curGomAddress && account && (
+                    <span className="text-primary cursor-select" onClick={getUserDepositAmount}>
+                      Use exsisting deposit
+                    </span>
+                  )}
                 </div>
-                <NumericalInput
-                  className="hp-amount m-t-10"
-                  value={depositAmount}
-                  decimals={2}
-                  onUserInput={val => {
-                    changeDepAmount(val)
-                  }}
-                />
+                <Skeleton loading={depositLoading} height={56} mt={10}>
+                  <NumericalInput
+                    className="hp-amount m-t-10"
+                    value={depositAmount}
+                    decimals={2}
+                    onUserInput={val => {
+                      changeDepAmount(val)
+                    }}
+                  />
+                </Skeleton>
+
                 <p className="text-normal m-t-20">Total Amount of Pool</p>
-                <NumericalInput
-                  className="hp-amount m-t-10"
-                  value={totalPoolAmount}
-                  decimals={2}
-                  onUserInput={val => {
-                    changeTotalPoolAmount(val)
-                  }}
-                />
+                <Skeleton loading={totalLoading} height={56} mt={10}>
+                  <NumericalInput
+                    className="hp-amount m-t-10"
+                    value={totalPoolAmount}
+                    decimals={2}
+                    onUserInput={val => {
+                      changeTotalPoolAmount(val)
+                    }}
+                  />
+                </Skeleton>
+
                 <div className="m-t-20">
                   <div className={['add-tab', 'flex', curType === 'LT' ? 'my-active' : ''].join(' ')}>
                     <div
@@ -218,7 +335,7 @@ export default function DaoGauge() {
                       value={veLTInputAmount}
                       decimals={2}
                       onUserInput={val => {
-                        changeVeLTInputAmount(val)
+                        setVeLTInputAmount(val)
                       }}
                     />
                   </div>
@@ -228,13 +345,13 @@ export default function DaoGauge() {
                       <NumericalInput
                         style={{ width: '160px' }}
                         className="hp-amount m-t-10"
-                        value={veLTInputAmount}
+                        value={ltInputAmount}
                         decimals={2}
                         onUserInput={val => {
-                          changeVeLTInputAmount(val)
+                          setltInputAmount(val)
                         }}
                       />
-                      <div className="text-center" style={{ width: '85px' }}>
+                      <div className="text-center text-normal font-nor m-t-10" style={{ width: '100px' }}>
                         locked for
                       </div>
                       <Select
@@ -256,20 +373,23 @@ export default function DaoGauge() {
                         })}
                       </Select>
                     </div>
-                    <div className="flex jc-end m-t-12">
-                      <span>2,139.49 veLT</span>
+                    <div className="flex jc-end m-t-16 font-nor text-medium">
+                      <span>{veLtAmount ? veLtAmount.toFixed(2, { groupSeparator: ',' }, 0) : '0.00'} veLT</span>
                     </div>
                   </>
                 )}
                 <p className="text-normal m-t-20">Total veLT</p>
-                <NumericalInput
-                  className="hp-amount m-t-10"
-                  value={totalVeLTAmount}
-                  decimals={2}
-                  onUserInput={val => {
-                    changeTotalVeLTAmount(val)
-                  }}
-                />
+                <Skeleton loading={veltTotalLoading} height={56} mt={10}>
+                  <NumericalInput
+                    className="hp-amount m-t-10"
+                    value={totalVeLTAmount}
+                    decimals={2}
+                    onUserInput={val => {
+                      changeTotalVeLTAmount(val)
+                    }}
+                  />
+                </Skeleton>
+
                 <ButtonPrimary className="hp-button-primary m-t-20" onClick={toCal}>
                   Calculate
                 </ButtonPrimary>
@@ -279,11 +399,17 @@ export default function DaoGauge() {
                   <h3 className="text-white font-18 font-bolder">Gauge info</h3>
                   <div className="flex jc-between m-t-20">
                     <span className="font-normal">Current cycle relative weight</span>
-                    <span className="font-bolder">19.89%</span>
+                    <Skeleton loading={weightLoading} width={60}>
+                      <span className="font-bolder">{weight ? `${weight.toFixed(2)}%` : '--'}</span>
+                    </Skeleton>
                   </div>
                   <div className="flex jc-between m-t-12">
                     <span className="font-normal">LT rewards per day</span>
-                    <span className="font-bolder">23,456,89.10</span>
+                    <Skeleton loading={rateLoading || weightLoading} width={100}>
+                      <span className="font-bolder">
+                        {ltRewards ? ltRewards.toFixed(2, { groupSeparator: ',' }, 0) : '0.00'}
+                      </span>
+                    </Skeleton>
                   </div>
                 </div>
                 <div className="summary">
@@ -300,7 +426,9 @@ export default function DaoGauge() {
                   </div>
                   <div className="m-t-30">
                     <p className="font-normal">Min veLT for Max boost</p>
-                    <p className="text-white font-28 m-t-15 font-bolder">278,384,839.49 veLT</p>
+                    <p className="text-white font-28 m-t-15 font-bolder">
+                      {minVelt ? minVelt.toFixed(2, { groupSeparator: ',' }, 0) : '0.00'} veLT
+                    </p>
                   </div>
                 </div>
               </div>
