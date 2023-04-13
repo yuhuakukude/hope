@@ -250,7 +250,7 @@ export default function DaoGauge() {
             <div className="cal-con flex">
               <div className="con-left p-30 flex-1">
                 <p className="text-normal">Select a Gauge </p>
-                <Skeleton loading={gaugeListLoading} height={56} mt={10}>
+                <Skeleton loading={gaugeListLoading} height={56} mt={10} radius={'10px'}>
                   <Select
                     value={curGomAddress ? curGomAddress : undefined}
                     placeholder="Select a Gauge"
@@ -284,7 +284,7 @@ export default function DaoGauge() {
                     </span>
                   )}
                 </div>
-                <Skeleton loading={depositLoading} height={56} mt={10}>
+                <Skeleton loading={depositLoading} height={56} mt={10} radius={'10px'}>
                   <NumericalInput
                     className="hp-amount m-t-10"
                     value={depositAmount}
@@ -296,7 +296,7 @@ export default function DaoGauge() {
                 </Skeleton>
 
                 <p className="text-normal m-t-20">Total Amount of Pool</p>
-                <Skeleton loading={totalLoading} height={56} mt={10}>
+                <Skeleton loading={totalLoading} height={56} mt={10} radius={'10px'}>
                   <NumericalInput
                     className="hp-amount m-t-10"
                     value={totalPoolAmount}
@@ -387,7 +387,7 @@ export default function DaoGauge() {
                   </>
                 )}
                 <p className="text-normal m-t-20">Total veLT</p>
-                <Skeleton loading={veltTotalLoading} height={56} mt={10}>
+                <Skeleton loading={veltTotalLoading} height={56} mt={10} radius={'10px'}>
                   <NumericalInput
                     className="hp-amount m-t-10"
                     value={totalVeLTAmount}

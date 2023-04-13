@@ -53,7 +53,7 @@ export function useCalculator() {
   }
 
   const getMinVeltAmount = (depositAmount: string, totalAmount: string, veLtTotalAmount: string) => {
-    if (!depositAmount || !totalAmount || !veLtTotalAmount || !chainId) {
+    if (!Number(depositAmount) || !Number(totalAmount) || !Number(veLtTotalAmount) || !chainId) {
       return undefined
     }
     const minVelt = new TokenAmount(
@@ -78,39 +78,50 @@ export function useCalculator() {
     veLtAmountArg: string,
     veLtTotalAmountArg: string
   ) => {
-    if (!depositAmountArg || !totalAmountArg || !veLtAmountArg || !veLtTotalAmountArg || !chainId) {
-      return undefined
-    }
-    const depositAmount = JSBI.BigInt(tryParseAmount(depositAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
-    const totalAmount = JSBI.BigInt(tryParseAmount(totalAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
-    const veLtAmount = JSBI.BigInt(tryParseAmount(veLtAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
-    const veLtTotalAmount = JSBI.BigInt(
-      tryParseAmount(veLtTotalAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0'
-    )
-
-    let lim = JSBI.divide(JSBI.multiply(JSBI.BigInt(depositAmount), JSBI.BigInt(4)), JSBI.BigInt(10))
-    if (
-      lim &&
-      veLtTotalAmount &&
-      totalAmount &&
-      veLtAmount &&
-      JSBI.greaterThan(JSBI.BigInt(veLtTotalAmount), JSBI.BigInt(0))
-    ) {
-      lim = JSBI.add(
-        JSBI.divide(
-          JSBI.multiply(JSBI.multiply(JSBI.BigInt(totalAmount), JSBI.BigInt(veLtAmount)), JSBI.BigInt(6)),
-          JSBI.multiply(JSBI.BigInt(veLtTotalAmount), JSBI.BigInt(10))
-        ),
-        lim
+    try {
+      if (
+        !Number(depositAmountArg) ||
+        !Number(totalAmountArg) ||
+        !Number(veLtAmountArg) ||
+        !Number(veLtTotalAmountArg) ||
+        !chainId
+      ) {
+        return undefined
+      }
+      const depositAmount = JSBI.BigInt(tryParseAmount(depositAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
+      const totalAmount = JSBI.BigInt(tryParseAmount(totalAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
+      const veLtAmount = JSBI.BigInt(tryParseAmount(veLtAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
+      const veLtTotalAmount = JSBI.BigInt(
+        tryParseAmount(veLtTotalAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0'
       )
+
+      let lim = JSBI.divide(JSBI.multiply(JSBI.BigInt(depositAmount), JSBI.BigInt(4)), JSBI.BigInt(10))
+      if (
+        lim &&
+        veLtTotalAmount &&
+        totalAmount &&
+        veLtAmount &&
+        JSBI.greaterThan(JSBI.BigInt(veLtTotalAmount), JSBI.BigInt(0))
+      ) {
+        lim = JSBI.add(
+          JSBI.divide(
+            JSBI.multiply(JSBI.multiply(JSBI.BigInt(totalAmount), JSBI.BigInt(veLtAmount)), JSBI.BigInt(6)),
+            JSBI.multiply(JSBI.BigInt(veLtTotalAmount), JSBI.BigInt(10))
+          ),
+          lim
+        )
+      }
+      const bu =
+        depositAmount && lim
+          ? JSBI.greaterThanOrEqual(JSBI.BigInt(depositAmount), lim)
+            ? lim
+            : JSBI.BigInt(depositAmount)
+          : undefined
+      return bu
+    } catch (error) {
+      console.log(error)
+      return JSBI.BigInt(0)
     }
-    const bu =
-      depositAmount && lim
-        ? JSBI.greaterThanOrEqual(JSBI.BigInt(depositAmount), lim)
-          ? lim
-          : JSBI.BigInt(depositAmount)
-        : undefined
-    return bu
   }
 
   const getBoost = (depositAmountArg: string, totalAmountArg: string, buMin: JSBI) => {
