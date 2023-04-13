@@ -260,7 +260,7 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
       title: (
         <>
           Boost{' '}
-          <Tips title="When the number of a user's veLT changes, the values of the Current Boost and Next Boost may become inconsistent. To ensure that the Next Boost takes effect, the user needs to actively update the value."></Tips>
+          <Tips title="When your veLT holding changes, the values of the Current Boost and Next Boost may be different. To ensure that the Next Boost takes effect, the user needs to actively update the value."></Tips>
         </>
       ),
       dataIndex: 'currentBoost',

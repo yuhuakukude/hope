@@ -312,7 +312,7 @@ export default function Pools() {
               <TYPE.white fontSize={16} lineHeight={'24px'}>
                 {liquiditySearchType === Field.USER_STAKING
                   ? `Stake your liquidity position (LP Token) to earn LT rewards`
-                  : `Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing liquidity provided. `}
+                  : `Liquidity providers earn 50% of all fees incurred in the pool, proportional to your share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.`}
               </TYPE.white>
             </RowBetween>
             <RowBetween>
@@ -349,7 +349,7 @@ export default function Pools() {
               <TYPE.white fontSize={16} lineHeight={'24px'}>
                 {liquiditySearchType === Field.USER_STAKING
                   ? `Stake your liquidity position (LP Token) to earn LT rewards`
-                  : `Liquidity providers earn a 0.3% fee on all trades proportional to their share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing liquidity provided. `}
+                  : `Liquidity providers earn 50% of all fees incurred in the pool, proportional to your share of the pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity. `}
               </TYPE.white>
             </RowBetween>
             <a

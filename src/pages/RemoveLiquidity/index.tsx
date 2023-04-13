@@ -591,8 +591,7 @@ export default function RemoveLiquidity({ currencyIdA, currencyIdB }: { currency
             <AutoColumn justify={'center'} gap={'24px'} style={{ padding: 60 }}>
               <NoData src={noData} />
               <TYPE.white maxWidth={230} textAlign={'center'}>
-                Sorry, the position you can withdraw cannot be found in the current state, please select the Token pair
-                first, and then proceed.
+                No withdrawable position was found. Please select the pool with your liquidity.
               </TYPE.white>
             </AutoColumn>
           ) : (

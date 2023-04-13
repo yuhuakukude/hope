@@ -44,16 +44,16 @@ export default function InvestmentAllocation({ data, loading }: { data?: Portfol
         value: data?.staking,
         formatValue: format.amountFormat(data?.staking, 2),
         tips:
-          'The total value of tokens currently held in the HOPE Staking contract, including the transferable, unstaking, redeemable, and claimable reward portions of the address'
+          'The total value of tokens currently held in the HOPE Staking contract, including all transferable, unstaking, withdrawable, and claimable assets.'
       },
       {
         name: 'Liquidity Pools',
         value: data?.lp,
         formatValue: format.amountFormat(data?.lp, 2),
-        tips: 'Total value of assets redeemable from liquidity pools'
+        tips: 'Total value of assets withdrawable from liquidity pools.'
       },
       {
-        name: 'Yield Farming',
+        name: 'Liquidity Farming',
         value: data?.yieldFarming,
         formatValue: format.amountFormat(data?.yieldFarming, 2),
         tips: 'Total value of LP Tokens staked and pending rewards'
@@ -160,7 +160,7 @@ export default function InvestmentAllocation({ data, loading }: { data?: Portfol
       <Card
         title={
           <>
-            My Asset Allocation
+            My Assets Allocation
             <i className="iconfont investment-allocation-title" onClick={() => setVisibleMap(true)}>
               &#xe624;
             </i>
@@ -172,7 +172,7 @@ export default function InvestmentAllocation({ data, loading }: { data?: Portfol
             <div className="investment-allocation-total">
               <TitleTips
                 title="Total Value"
-                desc="Total value of redeemable liquidity,  liquidity mining, claimable rewards, HOPE into the Staking Contract, and Locked LT"
+                desc="Total value of withdrawable liquidity, liquidity farming, claimable rewards, staked HOPE, and Locked LT"
               />
             </div>
             <div className="investment-allocation-total2">
