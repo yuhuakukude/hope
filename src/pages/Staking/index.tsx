@@ -487,7 +487,7 @@ export default function Staking() {
                     </div>
                   </div>
                   <div className="flex jc-between m-t-30">
-                    <span className="text-white">Receive </span>
+                    <span className="text-white">You'll Receive </span>
                     <span className="text-white">
                       {amount || '--'} {curType !== 'stake' ? 'HOPE' : 'stHOPE'}
                     </span>
@@ -608,7 +608,7 @@ export default function Staking() {
                         <Tooltip
                           className="m-l-5"
                           overlayClassName="tips-question"
-                          title="When the number of a user's veLT changes, the values of the Current Boost and Next Boost may become inconsistent. To ensure that the Next Boost takes effect, the user needs to actively update the value."
+                          title="When your veLT holding changes, the values of the Current Boost and Next Boost may be different. To ensure that the Next Boost takes effect, the user needs to actively update the value."
                         >
                           <i className="iconfont font-16 cursor-select tips-circle">&#xe620;</i>
                         </Tooltip>

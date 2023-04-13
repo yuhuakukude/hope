@@ -37,6 +37,7 @@ import { getLTToken } from 'utils/addressHelpers'
 import { DOCS_URL } from '../../constants/config'
 import Skeleton from '../../components/Skeleton'
 import { TxResponse } from '../../state/stake/hooks'
+import { Tooltip } from 'antd'
 
 const TableTitle = styled(TYPE.subHeader)<{ flex?: number }>`
   flex: ${({ flex }) => flex ?? '1'};
@@ -489,7 +490,7 @@ export default function StakingPoolDetail({
         <LightCard padding={'0'} borderRadius={'20px'}>
           <CardHeader style={{ padding: '30px' }}>
             <TYPE.white fontSize={18} fontWeight={700}>
-              Liquidity Gauge
+              Liquidity Farming
             </TYPE.white>
           </CardHeader>
           {!pool?.stakingRewardAddress && !loading ? (
@@ -523,7 +524,7 @@ export default function StakingPoolDetail({
                     </Skeleton>
                   </RowBetween>
                   <RowBetween>
-                    <TYPE.main>My Mining Position</TYPE.main>
+                    <TYPE.main>My Farming Position</TYPE.main>
                     <Skeleton loading={loading} width={150}>
                       <TYPE.white>
                         {stakedAmount ? stakedAmount.toFixed(4, { groupSeparator: ',' } ?? '0.00') : '--'}
@@ -537,7 +538,16 @@ export default function StakingPoolDetail({
                     </Skeleton>
                   </RowBetween>
                   <RowBetween>
-                    <TYPE.main>My Next Boost</TYPE.main>
+                    <TYPE.main>
+                      My Next Boost
+                      <Tooltip
+                        className="m-l-5"
+                        overlayClassName="tips-question"
+                        title="When your veLT holding changes, the values of the Current Boost and Next Boost may be different. To ensure that the Next Boost takes effect, the user needs to actively update the value."
+                      >
+                        <i className="iconfont font-16 cursor-select tips-circle">&#xe620;</i>
+                      </Tooltip>
+                    </TYPE.main>
                     <Skeleton loading={loading} width={150}>
                       <TYPE.white>{futureBoots ? `${futureBoots.toFixed(2)}x` : '--'}</TYPE.white>
                     </Skeleton>
@@ -760,7 +770,7 @@ export default function StakingPoolDetail({
                 </Skeleton>
 
                 <p className="flex jc-between ai-center font-nor m-t-22">
-                  <span className="text-normal">Fees APR:</span>
+                  <span className="text-normal">Fees APR</span>
                   <Skeleton loading={loading} width={130} height={18}>
                     <span>{numeral(aprInfo.feeApr * 100, 2)}%</span>
                   </Skeleton>
@@ -991,7 +1001,7 @@ export default function StakingPoolDetail({
                     <TableTitle flex={0.8}>Fee Rate</TableTitle>
                     <TableTitle flex={1.5}>Total Swap Volume</TableTitle>
                     <TableTitle flex={1.5}>Total Swap Fee</TableTitle>
-                    <TableTitle>Total Number of Trad</TableTitle>
+                    <TableTitle>Total Number of Trades</TableTitle>
                   </AutoRow>
                 </Card>
 

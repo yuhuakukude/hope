@@ -293,7 +293,7 @@ export default function MyLockedLTAndProfits({ getAllVoting }: { getAllVoting: (
                   <div style={{ height: '20px' }} className="my-locked-lt-title flex ai-center jc-between">
                     <div>
                       Claiming Voting Rewards{' '}
-                      <Tips title="An additional 25% of the platform's revenue will be distributed proportionally among all Gauge voters."></Tips>
+                      <Tips title="An additional 25% of the platform's revenue will be distributed proportionally among voters of respective Gauges."></Tips>
                     </div>
                     {claimableFees && Number(votingFee.stHope) > 0 && (
                       <Button
