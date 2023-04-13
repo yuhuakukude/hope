@@ -113,7 +113,7 @@ export default function MyHOPEStaking() {
       dataIndex: 'boost',
       key: 'boost',
       render: (text: string) => {
-        return <Skeleton2 loading={loading}>`${text}x`</Skeleton2>
+        return <Skeleton2 loading={loading}>{`${text} x`}</Skeleton2>
       }
     },
     {
