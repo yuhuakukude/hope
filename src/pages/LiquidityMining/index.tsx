@@ -130,6 +130,7 @@ export default function LiquidityMining({
   const onTxSubmitted = useCallback((hash: string | undefined) => {
     setShowConfirm(true)
     setPendingText(``)
+    setTypedValue('')
     setAttemptingTxn(false)
     hash && setTxHash(hash)
   }, [])
