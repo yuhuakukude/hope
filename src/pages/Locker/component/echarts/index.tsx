@@ -254,10 +254,11 @@ export default function LockerEcharts() {
         </div>
         <div className="tip-box m-t-30 p-t-30 flex">
           <div>
-            <p className="text-normal font-nor m-b-12">10,000 LT locked for 4 years = 1 veLT</p>
-            <p className="text-normal font-nor m-b-12">10,000 LT locked for 3 years = 0.75 veLT</p>
-            <p className="text-normal font-nor m-b-12">10,000 LT locked for 2 years = 0.50 veLT</p>
-            <p className="text-normal font-nor m-b-12">10,000 LT locked for 1 year = 0.25 veLT</p>
+            <p className="text-normal font-nor m-b-12 lh15">
+              LT holders can lock their LT tokens for a predetermined duration of time and receive veLT. The amount of
+              veLT a user receives is linearly correlated to the lock duration. E.g., a user will receive 0.25, 0.5,
+              0.75, or 1 veLT for locking 10,000 LT for 1, 2, 3, or 4 years, respectively.
+            </p>
           </div>
         </div>
       </div>
