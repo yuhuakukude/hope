@@ -11,15 +11,11 @@ import Toggle from '../../components/Toggle'
 import ReactGA from 'react-ga'
 import React, { useState } from 'react'
 import styled from 'styled-components'
-import {
-  useExpertModeManager,
-  useUserSingleHopOnly,
-  useUserSlippageTolerance,
-  useUserTransactionTTL
-} from '../../state/user/hooks'
+// useExpertModeManager
+import { useUserSingleHopOnly, useUserSlippageTolerance, useUserTransactionTTL } from '../../state/user/hooks'
 import Modal from '../../components/Modal'
 import { ButtonError } from '../../components/Button'
-import { useToggleSettingsMenu } from '../../state/application/hooks'
+// import { useToggleSettingsMenu } from '../../state/application/hooks'
 import { useHistory } from 'react-router-dom'
 
 const StyledCloseIcon = styled(X)`
@@ -92,9 +88,9 @@ export default function SettingPage() {
   const history = useHistory()
   const [userSlippageTolerance, setUserslippageTolerance] = useUserSlippageTolerance()
   const [ttl, setTtl] = useUserTransactionTTL()
-  const [expertMode, toggleExpertMode] = useExpertModeManager()
+  // const [expertMode, toggleExpertMode] = useExpertModeManager()
   const [showConfirmation, setShowConfirmation] = useState(false)
-  const toggle = useToggleSettingsMenu()
+  // const toggle = useToggleSettingsMenu()
   const [singleHopOnly, setSingleHopOnly] = useUserSingleHopOnly()
 
   return (
@@ -132,7 +128,7 @@ export default function SettingPage() {
                 padding={'12px'}
                 onClick={() => {
                   if (window.prompt(`Please type the word "confirm" to enable expert mode.`) === 'confirm') {
-                    toggleExpertMode()
+                    // toggleExpertMode()
                     setShowConfirmation(false)
                   }
                 }}
@@ -170,7 +166,7 @@ export default function SettingPage() {
           />
           <TYPE.main fontSize={14}>Interface Settings</TYPE.main>
           <AutoColumn gap="sm">
-            <RowBetween>
+            {/* <RowBetween>
               <RowFixed>
                 <TYPE.white fontWeight={700} fontSize={14}>
                   Toggle Expert Mode
@@ -198,7 +194,7 @@ export default function SettingPage() {
                       }
                 }
               />
-            </RowBetween>
+            </RowBetween> */}
             <RowBetween>
               <RowFixed>
                 <TYPE.white fontWeight={700} fontSize={14}>
