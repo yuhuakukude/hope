@@ -395,7 +395,7 @@ export default function DaoGauge() {
                         onChange={(val: string) => {
                           changeTime(val)
                         }}
-                        style={{ width: '125px' }}
+                        style={{ width: '120px' }}
                         className="hp-select m-t-10"
                       >
                         {timeList.map((data: any, index: number) => {
