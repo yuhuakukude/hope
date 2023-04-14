@@ -46,9 +46,11 @@ export function useCalculator() {
     if (!rateResult.result || !weight || !chainId) {
       return undefined
     }
-    const rate = CurrencyAmount.ether(JSBI.multiply(JSBI.BigInt(rateResult.result?.[0]), JSBI.BigInt(100)))
+    const rate = CurrencyAmount.ether(JSBI.BigInt(rateResult.result?.[0]))
+    const MIN_ETH: JSBI = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(20))
     const w = JSBI.multiply(JSBI.multiply(JSBI.BigInt(rate.raw), JSBI.BigInt(weight.raw)), JSBI.BigInt(86400))
-    const ltRewards = new TokenAmount(getLTToken(chainId), w)
+    const wr = JSBI.divide(w, MIN_ETH)
+    const ltRewards = new TokenAmount(getLTToken(chainId), wr)
     return ltRewards
   }
 
