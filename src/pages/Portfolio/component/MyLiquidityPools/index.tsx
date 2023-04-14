@@ -271,8 +271,8 @@ export default function MyLiquidityPools({ getLpData }: { getLpData?: (lpTotal: 
           <Item
             loading={loading}
             type={2}
-            title={<>Current Boost: {Number(record.currentBoost) > 0 ? toFixed(record.currentBoost, 2) : '--'}</>}
-            desc={<>Next Boost: {Number(record.futureBoost) > 0 ? toFixed(record.futureBoost, 2) : '--'}</>}
+            title={<>Current Boost: {Number(record.currentBoost) > 0 ? `${toFixed(record.currentBoost, 2)}x` : '--'}</>}
+            desc={<>Next Boost: {Number(record.futureBoost) > 0 ? `${toFixed(record.futureBoost, 2)}x` : '--'}</>}
           />
         )
       }
