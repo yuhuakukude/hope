@@ -1,5 +1,5 @@
 import { JSBI, Percent, Trade, TradeType } from '@uniswap/sdk'
-import React, { useContext } from 'react'
+import React, { useContext, useState } from 'react'
 import { Text } from 'rebass'
 import { ThemeContext } from 'styled-components'
 import { Field } from '../../state/swap/actions'
@@ -11,6 +11,7 @@ import { Tooltip } from 'antd'
 import { RowBetween, RowFixed } from '../Row'
 import FormattedPriceImpact from './FormattedPriceImpact'
 import SwapRoute from './SwapRoute'
+import TradePrice from './TradePrice'
 
 // const InfoLink = styled(ExternalLink)`
 //   width: 100%;
@@ -35,7 +36,7 @@ function TradeSummary({
   const { priceImpactWithoutFee } = computeTradePriceBreakdown(trade, feeRate)
   const isExactIn = trade.tradeType === TradeType.EXACT_INPUT
   const slippageAdjustedAmounts = computeSlippageAdjustedAmounts(trade, allowedSlippage)
-
+  const [showInverted, setShowInverted] = useState<boolean>(true)
   return (
     <>
       <AutoColumn gap={'20px'}>
@@ -56,9 +57,10 @@ function TradeSummary({
           </AutoColumn>
           <RowFixed>
             <TYPE.black fontWeight={700} color={theme.text1}>
-              {`1 ${trade.executionPrice?.baseCurrency?.symbol} = ${trade.executionPrice?.toSignificant(6)} ${
+              {/* {`1 ${trade.executionPrice?.baseCurrency?.symbol} = ${trade.executionPrice?.toSignificant(6)} ${
                 trade.executionPrice?.quoteCurrency?.symbol
-              }`}
+              }`} */}
+              <TradePrice price={trade?.executionPrice} showInverted={showInverted} setShowInverted={setShowInverted} />
             </TYPE.black>
           </RowFixed>
         </RowBetween>
