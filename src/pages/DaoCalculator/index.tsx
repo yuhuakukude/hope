@@ -34,6 +34,7 @@ export default function DaoGauge() {
   const [depositAmount, setDepositAmount] = useState('')
   const [curType, setCurType] = useState('veLT')
   const [totalPoolAmount, setTotalPoolAmount] = useState('')
+  const [workingSupply, setWorkingSupply] = useState('')
   const [veLTInputAmount, setVeLTInputAmount] = useState('')
   const [ltInputAmount, setltInputAmount] = useState('')
   const [totalVeLTAmount, setTotalVeLTAmount] = useState('')
@@ -208,6 +209,25 @@ export default function DaoGauge() {
       }
     }
   }
+  async function getWorkingSupply() {
+    if (stakingContract) {
+      try {
+        const res = await stakingContract.workingSupply()
+        if (res) {
+          setWorkingSupply(
+            CurrencyAmount.ether(res)
+              .toFixed(2)
+              .replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
+          )
+        } else {
+          setWorkingSupply('')
+        }
+      } catch (error) {
+        console.log(error)
+        setWorkingSupply('')
+      }
+    }
+  }
   function changeSel(val: string) {
     setDepositAmount('')
     setCurGomAddress(val)
@@ -225,8 +245,8 @@ export default function DaoGauge() {
     const currentBu = getBuMin(depositAmount, totalPoolAmount, velt || '0', totalVeLTAmount)
     const maxBu = getBuMin(depositAmount, totalPoolAmount, minVeltRes?.toFixed(2) || '0', totalVeLTAmount)
 
-    const cboost = getBoost(depositAmount, totalPoolAmount, currentBu || JSBI.BigInt(0))
-    const mboost = getBoost(depositAmount, totalPoolAmount, maxBu || JSBI.BigInt(0))
+    const cboost = getBoost(depositAmount, workingSupply, currentBu || JSBI.BigInt(0))
+    const mboost = getBoost(depositAmount, workingSupply, maxBu || JSBI.BigInt(0))
     setMinVelt(minVeltRes)
     setCurrentBoost(cboost)
     setMaxBoost(mboost)
@@ -239,6 +259,7 @@ export default function DaoGauge() {
   useEffect(() => {
     if (curGomAddress) {
       getPoolTotalAmount()
+      getWorkingSupply()
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [curGomAddress])
@@ -408,6 +429,7 @@ export default function DaoGauge() {
                   className="hp-button-primary m-t-20"
                   onClick={toCal}
                   disabled={
+                    !curGomAddress ||
                     !depositAmount ||
                     !totalPoolAmount ||
                     !totalVeLTAmount ||

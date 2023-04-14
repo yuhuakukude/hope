@@ -99,7 +99,10 @@ export function useCalculator() {
       ) {
         lim = JSBI.add(
           JSBI.divide(
-            JSBI.multiply(JSBI.multiply(JSBI.BigInt(totalAmount), JSBI.BigInt(veLtAmount)), JSBI.BigInt(6)),
+            JSBI.multiply(
+              JSBI.multiply(JSBI.BigInt(veLtAmount), JSBI.add(JSBI.BigInt(totalAmount), JSBI.BigInt(depositAmount))),
+              JSBI.BigInt(6)
+            ),
             JSBI.multiply(JSBI.BigInt(veLtTotalAmount), JSBI.BigInt(10))
           ),
           lim
@@ -118,18 +121,18 @@ export function useCalculator() {
     }
   }
 
-  const getBoost = (depositAmountArg: string, totalAmountArg: string, buMin: JSBI) => {
+  const getBoost = (depositAmountArg: string, workingSupplyArg: string, buMin: JSBI) => {
     try {
-      if (!depositAmountArg || !totalAmountArg || !chainId || !JSBI.greaterThan(JSBI.BigInt(buMin), JSBI.BigInt(0))) {
+      if (!depositAmountArg || !workingSupplyArg || !chainId || !JSBI.greaterThan(JSBI.BigInt(buMin), JSBI.BigInt(0))) {
         return undefined
       }
       const depositAmount = JSBI.BigInt(tryParseAmount(depositAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
-      const totalAmount = JSBI.BigInt(tryParseAmount(totalAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
+      const workingSupply = JSBI.BigInt(tryParseAmount(workingSupplyArg, getVELTToken(chainId))?.raw.toString() ?? '0')
       const MIN_ETH: JSBI = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(18))
       const MIN_ETH2: JSBI = JSBI.exponentiate(JSBI.BigInt(10), JSBI.BigInt(20))
-      const dividend = JSBI.divide(JSBI.multiply(buMin, MIN_ETH), JSBI.add(JSBI.BigInt(totalAmount), buMin))
+      const dividend = JSBI.divide(JSBI.multiply(buMin, MIN_ETH), JSBI.add(JSBI.BigInt(workingSupply), buMin))
       const bu1 = JSBI.divide(JSBI.multiply(JSBI.BigInt(4), JSBI.BigInt(depositAmount)), JSBI.BigInt(10))
-      const bu2 = JSBI.add(JSBI.BigInt(totalAmount), bu1)
+      const bu2 = JSBI.add(JSBI.BigInt(workingSupply), bu1)
       const divisor = JSBI.divide(JSBI.multiply(bu1, MIN_ETH2), bu2)
       let boost = new Percent(dividend, divisor).toFixed(2, { groupSeparator: ',' })
       if (Number(boost) < 1) {
@@ -141,7 +144,7 @@ export function useCalculator() {
       return boost
     } catch (error) {
       console.log(error)
-      return undefined
+      return '1.00'
     }
   }
 
