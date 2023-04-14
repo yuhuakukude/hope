@@ -79,13 +79,7 @@ export function useCalculator() {
     veLtTotalAmountArg: string
   ) => {
     try {
-      if (
-        !Number(depositAmountArg) ||
-        !Number(totalAmountArg) ||
-        !Number(veLtAmountArg) ||
-        !Number(veLtTotalAmountArg) ||
-        !chainId
-      ) {
+      if (!depositAmountArg || !totalAmountArg || !veLtAmountArg || !veLtTotalAmountArg || !chainId) {
         return undefined
       }
       const depositAmount = JSBI.BigInt(tryParseAmount(depositAmountArg, getVELTToken(chainId))?.raw.toString() ?? '0')
@@ -137,7 +131,14 @@ export function useCalculator() {
       const bu1 = JSBI.divide(JSBI.multiply(JSBI.BigInt(4), JSBI.BigInt(depositAmount)), JSBI.BigInt(10))
       const bu2 = JSBI.add(JSBI.BigInt(totalAmount), bu1)
       const divisor = JSBI.divide(JSBI.multiply(bu1, MIN_ETH2), bu2)
-      return new Percent(dividend, divisor).toFixed(2)
+      let boost = new Percent(dividend, divisor).toFixed(2, { groupSeparator: ',' })
+      if (Number(boost) < 1) {
+        boost = '1.00'
+      }
+      if (Number(boost) > 2.5) {
+        boost = '2.50'
+      }
+      return boost
     } catch (error) {
       console.log(error)
       return undefined

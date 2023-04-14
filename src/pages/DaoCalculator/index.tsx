@@ -209,6 +209,7 @@ export default function DaoGauge() {
     }
   }
   function changeSel(val: string) {
+    setDepositAmount('')
     setCurGomAddress(val)
     getRelAmount(val)
   }
@@ -423,7 +424,7 @@ export default function DaoGauge() {
                   <div className="flex jc-between m-t-20">
                     <span className="font-normal">Current cycle relative weight</span>
                     <Skeleton loading={weightLoading} width={60}>
-                      <span className="font-bolder">{weight ? `${weight.toFixed(2)}%` : '--'}</span>
+                      <span className="font-bolder">{weight ? `${weight.toFixed(2)}%` : '0.00%'}</span>
                     </Skeleton>
                   </div>
                   <div className="flex jc-between m-t-12">
@@ -441,7 +442,7 @@ export default function DaoGauge() {
                     <div>
                       <p className="font-normal">Current Boost</p>
                       <p className="text-white font-28 m-t-15 font-bolder">
-                        {currentBoost ? `${currentBoost}x` : '--'}
+                        {currentBoost ? `${currentBoost > maxBoost ? maxBoost : currentBoost}x` : '1.00x'}
                       </p>
                     </div>
                     <div>
@@ -452,7 +453,7 @@ export default function DaoGauge() {
                   <div className="m-t-30">
                     <p className="font-normal">Min veLT for Max boost</p>
                     <p className="text-white font-28 m-t-15 font-bolder">
-                      {minVelt ? minVelt.toFixed(2, { groupSeparator: ',' }, 0) : '0.00'} veLT
+                      {minVelt ? minVelt.toFixed(2, { groupSeparator: ',' }, 0) + ' veLT' : '--'}
                     </p>
                   </div>
                 </div>
