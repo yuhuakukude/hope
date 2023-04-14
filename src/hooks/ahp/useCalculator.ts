@@ -137,11 +137,10 @@ export function useCalculator() {
       const bu1 = JSBI.divide(JSBI.multiply(JSBI.BigInt(4), JSBI.BigInt(depositAmount)), JSBI.BigInt(10))
       const bu2 = JSBI.add(JSBI.BigInt(totalAmount), bu1)
       const divisor = JSBI.divide(JSBI.multiply(bu1, MIN_ETH2), bu2)
-      console.log(Number(dividend), bu1.toString(), bu2.toString(), divisor.toString())
       return new Percent(dividend, divisor).toFixed(2)
     } catch (error) {
       console.log(error)
-      return ''
+      return undefined
     }
   }
 
