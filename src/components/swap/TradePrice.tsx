@@ -18,9 +18,8 @@ export default function TradePrice({ price, showInverted, setShowInverted }: Tra
   const formattedPrice = showInverted ? price?.toSignificant(6) : price?.invert()?.toSignificant(6)
   const show = Boolean(price?.baseCurrency && price?.quoteCurrency)
   const label = showInverted
-    ? `${price?.quoteCurrency?.symbol} per ${price?.baseCurrency?.symbol}`
-    : `${price?.baseCurrency?.symbol} per ${price?.quoteCurrency?.symbol}`
-
+    ? `1 ${price?.baseCurrency?.symbol} = ${formattedPrice ?? '-'} ${price?.quoteCurrency?.symbol}`
+    : `1 ${price?.quoteCurrency?.symbol} = ${formattedPrice ?? '-'} ${price?.baseCurrency?.symbol}`
   return (
     <Text
       fontWeight={500}
@@ -30,7 +29,7 @@ export default function TradePrice({ price, showInverted, setShowInverted }: Tra
     >
       {show ? (
         <>
-          {formattedPrice ?? '-'} {label}
+          {label}
           <StyledBalanceMaxMini onClick={() => setShowInverted(!showInverted)}>
             <RefreshCw size={14} />
           </StyledBalanceMaxMini>
