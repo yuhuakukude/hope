@@ -289,6 +289,7 @@ export default function DaoGauge() {
                     className="hp-amount m-t-10"
                     value={depositAmount}
                     decimals={2}
+                    maxLen={18}
                     onUserInput={val => {
                       changeDepAmount(val)
                     }}
@@ -301,6 +302,7 @@ export default function DaoGauge() {
                     className="hp-amount m-t-10"
                     value={totalPoolAmount}
                     decimals={2}
+                    maxLen={18}
                     onUserInput={val => {
                       changeTotalPoolAmount(val)
                     }}
@@ -342,6 +344,7 @@ export default function DaoGauge() {
                       className="hp-amount m-t-10"
                       value={veLTInputAmount}
                       decimals={2}
+                      maxLen={18}
                       onUserInput={val => {
                         setVeLTInputAmount(val)
                       }}
@@ -355,6 +358,7 @@ export default function DaoGauge() {
                         className="hp-amount m-t-10"
                         value={ltInputAmount}
                         decimals={2}
+                        maxLen={18}
                         onUserInput={val => {
                           setltInputAmount(val)
                         }}
@@ -392,6 +396,7 @@ export default function DaoGauge() {
                     className="hp-amount m-t-10"
                     value={totalVeLTAmount}
                     decimals={2}
+                    maxLen={18}
                     onUserInput={val => {
                       changeTotalVeLTAmount(val)
                     }}
