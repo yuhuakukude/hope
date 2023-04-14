@@ -447,7 +447,9 @@ export default function Staking() {
                 </div>
                 <div className="tab-con p-30">
                   <div className="flex jc-between">
-                    <span className="text-normal">{curType === 'stake' ? 'Stake' : 'Unstake (It takes 28 days)'}</span>
+                    <span className="text-normal">
+                      {curType === 'stake' ? 'Stake' : 'Unstake (The process takes 28 days)'}
+                    </span>
                     <Skeleton
                       loading={
                         curType === 'stake' ? hopeBal === undefined && !!account : stakedVal === undefined && !!account
