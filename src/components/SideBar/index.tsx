@@ -160,7 +160,7 @@ export default function SideBar() {
           </a>
 
           <a
-            href="https://t.me/+9-N6Fa5D98JlYTk1"
+            href="https://t.me/hope_eco"
             target="_blank"
             rel="noopener noreferrer"
             className="a-link icon-item icon-item-3"

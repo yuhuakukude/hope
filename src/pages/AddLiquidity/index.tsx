@@ -272,13 +272,13 @@ export default function AddLiquidity({ currencyIdA, currencyIdB }: { currencyIdA
       <AutoColumn gap="20px">
         <LightCard mt="20px" borderRadius="20px">
           <RowFlat>
-            <Text fontSize="48px" fontWeight={500} lineHeight="42px" marginRight={10}>
+            <Text fontSize="36px" fontWeight={500} lineHeight="36px" marginRight={10}>
               {currencies[Field.CURRENCY_A]?.symbol + '/' + currencies[Field.CURRENCY_B]?.symbol}
             </Text>
             <DoubleCurrencyLogo
               currency0={currencies[Field.CURRENCY_A]}
               currency1={currencies[Field.CURRENCY_B]}
-              size={30}
+              size={36}
             />
           </RowFlat>
         </LightCard>
