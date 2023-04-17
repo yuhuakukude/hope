@@ -55,7 +55,13 @@ export function useCalculator() {
   }
 
   const getMinVeltAmount = (depositAmount: string, totalAmount: string, veLtTotalAmount: string) => {
-    if (!Number(depositAmount) || !Number(totalAmount) || !Number(veLtTotalAmount) || !chainId) {
+    if (
+      !depositAmount ||
+      !totalAmount ||
+      !veLtTotalAmount ||
+      !chainId ||
+      (Number(totalAmount) === 0 && Number(depositAmount) == 0)
+    ) {
       return undefined
     }
     const minVelt = new TokenAmount(

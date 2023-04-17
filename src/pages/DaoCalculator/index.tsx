@@ -464,7 +464,7 @@ export default function DaoGauge() {
                     <div>
                       <p className="font-normal">Current Boost</p>
                       <p className="text-white font-28 m-t-15 font-bolder">
-                        {currentBoost ? `${currentBoost > maxBoost ? maxBoost : currentBoost}x` : '1.00x'}
+                        {currentBoost ? `${currentBoost > maxBoost ? maxBoost : currentBoost}x` : '--'}
                       </p>
                     </div>
                     <div>
