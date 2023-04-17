@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { Token, Currency } from '@uniswap/sdk'
 import styled from 'styled-components'
 import { TYPE, CloseIcon } from 'theme'
@@ -16,6 +16,7 @@ import { ExternalLink } from '../../theme/components'
 import { useCombinedInactiveList } from 'state/lists/hooks'
 import ListLogo from 'components/ListLogo'
 import { PaddedColumn } from './styleds'
+import { DOCS_URL } from '../../constants/config'
 
 const Wrapper = styled.div`
   position: relative;
@@ -49,7 +50,7 @@ export function ImportToken({ tokens, onBack, onDismiss, handleCurrencySelect }:
 
   const { chainId } = useActiveWeb3React()
 
-  const [confirmed, setConfirmed] = useState(false)
+  // const [confirmed, setConfirmed] = useState(false)
 
   // use for showing import source on inactive tokens
   const inactiveTokenList = useCombinedInactiveList()
@@ -117,10 +118,17 @@ export function ImportToken({ tokens, onBack, onDismiss, handleCurrencySelect }:
 
           <AutoColumn style={{ textAlign: 'center', gap: '16px', marginBottom: '12px' }}>
             <TYPE.body fontWeight={400} color={fromLists ? theme.yellow2 : theme.red1}>
-              This token is not in the Asset Allow List of LightSwap, you can make it into the Asset Allow List by initiating/participating in Light DAO voting.
+              This token is not in the Asset Allow List of HopeSwap, you can make it into the Asset Allow List by
+              initiating/participating in Light DAO voting.
             </TYPE.body>
           </AutoColumn>
-          <AutoRow justify="center" style={{ cursor: 'pointer' }} onClick={() => setConfirmed(!confirmed)}>
+          <AutoRow
+            justify="center"
+            style={{ cursor: 'pointer' }}
+            onClick={() => {
+              window.open(DOCS_URL['Main'])!.opener = null
+            }}
+          >
             <TYPE.link>Learn more</TYPE.link>
           </AutoRow>
         </Card>

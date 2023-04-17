@@ -302,7 +302,7 @@ export default function DaoGauge() {
                   <span className="text-normal">My Deposit Amount </span>
                   {curGomAddress && account && (
                     <span className="text-primary cursor-select" onClick={getUserDepositAmount}>
-                      Use exsisting deposit
+                      Use existing deposit
                     </span>
                   )}
                 </div>
