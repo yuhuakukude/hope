@@ -10,7 +10,6 @@ import UNISWAP_LOGO_URL from '../assets/svg/logo.svg'
 import { ChainId } from '@uniswap/sdk'
 
 const NETWORK_URL = process.env.REACT_APP_NETWORK_URL
-// const TEST_NETWORK_URL = process.env.REACT_APP_TEST_NETWORK_URL
 const FORMATIC_KEY = process.env.REACT_APP_FORTMATIC_KEY
 const PORTIS_ID = process.env.REACT_APP_PORTIS_ID
 const WALLETCONNECT_BRIDGE_URL = process.env.REACT_APP_WALLETCONNECT_BRIDGE_URL
