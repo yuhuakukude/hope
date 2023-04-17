@@ -60,7 +60,7 @@ export function useCalculator() {
       !totalAmount ||
       !veLtTotalAmount ||
       !chainId ||
-      (Number(totalAmount) === 0 && Number(depositAmount) == 0)
+      (Number(totalAmount) === 0 && Number(depositAmount) === 0)
     ) {
       return undefined
     }
