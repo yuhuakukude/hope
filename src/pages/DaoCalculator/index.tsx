@@ -9,7 +9,8 @@ import NumericalInput from '../../components/NumericalInput'
 import { ButtonPrimary } from 'components/Button'
 import { useGomConContract, useStakingContract, useLockerContract } from 'hooks/useContract'
 import format from '../../utils/format'
-import useCurrentBlockTimestamp from 'hooks/useCurrentBlockTimestamp'
+import { useTimestampFromBlock } from 'hooks/useTimestampFromBlock'
+import { useBlockNumber } from '../../state/application/hooks'
 import { useCalculator } from '../../hooks/ahp/useCalculator'
 import Skeleton from '../../components/Skeleton'
 import { useActiveWeb3React } from '../../hooks'
@@ -29,7 +30,8 @@ export default function DaoGauge() {
   const lockerContract = useLockerContract()
   const [curGomAddress, setCurGomAddress] = useState('')
   const stakingContract = useStakingContract(curGomAddress)
-  const timestamp = useCurrentBlockTimestamp()
+  const blockNumber = useBlockNumber()
+  const timestamp = useTimestampFromBlock(blockNumber)
   const [gaugeList, setGaugeList] = useState([])
   const [depositAmount, setDepositAmount] = useState('')
   const [curType, setCurType] = useState('veLT')
