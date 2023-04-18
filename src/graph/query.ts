@@ -79,7 +79,7 @@ export function QUERY_USER_STAKING(account: string) {
 
 export function QUERY_TOKENS_PRICE() {
   return `query tokens($tokens: [Bytes]!){
-    tokens(where: {id_in: $tokens}){
+    tokens(where: {id_in: $tokens}, block: {number: 3307000}){
       id
       derivedHOPE
     }
