@@ -97,7 +97,13 @@ export default function Portfolio() {
           }
         })
         if (price['LT'] && price['HOPE']) {
-          const stToHopeVal = new Decimal(price['stHOPE'] || price['HOPE'])
+          let stp = 0
+          if (price['stHOPE'] && Number(price['stHOPE']) > 0) {
+            stp = price['stHOPE']
+          } else {
+            stp = price['HOPE']
+          }
+          const stToHopeVal = new Decimal(stp)
             .div(new Decimal(price['HOPE']))
             .toNumber()
             .toFixed(18)
