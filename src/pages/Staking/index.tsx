@@ -482,7 +482,7 @@ export default function Staking() {
                       }}
                     />
                     <div className="coin-box flex ai-center cursor-select">
-                      <div className="hope-icon"></div>
+                      <div className={curType === 'stake' ? 'hope-icon' : 'sthope-icon'}></div>
                       <div className="currency font-nor text-medium m-l-12">
                         {curType === 'stake' ? 'HOPE' : 'stHOPE'}
                       </div>
@@ -691,7 +691,7 @@ export default function Staking() {
                     <div className="card-line m-y-30"></div>
                     <div className="flex jc-between m-b-20">
                       <div className="coin-box flex ai-center">
-                        <div className="hope-icon"></div>
+                        <div className="sthope-icon"></div>
                         <div className="currency font-nor text-medium m-l-12">stHOPE</div>
                       </div>
                       <Skeleton loading={(stakedVal === undefined || priceLoading) && !!account} width={80}>
