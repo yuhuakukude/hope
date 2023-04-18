@@ -174,7 +174,7 @@ export const SUPPORTED_NETWORKS: {
       symbol: 'ETH',
       decimals: 18
     },
-    rpcUrls: ['https://mainnet.infura.io/v3/f338fa7411a945db8bed616683b2ade5'],
+    rpcUrls: ['https://ethereum.hivefin.net'],
     blockExplorerUrls: ['https://etherscan.io']
   },
   [ChainId.SEPOLIA]: {
