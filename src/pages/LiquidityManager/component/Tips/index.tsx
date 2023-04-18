@@ -16,7 +16,7 @@ export default function Tips() {
           By adding liquidity, you'll earn 50% of all fees specified in the pool, proportional to your share of the
           pool. Fees are added to the pool, accrue in real time and can be claimed by withdrawing your liquidity.
         </p>
-        <h3 className="font-white font-bold m-b-10 font-14">About Deposit</h3>
+        <h3 className="font-white font-bold m-b-10 font-14">About Withdraw</h3>
         <p className="font-white lh15 font-12">
           Removing pool tokens converts your position back into underlying tokens at the current rate, proportional to your share of the pool. Accrued fees are included in the amounts you receive.
         </p>
