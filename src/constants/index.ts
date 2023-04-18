@@ -121,13 +121,13 @@ export const CUSTOM_BASES: { [chainId in ChainId]?: { [tokenAddress: string]: To
 // used for display in the default list when adding liquidity
 export const SUGGESTED_BASES: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC[ChainId.MAINNET], USDT[ChainId.MAINNET], WBTC]
+  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET]]
 }
 
 // used to construct the list of all pairs we consider by default in the frontend
 export const BASES_TO_TRACK_LIQUIDITY_FOR: ChainTokenList = {
   ...WETH_ONLY,
-  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET], DAI, USDC[ChainId.MAINNET], USDT[ChainId.MAINNET], WBTC]
+  [ChainId.MAINNET]: [...WETH_ONLY[ChainId.MAINNET]]
 }
 
 export const PINNED_PAIRS: { readonly [chainId in ChainId]?: [Token, Token][] } = {
@@ -174,7 +174,7 @@ export const SUPPORTED_NETWORKS: {
       symbol: 'ETH',
       decimals: 18
     },
-    rpcUrls: ['https://ethereum.hivefin.net'],
+    rpcUrls: ['http://192.160.17.204:8545'],
     blockExplorerUrls: ['https://etherscan.io']
   },
   [ChainId.SEPOLIA]: {
