@@ -491,7 +491,7 @@ export default function Pools() {
           </TableTitleWrapper>
         </TableWrapper>
       )}
-      {liquiditySearchType !== Field.ALL && account && (
+      {liquiditySearchType !== Field.ALL && (account || (!account && loading)) && (
         <TableWrapper>
           <TableTitleWrapper>
             {positionTitles.map(({ value, weight, alignCenter }, index) => (
