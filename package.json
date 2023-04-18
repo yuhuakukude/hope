@@ -132,7 +132,7 @@
     "@ethersproject/address": "5.5.0",
     "@types/ms.macro": "^2.0.0",
     "@uniswap/default-token-list": "^2.0.0",
-    "@uniswap/sdk": "Light-Ecosystem/hope-dapp-sdk.git#dev",
+    "@uniswap/sdk": "Light-Ecosystem/hope-dapp-sdk.git",
     "antd": "^3.26.19",
     "axios": "0.18.1",
     "dayjs": "^1.11.7",
