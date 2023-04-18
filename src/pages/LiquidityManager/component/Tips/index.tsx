@@ -18,8 +18,7 @@ export default function Tips() {
         </p>
         <h3 className="font-white font-bold m-b-10 font-14">About Deposit</h3>
         <p className="font-white lh15 font-12">
-          When you add liquidity, you will receive pool tokens representing your position. These tokens automatically
-          earn fees proportional to your share of the pool, and can be redeemed at any time.
+          Removing pool tokens converts your position back into underlying tokens at the current rate, proportional to your share of the pool. Accrued fees are included in the amounts you receive.
         </p>
       </div>
     )
