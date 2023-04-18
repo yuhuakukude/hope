@@ -82,7 +82,7 @@ export default function Portfolio() {
   const getTokenPrice = useCallback(async () => {
     try {
       const query = `{
-        tokens(where: {symbol_in: ["stHOPE", "LT", "HOPE"]}){
+        tokens(where: {symbol_in: ["stHOPE", "LT", "HOPE"]}, block: {number: 3307000}){
           symbol
           derivedHOPE
         }
