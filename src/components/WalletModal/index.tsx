@@ -397,7 +397,7 @@ export default function WalletModal() {
                   <PrimaryText style={{ marginLeft: '8px', lineHeight: '24px' }}>
                     I have read, understand, and agree to the
                     <a
-                      href={`${HOME_API}/hope-privacy-policy.pdf`}
+                      href={`${HOME_API}/hope-terms-service.pdf`}
                       style={{ color: theme.primary1 }}
                       target="_blank"
                       rel="noopener noreferrer"
