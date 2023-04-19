@@ -1,6 +1,7 @@
 import React from 'react'
 import { Text } from 'rebass'
-import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk'
+// import { ChainId, Currency, currencyEquals, ETHER, Token } from '@uniswap/sdk'
+import { ChainId, Currency, Token } from '@uniswap/sdk'
 import styled from 'styled-components'
 
 import { SUGGESTED_BASES } from '../../constants'
@@ -49,7 +50,7 @@ export default function CommonBases({
         </Tooltip>
       </AutoRow>
       <AutoRow gap="4px">
-        <BaseWrapper
+        {/* <BaseWrapper
           onClick={() => {
             if (!selectedCurrency || !currencyEquals(selectedCurrency, ETHER)) {
               onSelect(ETHER)
@@ -61,7 +62,7 @@ export default function CommonBases({
           <Text fontWeight={500} fontSize={16}>
             ETH
           </Text>
-        </BaseWrapper>
+        </BaseWrapper> */}
         {(chainId ? SUGGESTED_BASES[chainId] : []).map((token: Token) => {
           const selected = selectedCurrency instanceof Token && selectedCurrency.address === token.address
           return (
