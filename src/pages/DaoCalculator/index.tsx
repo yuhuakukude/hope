@@ -216,7 +216,7 @@ export default function DaoGauge() {
         if (res) {
           setWorkingSupply(
             CurrencyAmount.ether(res)
-              .toFixed(2)
+              .toFixed(8)
               .replace(/(?:\.0*|(\.\d+?)0+)$/, '$1')
           )
         } else {
@@ -241,9 +241,9 @@ export default function DaoGauge() {
 
   function toCal() {
     const minVeltRes = getMinVeltAmount(depositAmount, totalPoolAmount, totalVeLTAmount)
-    const velt = curType === 'veLT' ? veLTInputAmount : veLtAmount?.toFixed(2)
+    const velt = curType === 'veLT' ? veLTInputAmount : veLtAmount?.toFixed(8)
     const currentBu = getBuMin(depositAmount, totalPoolAmount, velt || '0', totalVeLTAmount)
-    const maxBu = getBuMin(depositAmount, totalPoolAmount, minVeltRes?.toFixed(2) || '0', totalVeLTAmount)
+    const maxBu = getBuMin(depositAmount, totalPoolAmount, minVeltRes?.toFixed(8) || '0', totalVeLTAmount)
 
     const cboost = getBoost(depositAmount, workingSupply, currentBu || JSBI.BigInt(0))
     const mboost = getBoost(depositAmount, workingSupply, maxBu || JSBI.BigInt(0))
