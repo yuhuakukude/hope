@@ -87,6 +87,19 @@ export interface TokenPriceObject {
   [key: string]: string
 }
 
+function formatTokensPrice(tokensPrice: TokenPrice[], hasStHope: boolean, stHopeAddress: string, hopeAddress: string) {
+  const tokenMap = tokensPrice.reduce((acc, item) => {
+    acc[item.address] = item.price
+    return acc
+  }, {} as any)
+  if (hasStHope) {
+    const stHopePrice = tokenMap[stHopeAddress.toLowerCase()] ? Number(tokenMap[stHopeAddress.toLowerCase()]) : 0
+    tokenMap[stHopeAddress.toLowerCase()] =
+      stHopePrice > 0 ? tokenMap[stHopeAddress.toLowerCase()] : tokenMap[hopeAddress.toLowerCase()]
+  }
+  return tokenMap
+}
+
 export function useTokenPrice(addresses: string[]) {
   const [result, setResult] = useState<TokenPrice[]>([])
 
@@ -106,16 +119,9 @@ export function useTokenPrice(addresses: string[]) {
           addresses.push(hopeAddress)
         }
         const tokensPrice: TokenPrice[] = await fetchTokensPrice(addresses)
-        if (hasStHope && tokensPrice.some(s => s.address.toLowerCase() !== stHopeAddress.toLowerCase())) {
-          const hopePrice = tokensPrice.find(f => f.address.toLowerCase() === hopeAddress.toLowerCase())
-          if (hopePrice) {
-            tokensPrice.push({
-              address: stHopeAddress.toLowerCase(),
-              price: hopePrice?.price
-            })
-          }
-        }
-        setResult(tokensPrice)
+        const tokenMap = formatTokensPrice(tokensPrice, hasHope, stHopeAddress, hopeAddress)
+        const tokenPrices: TokenPrice[] = Object.keys(tokenMap).map(k => ({ address: k, price: tokenMap[k] }))
+        setResult(tokenPrices)
         setLoading(false)
       } catch (error) {
         setResult([])
@@ -150,13 +156,15 @@ export function useTokenPriceObject(addresses: string[]) {
           addresses.push(hopeAddress)
         }
         const tokensPrice: TokenPrice[] = await fetchTokensPrice(addresses)
-        const tokenMap = tokensPrice.reduce((acc, item) => {
-          acc[item.address] = item.price
-          return acc
-        }, {} as any)
-        if (hasStHope && tokensPrice.some(s => s.address.toLowerCase() !== stHopeAddress.toLowerCase())) {
-          tokenMap[stHopeAddress.toLowerCase()] = tokenMap[hopeAddress.toLowerCase()]
-        }
+        // const tokenMap = tokensPrice.reduce((acc, item) => {
+        //   acc[item.address] = item.price
+        //   return acc
+        // }, {} as any)
+        // if (hasStHope) {
+        //   const stHopePrice = tokenMap[stHopeAddress.toLowerCase()] ? Number(tokenMap[stHopeAddress.toLowerCase()]) : 0;
+        //   tokenMap[stHopeAddress.toLowerCase()] = stHopePrice > 0 ? tokenMap[stHopeAddress.toLowerCase()] : tokenMap[hopeAddress.toLowerCase()]
+        // }
+        const tokenMap = formatTokensPrice(tokensPrice, hasHope, stHopeAddress, hopeAddress)
         setResult(tokenMap)
         setLoading(false)
       } catch (error) {
