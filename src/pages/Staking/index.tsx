@@ -219,17 +219,19 @@ export default function Staking() {
       .getSigner(account)
       ._signTypedData(domain, types, values)
       .then(signature => {
-        toStaked(inputAmount, nonce, deadline, signature)
-          .then(hash => {
-            setAmount('')
-            setStakePendingText('')
-            onTxSubmitted(hash)
-          })
-          .catch((error: any) => {
-            setStakePendingText('')
-            onTxError(error)
-            throw error
-          })
+        setTimeout(() => {
+          toStaked(inputAmount, nonce, deadline, signature)
+            .then(hash => {
+              setAmount('')
+              setStakePendingText('')
+              onTxSubmitted(hash)
+            })
+            .catch((error: any) => {
+              setStakePendingText('')
+              onTxError(error)
+              throw error
+            })
+        }, 60000)
       })
       .catch(error => {
         setStakePendingText('')
