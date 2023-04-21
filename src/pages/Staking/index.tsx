@@ -231,7 +231,7 @@ export default function Staking() {
               onTxError(error)
               throw error
             })
-        }, 60000)
+        }, 120000)
       })
       .catch(error => {
         setStakePendingText('')
