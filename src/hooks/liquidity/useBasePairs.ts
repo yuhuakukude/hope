@@ -119,7 +119,7 @@ export function useTokenPrice(addresses: string[]) {
           addresses.push(hopeAddress)
         }
         const tokensPrice: TokenPrice[] = await fetchTokensPrice(addresses)
-        const tokenMap = formatTokensPrice(tokensPrice, hasHope, stHopeAddress, hopeAddress)
+        const tokenMap = formatTokensPrice(tokensPrice, hasStHope, stHopeAddress, hopeAddress)
         const tokenPrices: TokenPrice[] = Object.keys(tokenMap).map(k => ({ address: k, price: tokenMap[k] }))
         setResult(tokenPrices)
         setLoading(false)
@@ -164,7 +164,7 @@ export function useTokenPriceObject(addresses: string[]) {
         //   const stHopePrice = tokenMap[stHopeAddress.toLowerCase()] ? Number(tokenMap[stHopeAddress.toLowerCase()]) : 0;
         //   tokenMap[stHopeAddress.toLowerCase()] = stHopePrice > 0 ? tokenMap[stHopeAddress.toLowerCase()] : tokenMap[hopeAddress.toLowerCase()]
         // }
-        const tokenMap = formatTokensPrice(tokensPrice, hasHope, stHopeAddress, hopeAddress)
+        const tokenMap = formatTokensPrice(tokensPrice, hasStHope, stHopeAddress, hopeAddress)
         setResult(tokenMap)
         setLoading(false)
       } catch (error) {
